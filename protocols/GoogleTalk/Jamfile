@@ -1,0 +1,42 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP protocols GoogleTalk ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
+SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+
+Addon gtalk :
+	GoogleTalk.cpp
+	: be stdc++.r4 libim.so libexpat.a libjabber.a ssl crypto
+	: GoogleTalk.rdef
+;
+
+Depends gtalk : libexpat.a ;
+Depends gtalk : libjabber.a ;
+Depends gtalk : libim.so ;
+
+if $(IMKIT_IS_HAIKU)  = 1 {
+	LINKFLAGS on gtalk += -lnetwork ;
+}
+
+if $(IMKIT_IS_BEOS) = 1 {
+	LINKFLAGS on gtalk += -lsocket ;
+}
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on gtalk += -lsocket -lbind ;
+	SubDirHdrs /boot/develop/headers/be/bone ;
+}
+
+LINKFLAGS on gtalk += -L$(IMKIT_OPENSSL_LIBDIR) ;
+
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : gtalk ;

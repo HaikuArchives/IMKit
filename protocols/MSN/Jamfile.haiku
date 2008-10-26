@@ -1,0 +1,44 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit protocols MSN ;
+
+local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+
+SubDirC++Flags -DBONE_BUILD=1 ;
+
+Addon msn :
+	MSN.cpp
+	MSNConnection.cpp
+	MSNManager.cpp
+	Command.cpp
+	HTTPFormatter.cpp
+	MSNSBConnection.cpp
+	MSNObject.cpp
+	P2PContents.cpp
+	P2PHeader.cpp
+	Buddy.cpp
+	SSO.cpp 
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
+	: MSN.rdef
+;
+
+Depends msn : <IMKit>libcommon.a ;
+Depends msn : libim.so ;
+
+LINKFLAGS on msn += -L$(sslDir)/lib ;
+
+AddFilesToHaikuImage common add-ons im_kit protocols : msn ;
+
+Package imkit-cvs :
+	msn :
+	boot common add-ons im_kit protocols
+;

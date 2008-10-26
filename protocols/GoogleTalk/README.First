@@ -1,0 +1,24 @@
+/*
+	GoogleTalk protocol for IMKit
+	 end of sept. by xeD < andrea @ tenar.it>
+*/
+
+Some notes:
+
+* The protocol uses classes from the Jabber protocol. (subfolder expat and jabber)
+
+* GoogleTalk icon is done by zuMi
+
+* I'm working on a better protocol implementation.
+
+Bugs:
+
+* if you are connected and you add a contact you may experience and Error 'Could not send'. Try to add your contact off-line then connect to gtalk server, There should be a stupid bug somewhere..
+
+
+
+
+If you want to fix bugs and/or get better the protocol you can find infos here:
+
+http://www.xmpp.org/
+

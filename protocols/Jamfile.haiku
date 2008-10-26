@@ -1,0 +1,17 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit protocols ;
+
+SubInclude HAIKU_TOP 3rdparty IMKit protocols Jabber ;
+if $(USE_SSL) = 1 {
+	SubInclude HAIKU_TOP 3rdparty IMKit protocols MSN ;
+	SubInclude HAIKU_TOP 3rdparty IMKit protocols GoogleTalk ;
+}
+SubInclude HAIKU_TOP 3rdparty IMKit protocols OSCAR ;
+#SubInclude HAIKU_TOP 3rdparty IMKit protocols Yahoo ;

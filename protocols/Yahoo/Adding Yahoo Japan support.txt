@@ -1,0 +1,38 @@
+Adding Yahoo Japan support:
+
+"The info that I have is from the BeY client.
+
+This is what /libyahoo2/libyahoo2.c should look like:
+
+static char pager_host[] = "cs.yahoo.co.jp";
+static int pager_port = 5050;
+static int fallback_ports[]={23, 25, 80, 20, 119, 8001, 8002, 5050, 0};
+static char filetransfer_host[]="filetransfer.msg.yahoo.co.jp";
+static int filetransfer_port=80;
+static char webcam_host[]="webcam.yahoo.com";
+static int webcam_port=5100;
+static char webcam_description[]="";
+static char local_host[]="";
+static int conn_type=Y_WCM_DSL;
+
+static char profile_url[] = "http://profiles.yahoo.co.jp/"; would then 
+connect you to the Japanese server.
+
+Also...
+
+snprintf(url, 1024, "http://insider.msg.yahoo.co.jp/ycontent/?ab2=0");
+strncpy(url, "http://insider.msg.yahoo.co.jp/ycontent/?addab2=0", 
+size);
+snprintf(url, 1024, "http://insider.msg.yahoo.co.jp/ycontent/?chatcat=0");
+snprintf(url, 1024, "http://insider.msg.yahoo.co.jp/ycontent/?chatroom_%d=0",
+chatroomid);
+snprintf(url, 1024, "http://members.yahoo.co.jp/interests?.oc=m&.kw=%s&.sb=%d&.g=%d&.ar=0%s%s%s",
+
+And lastly, y_utf8_to_str and y_str_to_utf8 need to be converted to 
+sjis.
+
+Hope this is enough. If not, let me know, and I will try to find out.
+
+Koki"
+
+from "Jorge G. Mare" <koki@aequus.net>

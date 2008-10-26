@@ -1,0 +1,38 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP protocols Yahoo ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+
+Addon yahoo :
+	Yahoo.cpp
+	YahooCallbacks.cpp
+	YahooConnection.cpp
+	: be stdc++.r4 libcommon.a yahoo2
+	: yahoo.rsrc
+;
+
+if $(IMKIT_IS_HAIKU)  = 1 {
+	LINKFLAGS on yahoo += -lnetwork ;
+}
+
+if $(IMKIT_IS_BEOS) = 1 {
+	LINKFLAGS on yahoo += -lsocket ;
+}
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on yahoo += -lsocket -lbind ;
+	SubDirHdrs /boot/develop/headers/be/bone ;
+}
+
+LINKFLAGS on yahoo += -L$(IMKIT_YAHOO2_LIBDIR) ;
+
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : yahoo ;

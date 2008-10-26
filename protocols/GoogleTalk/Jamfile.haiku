@@ -1,0 +1,40 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit protocols GoogleTalk ;
+
+local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
+
+SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libexpat ] ;
+SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libjabber ] ;
+
+SubDirC++Flags -DBONE_BUILD=1 ;
+
+Addon gtalk :
+	GoogleTalk.cpp
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libexpat.a <IMKit>libjabber.a ssl crypto
+	: GoogleTalk.rdef
+;
+
+Depends gtalk : <IMKit>libexpat.a ;
+Depends gtalk : <IMKit>libjabber.a ;
+Depends gtalk : libim.so ;
+
+LINKFLAGS on gtalk += -L$(sslDir)/lib ;
+
+AddFilesToHaikuImage common add-ons im_kit protocols : gtalk ;
+
+Package imkit-cvs :
+	gtalk :
+	boot common add-ons im_kit protocols
+;

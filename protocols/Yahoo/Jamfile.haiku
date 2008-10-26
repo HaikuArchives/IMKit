@@ -1,0 +1,30 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit protocols Yahoo ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+
+SubDirC++Flags -DBONE_BUILD=1 ;
+
+Addon yahoo :
+	Yahoo.cpp
+	YahooCallbacks.cpp
+	YahooConnection.cpp
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) <IMKit>libcommon.a yahoo2
+	: yahoo.rsrc
+;
+
+AddFilesToHaikuImage common add-ons im_kit protocols : yahoo ;
+
+Package imkit-cvs :
+	yahoo :
+	boot common add-ons im_kit protocols
+;

@@ -1,0 +1,17 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP protocols ;
+
+SubInclude IMKIT_TOP protocols Jabber ;
+if $(IMKIT_HAVE_OPENSSL) = 1 {
+	SubInclude IMKIT_TOP protocols MSN ;
+	SubInclude IMKIT_TOP protocols GoogleTalk ;
+}
+SubInclude IMKIT_TOP protocols OSCAR ;
+#SubInclude IMKIT_TOP protocols Yahoo ;

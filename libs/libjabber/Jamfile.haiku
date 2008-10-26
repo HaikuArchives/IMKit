@@ -1,0 +1,33 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit libs libjabber ;
+
+local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+
+SubDirC++Flags -DSTDOUT=1 ;
+
+StaticLibrary <IMKit>libjabber.a :
+	JabberAgent.cpp
+	JabberContact.cpp
+	JabberElement.cpp
+	JabberHandler.cpp
+	JabberMessage.cpp
+	JabberPresence.cpp
+	JabberRegistration.cpp
+	JabberSSLPlug.cpp
+	JabberSocketPlug.cpp
+	SHA1.cpp
+;
+
+Depends <IMKit>libjabber.a : <IMKit>libexpat.a ;

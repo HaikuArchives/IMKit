@@ -1,0 +1,72 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP protocols OSCAR ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+
+Addon aim :
+	AIM.cpp
+	FLAP.cpp
+	TLV.cpp
+	OSCARManager.cpp
+	SNAC.cpp
+	OSCARConnection.cpp
+	OSCARBOSConnection.cpp
+	OSCARReqConn.cpp
+	Buddy.cpp
+	Group.cpp
+	: be stdc++.r4 textencoding libim.so libcommon.a crypto
+	: AIM.rdef
+;
+
+Depends aim : libcommon.a ;
+Depends aim : libim.so ;
+
+Addon icq :
+	ICQ.cpp
+	FLAP.cpp
+	TLV.cpp
+	OSCARManager.cpp
+	SNAC.cpp
+	OSCARConnection.cpp 
+	OSCARBOSConnection.cpp
+	OSCARReqConn.cpp
+	Buddy.cpp
+	Group.cpp
+	: be stdc++.r4 textencoding libim.so libcommon.a crypto
+	: ICQ.rdef
+;
+
+Depends icq : libcommon.a ;
+Depends icq : libim.so ;
+
+if $(IMKIT_IS_HAIKU)  = 1 {
+	LINKFLAGS on aim += -lnetwork ;
+	LINKFLAGS on icq += -lnetwork ;
+}
+
+if $(IMKIT_IS_BEOS) = 1 {
+	LINKFLAGS on aim += -lsocket ;
+	LINKFLAGS on icq += -lsocket ;
+}
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on aim += -lsocket -lbind ;
+	LINKFLAGS on icq += -lsocket -lbind ;
+	SubDirHdrs /boot/develop/headers/be/bone ;
+}
+
+LINKFLAGS on aim += -L$(IMKIT_OPENSSL_LIBDIR) ;
+LINKFLAGS on icq += -L$(IMKIT_OPENSSL_LIBDIR) ;
+
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : aim ;
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : icq ;

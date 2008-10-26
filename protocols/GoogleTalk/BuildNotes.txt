@@ -1,0 +1,15 @@
+To build the GoogleTalk add-on you need to fetch, build and install OpenSSL:
+http://www.openssl.org/
+
+The prebuilt version on BeBits, http://www.bebits.com/app/1020 , should also work.
+
+note:
+  *running `imkit/make` will enure OpenSSL is symlinked properly.
+
+
+If you installed the prebuilt version on BeBits,
+navigate to  /boot/home/config/lib/ and:
+* make a symlink of libssl.so.0.9.7  to libssl.so  
+* make a symlink of libcrypto.so.0.9.7  to libcrypto.so  
+* make a symlink of libcrypto.so.0.9.7  to /boot/develop/lib/x86/libcrypto.so  
+* make a symlink of /boot/home/config/include/openssl  (the folder)  to /boot/develop/headers/openssl

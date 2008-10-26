@@ -1,0 +1,49 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP protocols MSN ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+
+Addon msn :
+	# MSN
+	MSN.cpp
+	MSNConnection.cpp
+	MSNManager.cpp
+	Command.cpp
+	HTTPFormatter.cpp
+	MSNSBConnection.cpp
+	MSNObject.cpp
+	P2PContents.cpp
+	P2PHeader.cpp
+	Buddy.cpp
+	SSO.cpp 
+	: be stdc++.r4 libim.so libcommon.a ssl crypto
+	: MSN.rdef
+;
+
+Depends msn : libcommon.a ;
+Depends msn : libim.so ;
+
+if $(IMKIT_IS_HAIKU) = 1 {
+	LINKFLAGS on msn += -lnetwork ;
+}
+
+if $(IMKIT_IS_BEOS) = 1 {
+	LINKFLAGS on msn += -lsocket ;
+}
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on msn += -lsocket -lbind ;
+	SubDirHdrs /boot/develop/headers/be/bone ;
+}
+
+LINKFLAGS on msn += -L$(IMKIT_OPENSSL_LIBDIR) ;
+
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : msn ;

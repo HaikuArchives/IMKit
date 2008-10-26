@@ -1,0 +1,13 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP libs ;
+
+# Include all the components.
+SubInclude IMKIT_TOP libs libexpat ;
+SubInclude IMKIT_TOP libs libjabber ;

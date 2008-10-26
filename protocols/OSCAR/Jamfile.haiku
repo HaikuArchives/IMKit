@@ -1,0 +1,69 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit protocols OSCAR ;
+
+local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+
+SubDirC++Flags -DBONE_BUILD=1 ;
+
+Addon aim :
+	AIM.cpp
+	FLAP.cpp
+	TLV.cpp
+	OSCARManager.cpp
+	SNAC.cpp
+	OSCARConnection.cpp
+	OSCARBOSConnection.cpp
+	OSCARReqConn.cpp
+	Buddy.cpp
+	Group.cpp
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
+	: AIM.rdef
+;
+
+Depends aim : <IMKit>libcommon.a ;
+Depends aim : libim.so ;
+
+Addon icq :
+	ICQ.cpp
+	FLAP.cpp
+	TLV.cpp
+	OSCARManager.cpp
+	SNAC.cpp
+	OSCARConnection.cpp 
+	OSCARBOSConnection.cpp
+	OSCARReqConn.cpp
+	Buddy.cpp
+	Group.cpp
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
+	: ICQ.rdef
+;
+
+Depends icq : <IMKit>libcommon.a ;
+Depends icq : libim.so ;
+
+LINKFLAGS on aim += -L$(sslDir)/lib ;
+LINKFLAGS on icq += -L$(sslDir)/lib ;
+
+AddFilesToHaikuImage common add-ons im_kit protocols : aim ;
+AddFilesToHaikuImage common add-ons im_kit protocols : icq ;
+
+Package imkit-cvs :
+	aim :
+	boot common add-ons im_kit protocols
+;
+Package imkit-cvs :
+	icq :
+	boot common add-ons im_kit protocols
+;

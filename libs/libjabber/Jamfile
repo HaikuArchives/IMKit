@@ -1,0 +1,31 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP libs libjabber ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+
+SubDirC++Flags -DSTDOUT=1 ;
+
+StaticLibrary libjabber.a :
+	JabberAgent.cpp
+	JabberContact.cpp
+	JabberElement.cpp
+	JabberHandler.cpp
+	JabberMessage.cpp
+	JabberPresence.cpp
+	JabberRegistration.cpp
+	JabberSSLPlug.cpp
+	JabberSocketPlug.cpp
+	SHA1.cpp
+;
+
+Depends libjabber.a : libexpat.a ;
