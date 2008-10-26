@@ -1,0 +1,17 @@
+# Zeta locale file for im_binlog_viewer [itIT]
+
+# LogViewApp.cpp
+"This People file contains no Logs" "Questo contatto non contiene cronologia"
+
+# LogWin.cpp
+"IM Kit - Log Viewer" "IM Kit - visualizzatore cronologia"
+"Date" "Data"
+"Protocol" "Protocollo"
+"Sender" "Mittente"
+"Contents" "Contenuto"
+"Type" "Tipo"
+"Unknown Name" "Nome sconosciuto"
+"Unknown Nick" "Nick sconosciuto"
+"Error" "Errore"
+"You" "Tu"
+"Unknown" "Sconosciuto"

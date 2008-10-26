@@ -1,0 +1,52 @@
+# Zeta locale file for InstantMessaging [enUS]
+
+# PWindow.cpp
+"Save"
+"Revert"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"
+"Application signature"
+"Menubar Icon Size"
+"Show 'Send' button"
+"Send messages with CMD-Enter instead of Enter"
+
+# preferences: im_server
+"Blink Deskbar icon"
+"Auto-start im_server"
+"Show icon in Deskbar"
+"Debug log threshold"
+"Away Message"
+"Person handler"
+"Application signature"
+
+# preferences: im_logger
+"Auto-start"
+
+# preferences: im_binlogger
+"Auto-start"
+
+# preferences: im_infopopper
+"Status change text"
+"Message received text"
+"Icon size"
+
+# preferences: AIM
+"Screen Name"
+"Password"
+"User Profile"
+
+# preferences: ICQ
+"Password"
+"Text encoding"
+
+# preferences: MSN
+"Passport Email"
+"Password"
+"Display Name"
+
+# preferences: Yahoo
+"Password"

@@ -1,0 +1,30 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP sample_clients im_binlog_viewer ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) sample_clients im_binlog_viewer CLV ] ;
+
+Executable im_binlog_viewer :
+	# im_binlog_viewer
+	LogViewApp.cpp
+	LogWin.cpp
+	# CLV
+	ColorTools.cpp
+	ColumnListView.cpp
+	ColumnTypes.cpp
+	: be stdc++.r4 tracker libim.so libcommon.a
+	: logger.rsrc
+;
+
+Depends im_binlog_viewer : libcommon.a ;
+Depends im_binlog_viewer : libim.so ;
+
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlog_viewer ;

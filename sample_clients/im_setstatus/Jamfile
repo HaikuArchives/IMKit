@@ -1,0 +1,20 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP sample_clients im_setstatus ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Executable im_setstatus :
+	im_setstatus.cpp
+	: be libim.so
+;
+
+Depends im_setstatus : libim.so ;
+
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_setstatus ;

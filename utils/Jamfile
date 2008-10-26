@@ -1,0 +1,15 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP utils ;
+
+# Include all the components
+SubInclude IMKIT_TOP utils DeskbarIcon ;
+SubInclude IMKIT_TOP utils gimicq-import ;
+SubInclude IMKIT_TOP utils mimetype ;
+SubInclude IMKIT_TOP utils IconSetter ;

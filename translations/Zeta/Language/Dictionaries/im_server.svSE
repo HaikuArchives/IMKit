@@ -1,0 +1,25 @@
+# Zeta locale file for im_server [svSE]
+
+# DeskbarIcon.cpp
+"im_server not running"	"im_server är inte igång"
+"Online Status:"		"Anslutningsstatus"
+"Available"			"Tillgänglig"
+"Away"			"Borta"
+"Offline"			"Frånkopplad"
+"Start im_server"		"Starta im_server"
+"Set status"		"Sätt status"
+"All Protocols"		"Alla protokoll"
+# "Queries" # Queries are Queries :P
+"Open Query directory"	"Öppna query-katalogen"
+"Settings"			"Inställningar"
+"About"			"Om"
+"Quit"				"Avsluta"
+"SVN Version: "		"SVN Version: "
+"Built on: "			"Byggd: "
+"The IM Kit is a collaborative effort released under the BeClan banner."	"IM Kit är ett genemsamt projekt samordnat under BeClan."
+" Collaborators include:"	"Några av medhjälparna:"
+
+#AwayMessageWindow.cpp
+"IM Kit: Set Away Message"	"IM Kit: Ange meddelande för borta-läget"
+"Set Away"				"Sätt borta-läge"
+"Cancel"				"Avbryt"

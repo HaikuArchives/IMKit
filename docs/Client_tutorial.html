@@ -1,0 +1,157 @@
+<html>
+<head>
+	<title>IM Kit: How to write a client</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<h1>IM Kit: How to write a client</h1>
+
+<p>First of all, a quick introduction to the structure of the kit: In the beginning, there is the im_server.
+Then the im_server loads the protocol add-ons, and starts the auto-start clients. When this is all well
+and done, the clients can start telling the im_server what to do. They do this with the help of plain
+ol' BMessages and a helping hand called IM::Manager. The IM::Manager sends messages to the im_server,
+and it also let's the clients add endpoints for listening to messages from the im_server.</p>
+
+<p><strong>So what do you -really- need to do to write a client?</strong> Well, it depends on what you want
+to do with your client. If all you want to do is to send a single message to someone, all you have to do is
+to link against libim.so and use IM::Manager.OneShotMessage() to send a carefully constructed message. If you
+want to do more than just send single messages, you should have a BHandler attached to a BLooper and use
+IM::Manager to add that handler as an endpoint. That means that every message that the im_server get's (sort of)
+is forwarded to your handler. Then it's up to you what you want to do with these messages. Most of them you'll
+probably ignore, since they're not of interest to you client, but now and again there will come a message that
+you want to act upon, and this tutorial will show you how!</p>
+
+<h2>Step 1: Spawn a BLooper and add a BHandler</h2>
+
+<p>If this sounds tricky, it isn't. You can use your be_app or one of your windows if you don't want to create
+a new looper/handler just for IM messages.</p>
+
+<pre><code>
+	class IMApp : public BApplication
+	{
+		// Fleshed out below..
+	};
+	
+	int main()
+	{
+		IMApp * app = new IMApp;
+		app->Run();
+	}
+</code></pre>
+
+<h2>Step 2: Tell the im_server you want to listen</h2>
+
+<p>This is darn easy as well, just have a look:</p>
+
+<pre><code>
+	#include &lt;libim/Manager.h&gt;
+	
+	class IMApp : public BApplication
+	{
+		private:
+			IM::Manager * fManager;
+		
+		public:
+			IMApp()
+			:	BApplication("application/x-vnd.beclan.im_client_tutorial")
+			{
+			};
+			
+			void ReadyToRun()
+			{
+				fManager = new IM::Manager(this);
+				
+				fManager->StartListening();
+			};
+	};
+</code></pre>
+
+<p>That wasn't so hard, was it? Now all we have to do is start paying attention to the messages we receive!</p>
+
+<h2>Step 3: Act on the messages</h2>
+
+<p>The IM messages are like any other messages, so we'll add some code to MessageReceived() to do this.</p>
+
+<pre><code>
+	#include &lt;libim/Constants.h&gt;
+	
+	class IMApp : public BApplication
+	{
+		void MessageReceived( BMessage * msg )
+		{
+			switch ( msg->what )
+			{
+				case IM::Message:
+				{
+					int32 im_what=0;
+					
+					if ( msg->FindInt32("im_what", &im_what) != B_OK )
+						// Invalid message. Shouldn't happen, but we make sure.
+						break;
+					
+					switch ( im_what )
+					{
+						case IM::MESSAGE_RECEIVED:
+						{ // a message has been received. Let's send a reply!
+							entry_ref contact;
+							
+							// Get an entry_ref to the source of the message
+							if ( msg->FindRef("contact", &contact) != B_OK )
+								// again, should never happen.
+								break;
+							
+							// Construct the reply, adding the contact so the im_server knows
+							// who to send it to
+							BMessage reply(IM::MESSAGE);
+							reply.AddInt32("im_what", IM::SEND_MESSAGE);
+							reply.AddRef("contact", &contact);
+							reply.AddString("message", "This is an automatic reply. Cool, huh?");
+							
+							fManager->SendMessage( &reply );
+						}	break;
+						
+						default:
+							break;
+					}
+					
+				}	break;
+				
+				default:
+					BApplication::MessageReceived(msg);
+					break;
+			}
+		};
+	};
+</code></pre>
+
+<p>Phew, that got a bit more involed, didn't it? Well, that's what you get for using C++, it's pretty chatty with all
+those curly braces all over the place. Let's go through the important steps one by one:</p>
+
+<ol>
+	<li><code>#include &lt;libim/Constants.h&gt;</code>: Include this header to get the definitions of all those IM constants.</li>
+
+	<li><code>case IM::MESSAGE:</code>: in MessageReceived, check for IM::MESSAGE.</li>
+
+	<li><code>msg->FindInt32("im_what", &amp;im_what)</code>: Extract the im_what code.</li>
+
+	<li><code>msg->FindRef("contact", &contact)</code>: Get an entry_ref for the relevant contact.</li>
+
+	<li><code><pre>BMessage reply(IM::MESSAGE);
+reply.AddInt32("im_what", IM::SEND_MESSAGE);
+reply.AddRef("contact", &contact);
+reply.AddString("message", "This is an automatic reply. Cool, huh?");</pre></code>Construct a message in accordance to
+the <a href="IM_Message.html">message definitions</a>.</li>
+
+	<li><code>fManager->SendMessage( &reply );</code>: Send the message to the im_server. Done!</li>
+</ol>
+
+<h2>Step 4: No, you're done</h2>
+
+<p>That's pretty much all you have to do to send messages to anyone in the world. Not too hard, was it?</p>
+
+<p>Now that you've gotten your feet wet, you can check out what other messages you can send and receive, and
+what they do. You will find this information over at the <a href="IM_Message.html">message definitions</a>.</p>
+
+</body>
+</html>

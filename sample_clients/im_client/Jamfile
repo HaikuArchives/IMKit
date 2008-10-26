@@ -1,0 +1,33 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP sample_clients im_client ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Executable im_client :
+	main.cpp
+	ChatApp.cpp
+	ChatWindow.cpp
+	InputFilter.cpp
+	ResizeView.cpp
+	Theme.cpp
+	Utilities.cpp
+	URLCrunch.cpp
+	RunView.cpp
+	ImageButton.cpp
+	StatusBar.cpp
+	IconBar.cpp
+	: be stdc++.r4 libim.so libcommon.a
+	: im_client.rsrc
+;
+
+Depends im_client : libcommon.a ;
+Depends im_client : libim.so ;
+
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;

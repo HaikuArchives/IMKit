@@ -1,0 +1,30 @@
+#
+# Copyright 2008, IM Kit.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP libim ;
+
+SharedLibrary libim.so :
+	Contact.cpp
+	Manager.cpp
+	Helpers.cpp
+	Protocol.cpp
+	: be stdc++.r4
+;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on libim.so += -lzeta ;
+}
+
+AddResources libim.so : libim_version.rdef ;
+
+InstallLib $(IMKIT_COMMON_LIB_DIRECTORY) : libim.so ;
+InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Constants.h ;
+InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Contact.h ;
+InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Helpers.h ;
+InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Manager.h ;
+InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Protocol.h ;

@@ -1,0 +1,27 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit sample_clients im_binlogger ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Application im_binlogger :
+	logger.cpp
+	: be tracker libim.so <IMKit>libcommon.a
+	: logger.rsrc
+;
+
+Depends im_binlogger : <IMKit>libcommon.a ;
+Depends im_binlogger : libim.so ;
+
+AddFilesToHaikuImage common bin : im_binlogger ;
+
+Package imkit-cvs :
+	im_binlogger :
+	boot common bin
+;

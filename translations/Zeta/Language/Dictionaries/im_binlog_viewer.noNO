@@ -1,0 +1,20 @@
+# Zeta locale file for im_binlog_viewer [noNO]
+# This file is (c) yellowTAB GmbH and may only be used under the Zeta language file license terms.
+# The translation is done by Frank Paul Silye, frank.silye@yellowtab.com
+# Last updated 23.11.2004
+#
+# LogViewApp.cpp
+"This People file contains no Logs"		"Denne People filen inneholder ingen logger"
+
+# LogWin.cpp
+"IM Kit - Log Viewer"		"IM Kit - logg viser"
+"Date"						"Dato"
+"Protocol"					"Protokoll"
+"Sender"					"Sender"
+"Contents"					"Innhold"
+"Type"						"Type"
+"Unknown Name"				"Ukjent navn"
+"Unknown Nick"				"Ukjent kallenavn"
+"Error"						"Feil"
+"You"						"Du"
+"Unknown"					"Ukjent"

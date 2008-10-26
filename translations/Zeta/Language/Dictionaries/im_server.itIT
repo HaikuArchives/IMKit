@@ -1,0 +1,27 @@
+# Zeta locale file for im_server [itIT]
+
+# DeskbarIcon.cpp
+"im_server not running"			"im_server non funzionante"
+"Online Status:"				"Situazione:"
+"Available"					"Disponible"
+"Away"					"Assente"
+"Offline"					"Non connesso"
+"Start im_server"				"Lancia im_server"
+"Set status"					"Cambia stato"
+"All Protocols"				"Tutti i protocolli"
+
+# "Queries" # Queries are Queries :P
+
+"Open Query directory"		"Apri la cratella delle Query"
+"Settings"				"Settaggi"
+"About"				"Riguardo.."
+"Quit"					"Chiudi"
+"SVN Version: "			"Versione SVN : "
+"Built on: "				"Compilato il : "
+"The IM Kit is a collaborative effort released under the BeClan banner."	"L'IM Kit è uno sforzo di collaborazione sviluppato sotto la bandiera del BeClan"
+" Collaborators include:"	" I collaboratori includono :"
+
+#AwayMessageWindow.cpp
+"IM Kit: Set Away Message"	"IM Kit: Messaggio di assenza"
+"Set Away"				"Assente!"
+"Cancel"				"Cancella"

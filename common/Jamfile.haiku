@@ -1,0 +1,23 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit common ;
+
+StaticLibrary <IMKit>libcommon.a :
+	Base64.cpp
+	BufferWriter.cpp
+	BufferReader.cpp
+	BubbleHelper.cpp
+	IMKitUtilities.cpp
+	IconMenuItem.cpp
+	IconTextItem.cpp
+	IconView.cpp
+	MultiLineStringView.cpp
+	SettingsFile.cpp
+	htmlparse.cpp
+;

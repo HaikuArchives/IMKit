@@ -1,0 +1,53 @@
+# Zeta locale file for InstantMessaging [deDE]
+
+# PWindow.cpp
+"Save"								"Opslaan"
+"Revert"								"Terugdraaien"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"							"Automatisch starten"
+"Application signature"						"Programma handtekening"
+"Menubar Icon Size"						"Symboolgrootte"
+"Show 'Send' button"						"Toon 'Zenden' knop"
+"Send messages with CMD-Enter instead of Enter"	"Berichten met CMD-Enter ipv Enter zenden"
+
+# preferences: im_server
+"Blink Deskbar icon"						"Knipperend Deskbarsymbool"
+"Auto-start im_server"						"im_server automatisch starten"
+"Show icon in Deskbar"					"Deskbarsysmbool tonen"
+"Debug log threshold"						"Debug-log niveau"
+"Away Message"							"Afwezigheidsbericht"
+"Person handler"							"Persoon applicatie"
+"Application signature"						"Programma handtekening"
+
+
+# preferences: im_logger
+"Auto-start"							"Automatisch starten"
+
+# preferences: im_binlogger
+"Auto-start"							"Automatisch starten"
+
+# preferences: im_infopopper
+"Status change text"						"Status wissel"
+"Message received text"					"Bericht ontvangen"
+"Icon size"								"Icoon grootte"
+
+# preferences: AIM
+"Screen Name"							"Scherm Naam"
+"Password"							"Paswoord"
+"User Profile"							"Gebruikers Profiel"
+
+# preferences: ICQ
+"Password"							"Paswoord"
+"Text encoding"							"Tekst encoding"
+
+# preferences: MSN
+"Passport Email"							"Paspoort-Email"
+"Password"							"Paswoord"
+"Display Name"							"Scherm-Naam"
+
+# preferences: Yahoo
+"Password"							"Paswoord"

@@ -1,0 +1,71 @@
+# Zeta locale file for InstantMessaging [jaJP]
+# Translation by Jorge Mare (a.k.a. Koki)
+# Last revised 2/15/06
+
+# PWindow.cpp
+"Save"	"保存"
+"Revert"		"元に戻す"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"	"自動的に起動"
+"Application signature"	"アプリケーション署名"
+"Menubar Icon Size"		"アイコンサイズ"
+"Show 'Send' button"		"「送信」ボタンを表示"
+"Send messages with CMD-Enter instead of Enter"	"「CMD-Enter」でメッセージを送信"
+
+# preferences: im_emoclient
+"MIME type for default"	"標準 MIME タイプ"
+"Smiley Config file"	"スマイリー設定ファイル"
+"Other name"		"他の名前"
+
+# preferences: im_server
+"Blink Deskbar icon"	"Deskbar アイコンを点滅させる"
+"Auto-start im_server"		"IM サーバを自動的に起動"
+"Show icon in Deskbar"	"Deskbar にアイコンを表示"
+"Debug log threshold"		"デバグログの設定"
+"Away Message"		"離席中メッセージ"
+"Person handler"		"Person ハンドラー"
+"Application signature"	"アプリケーション署名"
+
+# preferences: im_logger
+"Auto-start"				"自動的に起動"
+
+# preferences: im_binlogger
+"Auto-start"				"自動的に起動"
+
+# preferences: im_infopopper
+"Status change text"		"状態変更通知"
+"Message received text"		"メッセージ受信通知"
+"Icon size"					"アイコンサイズ"
+
+# preferences: AIM
+"Screen Name"				"名前"
+"Password"					"パスワード"
+"User Profile"				"ユーザプロフィール"
+"Buddy Icon"				"相手アイコン"
+
+# preferences: ICQ
+"Password"					"パスワード"
+"Text encoding"				"文字コード"
+"encoding"				"文字コード"
+
+# preferences: gtalk
+"Gmail Username"					"Gmail ユーザ名"
+"Gmail Password"				"Gmail パスワード"
+
+# preferences: MSN
+"Passport Email"			"パスポートメールアドレス"
+"Password"					"パスワード"
+"Display Name"				"名前"
+
+# preferences: Yahoo
+"Password"					"パスワード"
+
+# preferences: Jabber
+"Username"		"ユーザ名"
+"Server"			"サーバ"
+"Resource"		"リソース"
+

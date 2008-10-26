@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="meta/default.css" media="all">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>The Instant Messenger Kit - Utilities</title>
+</head>
+
+<body>
+
+<div id="nav">
+<a href="index.html">Introduction</a><br>
+<a href="status.html">Status</a><br>
+<a href="chatting.html">Chatting</a><br>
+<a href="preferences.html">Preferences</a><br>
+<a href="query.html">Query</a><br>
+<cur>Utilities</cur><br>
+<a href="bugs.html">Bugs</a><br>
+<a href="team.html">Team</a><br>
+<a href="changes.html">Change Log</a><br>
+<a href="license.html">License</a><br>
+</div>
+
+<div id="content">
+<h1>The Instant Messenger </h1>
+
+
+<br>
+
+
+<h2>Utilities</h2>
+<h4>Keeping Logs Over Your Conversations </h4>
+<p>The Instant Messenger kit comes with it's own log solution, consisting of the three tools im_binlogger, im_logger and im_binlog_viewer. To enable the logging of all conversations, you must open the IM kit preferences and mark im_binlogger to be auto-started. im_binlogger will then be automatically started together the <em>im_server</em>.</p>
+<p>Just as you can start a conversation from the <em>Open with...</em> menu, you can read logs over previous conversations by choosing the <em>im_binlog_viewer</em>. The log viewer can also be accessed from the toolbar in the <em>im_client</em>. </p>
+<p><img src="graphics/open-log-viewer.png" alt="open log viewer from Tracker" width="501" height="436"></p>
+<p>Each entry in the log that gets created for each buddy starts with the Date, followed by the <em>Protocol</em> and the <em>Sender</em> (Contact). The <em>Contents</em> will show the conversation or changes in the online status, which is indicated with the last column <em>Type</em>.</p>
+<p><img src="graphics/log-viewer.png" alt="log viewer" width="577" height="399"></p>
+<p>&nbsp;</p>
+<h4>Adding Avartars to Your Buddies</h4>
+<p><img src="graphics/iconsetter.png" alt="setting avartar icon with IconSetter" width="657" height="199"> </p>
+<p>The IM Kit doesn't support transfer of avartars (portrait icons) for other platforms then AIM, but utility IconSetter lets you set an icon for a Person. As IconSetter is a shell application you must first open the Terminal, and drag the IconSetter application on to the Terminal (or write the path to it). Then drag the People file that you want to add an avartar to (or again write the path). You can choose for what IM protocol the icon should apply to, or that it should be used in &quot;<em>general</em>&quot; for that Person. If you choose to set the avartar to be used in &quot;<em>general</em>&quot; for a People file, InfoPopper will look for the &quot;general&quot; icon when you are receiving mails from your contacts. For those of your contacts that don't have such an icon set, the default  mail icon will be used. </p>
+<p><img src="graphics/imkit-added-icon.png" alt="imkit added avartar icon" width="426" height="135"></p>
+<p>As this works for all kinds of incoming mail, you might want to set up a Person file just to represent the Dictionary.com word of the day and then add a suitable &quot;<em>general</em>&quot; icon to be shown when the word of day gets received. </p>
+<p>&nbsp;</p>
+<h4>Merging Contacts</h4>
+<p>The first time you log on with the installed protocols, the IM kit will download your buddy lists from the protocols that you have accounts for: AIM, ICQ, MSN and/or Yahoo!. The IM kit will automatically generate Person files with Screen Name and UIN information stored in the IM Connections attribute. No other information will be stored to these Person files, and they will therefore appear as unkown contacts. By using the Tracker Add-On IM_Merge, you can merge these two contacts and their attributes together. For most situations we recommend you to choose the second merge direction: &quot;Unknown contact&quot; &gt; &quot;Registered contact&quot;.</p>
+<p><img src="graphics/merge-contacts.png" alt="merge protocols for contact" width="592" height="80"></p>
+<p>After having merged these Person files, you might have some friends that you haven't chatted with before. To add information about their IM Connections, simply click on their IM Connections field and add the protocols that they are using. Screen Names and UIN are written in the following way: AIM:industroslaad and ICQ:1595259. If a person is using more than one protocol, you can register them all in the same field. The protocols are than separated with a <em>;</em>. </p>
+</div>
+
+
+</body>
+</html>

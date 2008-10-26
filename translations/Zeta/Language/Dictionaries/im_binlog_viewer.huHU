@@ -1,0 +1,17 @@
+# Zeta locale file for im_binlog_viewer [huHU]
+
+# LogViewApp.cpp
+"Ez a 'Személy' fájl nem tartalmaz naplózott bejegyzést."
+
+# LogWin.cpp
+"IM Kit - Napló"
+"Dátum"
+"Protokoll"
+"Küldő"
+"Tartalom"
+"Típus"
+"Imeretlen név"
+"Ismeretlen becenév"
+"Hiba"
+"Te"
+"Ismeretlen"

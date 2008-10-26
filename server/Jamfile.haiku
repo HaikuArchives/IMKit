@@ -1,0 +1,31 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit server ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+SubDirC++Flags $(imkitDefines) ;
+
+Server im_server :
+	im_server.cpp
+	im_server_main.cpp
+	QueryLooper.cpp
+	: be $(TARGET_LIBSTDC++) translation textencoding libim.so <IMKit>libcommon.a
+	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
+;
+
+Depends im_server : <IMKit>libcommon.a ;
+Depends im_server : libim.so ;
+
+AddFilesToHaikuImage common servers : im_server ;
+
+Package imkit-cvs :
+	im_server :
+	boot common servers
+;

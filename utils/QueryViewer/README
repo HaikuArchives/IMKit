@@ -1,0 +1,20 @@
+QueryViewer
+
+Queries
+
+Okay, plonk queries in ~/config/settings/BeClan/QueryViewer/Queries
+
+These are standard Tracker queries, you can organise them in subdirectories or however you want. Eg. I have Queries/IM Kit/Online, Queries/IM Kit/Away, etc then Queries/Mail/New Mail, Queries/Mail/Work Mail, etc. The icon used is the Tracker icon, so feel free to make a pretty icon for your Query / Directory
+
+The columns it displays are the same ones that Tracker will display when you view the query, so set these up.
+
+Currently node monitoring for the Query directory isn't implemented (the framework is there)
+
+Actions
+
+As to what happens when you double click an entry or right click on it. These are "actions". The heirarchy is "Query Specific", "File type specific" then "Generic". The double click action is called "_DEFAULT_".
+
+So say I have a query called "Hourly Updates" which shows all queries that have been modified in the last hour. If I double click on an entry that is a People file (application/x-person) QueryViewer would look for
+ ~/config/settings/QueryViewer/Actions/Hourly Updates/_DEFAULT_ then  ~/config/settings/QueryViewer/Actions/application_x-person/_DEFAULT_ (This MIME  type mangling is the same as Tracker's) failing that it'd use  ~/config/settings/QueryViewer/Generic/_DEFAULT_, if it *still* can't find anything  it uses Tracker.
+ 
+ This heirarchy is used for right clicking as well, only it uses entries from all  the locations. They will be ordered by heirarchy (all Query specific, filetype, etc)  then name.

@@ -1,0 +1,30 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit ;
+
+# Short for IM Kit source code directory in 3rdparty
+local IMKIT_TOP = $(HAIKU_TOP) 3rdparty IMKit ;
+
+# Build date and revision
+IMKIT_BUILD_DATE = 2008-10-26 ;
+IMKIT_BUILD_REVISION = 666 ;
+
+# Local defines
+local imkitDefines = [ FDefines BUILD_DATE=\"\\\"$(IMKIT_BUILD_DATE)\\\"\" ] ;
+imkitDefines += [ FDefines BUILD_REVISION=\"\\\"$(IMKIT_BUILD_REVISION)\\\"\" ] ;
+
+# Include all the components
+SubInclude HAIKU_TOP 3rdparty IMKit libs ;
+SubInclude HAIKU_TOP 3rdparty IMKit common ;
+SubInclude HAIKU_TOP 3rdparty IMKit libim ;
+SubInclude HAIKU_TOP 3rdparty IMKit server ;
+SubInclude HAIKU_TOP 3rdparty IMKit Preflet ;
+SubInclude HAIKU_TOP 3rdparty IMKit sample_clients ;
+SubInclude HAIKU_TOP 3rdparty IMKit protocols ;
+SubInclude HAIKU_TOP 3rdparty IMKit utils ;

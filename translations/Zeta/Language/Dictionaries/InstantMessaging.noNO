@@ -1,0 +1,27 @@
+# Zeta locale file for InstantMessaging [noNO]
+# This file is (c) yellowTAB GmbH and may only be used under the Zeta language file license terms.
+# The translation is done by Frank Paul Silye, frank.silye@yellowtab.com
+# Last updated 23.11.2004
+#
+# PWindow.cpp
+"Save"		"Lagre"
+"Revert"		"Tilbakestill"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"	"Start automatisk"
+"Application signature"	"Programsignatur"
+"Menubar Icon Size"		"Størrelse på menyikoner"
+"Show 'Send' button"		"Vis 'Send'-knappen"
+"Send messages with CMD-Enter instead of Enter"	"Send meldinger med CMD-Retur istedetfor Retur"
+
+# preferences: im_server
+"Blink Deskbar icon"		"Blink Deskbar-ikonet"
+"Auto-start im_server"	"Start im_server automatiskt"
+"Show icon in Deskbar"	"Vis IM-replikant i Deskbar"
+"Debug log threshold"	"Feilsøkningsgrenseverdi"
+"Away Message"		"Borte melding"
+"Person handler"		"Program for håntering av Person-filer"
+"Application signature"	"Programsignatur"

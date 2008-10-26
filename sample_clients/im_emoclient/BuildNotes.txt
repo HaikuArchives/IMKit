@@ -1,0 +1,21 @@
+Building:
+
+Now uses libbsvg by Michael Lotz, a really nice SVG rendering lib written
+in good ol' BeOS drawing primitives. It uses a "use if you want, but please
+give proper credit".
+
+note: 
+  *running `make` from imkit/ will ensure libbsvg.so is installed.
+  *`make install` or `make symlinks` will expand smileys.zip  
+
+To build this now you'll need to copy lib/libbsvg.so to ~/config/lib and
+make a link from there to /boot/develop/lib/x86 or gcc won't find it.
+
+After building, you'll need to unzip the smileys.zip file to ~/config/settings/im_kit
+so that the im_emoclient will find the smileys. There are two settings files
+present, one of them uses GIFs and the other SVGs. They're named 
+settings.xml and settings_xml.xml, respectively. You can select the one
+you want to use in the Preflet.
+
+(You can easily edit the settings XML or write a new one if you want to use
+other SVGs or GIFs instead of the provided ones, or add more smileys)

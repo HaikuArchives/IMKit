@@ -1,0 +1,52 @@
+# Zeta locale file for InstantMessaging [enUS]
+
+# PWindow.cpp
+"Mentés"
+"Visszaállítás"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-indítás"
+"Program aláírása"
+"A menü ikonmérete"
+"A 'Küld' gomb megjelenítése"
+"Üzenetek küldése CMD-Enter-el sima Enter helyett"
+
+# preferences: im_server
+"Deskbar ikon villogtatása"
+"Az im_szerver auto-indítása"
+"Ikon megjelenítése a Deskbaron"
+"Debug log threshold"
+"'Távol vagyok' üzenet"
+"Kapcsolatkezelés"
+"Program aláírása"
+
+# preferences: im_logger
+"Auto-indítás"
+
+# preferences: im_binlogger
+"Auto-indítás"
+
+# preferences: im_infopopper
+"Állapot módosítás szövege"
+"'Üzenet érkezett' szöveg"
+"Ikon méret"
+
+# preferences: AIM
+"Kijelzett név"
+"Jelszó"
+"Profil"
+
+# preferences: ICQ
+"Jelszó"
+"Szöveg elkódolása"
+
+# preferences: MSN
+"Email cím"
+"Jelszó"
+"Kijelzett név"
+
+# preferences: Yahoo
+"Jelszó"

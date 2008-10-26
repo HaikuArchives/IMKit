@@ -1,0 +1,24 @@
+# Zeta locale file for InstantMessaging [svSE]
+
+# PWindow.cpp
+"Save"		"Spara"
+"Revert"		"Återgå till senaste"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"	"Starta automatiskt"
+"Application signature"	"Programsignatur"
+"Menubar Icon Size"		"Storlek för menyikoner"
+"Show 'Send' button"		"Visa 'Skicka'-knappen"
+"Send messages with CMD-Enter instead of Enter"	"Skicka meddelanden med CMD-Retur istället för Retur"
+
+# preferences: im_server
+"Blink Deskbar icon"		"Blinka Deskbar-ikonen"
+"Auto-start im_server"	"Starta im_server automatiskt"
+"Show icon in Deskbar"	"Visa en IM-ikon i Deskbar"
+"Debug log threshold"	"Felsökningströskelvärde"
+"Away Message"		"Borta-meddelande"
+"Person handler"		"Program för hantering av Person-filer"
+"Application signature"	"Programsignatur"

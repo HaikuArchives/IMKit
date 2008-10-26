@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 11.0, SVG Export Plug-In . SVG Version: 6.0.0 Build 78)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
+	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
+]>
+<svg  xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 width="115.016" height="126.495" viewBox="0 0 115.016 126.495" overflow="visible" enable-background="new 0 0 115.016 126.495"
+	 xml:space="preserve">
+		<g id="Ebene_1">
+			<g>
+				<polygon fill="#F6F8CD" points="10.053,124.199 87.69,124.054 73.985,101.954 15.926,104.331 "/>
+				<polygon fill="none" stroke="#000000" stroke-width="4.5922" stroke-linejoin="bevel" points="10.053,124.199 87.69,124.054 
+					73.985,101.954 15.926,104.331 "/>
+			</g>
+			<linearGradient id="XMLID_2_" gradientUnits="userSpaceOnUse" x1="1.8086" y1="63.1792" x2="113.207" y2="63.1792">
+				<stop  offset="0.0056" style="stop-color:#D9D8D8"/>
+				<stop  offset="0.191" style="stop-color:#FFFFFF"/>
+				<stop  offset="1" style="stop-color:#F5F8C6"/>
+				<a:midPointStop  offset="0.0056" style="stop-color:#D9D8D8"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#D9D8D8"/>
+				<a:midPointStop  offset="0.191" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="1" style="stop-color:#F5F8C6"/>
+			</linearGradient>
+			<path fill="url(#XMLID_2_)" stroke="#000000" stroke-width="3.6173" d="M30.79,3.938c-3.394,3.395-13.841,14.86-14.925,43.626
+				c0,37.888,3.212,67.968-5.74,76.921c-1.495,1.493-10.581-23.022-7.785-22.083c11.773,3.956,53.73,3.834,69.805,0.54
+				c3.376-0.689,8.658,21.543,15.693,21.543c4.857,0,9.476-19.047,10.688-49.366c0-50.099,17.633-67.324,14.25-70.707
+				C109.391,1.027,34.661,1.021,30.79,3.938z"/>
+			<path fill="#F6F8CD" d="M10.34,106.474l11.48,0.86l-4.125,14.603c0,0-3.888-0.251-5.94-0.251c-2.276,0-3.136-4.305-3.136-4.305
+				L10.34,106.474z"/>
+			<rect x="30.025" y="17.157" width="47.824" height="2.823"/> 
+			<rect x="22.791" y="30.275" width="19.096" height="2.49"/> 
+			<rect x="40.025" y="30.275" width="59.15" height="2.49"/> 
+			<rect x="21.584" y="41.981" width="19.097" height="2.49"/> 
+			<rect x="34.957" y="41.981" width="59.396" height="2.49"/> 
+			<rect x="22.791" y="55.598" width="19.096" height="2.49"/> 
+			<rect x="39.844" y="55.598" width="53.303" height="2.49"/> 
+			<rect x="22.791" y="75.359" width="48.21" height="2.488"/> 
+			<rect x="22.791" y="83.828" width="61.649" height="2.489"/> 
+			<rect x="22.791" y="93.292" width="49.446" height="2.489"/> 
+		</g>
+	</svg>

@@ -1,0 +1,173 @@
+<html>
+<head>
+<title>Installing and Running the BeOS Instant Messanger Kit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<p><font color="#000000" size=2><a href="index.html">Introduction</a> | <a href="contributors.html">Contributors</a> 
+  | <a href="license.html">License</a> | Install and Use | <a href="advanced-use.htm">Advanced 
+  Use</a> | <a href="history.html">History</a></font> </p>
+<h1><font color="#000000" size="5">Installing and running</font></h1>
+<p><font color="#000000"><b>There are a few things you need to do before running 
+  this alpha:</b></font></p>
+
+
+
+<!-- Point one starts here -->
+<p><font color="#000000" size=4>&nbsp;</font>1) Run the included file "<i>Install.sh</i>". 
+  This will install all files needed to run the <font color="#000000" size=3>IM 
+  kit in the proper locations. </font></p>
+<p><font color="#000000" size=3><b>&nbsp;</b></font><img src="graphics/install-folder.png" width="246" height="414"><font color="#000000" size=3></font></p>
+<p><img src="graphics/installation-done.png" width="449" height="196"></p>
+<p>When the script has finished installing the IM kit, you will get the message: 
+  &quot;<i>All done</i>&quot;. Press OK to continue. Y<font color="#000000" size=3>ou 
+  will now find a folder called im_kit in </font><font color="#000000" size=3><i>/boot/apps/im_kit</i></font><font color="#000000" size=3>.</font></p>
+
+<p>You should not have to run these apps manually, they're started automatically 
+  by the im_server when it starts up.</p>
+<p><img src="graphics/im-kit-folder.png" width="225" height="183"><font color="#000000" size=3></font></p>
+
+<!-- Point two starts here -->
+<p><font color="#000000" size=3><b>2)</b></font><font color="#000000" size=3> 
+  To be able to see the new attributes in the Tracker, you need to update </font><font color="#000000" size=3>your 
+  Filetype database. Do this by running </font><font color="#000000" size=3><i>BeOS</i></font><font color="#000000" size=3> 
+  -&gt; </font><font color="#000000" size=3><i>Preferences</i></font><font color="#000000" size=3> 
+  -&gt; </font><font color="#000000" size=3><i>File Types</i></font><font color="#000000" size=3>, 
+  </font><font color="#000000" size=3>selecting </font><font color="#000000" size=3><i>application/Person</i></font><font color="#000000" size=3> 
+  and adding two extra attributes:</font></p>
+<p><font color="#000000" size=3><i>Attribute name</i></font><font color="#000000" size=3>: 
+  "IM Connections", </font><font color="#000000" size=3><i>Internal name</i></font><font color="#000000" size=3>: 
+  "IM:connections", </font><font color="#000000" size=3><i>Attribute type</i></font><font color="#000000" size=3>: 
+  "String", Editable, Visible, not Extra, </font><font color="#000000" size=3><i>Display 
+  width</i></font><font color="#000000" size=3>: 80 and </font><font color="#000000" size=3><i>Display 
+  alignment</i></font><font color="#000000" size=3>: Left.</font></p>
+<p><img src="graphics/filetypes.png" width="535" height="389"><font color="#000000" size=3></font><font color="#000000" size=3></font></p>
+<p><font color="#000000" size=3><i>Attribute name</i></font><font color="#000000" size=3>: 
+  "IM Status", </font><font color="#000000" size=3><i>Internal name</i></font><font color="#000000" size=3>: 
+  "IM:status", </font><font color="#000000" size=3><i>Attribute type</i></font><font color="#000000" size=3>: 
+  "String", not Editable, Visible, not Extra, </font><font color="#000000" size=3><i>Display 
+  width</i></font><font color="#000000" size=3>: 80 and </font><font color="#000000" size=3><i>Display 
+  alignment</i></font><font color="#000000" size=3>: Left.</font></p>
+<p><img src="graphics/filetypes1.png" width="535" height="389"><font color="#000000" size=3></font><font color="#000000" size=3></font></p>
+<p><font color="#000000" size=3>You can now add those columns in a folder where 
+  there are People files.</font></p>
+
+
+
+<!-- Point three starts here -->
+<p><font color="#000000" size=3><b>3)</b></font><font color="#000000" size=3> 
+  To edit your settings for the installed protocol(s), right-click the talk-bubble 
+  icon </font><font color="#000000" size=3>in the Deskbar and select Settings. 
+  In the IM Server settings click on the protocol you want to edit.</font></p>
+
+<p><img src="graphics/server-setting.png" width="239" height="158"><font color="#000000" size=3></font><font color="#000000" size=3></font></p>
+
+<p>
+You can also change the settings for the im_server, for example you can select if you want it to start automatically when you start your computer.
+</p>
+<p> <img src="graphics/im-server-settings.png" width="242" height="160"></p>
+<p><font color="#000000" size=3>The first supported protocol was ICQ. In the ICQ 
+  settings you can add your ICQ id, password, the text encoding you prefer to 
+  use and your status. To activate the changes to have made to the settings, press 
+  <i>Apply</i>.</font></p>
+<p><img src="graphics/icq-protocol.png" width="278" height="192"><font color="#000000" size=3></font></p>
+<p>The settings for the AIM protocol is more or less the same as the one for ICQ. 
+  Add your <em>Screen Name</em> and <em>Password</em> and press <em>Apply</em>.</p>
+<p><img src="graphics/aim-settings.png" width="240" height="178"></p>
+<p><font color="#000000" size=3>You can also set your online status for all protocols 
+  at once using the Deskbar menu, or choose to only be online with one of the 
+  protocols if you would like that.</font></p>
+<p><img src="graphics/replicant-protocols.png" width="248" height="149" align="top"><img src="graphics/replicant-aim.png" width="248" height="153" align="top"><img src="graphics/replicant-icq.png" width="251" height="167" align="top"><font color="#000000" size=3></font><font color="#000000" size=3></font></p>
+
+<p><font color="#000000" size=3>&nbsp;Currently only three different status modes 
+  are supported: <i>Available</i> (<i>Online</i>), <i>Away</i> and <i>Offline</i>.</font></p>
+<p><font color="#000000" size="3">Your online status can also be seen by moving 
+  the mouse over the replicant:</font></p>
+<p><font color="#000000" size="3"><img src="graphics/label.png" width="125" height="125"></font></p>
+<p><font color="#000000" size="3">When you are logged on to the BeOS IM Kit, you 
+  can see the current <em>IM Status</em> to all your friends and business relations 
+  registered with an <em>IM Connection</em>.</font></p>
+<p><font color="#000000" size=3>&nbsp;</font><img src="graphics/people-folder.png" width="358" height="199"></p>
+
+
+
+<!-- Point four starts here -->
+<p><font color="#000000" size=3><b>4)</b></font><font color="#000000" size=3> 
+  If you receive a message from somebody, a new window will open where </font><font color="#000000" size=3>you 
+  can chat with them and an alert will appear in the Deskbar. The IM kit's replicant 
+  will blink (switch between green and orange). A red replicants indicates that 
+  you are not online. </font></p>
+<p><img src="graphics/replicant-red.png" width="123" height="113"><font color="#000000" size=3></font><font color="#000000" size=3> 
+  </font><img src="graphics/replicant-green.png" width="123" height="113"><font color="#000000" size=3></font><font color="#000000" size=3> 
+  <img src="graphics/replicant-orange.png" width="123" height="113"> </font></p>
+<p><font color="#000000" size=3>Also, since the kit doesn't know which person 
+  is using a UIN you get a message from, it will create a new People-file in you 
+  ~/people folder with the relevant UIN filled in. It will also get the person's 
+  name, nick and email if they're available.</font></p>
+
+
+
+<!-- Point five starts here -->
+<p><font color="#000000" size=3><b>5)</b></font><font color="#000000" size=3> 
+  If you want, you can use one of the provided Tracker add-ons to merge two </font><font color="#000000" size=3>People 
+  files, this is useful when you already have a People file for someone and </font><font color="#000000" size=3>get 
+  a new one created by the IM server, and you want to combine the two.</font></p>
+<p><font color="#000000" size=3>Try it out on a copy of a real file before using 
+  it for real, since it's a destructive </font><font color="#000000" size=3>operation 
+  that can't be undo it's best if you try it on non-vital files first.</font></p>
+
+
+
+<!-- Point six starts here -->
+<p><font color="#000000" size=3><b>6)</b></font><font color="#000000" size=3> 
+  There are two ways to start a chat in the IM kit: </font></p>
+<p><font color="#000000" size=3>The first way is simply to choose a Person file 
+  and open it with im_client.</font><font color="#000000" size=3>&nbsp;</font></p>
+<p><img src="graphics/open-with.png" width="417" height="306"></p>
+<p><font color="#000000" size=3>The second way is to use a Tracker add-on to start 
+  a conversation with that person. Select the file and use the add-on named "IM 
+  Start conversation". and you will get a new chat window. The other way is to 
+  choose a Person file and open it with im_client. </font><font color="#000000" size=3><b>Remember:</b></font><font color="#000000" size=3> 
+  To be able to start a conversation this second way, the im_client must be running. As stated in 1) above, you should not have to
+run im_client manually.</font></p>
+<p><img src="graphics/add-ons.png" width="452" height="479"><font color="#000000" size=3></font><font color="#000000" size=3></font></p>
+<p><font color="#000000" size=3>Either way you choose to start the conversation, 
+  a message window will appear. To send a message, press CMD-Enter.</font></p>
+<p><img src="graphics/im_client.png" width="322" height="247"></p>
+<p>Clicking <em>Show info</em> opens your contacts People file, and clicking <em>E-mail</em> 
+  will start your default e-mail client. You can also <em>block</em> a contact. 
+  This will prevent your contact from seeing when you are online and available 
+  for a chat.</p>
+
+
+
+<!-- Point seven starts here -->
+<p><font color="#000000" size=3><b>7)</b></font><font color="#000000" size=3> 
+  If you want to add a new contact, you can do this by creating a new People </font><font color="#000000" size=3>file 
+  and setting the IM:connections attribute. To add the project leader you'd set 
+  the attribute to </font><font color="#000000" size=3>ICQ:721021. The format 
+  is pretty simple, &lt;protocol&gt;:&lt;id&gt;, and if you have several </font><font color="#000000" size=3>connections 
+  for the same person you separate the connections with a ;<br>
+  </font></p>
+<h1><font size="5">Merging People files</font></h1>
+<p><img src="graphics/merge-contacts.png" width="592" height="80"></p>
+<p>When you add an id as an attribute to a People file, you might experience that 
+  an unknown contact gets added to your People folder and that this file (unknown 
+  contact) contains the nick and attribute of an other contact. By using using 
+  IM_Merge contacts add-on in the Tracker, you can merge these two contacts and 
+  their attributes together. For most situations we recommend you to choose the 
+  second merge direction: <em>&quot;Unknown contact&quot; &gt; &quot;Registered 
+  contact&quot;</em>.<em> </em></p>
+<p>&nbsp;</p>
+<h1><font color="#000000" size=5>Upgrading</font></h1>
+<p>Running <I>Install.sh</I> should be enough to safely upgrade the Kit. When 
+  running the script, you will be notified that you are about to overwrite your 
+  existing version of the kit. Press Continue to upgrade or Cancel to abort the 
+  script. </p>
+<p><img src="graphics/previous-version.png" width="451" height="196"> </p>
+<p>&nbsp;</p>
+
+
+</body>
+</html>

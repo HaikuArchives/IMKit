@@ -1,0 +1,17 @@
+# Zeta locale file for im_binlog_viewer [deDE]
+
+# LogViewApp.cpp
+"This People file contains no Logs"		"Diese People-Datei enthält keine Logs"
+
+# LogWin.cpp
+"IM Kit - Log Viewer"		"IM Kit - Logbetrachter"
+"Date"						"Datum"
+"Protocol"					"Protokoll"
+"Sender"					"Sender"
+"Contents"					"Inhalte"
+"Type"						"Typ"
+"Unknown Name"				"Unbekannter Name"
+"Unknown Nick"				"Unbekannter Rufname"
+"Error"						"Fehler"
+"You"						"Du"
+"Unknown"					"Unbekannt"

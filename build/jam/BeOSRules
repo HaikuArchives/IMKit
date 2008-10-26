@@ -1,0 +1,76 @@
+# BeOS specific rules
+
+rule XRes
+{
+	# XRes <target> : <resource files>
+	if $(2)
+	{
+		Depends $(1) : $(XRES) $(2) ;
+		XRes1 $(1) : $(XRES) $(2) ;
+	}
+}
+
+actions XRes1
+{
+	$(2[1]) -o "$(1)" "$(2[2-])" ;
+}
+
+# SetVersion <target>
+rule SetVersion
+{
+	Depends $(1) : $(SETVERSION) ;
+	SetVersion1 $(1) : $(SETVERSION) ;
+}
+
+actions SetVersion1
+{
+	$(2[1]) "$(1)" -system $(IMKIT_BUILD_VERSION) -short "$(IMKIT_BUILD_DESCRIPTION)" ;
+}
+
+# SetType <target>
+rule SetType
+{
+	Depends $(1) : $(SETTYPE) ;
+	SetType1 $(1) : $(SETTYPE) ;
+}
+
+actions SetType1
+{
+	$(2[1]) -t application/x-vnd.Be-elfexecutable "$(1)" ;
+}
+
+# MimeSet <target>
+rule MimeSet
+{
+	Depends $(1) : $(MIMESET) ;
+	MimeSet1 $(1) : $(MIMESET) ;
+}
+
+actions MimeSet1
+{
+	$(2[1]) -f "$(1)" ;
+}
+
+# ResComp <resource file> : <rdef file> ;
+#
+# <resource file> and <rdef file> must be gristed.
+rule ResComp
+{
+	MakeLocate $(<) : $(LOCATE_TARGET) ;
+
+	CCDEFS on $(1) = [ FDefines $(DEFINES) ] ;
+	HDRS on $(1) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) : "-I " ] ;
+
+	# set up other vars
+	SEARCH on $(2) += $(SEARCH_SOURCE) ;
+	Depends $(1) : $(2) $(RC) ;
+	LocalClean clean : $(1) ;
+	ResComp1 $(1) : $(RC) $(2) ;
+}
+
+# Note: We pipe the input files into the preprocessor, since *.rdef files are
+# considered linker scripts, and thus we can use preprocessor features.
+actions ResComp1
+{
+	cat "$(2[2-])" | $(CC) -E $(CCDEFS) $(HDRS) - | egrep -v '^#' | $(2[1]) --auto-names -o "$(1)" -
+}

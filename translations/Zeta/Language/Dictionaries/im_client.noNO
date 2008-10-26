@@ -1,0 +1,36 @@
+# Zeta locale file for im_client [noNO]
+# This file is (c) yellowTAB GmbH and may only be used under the Zeta language file license terms.
+# The translation is done by Frank Paul Silye, frank.silye@yellowtab.com
+# Last updated 23.11.2004
+#
+# ChatApp.cpp
+"Really quit?"		"Vil du virkelig avslutte?"
+"Do you really want to quit im_client and stop getting messages?"	"Vil du virkelig avslutte im_client og slutte å ta imot meldinger?"
+"Yes"			"Ja"
+"No"				"Nei"
+
+# ChatWindow.cpp
+"Show contact in People"		"Åpne brukeren i People"
+"Send email to contact"		"Send e-post til brukeren"
+"Block messages from contact"	"Blokkere meldinger fra brukeren"
+"View chat history for contact"	"Vis tidligere meldinger fra brukeren"
+"Send"					"Send"
+"* You "					"* Du"
+"You say: "				"Du sier: "
+"Error: im_server not running, can't send message\n"	"Feil: im_server er ikke i gang, meldingen kunne ikke sendes\n"
+"Unknown name"	"Ukjent navn"
+"no nick"			"ingen kallenavn"
+"Unknown status"	"Ukjent status"
+"Any Protocol"		"Valgfri protokoll"
+"Available"		"Tilgjengelig"
+"Away"			"Borte"
+"Offline"			"Avkoblet"
+"User is typing.."	"Brukeren skriver..."
+
+# RunView.cpp
+"Lookup (Dictionary)"	"Finn (Dictionary)"
+"Lookup (Google)"		"Finn (Google)"
+"Lookup (Acronym Finder)"	"Finn (Acronym Finder)"
+"Copy"				"Kopiere"
+"Select All"			"Velg alt"
+"Clear"				"Tøm"

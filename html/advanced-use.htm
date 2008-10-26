@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>Installing and Running the BeOS Instant Messanger Kit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<hr>
+<p><font color="#000000" size=2><a href="index.html">Introduction</a> | <a href="contributors.html">Contributors</a> 
+  | <a href="license.html">License</a> | <a href="install-use.html">Install and 
+  Use</a> | Advanced Use | <a href="history.html">History</a></font> </p>
+<h1>Advanced Use</h1>
+<h3>Live Queries</h3>
+
+
+
+<p>BeOS IM kit makes use of Queries and Attributes. In this part of the manual, 
+  we want to show you how you can construct your own queries for this chat solution.</p>
+<p>Go to the Deskbar and choose Find, or hit Alt + F in a Tracker related window 
+  or after first having clicked on the desktop.</p>
+<p><img src="graphics/query.png" width="450" height="148"></p>
+<p>In the Query application, choose what file type you want to be searched by 
+  clicking on <i>All files and folders</i>. In this pop-down menu, first choose 
+  application, and from the application's sub-menu, choose Person. The Query we 
+  want to do, is related to the Person files.</p>
+<p><img src="graphics/im-query2.png" width="450" height="440"></p>
+<p>Choose <i>By attribute</i> from the pop-down menu <i>Name</i> and then that 
+  you only want to do the Query on your boot partition (here: Zeta). If you have 
+  other BeOS systems on the computer, you can choose <em>All disks</em>.</p>
+<p>As you set the Query type to attribute, a new pop-down menu appears and you 
+  can choose between all attributes related to that file type. In the bottom of 
+  this menu, you will find the attributes that you made when installing the Instant 
+  Messenger kit, <i>IM Connections</i> and <i>IM Status</i>.</p>
+<p><img src="graphics/im-query1.png" width="451" height="488"></p>
+<p>Choose <i>IM Status</i>, and specify the query to be exact (Is). The exact 
+  words that we want to do a query on are <i>Available</i>, <em>Away</em> and 
+  <em>Offline</em>, and will show us all our friends that are using one of the 
+  supported IM protocols. To get the query correct, each <em>IM Status</em> have 
+  to be separated with <em>Or</em> (instead of the default <em>And</em>)..</p>
+<p><img src="graphics/query-attributes.png" width="449" height="263"></p>
+<p>If you find this query useful, you can save it for later use by giving it a 
+  name and dragging the query icon to the desktop.</p>
+<p><img src="graphics/live-query.png" width="280" height="444"></p>
+<p>The Live Queries are system wide and can be seen in a various of applications 
+  making use of the People files and in the operating system it self. In the <i>Recent 
+  applications</i> you can also see with who you recently had a chat with and 
+  the online status they have now, and start a new chat with them.</p>
+<p><img src="graphics/recent-chats.png" width="421" height="270"></p>
+<h3><br>
+  Living on the Edge</h3>
+<p>As the project is hosted by <a href="http://www.beclan.org">BeClan</a>, you 
+  will need to install a <a href="http://www.beclan.org/packages/svn-0.33.pkg">subversion 
+  client</a> to be able to download the sources and compile BeOS IM kit for your 
+  self.</p>
+<p>Open Terminal and type:</p>
+<p><em>svn co http://www.beclan.org:8080/svn/repos/imkit/</em>, and the subversion 
+  client will start downloading the sources.</p>
+<p><img src="graphics/fetching-latest.png" width="600" height="445"></p>
+<p>The sources are downloaded to <em>/boot/beos/home/imkit</em>. When the download 
+  of the sources are completed, make sure that you are in the imkit folder and 
+  then give the command <em>make</em>. The sources willl now get compiled, and 
+  afterwards you can replace the old BeOS IM kit files with the new ones.</p>
+
+
+</body>
+</html>

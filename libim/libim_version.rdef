@@ -1,0 +1,11 @@
+resource app_version {
+	major  = 0,
+	middle = 9,
+	minor  = 2,
+
+	variety = B_APPV_ALPHA,
+	internal = 0,
+
+	short_info = "IM Kit",
+	long_info = "IM Kit © 2003-2008 IM Kit Team"
+};

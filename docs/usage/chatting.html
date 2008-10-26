@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="meta/default.css" media="all">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>The Instant Messenger Kit - Chatting</title>
+</head>
+
+<body>
+<div id="nav">
+<a href="index.html">Introduction</a><br>
+<a href="status.html">Status</a><br>
+<cur>Chatting</cur><br>
+<a href="preferences.html">Preferences</a><br>
+<a href="query.html">Query</a><br>
+<a href="utilities.html">Utilities</a><br>
+<a href="bugs.html">Bugs</a><br>
+<a href="team.html">Team</a><br>
+<a href="changes.html">Change Log</a><br>
+<a href="license.html">License</a><br>
+</div>
+
+<div id="content">
+<h1>The Instant Messenger </h1>
+<p>Before you can start using the IM kit, you must have <a href="preferences.html">configured</a> at least one protocol. You will only be able to communicate with users/contacts on a protocol if you have an account on that protocol. Just to make it clear, you will need an AIM account to talk to AIM users, a Yahoo! account to talk to Yahoo! users, etc. The IM kit is limited to one account for each protocol, and you can sign in on them all simultaneosly.</p>
+<br>
+
+
+
+
+
+
+<h2>Starting a Chat </h2>
+
+
+
+
+
+
+<p>To start a chat using the im_client with a person, you will first 
+  have to check if the person is available for a chat or not. There 
+  are three statuses in the IM kit: Available, Away and Offline. The 
+  easiest way to see if they are available for a chat is by accessing 
+  the IM kit's Deskbar replicant and choose Queries. In the Queries 
+  sub menu, you can choose the default Query. This will open a query 
+  window that lists all your online friends:</p>
+<p><img src="graphics/deskbar-queries-overview.png" alt="imkit-deskbar-queries" width="295" height="193"></p>
+<p>From the Query window you can choose a contact's People file and open it with your preferred im_client:</p>
+<p><img src="graphics/open-with.png" alt="open with im_client" width="425" height="329"></p>
+<p>Instead of making use of live queries, you can use the tool <a href="utilities.html#im_contactlist">im_contactlist</a>, and then simply just double-click on the person's entry to bring up the default chat client. </p>
+<p>An im_client window will stay where you put it (unless you click the  deskbar icon when there is a pending message, then it'll bring a window  with a pending message to the current workspace). But in the case where  there is no window associated with a user it'll pop up a window on the  current workspace.</p>
+<p><img src="graphics/im-kit-client.png" alt="im_client - buddy is typing" width="318" height="239"> </p>
+<p>Depending on what Instant Messenger your buddy is using, you can see when the <em>User is typing..</em> . This feature makes it easier to make a conversation.</p>
+<p>Clicking Show info opens your contacts People file, and clicking E-mail will start your default e-mail client. You can also block a contact. Have in mind that blocking a contact will only make the client ignore the messages that the person is sending to you. The person will in other words still see that you are online. As far as they know, you might only be away from the computer or they might even guess that you are ignoring them. Be careful using this feature.<br>
+</p>
+<h4>Looking Up Content From a Chat</h4>
+<p>Select a word or part of the chat and right-click the mouse. A context menu will then appear, letting you choose to look up your selection at <a href="http://dictionary.reference.com/">Dictionary</a>, <a href="http://www.google.com/">Google</a> and <a href="http://acronymfinder.com/">Acronym Finder</a>.</p>
+<p><img src="graphics/im-client-lookup.png" alt="im_client - Internet lookup" width="459" height="240"></p>
+<p>&nbsp;</p>
+<h2>Receiving Messages </h2>
+<p>If you receive a message from somebody, a new window will open where you can chat with them and an alert will appear in the Deskbar. The IM kit's replicant will switch from green to orange when you receive a new instant message. A red replicant indicates that you are not online.</p>
+<p><img src="graphics/you-online.png" alt="you online - available for chat" width="122" height="134"><img src="graphics/incoming-message.png" alt="incomming message" width="123" height="133"><img src="graphics/you-offline.png" alt="you offline - no chat possible" width="121" height="134"></p>
+<p>&nbsp; </p>
+<h2><strong>Emoicons - Emotion Icons (Smileys)</strong></h2>
+<p>The IM kit also comes with an alternative chat client, the im_emoclient. 
+  One of the most popluar features when it comes to instant messaging 
+  is emo icons, the possibility to add icons in the end of a sentence 
+  to show that you are happy or sad. A smiley is a representation 
+  of a smiling face, most often coloured in yellow, so also in Zeta:</p>
+<p><img src="graphics/smiley.png" width="320" height="240"></p>
+<p>The are two ways to add emoicons to a sentence that you are about 
+  to send to the person you are chatting with. The first way is to 
+  choose the icon from a menu accessable from the im_client's toolbar. 
+  The second way is to use the signs for the emoicons in the tying 
+  area in the im_client:</p>
+<table width="128" border="0">
+  <tr valign="top">
+    <td width="32">&nbsp;</td>
+    <td width="8">&nbsp;</td>
+    <td width="66">:)</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>;)</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>:D</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>:p</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td valign="top">:(</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>:|</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>:`(</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>(l)</td>
+  </tr>
+</table>
+<p>With the IM kit you can also choose them from the menu bar and 
+  in the default emoicon theme, the following icons are available:</p>
+<p><img src="graphics/smileys.png" width="373" height="239"></p>
+<p style="margin-bottom: 0;">The IM kit comes with the default emoicon 
+  size set to 16, so that they shouldn't be to big compared 
+  to the text in the chat window. Never the less many users would 
+  like to have them bigger. The icons and their size has been set 
+  in <em>/boot/home/config/settings/im_kit </em>... . As you open the 
+  settings file in your default text editor, search for &lt;size&gt;. 
+  As mentioned before, change the size 16 to your preferred size. 
+  In this example set to size 40.</p>
+<p><img src="graphics/icon-settings.png" width="534" height="455"></p>
+</div>
+
+
+
+
+
+
+</body>
+</html>

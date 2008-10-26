@@ -1,0 +1,33 @@
+# Zeta locale file for im_client [enUS]
+
+# ChatApp.cpp
+"Biztosan kilépsz?"
+"Ha kilépsz az im_kliensből, nem tudsz üzeneteket fogadni. Mégis kilépsz?"
+"Igen"
+"Nem"
+
+# ChatWindow.cpp
+"Show contact in People"
+"Email küldése"
+"Üzenetek blokkolása ettől a személytől"
+"A beszélgetés-napló megtekintése"
+"Küld"
+"* Te "
+"Te: "
+"Hiba: Az im_szerver nem fut, nem lehet elküldeni az üzenetet\n"
+"Ismeretlen név"
+"nincs becenév"
+"Ismeretlen állapot"
+"Minden protokoll"
+"Elérhető"
+"Távol"
+"Nem elérhető"
+"Épp üzenetet ír.."
+
+# RunView.cpp
+"Lookup (Dictionary)"
+"Lookup (Google)"
+"Lookup (Acronym Finder)"
+"Másol"
+"Mindent kijelöl"
+"Töröl"

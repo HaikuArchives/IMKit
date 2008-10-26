@@ -1,0 +1,29 @@
+# Zeta Japanese locale file for im_server [jaJP]
+# Translation by Jorge Mare (a.k.a. Koki)
+# Last revised 2/15/06
+
+
+# DeskbarIcon.cpp
+"im_server not running"		"im_server が起動されていません"
+"Online Status:"	"接続状態:"
+"Available"	"オンライン"
+"Away"	"離席中"
+"Offline"	"オフライン"
+"Start im_server"	"IM サーバを起動する"
+"Set status"	"接続状態の変更"
+"All Protocols"	"全プロトコル"
+# "Queries" # Queries are Queries :P
+"Open Query directory"	"クエリフォルダを開く"
+"Settings"	"IM Kit の設定..."
+"About"	"IM Kit について..."
+"Quit"	"終了"
+"SVN Version: "	"SVN バージョン: "
+"Built on: "	"ビルドの日付:  "
+"The IM Kit is a collaborative effort released under the BeClan banner."		"IM Kit は BeClan のプロジェクトとして色々な方々の協力で実現しています。"
+" Collaborators include:"	"協力者名望は下記の通りです。"
+
+#AwayMessageWindow.cpp
+"IM Kit: Set Away Message"	"IM Kit: 離席中メッセージの設定"
+"Set Away Message"	"離席中メッセージの設定"
+"Set Away"	"離席中にする"
+"Cancel"		"中止"

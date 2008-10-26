@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<link rel="stylesheet" type="text/css" href="../meta/default.css" media="all"/>
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>InfoPopper - Shell Scripting</title>
+
+</head>
+
+<body>
+
+<div id="nav"> 
+<a href="index.html">Introduction</a><br>
+<a href="applications.html">Applications</a><br>
+<a href="configuration.html">Configuration</a><br>
+<cur>Developers</cur><br>
+<a href="team.html">Team</a><br>
+<a href="license.html">License</a><br></div>
+</div>
+
+<div id="content">
+<h1>InfoPopper</h1><br>
+  <h2>Adding Support For InfoPopper</h2>
+  <p>&nbsp; </p>
+  <h3>General use</h3>
+  <p>The normal end-user of InfoPopper doesn't have to do anything, more or less. 
+    Once InfoPopper is started, other apps send messages to it that are displayed. 
+    Depending on the type of message, clicking it can do various things. The sending 
+    app decides what should happen when a message is clicked.</p>
+  <p>&nbsp;</p>
+  <h3>Settings</h3>
+  <p>There are some settings you can adjust to make InfoPopper look the way you 
+    want. The settings file if located at /boot/home/config/settings/BeClan/InfoPopper/settings.</p>
+  <table width="100%" border="0" cellspacing="10" cellpadding="0">
+    <thead>
+      <tr> 
+        <td>Name</td>
+        <td>Type</td>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr> 
+        <td>windowWidth</td>
+        <td>float</td>
+        <td>Width of window.</td>
+      </tr>
+      <tr> 
+        <td>displayTime</td>
+        <td>int32</td>
+        <td>Default display duration.</td>
+      </tr>
+      <tr> 
+        <td>titlePosition</td>
+        <td>int16</td>
+        <td> <p>You can select one of two layout schemes, described below.</p>
+          <table>
+            <thead>
+              <tr>
+                <td>Value</td>
+                <td>Description</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>0</td>
+                <td>Title above icon</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>All text right of icon</td>
+              </tr>
+            </tbody>
+          </table></td>
+      </tr>
+      <tr> 
+        <td>iconSize</td>
+        <td>int16</td>
+        <td>Size of icon.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Developer info</h3>
+  <p>To display a message, you send a message to the InfoPopper. The message needs 
+    to contain a number of fields, and can optionally contain more to specify 
+    more of how the message should be displayed and associate actions with it. 
+    Listed below you'll find a list of all the available fields.</p>
+  <p>The message should have a <b>what</b> value of <i>InfoPopper::AddMessage</i> 
+    (defined in libim/InfoPopper.h), or you could send scripting messages. The 
+    property is 'message'.</p>
+  <p>InfoPopper app-sig: <b>application/x-vnd.beclan.InfoPopper</b></p>
+  <p>You can also use hey to add messages:</p>
+  <pre>hey InfoPopper create message with app="MyApp" and title="Woot" and content="Hejsan"</pre>
+  <pre>hey InfoPopper create message with title="Ze title" and content="This iz a message. It iz a good ouane." 
+   and iconRef="file(/boot/home/config/settings/im_kit/icons/Available)" and app="My app"
+</pre>
+  <h3>Message fields</h3>
+  <table width="100%" border="0" cellspacing="10" cellpadding="0">
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Type</td>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr> 
+        <td>app</td>
+        <td>string</td>
+        <td>Required. The name of the application. Will be displayed above the 
+          rest of the message. Not guaranteed to be shown for each message, several 
+          messages could be grouped under a single 'app' header.</td>
+      </tr>
+      <tr> 
+        <td>title</td>
+        <td>string</td>
+        <td>Required. Message header.</td>
+      </tr>
+      <tr> 
+        <td>content</td>
+        <td>string</td>
+        <td>Required. The actual message</td>
+      </tr>
+      <tr> 
+        <td>type</td>
+        <td>int8</td>
+        <td>Optional. Describes the type of message, which in turns decides how 
+          it will look. 
+          <table>
+            <thead>
+              <tr>
+                <td>Value</td>
+                <td>Description</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>0</td>
+                <td>Information</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Important</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Error</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Progress - don't forget to add the <b>progress</b> field.</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table></td>
+  </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</body>
+</html>

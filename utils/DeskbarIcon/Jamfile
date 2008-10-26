@@ -1,0 +1,28 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP utils DeskbarIcon ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Addon IMDeskbarIcon :
+	DeskbarIcon.cpp
+	AwayMessageWindow.cpp
+	QueryLooper.cpp
+	: be stdc++.r4 libim.so libcommon.a
+	: IMDeskbarIcon.rsrc
+;
+
+Depends IMDeskbarIcon : libcommon.a ;
+Depends IMDeskbarIcon : libim.so ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on IMDeskbarIcon += -lzeta -ltracker ;
+}
+
+InstallLib $(IMKIT_APPS_DIRECTORY)/im_kit : IMDeskbarIcon ;

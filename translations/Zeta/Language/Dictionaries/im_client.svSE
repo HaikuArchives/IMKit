@@ -1,0 +1,33 @@
+# Zeta locale file for im_client [svSE]
+
+# ChatApp.cpp
+"Really quit?"		"Vill du verkligen avsluta?"
+"Do you really want to quit im_client and stop getting messages?"	"Vill du verkligen avsluta im_client och sluta ta emot meddelanden?"
+"Yes"			"Ja"
+"No"				"Nej"
+
+# ChatWindow.cpp
+"Show contact in People"		"Öppna användaren i People"
+"Send email to contact"		"Skicka e-post till användaren"
+"Block messages from contact"	"Blockera meddelanden från användaren"
+"View chat history for contact"	"Visa tidigare meddelanden från användaren"
+"Send"					"Skicka"
+"* You "					"* Du"
+"You say: "				"Du säger: "
+"Error: im_server not running, can't send message\n"	"Fel: im_server är inte igång, meddelandet kan inte skickas\n"
+"Unknown name"	"Okänt namn"
+"no nick"			"inget smeknamn"
+"Unknown status"	"Okänd status"
+"Any Protocol"		"Valfritt protokoll"
+"Available"		"Tillgänglig"
+"Away"			"Borta"
+"Offline"			"Frånkopplad"
+"User is typing.."	"Användaren skriver..."
+
+# RunView.cpp
+"Lookup (Dictionary)"	"Hitta (Dictionary)"
+"Lookup (Google)"		"Hitta (Google)"
+"Lookup (Acronym Finder)"	"Hitta (Acronym Finder)"
+"Copy"				"Kopiera"
+"Select All"			"Markera allt"
+"Clear"				"Rensa"

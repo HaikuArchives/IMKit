@@ -1,0 +1,29 @@
+#
+# Copyright 2008, IM Kit.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit libim ;
+
+SharedLibrary libim.so :
+	Contact.cpp
+	Manager.cpp
+	Helpers.cpp
+	Protocol.cpp
+	: be $(TARGET_LIBSTDC++)
+	: libim_version.rdef
+;
+
+AddFilesToHaikuImage common lib : libim.so ;
+CopyDirectoryToHaikuImage develop headers
+	: [ FDirName $(HAIKU_TOP) 3rdparty IMKit libim ]
+	: libim : -x .svn -x *.cpp -x Jamfile* -x *.rdef
+;
+
+Package imkit-cvs :
+	libim.so :
+	boot common lib
+;

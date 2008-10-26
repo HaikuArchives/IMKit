@@ -1,0 +1,25 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP sample_clients im_infopopper ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Executable im_infopopper :
+	main.cpp
+	IMInfoApp.cpp
+	: be stdc++.r4 libim.so libcommon.a infopopper
+	: im_infopopper.rsrc
+;
+
+Depends im_infopopper : libcommon.a ;
+Depends im_infopopper : libim.so ;
+
+LINKFLAGS on im_infopopper += -L$(IMKIT_COMMON_LIB_DIRECTORY) ;
+
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_infopopper ;

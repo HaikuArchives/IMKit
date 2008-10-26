@@ -1,0 +1,64 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+##-------------------------------------------------------------------
+## Version goes here
+##-------------------------------------------------------------------
+
+IMKIT_BUILD_VERSION = 0 9 2 ;
+IMKIT_BUILD_DESCRIPTION = v0.9.2 ;
+
+##-------------------------------------------------------------------
+## BuildConfig check and inclusion
+##-------------------------------------------------------------------
+{
+	local buildConfig = [ GLOB $(IMKIT_TOP) : BuildConfig ] ;
+
+	if ! $(buildConfig) {
+		Echo "No `BuildConfig' found in $(IMKIT_TOP)!" ;
+		Exit "Run ./configure in the source tree's root directory first!" ;
+	}
+
+	LOCATE on BuildConfig = $(IMKIT_TOP) ;
+
+	include BuildConfig ;
+}
+
+##-------------------------------------------------------------------
+## Special flags
+##-------------------------------------------------------------------
+if $(IMKIT_CHECKMEM) = 1 {
+	CCFLAGS += -fcheck-memory-usage ;
+	C++FLAGS += -fcheck-memory-usage ;
+	DEFINES += _NO_INLINE_ASM=1 _KERNEL_MODE=1 ;
+}
+if $(IMKIT_DEBUG) = 1 {
+	CCFLAGS += -g ;
+	C++FLAGS += -g ;
+	DEFINES += DEBUG=1 ;
+	LINKFLAGS += -g ;
+}
+
+##-------------------------------------------------------------------
+## Other flags
+##-------------------------------------------------------------------
+CCFLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
+C++FLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
+
+##-------------------------------------------------------------------
+## Defines
+##-------------------------------------------------------------------
+DEFINES += BUILD_DATE=\"\\\"$(IMKIT_BUILD_DATE)\\\"\" ;
+DEFINES += BUILD_REVISION=\"\\\"$(IMKIT_BUILD_REVISION)\\\"\" ;
+
+##-------------------------------------------------------------------
+## Include rules
+##-------------------------------------------------------------------
+include [ FDirName $(IMKIT_TOP) build jam BeOSRules ] ;
+include [ FDirName $(IMKIT_TOP) build jam MainBuildRules ] ;
+include [ FDirName $(IMKIT_TOP) build jam OverriddenJamRules ] ;

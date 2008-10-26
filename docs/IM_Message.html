@@ -1,0 +1,318 @@
+<html>
+<head>
+<link href="style.css" rel="stylesheet" type="text/css">
+<title>IM Kit messages: IM::MESSAGE</title>
+</head>
+<body>
+
+<h1>IM Kit messages: IM::MESSAGE</h1>
+
+<span class='linkBox'>
+	Messages from clients:<br/>
+	<a href="#SEND_MESSAGE">SEND_MESSAGE</a><br/>
+	<a href="#SET_STATUS">SET_STATUS</a><br/>
+	<a href="#GET_CONTACT_INFO">GET_CONTACT_INFO</a><br/>
+	<a href="#USER_STARTED_TYPING">USER_STARTED_TYPING</a><br/>
+	<a href="#USER_STOPPED_TYPING">USER_STOPPED_TYPING</a><br/>
+	<a href="#REQUEST_AUTH">REQUEST_AUTH</a><br/>
+	<br/>
+	Messages to clients:<br/>
+	<a href="#MESSAGE_SENT">MESSAGE_SENT</a><br/>
+	<a href="#MESSAGE_RECEIVED">MESSAGE_RECEIVED</a><br/>
+	<a href="#STATUS_CHANGED">STATUS_CHANGED</a><br/>
+	<a href="#CONTACT_INFO">CONTACT_INFO</a><br/>
+	<a href="#CONTACT_STARTED_TYPING">CONTACT_STARTED_TYPING</a><br/>
+	<a href="#CONTACT_STOPPED_TYPING">CONTACT_STOPPED_TYPING</a><br/>
+	<a href="#PROGRESS">PROGRESS</a><br/>
+	<br/>
+	Messages from protocols:<br/>
+	<a href="#MESSAGE_SENT">MESSAGE_SENT</a><br/>
+	<a href="#MESSAGE_RECEIVED">MESSAGE_RECEIVED</a><br/>
+	<a href="#STATUS_CHANGED">STATUS_CHANGED</a><br/>
+	<a href="#CONTACT_LIST">CONTACT_LIST</a><br/>
+	<a href="#CONTACT_INFO">CONTACT_INFO</a><br/>
+	<a href="#CONTACT_STARTED_TYPING">CONTACT_STARTED_TYPING</a><br/>
+	<a href="#CONTACT_STOPPED_TYPING">CONTACT_STOPPED_TYPING</a><br/>
+	<a href="#STATUS_SET">STATUS_SET</a><br/>
+	<a href="#AUTH_REQUEST">AUTH_REQUEST</a><br/>
+	<a href="#CONTACT_AUTHORIZED">CONTACT_AUTHORIZED</a><br/>
+	<a href="#PROGRESS">PROGRESS</a><br/>
+	<br/>
+	Messages to protocols:<br/>
+	<a href="#GET_CONTACT_LIST">GET_CONTACT_LIST</a><br/>
+	<a href="#SEND_MESSAGE">SEND_MESSAGE</a><br/>
+	<a href="#SET_STATUS">SET_STATUS</a><br/>
+	<a href="#GET_CONTACT_INFO">GET_CONTACT_INFO</a><br/>
+	<a href="#REGISTER_CONTACTS">REGISTER_CONTACTS</a><br/>
+	<a href="#USER_STARTED_TYPING">USER_STARTED_TYPING</a><br/>
+	<a href="#USER_STOPPED_TYPING">USER_STOPPED_TYPING</a><br/>
+	<a href="#SEND_AUTH_ACK">SEND_AUTH_ACK</a><br/>
+	<a href="#REQUEST_AUTH">REQUEST_AUTH</a><br/>
+</span>
+
+<p>IM::MESSAGE is used to send a lot of different messages, specified with the int32 'im_what' value in the message. Below is a list
+of im_what codes, the parameters that should be added to each message and who is the intended source and destination of each message</p>
+
+<p>Let's start off with some sample code for constructing a message:
+	<pre><code>
+		entry_ref entry;
+		
+		// point entry to a People file,
+		
+		BMessage msg(IM::MESSAGE);
+		msg.AddInt32("im_what", IM::SEND_MESSAGE);
+		msg.AddRef("contact", entry);
+		msg.AddString("protocol", "ICQ");
+		msg.AddString("message", "Hello world!");
+	</code></pre>
+	Here we specify the optional protocol parameter, to make sure that the message is sent using the ICQ protocol.
+</p>
+
+<p>Basically you create BMessage with a 'what' value of IM::MESSAGE, add an int32 'im_what with one of the values listed
+below and any parameters that are required, and you're done. Send the message with your IM::Manager if you're in a client,
+or with the BMessenger provided by im_server if you're in a protocol add-on.
+</p>
+
+<table>
+
+<tr><td class='messageConstant'    colspan='3'><a name='GET_CONTACT_LIST'>GET_CONTACT_LIST</a></td></tr>
+<tr><td class='messageSource'      colspan='3'>Sent by im_server to protocols</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	This message is sent by the im_server to the protocols when they successfully connect.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='SEND_MESSAGE'>SEND_MESSAGE</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td>  <td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>id</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td>  <td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>message</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Specify the protocol, and optionally the id, if you want to force the selection of connection to use when sending the message. The protocol that received the message
+	will respond with a <a href='#MESSAGE_SENT'>MESSAGE_SENT</a> message when the message has been sent.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='MESSAGE_SENT'>MESSAGE_SENT</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>id</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>message</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Sent to notify the clients that a message has been successfully sent, in response to a <a href='#SEND_MESSAGE'>SEND_MESSAGE</a> message.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='MESSAGE_RECEIVED'>MESSAGE_RECEIVED</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>id</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>message</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	A message has been received from a contact (specified by the contact, protocol and id parameter in the message).
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='STATUS_CHANGED'>STATUS_CHANGED</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>id</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>status</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>old_status</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>total_status</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td>   <td class='messageParameterName' width='100%'>old_total_status</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	One of contact's connections, protocol:id, has a new status. Status, old_status, total_status and old_total_status are all one of ONLINE_TEXT, AWAY_TEXT, OFFLINE_TEXT.
+	status and old_status describe the status of the specified connection, total_status and old_total_status describe the total status of the contact.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='CONTACT_LIST'>CONTACT_LIST</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to im_server</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Sent in response to a <a href="#GET_CONTACT_LIST">GET_CONTACT_LIST</a> message. Contains a number of id's, one per contact in the server-side contact list.
+	The im_server will create a new contact file for each id if there isn't one already.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='SET_STATUS'>SET_STATUS</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td>  <td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>status</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Request that a protocol, or all protocols if none is specified, change you online status to 'status', which should be one of ONLINE_TEXT, AWAY_TEXT or OFFLINE_TEXT.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='GET_CONTACT_INFO'>GET_CONTACT_INFO</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients and im_server to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Request any extra information that's available for the specified contact.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='CONTACT_INFO'>CONTACT_INFO</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>first name</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>last name</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>email</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>nick</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>[more]</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Response to a <a href='#GET_CONTACT_INFO'>GET_CONTACT_INFO</a> request. The protocol decides what information to include in the message, but as much as
+	possible should be included, and if possible with the parameter names listed above.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='REGISTER_CONTACTS'>REGISTER_CONTACTS</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by im_server to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Tells the protocol to start watching status changes for the specified id(s). This is sent in response to either a connection event or an edit event, where
+	the user has added a new connection to a contact.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='CONTACT_STARTED_TYPING'>CONTACT_STARTED_TYPING</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	The specified contact has started typing a message.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='CONTACT_STOPPED_TYPING'>CONTACT_STOPPED_TYPING</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	The specified contact has stopped typing a message. Not always sent.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='USER_STARTED_TYPING'>USER_STARTED_TYPING</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Notify the contact that the user has started typing a message.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='USER_STOPPED_TYPING'>USER_STOPPED_TYPING</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Notify the contact that the user has started typing a message.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='STATUS_SET'>STATUS_SET</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients and im_server</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>status</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>total_status</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Own status for protocol 'protocol' changed to 'status', which should be one of ONLINE_TEXT, AWAY_TEXT or OFFLINE_TEXT.<br/>
+	Total status is now 'total_status', the highest connection state of all protocols.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='AUTH_REQUEST'>AUTH_REQUEST</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to im_server and clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	The specified contact has requested authorization to add the user to his or her contact list.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='SEND_AUTH_ACK'>SEND_AUTH_ACK</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by clients and im_server to protocols</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	BGA knows all abuot this and can probably tell me what to write here..
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='CONTACT_AUTHORIZED'>CONTACT_AUTHORIZED</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	BGA knows all abuot this and can probably tell me what to write here..
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='REQUEST_AUTH'>REQUEST_AUTH</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>entry_ref</td><td class='messageParameterName' width='100%'>contact</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>protocol</td></tr>
+	<tr><td class='messageParameterOptional'>optional</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Request authorization to add contact to contact list.
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='UNREGISTER_CONTACTS'>UNREGISTER_CONTACTS</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by im_server to protocols</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>id</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	Stop listening to status changes from id(s).
+</td></tr>
+
+<tr><td class='messageDivider' colspan='3'>&nbsp;</td></tr>
+
+<tr><td class='messageConstant' colspan='3'><a name='PROGRESS'>PROGRESS</a></td></tr>
+<tr><td class='messageSource'   colspan='3'>Sent by protocols to clients</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>progressID</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>string</td><td class='messageParameterName' width='100%'>message</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>float</td><td class='messageParameterName' width='100%'>progress</td></tr>
+	<tr><td class='messageParameterOptional'>&nbsp;</td><td class='messageParameterType'>int32</td><td class='messageParameterName' width='100%'>state</td></tr>
+<tr><td class='messageDescription' colspan='3'>
+	A progress indicator update. The 'progressID' will be the same for all updates to a specific progress, for example a login process.<br/>
+	The 'message' is a message to be displayed to the user that shows what's currently happening.<br/>
+	The 'progress' is a float value larger than 0.0 but not larger than 1.0 that shows the progress.<br/>
+	The 'state' is one of im_progress_state_type that describes what type of activity is going on, if can be used by clients to alter
+	the appearance of the progress indicator.
+</td></tr>
+
+</table>
+
+</body>
+</html>

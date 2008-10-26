@@ -1,0 +1,114 @@
+<html>
+<head>
+<title>History</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<p><font color="#000000" size=2><a href="index.html">Introduction</a> | <a href="contributors.html">Contributors</a> 
+  | <a href="license.html">License</a> | <a href="install-use.html">Install and 
+  Use</a> | <a href="advanced-use.htm">Advanced Use</a> | History</font> </p>
+<h1><font size="5"><b>Changes for the various versions:</b></font></h1>
+
+<p><font color="#000000"><b>Changes for alpha 9.1:</b></font><font color="#000000"></font></p>
+<ul>
+  <li>Client handles dropped People files</li>
+  <li>Initial AIM protocol support</li>
+  <li>Smart(er) protocol selection in im_server</li>
+  <li>Contacts can be on any drive, not just boot</li>
+  <li>"Action" buttons in client</li>
+  <li>Away messages (for AIM only so far)</li>
+  <li>Various things needed to support multiple connections</li>
+  <li>The usual bugfixes</li>
+</ul>
+
+<p><font color="#000000"><b>Changes for alpha 8:</b></font><font color="#000000"></font></p>
+<ul>
+  <li>Scroll wheel in client scrolls history</li>
+  <li>Deskbar icon shows current status</li>
+  <li>Clicking the Deskbar icon with your third mouse button opens your People folder</li>
+  <li>Various changes, fixes etc</li>
+</ul>
+
+<p><font color="#000000"><b>Changes for alpha 7.1:</b></font><font color="#000000"></font></p>
+<ul>
+  <li>Fixed some bugs in im_client</li>
+  <li>Added saved history in im_client</li>
+</ul>
+
+<p><font color="#000000"><b>Changes for alpha 7:</b></font><font color="#000000"></font></p>
+<ul>
+  <li>Changed flashing deskbar icon to red</li>
+  <li><font color="#000000" size=3>Removed app-sigs from add-ons so they don't 
+    appear in Open with</font></li>
+  <li><font color="#000000" size=3>Added new setting type: bool</font></li>
+  <li><font color="#000000" size=3> Added settings for im_server and Deskbar icon</font></li>
+  <li><font color="#000000" size=3>Added click-URL-to-open in client</font></li>
+  <li><font color="#000000" size=3>Fixed a flooding bug that disconencted you 
+    from ICQ if you have a lot of contacts</font></li>
+  <li><font color="#000000" size=3>Changed chat windows to not steal focus</font></li>
+  <li><font color="#000000" size=3>Added auto-starting clients</font></li>
+  <li><font color="#000000" size=3>Added selectable amount of output</font></li>
+  <li><font color="#000000" size=3>Added duct-tape style fix for buffer overflow 
+    </font></li>
+  <li><font color="#000000" size=3>Swtich to multi-line input in client</font></li>
+  <li><font color="#000000" size=3> Chat windows remember position</font></li>
+  <li><font color="#000000" size=3> Changed log to be per-contact</font></li>
+  <li><font color="#000000" size=3>Person icons now reflect online status</font><font color="#000000" size=2></font></li>
+</ul>
+<p><font color="#000000"><b>Changes for alpha 6:</b></font><font color="#000000"></font></p>
+<ul>
+  <li><font color="#000000" size=3>Various fixes</font></li>
+  <li><font color="#000000" size=3> IRC-style /me support in chat</font></li>
+  <li><font color="#000000" size=3>Sound notification if a message is received 
+    to a window not on current workspace</font></li>
+  <li><font color="#000000" size=3>Improved text output from im_server et al</font></li>
+  <li><font color="#000000" size=3>Updated GimICQ import utility</font></li>
+  <li><font color="#000000" size=3>Changed query that's used to set contacts to 
+    offline when disconnecting so it matches all contacts</font> <font color="#000000" size=3>that 
+    have a connection set</font></li>
+  <li><font color="#000000" size=3> Added a Deskbar icon</font></li>
+  <li><font color="#000000" size=3>If a window receives a message when not active, 
+    it's title is changed to reflect this</font></li>
+  <li>A<font color="#000000" size=3>lso, the Deskbar icon starts flashing. Click 
+    it to activate the chat window</font></li>
+</ul>
+<p><font color="#000000"><b>Changes for alpha 5:</b></font><font color="#000000"></font></p>
+<ul>
+  <li><font color="#000000" size=3>Fixed bug where contacts weren't registered 
+    to 'receive updates'-list</font></li>
+  <li><font color="#000000" size=3>Made im_server and sample_client SingleLaunch</font></li>
+  <li><font color="#000000" size=3>Changed the way messages are handled by sample_client 
+    to fix bug with missed messages on startup</font></li>
+  <li><font color="#000000" size=3>Changed the makefile for the ICQ add-on so 
+    it builds with the rest of the kit</font></li>
+  <li><font color="#000000" size=3>Might have fixed Server::SetAllOffline() bug</font></li>
+  <li><font color="#000000" size=3>Changed text colors in ChatWindow</font></li>
+  <li><font color="#000000" size=3>Changed status "online" to "available" to get 
+    nicer lists in Tracker</font></li>
+  <li><font color="#000000" size=3>Hopefully fixed the 'im_server uses 100% cpu 
+    on error' bug. Not sure though.</font></li>
+  <li><font color="#000000" size=3>Added constants defining the texts for various 
+    statuses</font></li>
+  <li><font color="#000000" size=3>Added more info on step one of the install 
+    instructions</font></li>
+  <li><font color="#000000" size=3>Added ScrollToSelection when a chat window 
+    is resized</font></li>
+</ul>
+<p><font color="#000000"><b>Changes for alpha 4:</b></font><font color="#000000"></font></p>
+<ul>
+  <li><font color="#000000" size=3>Fixed the chat window so that the text re-wraps 
+    when the window is resized</font></li>
+  <li><font color="#000000" size=3>Moved the source and changed to proper makefiles. 
+    new build instructions in imkit/src/README</font></li>
+  <li><font color="#000000" size=3>Changed chat window: own text is gray, selecting 
+    text no longer messes things up quite as much</font></li>
+  <li><font color="#000000" size=3>changed Contact::AddConnection and RemoveConnection 
+    to return status_t</font></li>
+  <li><font color="#000000" size=3>changed Server::CreateContact to use Contact 
+    functions to add connection and set status</font></li>
+  <li><font color="#000000" size=3>Added "Tips and tricks"</font><font color="#000000" size=2></font></li>
+</ul>
+<p><font color="#000000" size=3>Earlier changes lost in the mists of history.</font><font color="#000000" size=2></font></p>
+</body>
+</html>

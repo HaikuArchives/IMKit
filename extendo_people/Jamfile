@@ -1,0 +1,20 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP extendo_people ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Executable People :
+	main.cpp
+	PeopleWindow.cpp
+	: be
+	: people.rsrc
+;
+
+InstallFile $(IMKIT_BEOS_PREFERENCES_DIRECTORY) : InstantMessaging ;

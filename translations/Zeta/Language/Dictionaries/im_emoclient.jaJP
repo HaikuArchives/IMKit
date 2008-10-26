@@ -1,0 +1,41 @@
+# Zeta locale file for im_emoclient [jaJP]
+# Translation by Jorge Mare (a.k.a. Koki)
+# Last revised 2/15/06
+
+# ChatApp.cpp
+"Really quit?"										"本当に終了しますか?"
+"Do you really want to quit im_client and stop getting messages?"	"IM クライアントを終了し、メッセージの受信を止めまてもよろしいですか？"
+"Yes"											"はい"
+"No"												"いいえ"
+
+# ChatWindow.cpp
+"Show contact in People"								"People で個人情報を表示"
+"Send email to contact"								"相手にメールを送る"
+"Block messages from contact"							"相手からのメッセージをブロック"
+"View chat history for contact"							"相手とのチャット経歴を表示"
+"Send"											"送信"
+"* You "											"* あなた "
+"You say: "											"あなたの発言: "
+"Error: im_server not running, can't send message\n"			"エラー: IM サーバが起動されていないため、メッセージを送信できません。\n"
+"Error: Can't send message, no available connections. Go online!"	"エラー: オフラインになっているため、メッセージを送信できません。"
+"Unknown name"									"名前が不明"
+"no nick"											"ニックが不明"
+"Unknown status"									"接続状態が不明"
+"Any Protocol"										"全プロトコル"
+"Available"											"オンライン"
+"Away"											"離席中"
+"Offline"											"オフライン"
+"User is typing.."										"相手がメッセージを入力中..."
+
+# RunView.cpp
+"Lookup (Dictionary)"									"オンライン辞典で検索"
+"Lookup (Google)"									"Google で検索"
+"Lookup (Acronym Finder)"								"acronymfinder.com で略語を検索"
+
+"Copy"											"コピー"
+"Select All"											"全て選択"
+"Clear"											"クリア"
+
+# Missing keys?
+"Emoticons"			"スマイリー"
+"View contact's web page"		"相手のホームページをブラウザで表示"

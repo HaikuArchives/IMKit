@@ -1,0 +1,29 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit Preflet ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Preference InstantMessaging :
+	main.cpp
+	PApplication.cpp
+	PWindow.cpp
+	: be $(TARGET_LIBSTDC++) translation textencoding libim.so <IMKit>libcommon.a
+	: preflet.rdef
+;
+
+Depends InstantMessaging : <IMKit>libcommon.a ;
+Depends InstantMessaging : libim.so ;
+
+AddFilesToHaikuImage beos preferences : InstantMessaging ;
+
+Package imkit-cvs :
+	InstantMessaging :
+	boot beos preferences
+;

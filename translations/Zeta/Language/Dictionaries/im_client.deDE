@@ -1,0 +1,33 @@
+# Zeta locale file for im_client [deDE]
+
+# ChatApp.cpp
+"Really quit?"		"Wirklich beenden?"
+"Do you really want to quit im_client and stop getting messages?"	"Möchten Sie den im_client wirklich beenden und keine weiteren Nachrichten empfangen?"
+"Yes"		"Ja"
+"No"		"Nein"
+
+# ChatWindow.cpp
+"Show contact in People"		"Kontakt in People-Anwendung zeigen"
+"Send email to contact"			"EMail an Kontakt senden"
+"Block messages from contact"	"Nachrichtenempfang blockieren"
+"View chat history for contact"	"Chatverlauf anzeigen"
+"Send"			"Senden"
+"* You "		"* Du "
+"You say: "		"Du sagst: "
+"Error: im_server not running, can't send message\n"		"Fehler: Der im_server ist nicht gestartet. Kann die Nachricht nicht senden.\n"
+"Unknown name"		"Unbekannter Name"
+"no nick"			"Kein Rufname"
+"Unknown status"	"Unbekannter Status"
+"Any Protocol"		"Jedes Protokoll"
+"Available"			"Verfügbar"
+"Away"				"Abwesend"
+"Offline"			"Nicht verfügbar"
+"User is typing.."	"Benutzer schreibt.."
+
+# RunView.cpp
+"Lookup (Dictionary)"		"Nachschlagen (Wörterbuch)"
+"Lookup (Google)"			"Nachschlagen (Google)"
+"Lookup (Acronym Finder)"	"Nachschlagen (Acronym Finder)"
+"Copy"						"Kopieren"
+"Select All"				"Alles auswählen"
+"Clear"						"Inhalt löschen"

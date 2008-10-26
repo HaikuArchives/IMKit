@@ -1,0 +1,19 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP ;
+
+# Include all the components
+SubInclude IMKIT_TOP libs ;
+SubInclude IMKIT_TOP common ;
+SubInclude IMKIT_TOP libim ;
+SubInclude IMKIT_TOP server ;
+SubInclude IMKIT_TOP Preflet ;
+SubInclude IMKIT_TOP sample_clients ;
+SubInclude IMKIT_TOP protocols ;
+SubInclude IMKIT_TOP utils ;

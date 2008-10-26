@@ -1,0 +1,33 @@
+# Zeta locale file for im_client [nlNL]
+
+# ChatApp.cpp
+"Really quit?"										"Wil je echt afsluiten?"
+"Do you really want to quit im_client and stop getting messages?"	"Wil je im_client wirklich werkelijk sluiten en dus geen berichten meer ontvangen?"
+"Yes"											"Ja"
+"No"												"Neen"
+
+# ChatWindow.cpp
+"Show contact in People"								"Toon contact persoon in People"
+"Send email to contact"								"EMail aan contact verzenden"
+"Block messages from contact"							"Berichten blokkeren van deze persoon"
+"View chat history for contact"							"Toon chat geschiedenis"
+"Send"											"Zenden"
+"* You "											"* Jij "
+"You say: "											"Jij zegt: "
+"Error: im_server not running, can't send message\n"			"Fout:im_server draait niet, kan niets verzenden\n"
+"Unknown name"									"Unbekende naam"
+"no nick"											"Geen bijnaam"
+"Unknown status"									"Onbekende Status"
+"Any Protocol"										"Willekeurig Protokol"
+"Available"											"Beschikbaar"
+"Away"											"Afwezig"
+"Offline"											"Niet beschikbaar"
+"User is typing.."										"Gebruiker typt..."
+
+# RunView.cpp
+"Lookup (Dictionary)"									"Opzoeken (Woordenboek)"
+"Lookup (Google)"									"Opzoeken (Google)"
+"Lookup (Acronym Finder)"								"Opzoeken (Acronym Zoeker)"
+"Copy"											"Kopieren"
+"Select All"											"Alles selecteren"
+"Clear"											"Alles wissen"

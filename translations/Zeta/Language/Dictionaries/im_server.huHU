@@ -1,0 +1,25 @@
+# Zeta locale file for im_server [enUS]
+
+# DeskbarIcon.cpp
+"Az im_szerver nem fut"
+"Állapot:"
+"Elérhető"
+"Távol"
+"Nem elérhető"
+"Az im_szerver indítása"
+"Állapot"
+"Minden protokoll"
+# "Queries" # Queries are Queries :P
+"A kapcsolatlista megjelenítése"
+"Beállítások"
+"Névjegy"
+"Kilépés"
+"SVN verzió: "
+"Lefordítva: "
+"The IM Kit is a collaborative effort released under the BeClan banner."
+" Collaborators include:"
+
+#AwayMessageWindow.cpp
+"IM Kit: 'Távol vagyok' üzenet beállítása"
+"Távol vagyok"
+"Mégsem"

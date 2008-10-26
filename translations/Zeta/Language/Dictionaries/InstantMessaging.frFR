@@ -1,0 +1,52 @@
+# Zeta locale file for InstantMessaging [deDE]
+
+# PWindow.cpp
+"Save"			"Sauver"
+"Revert"		"Revenir"
+
+# The strings below need to be updated, whenever a new preferences
+# setting is added to an im_kit application.
+
+# preferences: im_client
+"Auto-start"				"Démarrage automatique"
+"Application signature"		"Signature de l'application"
+"Menubar Icon Size"			"Taille d'icône des menus"
+"Show 'Send' button"		"Afficher le bouton \"Envoyer\""
+"Send messages with CMD-Enter instead of Enter"	"Envoyer avec ALT-Entrée au lieu d'Entrée"
+
+# preferences: im_server
+"Blink Deskbar icon"		"Flasher l'icône Deskbar"
+"Auto-start im_server"		"Démarrage automatique d'im_server"
+"Show icon in Deskbar"		"Icône dans la Deskbar"
+"Debug log threshold"		"Seuil de log debug"
+"Away Message"				"Message d'absence"
+"Person handler"			"Prise en charge des contacts"
+"Application signature"		"Signature de l'application"
+
+# preferences: im_logger
+"Auto-start"				"Démarrage automatique"
+
+# preferences: im_binlogger
+"Auto-start"				"Démarrage automatique"
+
+# preferences: im_infopopper
+"Status change text"		"Changement d'état"
+"Message received text"		"Réception de message"
+"Icon size"					"Taille d'icône"
+
+# preferences: AIM
+"Screen Name"				"Identifiant AIM"
+"Password"					"Mot de passe"
+"User Profile"				"Profil utilisateur"
+
+# preferences: ICQ
+"Password"					"Mot de passe"
+"Text encoding"				"Codage du texte"
+
+# preferences: MSN
+"Passport Email"			"Email Passport"
+"Password"					"Mot de passe"
+"Display Name"				"Identifiant MSN"
+
+# preferences: Yahoo
+"Password"					"Mot de passe"

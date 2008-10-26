@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 11.0, SVG Export Plug-In . SVG Version: 6.0.0 Build 78)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
+	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
+]>
+<svg  xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 width="404.023" height="79.069" viewBox="0 0 404.023 79.069" overflow="visible" enable-background="new 0 0 404.023 79.069"
+	 xml:space="preserve">
+		<g id="Ebene_1">
+			<ellipse opacity="0.25" enable-background="new    " cx="16.039" cy="75.701" rx="15.15" ry="3.369"/> 
+			<circle cx="15.588" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_10_" cx="-309.1001" cy="-607.3765" r="21.8581" fx="-309.1001" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_10_)" cx="15.588" cy="62.658" r="14.108"/> 
+			<ellipse cx="9.441" cy="58.059" rx="2.25" ry="3.906"/> 
+			<ellipse cx="20.88" cy="58.059" rx="2.25" ry="3.906"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M19.844,49.204c5.661,1.591,9.565,7.75,9.684,11.268
+				c0.1,2.938-8.075-0.898-11.678-2.136c-3.601-1.237-15.451-1.478-13.589-4.087C5.967,51.854,11.691,46.528,19.844,49.204z"/>
+			<path d="M5.733,65.403c0.588-0.588,3.25,4.5,9.5,4.5s8.869-4.797,9.583-4.084c0.714,0.715-2.667,5.584-9.667,5.584
+				S5.146,65.991,5.733,65.403z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="388.872" cy="75.701" rx="15.151" ry="3.369"/> 
+			<circle cx="388.421" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_11_" cx="63.7329" cy="-607.3765" r="21.8581" fx="63.7329" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_11_)" cx="388.421" cy="62.658" r="14.108"/> 
+			<path d="M384.524,58.06c0,2.156-1.007,3.905-2.25,3.905s-3.25-1.749-3.25-3.905c0-2.158,2.007-3.906,3.25-3.906
+				S384.524,55.901,384.524,58.06z"/>
+			<path d="M396.963,58.06c0,2.156-2.008,3.905-3.25,3.905c-1.243,0-2.25-1.749-2.25-3.905c0-2.158,1.007-3.906,2.25-3.906
+				C394.955,54.153,396.963,55.901,396.963,58.06z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="184.298" cy="75.701" rx="15.151" ry="3.369"/> 
+			<circle cx="183.847" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_12_" cx="-140.8418" cy="-607.3765" r="21.8581" fx="-140.8418" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_12_)" cx="183.847" cy="62.658" r="14.108"/> 
+			<ellipse cx="177.701" cy="58.059" rx="2.25" ry="3.906"/> 
+			<ellipse cx="189.138" cy="58.059" rx="2.25" ry="3.906"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M188.102,49.204c5.661,1.591,9.565,7.75,9.685,11.268
+				c0.099,2.938-8.076-0.898-11.679-2.136c-3.601-1.237-15.45-1.478-13.589-4.087C174.225,51.854,179.951,46.528,188.102,49.204z"/>
+			<path d="M190.987,70.638c-0.467,0.469-2.582-3.574-7.546-3.574s-7.045,3.812-7.611,3.244c-0.567-0.566,2.117-4.435,7.678-4.435
+				C189.067,65.873,191.455,70.171,190.987,70.638z"/>
+			<ellipse opacity="0.5" fill="#095DA7" enable-background="new    " cx="235.423" cy="75.701" rx="15.151" ry="3.369"/> 
+			<circle cx="235.972" cy="62.658" r="15.588"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M392.677,49.204c5.661,1.591,9.563,7.75,9.684,11.268
+				c0.101,2.938-8.076-0.898-11.678-2.136c-3.603-1.237-15.451-1.478-13.59-4.087C378.8,51.854,384.524,46.528,392.677,49.204z"/>
+			
+				<radialGradient id="XMLID_13_" cx="-88.7163" cy="-607.3765" r="21.8581" fx="-88.7163" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_13_)" cx="235.972" cy="62.658" r="14.108"/> 
+			<path d="M232.076,58.06c0,2.156-2.013,3.901-3.256,3.901c-1.242,0-1.244-1.745-1.244-3.901c0-2.158,1.007-0.845,2.25-0.845
+				C231.068,57.215,232.076,55.901,232.076,58.06z"/>
+			<path d="M243.514,58.06c0,2.156-0.012,3.91-1.255,3.91s-3.245-1.753-3.245-3.91c0-2.158,1.007-0.906,2.25-0.906
+				S243.514,55.901,243.514,58.06z"/>
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M240.228,49.204c5.661,1.591,9.564,7.75,9.685,11.268
+				c0.1,2.938-8.076-0.898-11.679-2.136c-3.602-1.237-15.45-1.478-13.59-4.087C226.351,51.854,232.076,46.528,240.228,49.204z"/>
+			<path d="M243.112,70.638c-0.468,0.469-2.58-3.574-7.546-3.574c-4.965,0-7.045,3.812-7.61,3.244
+				c-0.567-0.566,2.116-4.435,7.678-4.435C241.194,65.873,243.581,70.171,243.112,70.638z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="128.623" cy="75.701" rx="15.15" ry="3.369"/> 
+			<circle cx="128.172" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_14_" cx="-196.5166" cy="-607.3765" r="21.8581" fx="-196.5166" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_14_)" cx="128.172" cy="62.658" r="14.108"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M132.427,49.204c5.661,1.591,9.565,7.75,9.684,11.268
+				c0.1,2.938-8.075-0.898-11.678-2.136c-3.601-1.237-15.451-1.478-13.589-4.087C118.55,51.854,124.275,46.528,132.427,49.204z"/>
+			<path d="M119.317,64.403c0.588-0.588,2.25,0.5,8.5,0.5s7.869-0.797,8.583-0.084c0.714,0.715-1.667,5.584-8.667,5.584
+				S118.729,64.991,119.317,64.403z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="72.075" cy="75.701" rx="15.15" ry="3.369"/> 
+			<circle cx="71.625" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_15_" cx="-253.064" cy="-607.3765" r="21.8581" fx="-253.064" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_15_)" cx="71.625" cy="62.658" r="14.108"/> 
+			<path d="M68.173,58.033c0,1.161-1.207,1.409-2.694,1.409c-1.486,0-2.693,1.174-2.693-1.409s1.207-0.687,2.693-0.687
+				C66.966,57.347,68.173,57.024,68.173,58.033z"/>
+			<path d="M124.31,55.769c0,1.162-1.207,1.41-2.693,1.41c-1.487,0-2.694,1.174-2.694-1.41c0-2.582,1.207-0.686,2.694-0.686
+				C123.103,55.083,124.31,54.761,124.31,55.769z"/>
+			<path d="M131.071,55.769c0,1.162,1.207,1.41,2.694,1.41s2.694,1.174,2.694-1.41c0-2.582-1.207-0.686-2.694-0.686
+				S131.071,54.761,131.071,55.769z"/>
+			<ellipse cx="76.916" cy="58.059" rx="2.25" ry="3.906"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M75.88,49.204c5.661,1.591,9.564,7.75,9.684,11.268
+				c0.1,2.938-8.076-0.898-11.678-2.136c-3.601-1.237-15.451-1.478-13.589-4.087C62.003,51.854,67.729,46.528,75.88,49.204z"/>
+			<path d="M61.771,65.403c0.588-0.588,3.25,4.5,9.5,4.5s8.869-4.797,9.583-4.084c0.714,0.715-2.667,5.584-9.667,5.584
+				S61.182,65.991,61.771,65.403z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="288.873" cy="75.701" rx="15.15" ry="3.369"/> 
+			<circle cx="288.421" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_16_" cx="-36.2671" cy="-607.3765" r="21.8581" fx="-36.2671" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_16_)" cx="288.421" cy="62.658" r="14.108"/> 
+			<path d="M284.129,60.153c-0.891,0.748-1.855-0.018-2.813-1.157c-0.956-1.14-2.631-1.31-0.651-2.97
+				c1.979-1.662,1.302,0.484,2.258,1.623S284.9,59.506,284.129,60.153z"/>
+			<path d="M291.922,60.153c0.89,0.748,1.854-0.018,2.812-1.157c0.956-1.14,2.632-1.31,0.652-2.97
+				c-1.979-1.66-1.302,0.484-2.258,1.623C292.172,58.79,291.148,59.506,291.922,60.153z"/>
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M292.677,49.204c5.661,1.591,9.563,7.75,9.684,11.268
+				c0.101,2.938-8.075-0.898-11.678-2.136c-3.602-1.237-15.451-1.478-13.59-4.087C278.8,51.854,284.524,46.528,292.677,49.204z"/>
+			<path d="M136.021,61.872c0,0-0.513,1.717,0.306,3.126c0.817,1.41,1.763,1.79,2.211,1.687c0.608-0.141-1.158-0.896-1.724-2.004
+				C136.171,63.418,136.475,61.417,136.021,61.872z"/>
+			<path d="M119.48,61.872c0,0,0.514,1.717-0.305,3.126c-0.818,1.41-1.763,1.79-2.211,1.687c-0.609-0.141,1.158-0.896,1.723-2.004
+				C119.331,63.418,119.026,61.417,119.48,61.872z"/>
+			<ellipse opacity="0.25" enable-background="new    " cx="338.955" cy="75.701" rx="15.151" ry="3.369"/> 
+			<circle cx="338.505" cy="62.658" r="15.588"/> 
+			
+				<radialGradient id="XMLID_17_" cx="13.8164" cy="-607.3765" r="21.8573" fx="13.8164" fy="-607.3765" gradientTransform="matrix(1 0 0 1 327.875 661.6738)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.7022" style="stop-color:#FFE100"/>
+				<stop  offset="0.8876" style="stop-color:#EDC514"/>
+				<stop  offset="1" style="stop-color:#FFAE10"/>
+				<a:midPointStop  offset="0" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFFFFF"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#FFE100"/>
+				<a:midPointStop  offset="0.8876" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EDC514"/>
+				<a:midPointStop  offset="1" style="stop-color:#FFAE10"/>
+			</radialGradient>
+			<circle fill="url(#XMLID_17_)" cx="338.505" cy="62.658" r="14.108"/> 
+			<ellipse cx="332.358" cy="55.059" rx="2.25" ry="3.907"/> 
+			<ellipse cx="343.797" cy="55.059" rx="2.25" ry="3.906"/> 
+			<path opacity="0.25" fill="#FFFFFF" enable-background="new    " d="M342.761,49.204c5.66,1.591,9.563,7.75,9.684,11.268
+				c0.1,2.938-8.076-0.898-11.678-2.136c-3.603-1.237-15.451-1.478-13.59-4.087C328.884,51.854,334.607,46.528,342.761,49.204z"/>
+			<path d="M329.65,64.403c0.588-0.588,2.25,0.5,8.5,0.5s7.869-0.797,8.582-0.084c0.715,0.713-1.666,5.584-8.666,5.584
+				S329.063,64.991,329.65,64.403z"/>
+			<path fill="#095DA7" d="M226.066,63.215c0,0-4.063,4.5-1.188,5.125s2.063-0.938,1.688-2.188S226.066,63.215,226.066,63.215z"/>
+			<path fill="#095DA7" d="M225.649,70.042c0,0-5.748,6.365-1.68,7.251c4.067,0.884,2.918-1.327,2.387-3.095
+				C225.827,72.431,225.649,70.042,225.649,70.042z"/>
+			<path fill="#095DA7" d="M245.047,63.215c0,0,4.063,4.5,1.188,5.125s-2.063-0.938-1.688-2.188S245.047,63.215,245.047,63.215z"/>
+			<path fill="#095DA7" d="M245.525,71.092c0,0,5.217,5.777,1.525,6.58c-3.691,0.802-2.648-1.204-2.167-2.81
+				C245.364,73.258,245.525,71.092,245.525,71.092z"/>
+			<path opacity="0.3" fill="#F9350E" enable-background="new    " d="M279.691,64.278c-0.356,1.759-0.896,3.25-2,3.25
+				c-1.104,0-1.818-1.803-2.036-3.584c-0.247-2.043-0.054-3.791,1.052-3.791C277.812,60.153,280.359,60.995,279.691,64.278z"/>
+			<path opacity="0.3" fill="#F9350E" enable-background="new    " d="M297.254,64.278c0.356,1.759,0.896,3.25,2,3.25
+				c1.104,0,1.818-1.803,2.035-3.584c0.248-2.043,0.055-3.791-1.051-3.791C299.134,60.153,296.586,60.995,297.254,64.278z"/>
+			<path d="M279.841,68.937c0.588-0.588,4.249-0.563,9.914-3.127c5.692-2.578,7.896-1,7.896,0.01c0,1.427-2.667,5.582-9.667,5.582
+				S279.253,69.524,279.841,68.937z"/>
+			<path d="M338.748,76.015c6.787,0,4.272-9.222,2.455-9.222c-1.815,0-2.933,0.421-2.933,0.421s-1.467-0.619-2.519-0.619
+				C333.744,66.595,330.24,76.015,338.748,76.015z"/>
+			
+				<radialGradient id="XMLID_18_" cx="246.1426" cy="373.4443" r="7.3841" fx="246.1426" fy="373.4443" gradientTransform="matrix(1 0 0 -1 92.4858 448.4082)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#F8B777"/>
+				<stop  offset="0.0917" style="stop-color:#F8AD70"/>
+				<stop  offset="0.2486" style="stop-color:#F7915B"/>
+				<stop  offset="0.4518" style="stop-color:#F7653B"/>
+				<stop  offset="0.6912" style="stop-color:#F6280E"/>
+				<stop  offset="0.7022" style="stop-color:#F6250C"/>
+				<stop  offset="0.8708" style="stop-color:#EB000B"/>
+				<stop  offset="1" style="stop-color:#BB0005"/>
+				<a:midPointStop  offset="0" style="stop-color:#F8B777"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F8B777"/>
+				<a:midPointStop  offset="0.0917" style="stop-color:#F8AD70"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F8AD70"/>
+				<a:midPointStop  offset="0.2486" style="stop-color:#F7915B"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F7915B"/>
+				<a:midPointStop  offset="0.4518" style="stop-color:#F7653B"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F7653B"/>
+				<a:midPointStop  offset="0.6912" style="stop-color:#F6280E"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F6280E"/>
+				<a:midPointStop  offset="0.7022" style="stop-color:#F6250C"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#F6250C"/>
+				<a:midPointStop  offset="0.8708" style="stop-color:#EB000B"/>
+				<a:midPointStop  offset="0.5" style="stop-color:#EB000B"/>
+				<a:midPointStop  offset="1" style="stop-color:#BB0005"/>
+			</radialGradient>
+			<path fill="url(#XMLID_18_)" d="M338.686,75.41c5.917,0,3.725-8.038,2.141-8.038s-2.557,0.367-2.557,0.367
+				s-1.279-0.541-2.196-0.541C334.322,67.198,331.269,75.41,338.686,75.41z"/>
+			<path d="M337.985,66.665c0,0,0.313,1.104,0.313,2.771c0,0.881-0.396,3.271-0.021,3.271s0.375-3.313,0.375-3.313
+				s-0.073-2.635,0-2.707C338.726,66.612,337.985,66.665,337.985,66.665z"/>
+			<circle cx="388.005" cy="68.402" r="3.208"/> 
+			<g enable-background="new    ">
+				<path d="M12.213,4.428H7.245c-1.134,0-2.052-0.918-2.052-2.052c0-1.135,0.918-2.053,2.052-2.053h8.262
+					c0.918,0,1.458,0.108,1.458,1.296v34.938c0,1.565-0.918,2.538-2.376,2.538s-2.376-0.973-2.376-2.538V4.428z"/>
+				<path d="M73.772,34.667c1.134,0,2.052,0.919,2.052,2.053s-0.918,2.052-2.052,2.052h-18.63c-1.998,0-2.592-1.134-2.592-1.944
+					c0-0.594,0.216-1.025,1.026-2.16L66.86,16.901c1.62-2.105,2.808-4.481,2.808-6.804c0-3.51-2.646-5.994-6.102-5.994
+					c-4.59,0-7.02,3.888-7.02,8.694c0,1.674-1.08,2.16-2.106,2.16c-1.512,0-2.322-0.919-2.322-2.916C52.118,5.67,56.438,0,64.376,0
+					c6.372,0,10.368,4.59,10.368,9.558c0,2.214-0.162,4.698-2.646,7.938L59.192,34.667H73.772z"/>
+				<path d="M118.754,39.096c-7.992,0-11.232-5.994-11.232-8.856c0-1.674,0.864-2.646,1.998-2.646c1.404,0,2.106,0.81,2.646,2.483
+					c0.918,2.754,2.862,4.914,6.48,4.914c4.266,0,7.29-3.186,7.29-7.128c0-5.724-3.132-7.182-6.696-7.182
+					c-1.89,0-2.916-0.811-2.916-2.052c0-1.08,0.702-1.675,2.484-2.053c3.834-0.863,5.4-2.699,5.4-6.21
+					c0-3.672-2.16-6.264-5.454-6.264c-3.78,0-5.184,2.7-5.454,5.616c-0.162,2.16-1.458,2.214-2.268,2.214
+					c-1.35,0-2.16-0.972-2.16-2.214c0-5.13,3.726-9.72,10.098-9.72c6.156,0,9.99,4.535,9.99,9.936c0,3.186-1.512,6.318-4.536,8.154
+					c4.32,1.296,6.588,4.968,6.588,9.342C131.012,34.722,125.612,39.096,118.754,39.096z"/>
+				<path d="M163.952,28.89c-1.62,0-2.052-0.702-2.052-1.674c0-0.702,0.486-1.62,1.188-2.754l13.608-22.303
+					C177.668,0.54,178.748,0,180.422,0c2.106,0,3.618,1.134,3.618,3.941v20.844h2.43c1.134,0,2.052,0.918,2.052,2.053
+					c0,1.134-0.918,2.052-2.052,2.052h-2.43v7.668c0,1.565-0.918,2.538-2.376,2.538s-2.376-0.973-2.376-2.538V28.89H163.952z
+					 M179.288,24.785V5.075h-0.108l-11.34,19.71H179.288z"/>
+				<path d="M227.941,14.85c1.566-0.811,3.295-1.08,5.076-1.08c5.994,0,9.828,5.67,9.828,11.664c0,8.262-4.697,13.662-12.475,13.662
+					c-6.371,0-10.799-4.05-10.799-6.372c0-0.972,0.539-2.052,1.728-2.052c1.944,0,3.672,3.995,9.126,3.995
+					c4.59,0,7.344-3.834,7.344-8.315c0-4.536-1.998-8.154-6.642-8.154c-3.511,0-5.185,1.458-6.534,1.458
+					c-1.134,0-1.62-0.702-1.62-1.458c0-0.594,0.216-1.998,0.378-3.186l1.998-13.446c0.162-0.972,0.648-1.242,1.782-1.242h13.338
+					c1.134,0,2.052,0.918,2.052,2.053c0,1.134-0.918,2.052-2.052,2.052h-10.962L227.941,14.85z"/>
+				<path d="M275.947,25.865c0-11.231,7.561-19.872,13.393-24.786C290.311,0.27,290.905,0,291.553,0
+					c0.756,0,1.944,0.756,1.944,2.214c0,0.756-0.54,1.35-1.89,2.538c-3.078,2.754-5.346,5.346-8.262,10.691h0.107
+					c1.782-0.918,3.51-1.512,6.102-1.512c6.265,0,9.721,5.939,9.721,12.636c0,6.966-4.969,12.528-11.772,12.528
+					C280.807,39.096,275.947,33.533,275.947,25.865z M287.449,34.667c4.697,0,6.75-3.834,6.75-8.315c0-5.076-2.053-8.316-6.75-8.316
+					c-4.698,0-6.75,3.889-6.75,8.316C280.699,30.833,282.751,34.667,287.449,34.667z"/>
+				<path d="M332.648,4.428c-1.135,0-2.053-0.918-2.053-2.052c0-1.135,0.918-2.053,2.053-2.053h19.492
+					c1.459,0,2.432,0.378,2.432,1.513c0,0.756-0.324,1.512-0.918,2.861l-14.365,32.67c-0.648,1.513-1.836,1.729-2.861,1.729
+					c-0.648,0-1.783-0.594-1.783-1.836c0-0.378,0.162-1.134,0.758-2.538l13.445-30.187V4.428H332.648z"/>
+				<path d="M391.555,0c4.861,0,9.828,2.916,9.828,8.802c0,4.104-1.564,6.372-5.021,8.532c4.482,1.025,6.967,5.13,6.967,9.611
+					c0,6.265-4.268,12.15-11.773,12.15s-11.771-5.886-11.771-12.15c0-4.481,2.484-8.586,6.967-9.611
+					c-3.457-2.16-5.023-4.429-5.023-8.532C381.727,2.916,386.695,0,391.555,0z M391.555,34.991c3.564,0,6.697-2.861,6.697-7.83
+					c0-3.941-2.268-7.668-6.697-7.668c-4.428,0-6.695,3.727-6.695,7.668C384.859,32.13,387.992,34.991,391.555,34.991z
+					 M391.555,15.39c3.402,0,5.4-2.376,5.4-5.67c0-3.24-1.998-5.616-5.4-5.616c-3.4,0-5.398,2.376-5.398,5.616
+					C386.156,13.014,388.154,15.39,391.555,15.39z"/>
+			</g>
+		</g>
+	</svg>

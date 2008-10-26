@@ -1,0 +1,44 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP sample_clients im_emoclient ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) sample_clients im_emoclient BitmapMenu ] ;
+
+Executable im_emoclient :
+	# im_emoclient
+	main.cpp
+	ChatApp.cpp
+	ChatWindow.cpp
+	InputFilter.cpp
+	ResizeView.cpp
+	Theme.cpp
+	Utilities.cpp
+	URLCrunch.cpp
+	RunView.cpp
+	ImageButton.cpp
+	StatusBar.cpp
+	IconBar.cpp
+	StdBevels.cpp
+	Emoticor.cpp
+	Emoconfig.cpp
+	# BitmapMenu
+	MenuBuilder.cpp
+	BitmapMenuItem.cpp
+	PopUpMenu.cpp
+	: be stdc++.r4 translation bsvg libcommon.a libexpat.a
+	: im_emoclient.rsrc
+;
+
+Depends im_emoclient : libcommon.a ;
+Depends im_emoclient : libexpat.a ;
+
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_emoclient ;

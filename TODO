@@ -1,0 +1,65 @@
+This is a list of bugs that need to be fixed, features that have been requested and such. If you
+feel like coding something and don't know what to do, this is the place to go! :)
+
+Please visit the BeClan bug tracker, since I'm moving all this over there.
+
+http://www.beclan.org/bugs
+
+___ Things to fix
+
+* Protocol doc needs to be updated and extended to describe Deskbar add-on and probably more.
+* Strangeness with getting contact info, error in icq-addon or in im_server, or both?
+* Add Deskbar monitor for im_server, so it restores the deskbar icon if needed.
+* Don't use BAlert in Merge contacts, it doesn't play well with long filenames
+* Contact's BNode::SetTo crashes with invalid pointer sometimes?
+* Change 'command sends message' option to a one-of-two menu
+* Make the clients handle the new 'multiple contacts per message' thing
+* Fix im_server SVG icon setting so it doesn't have to read the icons all the time..
+* binlog viewer: auto-wrap long lines, if we support variable height list items?
+* Add to readme/documentation, german docs: http://besly.mittilgart.de
+* im_server: ContactMonitor_Modified, merging "online" > "offline". Several AIM.
+* im_server: what happens in the index test if we have a read-only BFS volume mounted?
+* im_server: remove all FindContact calls and replace with FindAllContacts
+
+___ New features
+
+Re-add libbsvg code for R5 SVG support
+
+Setting something so ICQ displays as online with it's webfeatures
+
+Support for wide char encodings (utf-16 etc)?
+	Need to move all text to data fields instead of string ones, lots of work.
+
+Auto-send a user defined message to blocked contacts if they send a message (don't send again
+if already sent in the last 30 seconds, to prevent ping pong flood)
+
+Change Merge contacts, or make a new one, so it can be used from the Terminal
+
+Invisibility
+
+More attributes for info like timezone, location, etc?
+
+Option for im_server - Don't fetch serverside contact lists
+
+* More possible statuses, like Busy etc. Separate into sub-status? Away:Working, Away:Busy etc
+* Add a new attribute, IM Specific Status, for network-specific status (well, d'uh.)
+For things like "out to lunch" or whatever messages you can set on e.g. MSN.
+
+Serverside contact list manager:
+	Search for contacts
+		IM:SEARCH_FOR_CONTACTS ( string:name, string:nick, string:email, string:id )
+		IM:SEARCH_RESULTS ( protocol, name, email, id, whatever info we can get )
+		IM:SEARCH_COMPLETED (protocol)
+		IM:STOP_SEARCH (stops the currently active search(?))
+	Remove contacts
+		IM:REMOVE_SERVERSIDE_CONTACT (protocol, id)
+	Sort contacts in groups
+		IM:GET_SERVERSIDE_GROUPS (protocol)
+		IM:GET_CONTACTS_IN_SERVERSIDE_GROUP (protocol, group)
+		IM:MOVE_CONTACT_TO_SERVERSIDE_GROUP (protocol, id, group)
+
+New client: Relay station
+* Forward all messages received from !relay_target to relay_target
+
+Features in sample_client
+* Smileys

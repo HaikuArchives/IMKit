@@ -1,0 +1,19 @@
+# Zeta locale file for im_binlog_viewer [jaJP]
+# Translation by Jorge Mare (a.k.a. Koki)
+# Last revised 2/15/06
+
+# LogViewApp.cpp
+"This People file contains no Logs"		"この People ファイルにはログがありません。"
+
+# LogWin.cpp
+"IM Kit - Log Viewer"		"IM Kit - ログ・ビューア"
+"Date"						"日付"
+"Protocol"					"プロトコール"
+"Sender"					"差出人"
+"Contents"					"内容"
+"Type"						"種類"
+"Unknown Name"				"不明な名前"
+"Unknown Nick"				"不明なニック"
+"Error"						"エラー"
+"You"						"自分"
+"Unknown"					"不明"

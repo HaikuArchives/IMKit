@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="meta/default.css" media="all">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>The Instant Messenger Kit - Chatting</title>
+</head>
+
+<body>
+<div id="nav">
+<a href="index.html">Introduction</a><br>
+<a href="status.html">Status</a><br>
+<cur>Chatting</cur><br>
+<a href="preferences.html">Preferences</a><br>
+<a href="query.html">Query</a><br>
+<a href="utilities.html">Utilities</a><br>
+<a href="bugs.html">Bugs</a><br>
+<a href="team.html">Team</a><br>
+<cur>Change Log</cur><br>
+<a href="license.html">License</a><br>
+</div>
+
+<div id="content">
+<h1>The Instant Messenger </h1>
+<p>&nbsp;</p>
+<h2>The Development Change Log</h2>
+<h3>Changes for alpha 12</h3>
+<ul>
+  <li>im_client: Some fixes</li>
+  <li>im_server: Some 
+  fixes </li>
+  <li>The 
+    auto-install now indexes</li>
+  <li>    IM:connections is now case-insensitive</li>
+  <li>    lgo rotation - no more huge log files</li>
+  <li>deskbar replicant: Some fixes</li>
+  <li>deskbar replicant is now more separated from im_server</li>
+  <li>query links</li>
+  <li>developer documentation: 
+  Client-writing tutorial</li>
+  <li>enduser documentation updated</li>
+  <li>Preflet: Tooltips added </li>
+  <li>AIM protocol: Some 
+  fixes and 
+  non-ascii charset support</li>
+  <li>Jabber protocol added</li>
+  <li>MSN protocol: Some fixes</li>
+  <li>GoogleTalk protocol
+  added</li>
+  <li>im_emoclient: New alternative client added</li>
+  <li>QueryViewer: New tool added 
+  (Generic query viewer with nifty stuff)</li>
+  <li>PeopleURLOpener: New tool added 
+  (opens META:url of files dropped on it)</li>
+  <li>MailSetter: New tool added 
+  (sets mail as read)</li>
+</ul>
+<p>&nbsp;   </p>
+<h3>Changes for alpha 11</h3>
+<ul>
+  <li>  Bug fixes in MSN add-on</li>
+  <li>    Improved contact handling in im_server</li>
+  <li>    More sound events: contact status changes and protocol [dis]connect</li>
+  <li>    Bug fixes in im_client to make the protocol menu show correct statuses</li>
+  <li>    Sounds from <a href="http://www.partnersinrhyme.com/main/sfxlib/beep.shtml">http://www.partnersinrhyme.com/main/sfxlib/beep.shtml</a></li>
+  <li>    Fixed &quot;100% CPU usage if you block someone&quot; bug</li>
+  <li>    Fixed &quot;Deskbar can't read settings&quot; bug, should those with Dano too  </li>
+</ul>
+<h3>Changes for alpha 10</h3>
+<ul>
+  <li>New preflet</li>
+  <li>    Added protocols, MSN and Yahoo</li>
+  <li>    New client, info popper</li>
+  <li>    Too many changes to list them all, over a hundred commits!</li>
+</ul>
+<h3>Changes for alpha 9.1</h3>
+<ul>
+  <li>Client handles dropped People files</li>
+  <li>    Initial AIM protocol support</li>
+  <li>    Smart(er) protocol selection in im_server</li>
+  <li>    Contacts can be on any drive, not just boot</li>
+  <li>&quot;Action&quot; buttons in client</li>
+  <li>Away messages (for AIM only so far)</li>
+  <li>Various things needed to support multiple connections</li>
+  <li>The usual bugfixes</li>
+</ul>
+<h3>Changes for alpha 8</h3>
+<ul>
+  <li>Scroll wheel in client scrolls history</li>
+  <li>Deskbar icon shows current status</li>
+  <li>Clicking the Deskbar icon with your third mouse button opens your People folder</li>
+  <li>Various changes, fixes etc</li>
+</ul>
+<h3>Changes for alpha 7.1</h3>
+<ul>
+  <li>Fixed some bugs in im_client</li>
+  <li>Added saved history in im_client</li>
+</ul>
+<h3>Changes for alpha 7</h3>
+<ul>
+  <li>Changed flashing deskbar icon to red</li>
+  <li>Removed app-sigs from add-ons so they don't appear in Open with</li>
+  <li>Added new setting type: bool</li>
+  <li>Added settings for im_server and Deskbar icon</li>
+  <li>Added click-URL-to-open in client</li>
+  <li>Fixed a flooding bug that disconencted you from ICQ if you have a lot of contacts</li>
+  <li>Changed chat windows to not steal focus</li>
+  <li>Added auto-starting clients</li>
+  <li>Added selectable amount of output</li>
+  <li>Added duct-tape style fix for buffer overflow </li>
+  <li>Swtich to multi-line input in client</li>
+  <li>Chat windows remember position</li>
+  <li>Changed log to be per-contact</li>
+  <li>Person icons now reflect online status</li>
+</ul>
+<h3>Changes for alpha 6</h3>
+<ul>
+  <li>Various fixes</li>
+  <li>IRC-style /me support in chat</li>
+  <li>Sound notification if a message is received to a window not on current workspace</li>
+  <li>Improved text output from im_server et al</li>
+  <li>Updated GimICQ import utility</li>
+  <li>Changed query that's used to set contacts to offline when disconnecting so it matches all contacts that have a connection set</li>
+  <li>Added a Deskbar icon</li>
+  <li>If a window receives a message when not active, it's title is changed to reflect this</li>
+  <li>Also, the Deskbar icon starts flashing. Click it to activate the chat window</li>
+</ul>
+<h3>Changes for alpha 5</h3>
+<ul>
+  <li>Fixed bug where contacts weren't registered to 'receive updates'-list</li>
+  <li>Made im_server and sample_client SingleLaunch</li>
+  <li>Changed the way messages are handled by sample_client to fix bug with missed messages on startup</li>
+  <li>Changed the makefile for the ICQ add-on so it builds with the rest of the kit</li>
+  <li>Might have fixed Server::SetAllOffline() bugChanged text colors in ChatWindow</li>
+  <li>Changed status &quot;online&quot; to &quot;available&quot; to get nicer lists in Tracker</li>
+  <li>Hopefully fixed the 'im_server uses 100% cpu on error' bug. Not sure though.</li>
+  <li>Added constants defining the texts for various statuses</li>
+  <li>Added more info on step one of the install instructionsAdded ScrollToSelection when a chat window is resized</li>
+</ul>
+<h3>Changes for alpha 4</h3>
+<ul>
+  <li>Fixed the chat window so that the text re-wraps when the window is resized</li>
+  <li>Moved the source and changed to proper makefiles. new build instructions in imkit/src/README</li>
+  <li>Changed chat window: own text is gray, selecting text no longer messes things up quite as much</li>
+  <li>Changed Contact::AddConnection and RemoveConnection to return status_t</li>
+  <li>Changed Server::CreateContact to use Contact functions to add connection and set status</li>
+  <li>Added &quot;Tips and tricks&quot;</li>
+</ul>
+<p>Earlier changes lost in the mists of history.</p>
+</div>
+
+
+
+
+
+
+</body>
+</html>

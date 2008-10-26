@@ -1,0 +1,33 @@
+# Zeta locale file for im_client [enUS]
+
+# ChatApp.cpp
+"Really quit?"
+"Do you really want to quit im_client and stop getting messages?"
+"Yes"
+"No"
+
+# ChatWindow.cpp
+"Show contact in People"
+"Send email to contact"
+"Block messages from contact"
+"View chat history for contact"
+"Send"
+"* You "
+"You say: "
+"Error: im_server not running, can't send message\n"
+"Unknown name"
+"no nick"
+"Unknown status"
+"Any Protocol"
+"Available"
+"Away"
+"Offline"
+"User is typing.."
+
+# RunView.cpp
+"Lookup (Dictionary)"
+"Lookup (Google)"
+"Lookup (Acronym Finder)"
+"Copy"
+"Select All"
+"Clear"

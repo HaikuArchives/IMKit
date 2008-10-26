@@ -1,0 +1,28 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP server ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Executable im_server :
+	im_server.cpp
+	im_server_main.cpp
+	QueryLooper.cpp
+	: be stdc++.r4 translation textencoding libim.so libcommon.a
+	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
+;
+
+Depends im_server : libcommon.a ;
+Depends im_server : libim.so ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on im_server += -lzeta -ltracker ;
+}
+
+InstallBin $(IMKIT_COMMON_SERVERS_DIRECTORY) : im_server ;
