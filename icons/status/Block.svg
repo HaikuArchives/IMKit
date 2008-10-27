@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 11.0, SVG Export Plug-In . SVG Version: 6.0.0 Build 78)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
+	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
+]>
+<svg  xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 width="90.708" height="121.731" viewBox="0 0 90.708 121.731" overflow="visible" enable-background="new 0 0 90.708 121.731"
+	 xml:space="preserve">
+	
+		<g id="Ebene_1">
+			<g id="Layer_1_2_">
+				<path d="M41.2,15.973l-19.292,9.99v38.973c0,0,2.808,1.271,3.058,1.387c0,4.549,0,41.58,0,41.58l26.387,13.828l18.646-12.6
+					c0,0-0.092-36.084-0.101-39.59c1.387-1.105,4.683-3.729,4.683-3.729V29.825l-31.628-14.76L41.2,15.973z"/>
+				<g>
+					<polygon points="70.57,32.378 43.045,19.533 25.917,28.403 25.917,62.352 28.975,63.739 28.975,105.477 51.092,117.067 
+						65.983,107.004 65.881,67.612 70.57,63.881 "/>
+				</g>
+				<g>
+					
+						<linearGradient id="XMLID_5_" gradientUnits="userSpaceOnUse" x1="-214.5962" y1="396.2993" x2="-235.3471" y2="402.5941" gradientTransform="matrix(1 0 0 -1 255.1436 481.3818)">
+						<stop  offset="0" style="stop-color:#FDCC12"/>
+						<stop  offset="0.8114" style="stop-color:#F7BC0E"/>
+						<stop  offset="1" style="stop-color:#F7B80D"/>
+						<a:midPointStop  offset="0" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.8114" style="stop-color:#F7BC0E"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#F7BC0E"/>
+						<a:midPointStop  offset="1" style="stop-color:#F7B80D"/>
+					</linearGradient>
+					<polygon fill="url(#XMLID_5_)" points="28.975,61.434 28.975,105.477 51.09,117.067 65.982,107.004 65.873,63.981 
+						54.006,72.725 "/>
+				</g>
+				<g>
+					<polygon fill="#F96611" points="51.07,71.098 65.967,61.004 65.967,107.014 51.28,117.034 "/>
+				</g>
+				<g>
+					
+						<linearGradient id="XMLID_6_" gradientUnits="userSpaceOnUse" x1="-194.5474" y1="402.647" x2="-196.3484" y2="408.3507" gradientTransform="matrix(1 0 0 -1 255.1436 481.3818)">
+						<stop  offset="0" style="stop-color:#F96611"/>
+						<stop  offset="0.3765" style="stop-color:#EE580F"/>
+						<stop  offset="1" style="stop-color:#CC340B"/>
+						<a:midPointStop  offset="0" style="stop-color:#F96611"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#F96611"/>
+						<a:midPointStop  offset="0.3765" style="stop-color:#EE580F"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#EE580F"/>
+						<a:midPointStop  offset="1" style="stop-color:#CC340B"/>
+					</linearGradient>
+					<polygon fill="url(#XMLID_6_)" points="51.069,70.85 65.965,60.757 65.965,76.379 51.188,83.926 "/>
+				</g>
+				<g>
+					
+						<linearGradient id="XMLID_7_" gradientUnits="userSpaceOnUse" x1="-203.4634" y1="432.9927" x2="-224.2128" y2="439.2871" gradientTransform="matrix(1 0 0 -1 255.1436 481.3818)">
+						<stop  offset="0" style="stop-color:#FDCC12"/>
+						<stop  offset="0.8114" style="stop-color:#F7BC0E"/>
+						<stop  offset="1" style="stop-color:#F7B80D"/>
+						<a:midPointStop  offset="0" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.8114" style="stop-color:#F7BC0E"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#F7BC0E"/>
+						<a:midPointStop  offset="1" style="stop-color:#F7B80D"/>
+					</linearGradient>
+					<polygon fill="url(#XMLID_7_)" points="25.917,28.403 25.917,62.352 55.583,75.809 70.57,63.879 70.57,32.378 43.045,19.533 
+						"/>
+				</g>
+				<g>
+					<polygon fill="#F96611" points="55.463,42.537 70.582,32.349 70.643,63.942 55.583,75.846 "/>
+				</g>
+				<path fill="#F96611" d="M38.809,73.973c-1.032-0.537-2.006,0.209-2.006,0.209l0.074,35.391l3.936,2.182v-35.49
+					C40.813,76.264,39.779,74.477,38.809,73.973z"/>
+				<path fill="#CC340B" d="M38.659,74.788c-0.863-0.17-1.023,0.32-1.023,0.32l-0.188,34.736l2.749,1.328l-0.042-34.908
+					C40.153,76.264,39.465,74.946,38.659,74.788z"/>
+				<g>
+					
+						<linearGradient id="XMLID_8_" gradientUnits="userSpaceOnUse" x1="-203.5581" y1="451.481" x2="-223.4569" y2="441.6803" gradientTransform="matrix(1 0 0 -1 255.1436 481.3818)">
+						<stop  offset="0" style="stop-color:#FDCC12"/>
+						<stop  offset="0.0962" style="stop-color:#FDCF13"/>
+						<stop  offset="0.2834" style="stop-color:#FAD737"/>
+						<stop  offset="0.5431" style="stop-color:#F6E57B"/>
+						<stop  offset="0.8621" style="stop-color:#F8F5D6"/>
+						<stop  offset="1" style="stop-color:#FFFFFF"/>
+						<a:midPointStop  offset="0" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#FDCC12"/>
+						<a:midPointStop  offset="0.0962" style="stop-color:#FDCF13"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#FDCF13"/>
+						<a:midPointStop  offset="0.2834" style="stop-color:#FAD737"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#FAD737"/>
+						<a:midPointStop  offset="0.5431" style="stop-color:#F6E57B"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#F6E57B"/>
+						<a:midPointStop  offset="0.8621" style="stop-color:#F8F5D6"/>
+						<a:midPointStop  offset="0.5" style="stop-color:#F8F5D6"/>
+						<a:midPointStop  offset="1" style="stop-color:#FFFFFF"/>
+					</linearGradient>
+					<polygon fill="url(#XMLID_8_)" points="25.904,28.43 55.445,42.574 70.582,32.348 43.045,19.533 "/>
+				</g>
+				<polygon fill="#FFFFFF" points="25.904,28.43 25.958,30.219 55.457,44.718 55.445,42.573 57.413,41.251 27.608,27.491 "/>
+				<g opacity="0.8"  a:adobe-blending-mode="multiply">
+					<path opacity="0.8" fill="#F96611" d="M35.799,26.451c0-3.036,2.578-5.76,7.312-6.967c0.057,0.005,22.224,10.203,22.231,10.155
+						c-1.801,3.048-6.885,4.589-15.646,4.386C42.024,33.848,35.799,30.633,35.799,26.451z"/>
+				</g>
+				<g  a:adobe-knockout="true">
+					<circle fill="#808080"  a:adobe-knockout="false" enable-background="new    " cx="46.702" cy="15.569" r="14.068"/> 
+					<circle fill="#808080"  a:adobe-knockout="false" enable-background="new    " cx="46.676" cy="15.537" r="13.978"/> 
+					<circle fill="#818080"  a:adobe-knockout="false" enable-background="new    " cx="46.647" cy="15.504" r="13.887"/> 
+					<circle fill="#828282"  a:adobe-knockout="false" enable-background="new    " cx="46.62" cy="15.472" r="13.795"/> 
+					<circle fill="#848484"  a:adobe-knockout="false" enable-background="new    " cx="46.592" cy="15.438" r="13.705"/> 
+					<circle fill="#848484"  a:adobe-knockout="false" enable-background="new    " cx="46.565" cy="15.405" r="13.613"/> 
+					<circle fill="#858585"  a:adobe-knockout="false" enable-background="new    " cx="46.538" cy="15.373" r="13.521"/> 
+					<circle fill="#868686"  a:adobe-knockout="false" enable-background="new    " cx="46.51" cy="15.339" r="13.432"/> 
+					<circle fill="#878787"  a:adobe-knockout="false" enable-background="new    " cx="46.483" cy="15.308" r="13.34"/> 
+					<circle fill="#888888"  a:adobe-knockout="false" enable-background="new    " cx="46.455" cy="15.274" r="13.25"/> 
+					<circle fill="#898989"  a:adobe-knockout="false" enable-background="new    " cx="46.428" cy="15.241" r="13.158"/> 
+					<circle fill="#89898A"  a:adobe-knockout="false" enable-background="new    " cx="46.4" cy="15.208" r="13.067"/> 
+					<circle fill="#8B8B8B"  a:adobe-knockout="false" enable-background="new    " cx="46.372" cy="15.175" r="12.977"/> 
+					<circle fill="#8C8C8C"  a:adobe-knockout="false" enable-background="new    " cx="46.345" cy="15.143" r="12.886"/> 
+					<circle fill="#8D8D8D"  a:adobe-knockout="false" enable-background="new    " cx="46.318" cy="15.109" r="12.794"/> 
+					<circle fill="#8E8E8E"  a:adobe-knockout="false" enable-background="new    " cx="46.29" cy="15.076" r="12.703"/> 
+					<circle fill="#8F8E8F"  a:adobe-knockout="false" enable-background="new    " cx="46.263" cy="15.044" r="12.611"/> 
+					<circle fill="#909090"  a:adobe-knockout="false" enable-background="new    " cx="46.235" cy="15.011" r="12.521"/> 
+					<circle fill="#919191"  a:adobe-knockout="false" enable-background="new    " cx="46.208" cy="14.979" r="12.43"/> 
+					<circle fill="#929292"  a:adobe-knockout="false" enable-background="new    " cx="46.181" cy="14.946" r="12.339"/> 
+					<circle fill="#939392"  a:adobe-knockout="false" enable-background="new    " cx="46.153" cy="14.913" r="12.248"/> 
+					<circle fill="#949494"  a:adobe-knockout="false" enable-background="new    " cx="46.127" cy="14.88" r="12.156"/> 
+					<circle fill="#969595"  a:adobe-knockout="false" enable-background="new    " cx="46.098" cy="14.848" r="12.065"/> 
+					<circle fill="#969595"  a:adobe-knockout="false" enable-background="new    " cx="46.07" cy="14.813" r="11.976"/> 
+					<circle fill="#979797"  a:adobe-knockout="false" enable-background="new    " cx="46.043" cy="14.781" r="11.883"/> 
+					<circle fill="#989898"  a:adobe-knockout="false" enable-background="new    " cx="46.015" cy="14.749" r="11.792"/> 
+					<circle fill="#9A9999"  a:adobe-knockout="false" enable-background="new    " cx="45.988" cy="14.715" r="11.7"/> 
+					<circle fill="#9A9A9A"  a:adobe-knockout="false" enable-background="new    " cx="45.962" cy="14.684" r="11.61"/> 
+					<circle fill="#9B9A9A"  a:adobe-knockout="false" enable-background="new    " cx="45.932" cy="14.65" r="11.52"/> 
+					<circle fill="#9C9C9C"  a:adobe-knockout="false" enable-background="new    " cx="45.905" cy="14.617" r="11.428"/> 
+					<circle fill="#9D9D9D"  a:adobe-knockout="false" enable-background="new    " cx="45.878" cy="14.584" r="11.337"/> 
+					<circle fill="#9F9E9E"  a:adobe-knockout="false" enable-background="new    " cx="45.851" cy="14.551" r="11.245"/> 
+					<circle fill="#9F9F9F"  a:adobe-knockout="false" enable-background="new    " cx="45.823" cy="14.52" r="11.154"/> 
+					<circle fill="#A09FA0"  a:adobe-knockout="false" enable-background="new    " cx="45.797" cy="14.486" r="11.063"/> 
+					<circle fill="#A1A1A1"  a:adobe-knockout="false" enable-background="new    " cx="45.768" cy="14.453" r="10.973"/> 
+					<circle fill="#A2A2A2"  a:adobe-knockout="false" enable-background="new    " cx="45.74" cy="14.42" r="10.881"/> 
+					<circle fill="#A4A3A3"  a:adobe-knockout="false" enable-background="new    " cx="45.712" cy="14.388" r="10.79"/> 
+					<circle fill="#A4A4A4"  a:adobe-knockout="false" enable-background="new    " cx="45.686" cy="14.354" r="10.699"/> 
+					<circle fill="#A5A4A5"  a:adobe-knockout="false" enable-background="new    " cx="45.659" cy="14.322" r="10.607"/> 
+					<circle fill="#A6A6A6"  a:adobe-knockout="false" enable-background="new    " cx="45.631" cy="14.289" r="10.518"/> 
+					<circle fill="#A7A7A7"  a:adobe-knockout="false" enable-background="new    " cx="45.603" cy="14.256" r="10.427"/> 
+					<circle fill="#A8A8A8"  a:adobe-knockout="false" enable-background="new    " cx="45.576" cy="14.224" r="10.335"/> 
+					<circle fill="#A9A9A9"  a:adobe-knockout="false" enable-background="new    " cx="45.548" cy="14.19" r="10.243"/> 
+					<circle fill="#AAA9AA"  a:adobe-knockout="false" enable-background="new    " cx="45.521" cy="14.157" r="10.153"/> 
+					<circle fill="#ABABAB"  a:adobe-knockout="false" enable-background="new    " cx="45.493" cy="14.124" r="10.063"/> 
+					<circle fill="#ACACAC"  a:adobe-knockout="false" enable-background="new    " cx="45.465" cy="14.092" r="9.971"/> 
+					<circle fill="#ADADAD"  a:adobe-knockout="false" enable-background="new    " cx="45.438" cy="14.06" r="9.879"/> 
+					<circle fill="#ADADAD"  a:adobe-knockout="false" enable-background="new    " cx="45.411" cy="14.026" r="9.789"/> 
+					<circle fill="#AFAFAF"  a:adobe-knockout="false" enable-background="new    " cx="45.383" cy="13.993" r="9.697"/> 
+					<circle fill="#B0B0AF"  a:adobe-knockout="false" enable-background="new    " cx="45.356" cy="13.96" r="9.607"/> 
+					<circle fill="#B1B1B1"  a:adobe-knockout="false" enable-background="new    " cx="45.329" cy="13.927" r="9.516"/> 
+					<circle fill="#B2B2B2"  a:adobe-knockout="false" enable-background="new    " cx="45.301" cy="13.896" r="9.424"/> 
+					<circle fill="#B3B3B3"  a:adobe-knockout="false" enable-background="new    " cx="45.274" cy="13.861" r="9.333"/> 
+					<circle fill="#B4B4B4"  a:adobe-knockout="false" enable-background="new    " cx="45.247" cy="13.829" r="9.242"/> 
+					<circle fill="#B4B4B4"  a:adobe-knockout="false" enable-background="new    " cx="45.218" cy="13.796" r="9.15"/> 
+					<circle fill="#B6B6B6"  a:adobe-knockout="false" enable-background="new    " cx="45.19" cy="13.764" r="9.061"/> 
+					<circle fill="#B7B7B7"  a:adobe-knockout="false" enable-background="new    " cx="45.163" cy="13.73" r="8.968"/> 
+					<circle fill="#B8B8B8"  a:adobe-knockout="false" enable-background="new    " cx="45.136" cy="13.698" r="8.878"/> 
+					<circle fill="#B9B9B9"  a:adobe-knockout="false" enable-background="new    " cx="45.109" cy="13.665" r="8.786"/> 
+					<circle fill="#BBBBBA"  a:adobe-knockout="false" enable-background="new    " cx="45.082" cy="13.632" r="8.695"/> 
+					<circle fill="#BBBBBB"  a:adobe-knockout="false" enable-background="new    " cx="45.054" cy="13.6" r="8.604"/> 
+					<circle fill="#BCBCBC"  a:adobe-knockout="false" enable-background="new    " cx="45.026" cy="13.566" r="8.514"/> 
+					<circle fill="#BDBCBC"  a:adobe-knockout="false" enable-background="new    " cx="44.998" cy="13.534" r="8.422"/> 
+					<circle fill="#BEBEBE"  a:adobe-knockout="false" enable-background="new    " cx="44.971" cy="13.5" r="8.332"/> 
+					<circle fill="#BFBFBF"  a:adobe-knockout="false" enable-background="new    " cx="44.944" cy="13.468" r="8.24"/> 
+					<circle fill="#C0C0C0"  a:adobe-knockout="false" enable-background="new    " cx="44.917" cy="13.436" r="8.149"/> 
+					<circle fill="#C1C1C0"  a:adobe-knockout="false" enable-background="new    " cx="44.889" cy="13.402" r="8.059"/> 
+					<circle fill="#C2C2C2"  a:adobe-knockout="false" enable-background="new    " cx="44.86" cy="13.369" r="7.967"/> 
+					<circle fill="#C2C2C3"  a:adobe-knockout="false" enable-background="new    " cx="44.833" cy="13.336" r="7.876"/> 
+					<circle fill="#C4C4C4"  a:adobe-knockout="false" enable-background="new    " cx="44.806" cy="13.303" r="7.784"/> 
+					<circle fill="#C5C5C5"  a:adobe-knockout="false" enable-background="new    " cx="44.78" cy="13.271" r="7.693"/> 
+					<circle fill="#C6C6C6"  a:adobe-knockout="false" enable-background="new    " cx="44.751" cy="13.238" r="7.603"/> 
+					<circle fill="#C7C7C7"  a:adobe-knockout="false" enable-background="new    " cx="44.724" cy="13.205" r="7.512"/> 
+					<circle fill="#C8C7C7"  a:adobe-knockout="false" enable-background="new    " cx="44.696" cy="13.172" r="7.421"/> 
+					<circle fill="#C9C9C8"  a:adobe-knockout="false" enable-background="new    " cx="44.668" cy="13.141" r="7.33"/> 
+					<circle fill="#CACACA"  a:adobe-knockout="false" enable-background="new    " cx="44.641" cy="13.106" r="7.238"/> 
+					<circle fill="#CCCBCB"  a:adobe-knockout="false" enable-background="new    " cx="44.615" cy="13.074" r="7.147"/> 
+					<circle fill="#CCCCCC"  a:adobe-knockout="false" enable-background="new    " cx="44.586" cy="13.041" r="7.057"/> 
+					<circle fill="#CDCDCD"  a:adobe-knockout="false" enable-background="new    " cx="44.56" cy="13.008" r="6.965"/> 
+					<circle fill="#CECDCE"  a:adobe-knockout="false" enable-background="new    " cx="44.532" cy="12.976" r="6.874"/> 
+					<circle fill="#CFCFCE"  a:adobe-knockout="false" enable-background="new    " cx="44.504" cy="12.942" r="6.783"/> 
+					<circle fill="#D0D0D0"  a:adobe-knockout="false" enable-background="new    " cx="44.477" cy="12.909" r="6.692"/> 
+					<circle fill="#D2D1D2"  a:adobe-knockout="false" enable-background="new    " cx="44.448" cy="12.877" r="6.602"/> 
+					<circle fill="#D3D2D2"  a:adobe-knockout="false" enable-background="new    " cx="44.421" cy="12.844" r="6.511"/> 
+					<circle fill="#D4D3D3"  a:adobe-knockout="false" enable-background="new    " cx="44.394" cy="12.812" r="6.419"/> 
+					<circle fill="#D5D4D4"  a:adobe-knockout="false" enable-background="new    " cx="44.367" cy="12.778" r="6.328"/> 
+					<circle fill="#D5D5D5"  a:adobe-knockout="false" enable-background="new    " cx="44.339" cy="12.746" r="6.237"/> 
+					<circle fill="#D6D5D5"  a:adobe-knockout="false" enable-background="new    " cx="44.311" cy="12.712" r="6.146"/> 
+					<circle fill="#D7D7D7"  a:adobe-knockout="false" enable-background="new    " cx="44.284" cy="12.681" r="6.055"/> 
+					<circle fill="#D8D8D7"  a:adobe-knockout="false" enable-background="new    " cx="44.256" cy="12.647" r="5.963"/> 
+					<circle fill="#D9D8D8"  a:adobe-knockout="false" enable-background="new    " cx="44.229" cy="12.614" r="5.873"/> 
+					<circle fill="#DAD9D9"  a:adobe-knockout="false" enable-background="new    " cx="44.202" cy="12.581" r="5.782"/> 
+					<circle fill="#DBDBDA"  a:adobe-knockout="false" enable-background="new    " cx="44.175" cy="12.548" r="5.69"/> 
+					<circle fill="#DCDCDC"  a:adobe-knockout="false" enable-background="new    " cx="44.146" cy="12.517" r="5.6"/> 
+					<circle fill="#DDDDDD"  a:adobe-knockout="false" enable-background="new    " cx="44.119" cy="12.482" r="5.508"/> 
+					<circle fill="#DFDFDF"  a:adobe-knockout="false" enable-background="new    " cx="44.091" cy="12.45" r="5.417"/> 
+					<circle fill="#E0DFDF"  a:adobe-knockout="false" enable-background="new    " cx="44.065" cy="12.417" r="5.326"/> 
+					<circle fill="#E1E0E0"  a:adobe-knockout="false" enable-background="new    " cx="44.038" cy="12.384" r="5.234"/> 
+					<circle fill="#E2E1E1"  a:adobe-knockout="false" enable-background="new    " cx="44.009" cy="12.352" r="5.145"/> 
+					<circle fill="#E3E2E2"  a:adobe-knockout="false" enable-background="new    " cx="43.981" cy="12.318" r="5.053"/> 
+					<circle fill="#E3E3E2"  a:adobe-knockout="false" enable-background="new    " cx="43.954" cy="12.286" r="4.962"/> 
+					<circle fill="#E4E4E4"  a:adobe-knockout="false" enable-background="new    " cx="43.926" cy="12.253" r="4.871"/> 
+					<circle fill="#E5E4E4"  a:adobe-knockout="false" enable-background="new    " cx="43.899" cy="12.22" r="4.779"/> 
+					<circle fill="#E6E6E6"  a:adobe-knockout="false" enable-background="new    " cx="43.873" cy="12.188" r="4.688"/> 
+					<circle fill="#E7E6E6"  a:adobe-knockout="false" enable-background="new    " cx="43.844" cy="12.154" r="4.598"/> 
+					<circle fill="#E8E7E8"  a:adobe-knockout="false" enable-background="new    " cx="43.817" cy="12.122" r="4.506"/> 
+					<circle fill="#EAEAE9"  a:adobe-knockout="false" enable-background="new    " cx="43.789" cy="12.088" r="4.416"/> 
+					<circle fill="#EBEAEA"  a:adobe-knockout="false" enable-background="new    " cx="43.762" cy="12.057" r="4.324"/> 
+					<circle fill="#ECEBEB"  a:adobe-knockout="false" enable-background="new    " cx="43.735" cy="12.023" r="4.232"/> 
+					<circle fill="#EDEDED"  a:adobe-knockout="false" enable-background="new    " cx="43.706" cy="11.99" r="4.143"/> 
+					<circle fill="#EEEDED"  a:adobe-knockout="false" enable-background="new    " cx="43.679" cy="11.957" r="4.052"/> 
+					<circle fill="#EFEEEE"  a:adobe-knockout="false" enable-background="new    " cx="43.653" cy="11.924" r="3.96"/> 
+					<circle fill="#F0F0EF"  a:adobe-knockout="false" enable-background="new    " cx="43.625" cy="11.893" r="3.868"/> 
+					<circle fill="#F1F0F0"  a:adobe-knockout="false" enable-background="new    " cx="43.597" cy="11.859" r="3.777"/> 
+					<circle fill="#F2F1F1"  a:adobe-knockout="false" enable-background="new    " cx="43.569" cy="11.826" r="3.688"/> 
+					<circle fill="#F3F3F3"  a:adobe-knockout="false" enable-background="new    " cx="43.543" cy="11.793" r="3.596"/> 
+				</g>
+				<path enable-background="new    " d="M31.133,15.569c0,8.584,6.984,15.568,15.568,15.568c8.585,0,15.568-6.984,15.568-15.568
+					C62.272,6.984,55.287,0,46.702,0C38.118,0,31.133,6.984,31.133,15.569z M34.133,15.569C34.133,8.64,39.772,3,46.702,3
+					C53.633,3,59.27,8.64,59.27,15.569s-5.639,12.568-12.568,12.568C39.772,28.139,34.133,22.5,34.133,15.569z"/>
+			</g>
+			<g>
+				<g>
+					<path fill="#FF0000" d="M45.354,15.213C20.858,15.213,1,35.071,1,59.568c0,24.495,19.858,44.354,44.354,44.354
+						c24.495,0,44.354-19.857,44.354-44.354C89.708,35.071,69.849,15.213,45.354,15.213z M45.354,27.092
+						c6.471,0,12.495,1.899,17.559,5.162L16.427,74.322c-2.264-4.429-3.549-9.439-3.549-14.755
+						C12.878,41.631,27.418,27.092,45.354,27.092z M45.354,92.042c-7.042,0-13.554-2.248-18.874-6.057l47.041-42.574
+						c2.735,4.76,4.31,10.272,4.31,16.156C77.829,77.502,63.29,92.042,45.354,92.042z"/>
+				</g>
+				<g>
+					<path fill="none" stroke="#000000" stroke-width="2" d="M45.354,15.213C20.858,15.213,1,35.071,1,59.568
+						c0,24.495,19.858,44.354,44.354,44.354c24.495,0,44.354-19.857,44.354-44.354C89.708,35.071,69.849,15.213,45.354,15.213z
+						 M45.354,27.092c6.471,0,12.495,1.899,17.559,5.162L16.427,74.322c-2.264-4.429-3.549-9.439-3.549-14.755
+						C12.878,41.631,27.418,27.092,45.354,27.092z M45.354,92.042c-7.042,0-13.554-2.248-18.874-6.057l47.041-42.574
+						c2.735,4.76,4.31,10.272,4.31,16.156C77.829,77.502,63.29,92.042,45.354,92.042z"/>
+				</g>
+			</g>
+		</g>
+	</svg>
