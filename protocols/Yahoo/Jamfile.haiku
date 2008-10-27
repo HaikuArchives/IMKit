@@ -8,11 +8,11 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit protocols Yahoo ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
-
-SubDirC++Flags -DBONE_BUILD=1 ;
 
 Addon yahoo :
 	Yahoo.cpp

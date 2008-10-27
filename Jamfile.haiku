@@ -12,12 +12,14 @@ SubDir HAIKU_TOP 3rdparty IMKit ;
 local IMKIT_TOP = $(HAIKU_TOP) 3rdparty IMKit ;
 
 # Build date and revision
-IMKIT_BUILD_DATE = 2008-10-26 ;
-IMKIT_BUILD_REVISION = 666 ;
+IMKIT_BUILD_DATE = $(JAMDATE) ;
+IMKIT_BUILD_REVISION = "Haiku image build" ;
 
 # Local defines
-local imkitDefines = [ FDefines BUILD_DATE=\"\\\"$(IMKIT_BUILD_DATE)\\\"\" ] ;
-imkitDefines += [ FDefines BUILD_REVISION=\"\\\"$(IMKIT_BUILD_REVISION)\\\"\" ] ;
+IMKIT_DEFINES = ;
+IMKIT_DEFINES += [ FDefines BUILD_DATE=\"\\\"$(IMKIT_BUILD_DATE)\\\"\" ] ;
+IMKIT_DEFINES += [ FDefines BUILD_REVISION=\"\\\"$(IMKIT_BUILD_REVISION)\\\"\" ] ;
+IMKIT_DEFINES += [ FDefines BONE_BUILD=1 ] ;
 
 # Include all the components
 SubInclude HAIKU_TOP 3rdparty IMKit libs ;

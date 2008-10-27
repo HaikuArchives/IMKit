@@ -8,14 +8,14 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit protocols Jabber ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) server ] ;
 
 SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libexpat ] ;
 SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libjabber ] ;
-
-SubDirC++Flags -DBONE_BUILD=1 ;
 
 Addon jabber :
 	Jabber.cpp

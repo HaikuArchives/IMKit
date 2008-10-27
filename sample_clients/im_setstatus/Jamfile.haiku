@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit sample_clients im_setstatus ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 Application im_setstatus :

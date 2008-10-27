@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit Preflet ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 Preference InstantMessaging :

@@ -8,12 +8,12 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit protocols MSN ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(sslDir) include ] ;
-
-SubDirC++Flags -DBONE_BUILD=1 ;
 
 Addon msn :
 	MSN.cpp

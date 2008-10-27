@@ -8,4 +8,6 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit sample_clients tracker_addons ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SubInclude HAIKU_TOP 3rdparty IMKit sample_clients tracker_addons merge_contacts ;

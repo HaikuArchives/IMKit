@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit common ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 StaticLibrary <IMKit>libcommon.a :
 	Base64.cpp
 	BufferWriter.cpp

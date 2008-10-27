@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit libs libjabber ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;

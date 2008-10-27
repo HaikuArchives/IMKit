@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit libim ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 SharedLibrary libim.so :
 	Contact.cpp
 	Manager.cpp

@@ -8,6 +8,8 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit utils mimetype ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 Application mimetype_attribute :
 	mimetype_attribute.cpp
 	: be

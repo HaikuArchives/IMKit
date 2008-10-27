@@ -8,6 +8,9 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit libs libexpat ;
 
+SubDirCcFlags $(IMKIT_DEFINES) ;
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
 StaticLibrary <IMKit>libexpat.a :
 	xmlparse.c
 	xmlrole.c

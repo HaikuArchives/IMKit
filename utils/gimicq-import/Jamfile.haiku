@@ -8,6 +8,7 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit utils gimicq-import ;
 
+SubDirC++Flags $(IMKIT_DEFINES) ;
 
 AddFilesToHaikuImage apps im_kit gimicq-import : GimICQ2IM.py ;
 AddFilesToHaikuImage apps im_kit gimicq-import : README ;

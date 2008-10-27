@@ -8,9 +8,9 @@
 
 SubDir HAIKU_TOP 3rdparty IMKit utils DeskbarIcon ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirC++Flags $(IMKIT_DEFINES) ;
 
-SubDirC++Flags $(imkitDefines) ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 Addon IMDeskbarIcon :
 	DeskbarIcon.cpp
