@@ -12,6 +12,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
 SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 Addon gtalk :

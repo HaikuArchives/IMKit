@@ -11,11 +11,14 @@ SubDir IMKIT_TOP libs libjabber ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
 SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+#SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) libs libexpat ] ;
 
 SubDirC++Flags -DSTDOUT=1 ;
 
 StaticLibrary libjabber.a :
+	# libjabber
 	JabberAgent.cpp
 	JabberContact.cpp
 	JabberElement.cpp
@@ -26,6 +29,10 @@ StaticLibrary libjabber.a :
 	JabberSSLPlug.cpp
 	JabberSocketPlug.cpp
 	SHA1.cpp
+	# libexpat
+	xmlparse.c
+	xmlrole.c
+	xmltok.c
 ;
 
 Depends libjabber.a : libexpat.a ;
