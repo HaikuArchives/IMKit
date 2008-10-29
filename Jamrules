@@ -47,8 +47,17 @@ if $(IMKIT_DEBUG) = 1 {
 ##-------------------------------------------------------------------
 ## Other flags
 ##-------------------------------------------------------------------
-CCFLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
-C++FLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
+WARNING_CCFLAGS = -Wall -Wno-trigraphs -Wmissing-prototypes
+	-Wpointer-arith -Wcast-align -Wsign-compare -Wno-multichar ;
+WARNING_C++FLAGS = -Wall -Wno-trigraphs -Wno-ctor-dtor-privacy
+	-Woverloaded-virtual -Wpointer-arith -Wcast-align -Wsign-compare
+	-Wno-multichar ;
+
+##-------------------------------------------------------------------
+## Set compiler and linker flags
+##-------------------------------------------------------------------
+CCFLAGS += $(WARNING_CCFLAGS) ;
+C++FLAGS += $(WARNING_C++FLAGS) ;
 
 ##-------------------------------------------------------------------
 ## Defines
