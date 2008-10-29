@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <NodeInfo.h>
 
+#include <IconUtils.h>
+
 const int32 kSmallIcon = 16;
 const int32 kLargeIcon = 32;
 
@@ -18,35 +20,37 @@ const int32 kLargeIcon = 32;
 BBitmap *ReadNodeIcon(const char *name, int32 size = kSmallIcon,
 	bool followSymlink = true) {
 	
-	BBitmap *ret = NULL;
-
-#if defined(B_BEOS_VERSION_DANO) && (B_BEOS_VERSION > B_BEOS_VERSION_DANO)
- #ifndef B_ZETA_VERSION
-	// Zeta RC2 or early code.
 	BEntry entry(name, followSymlink);
 	entry_ref ref;
 	BPath path;
-	
+	BBitmap *ret = NULL;
+
 	entry.GetRef(&ref);
+
+#ifdef ZETA
+ #ifndef B_ZETA_VERSION
+	// Zeta RC2 or early code.
 	BNode node(BPath(&ref).Path());
 
 	ret = GetTrackerIcon(node, size, NULL);
  #else
 	// Zeta RC3 or later.
-	BEntry entry(name, followSymlink);
-	entry_ref ref;
-	BPath path;
-	
-	entry.GetRef(&ref);
-
 	ret = new BBitmap(GetTrackerIcon(entry, size));
  #endif
-#else
-	BEntry entry(name, followSymlink);
-	entry_ref ref;
-	BPath path;
-	
-	entry.GetRef(&ref);
+#endif
+
+#ifdef HAIKU
+	BNode node(BPath(&ref).Path());
+
+	ret = new BBitmap(BRect(0, 0, size - 1, size - 1), B_RGBA32);
+	if (BIconUtils::GetIcon(&node, BEOS_ICON_ATTRIBUTE, BEOS_MINI_ICON_ATTRIBUTE,
+		BEOS_LARGE_ICON_ATTRIBUTE, (icon_size)size, ret) < B_OK) {
+		delete ret;
+		ret = NULL;
+	}
+#endif
+
+#ifdef BEOS
 	BNode node(BPath(&ref).Path());
 
 	ret = new BBitmap(BRect(0,0,size-1,size-1), B_CMAP8);
@@ -56,36 +60,7 @@ BBitmap *ReadNodeIcon(const char *name, int32 size = kSmallIcon,
 	}
 #endif
 
-
-/*
-#if 0
-#if 0
-  // Dano code.
-   if (size == kSmallIcon) {
-		ret = GetBitmapFromAttribute(name, BEOS_SMALL_ICON_ATTRIBUTE, 
-'MICN',
-			followSymlink);
-	} else {
-		ret = GetBitmapFromAttribute(name, BEOS_LARGE_ICON_ATTRIBUTE, 
-'ICON',
-			followSymlink);
-	};
- #endif
-#else
- // R5 code.
- if (size == kSmallIcon) {
-		ret = GetBitmapFromAttribute(name, BEOS_SMALL_ICON_ATTRIBUTE, 
-'MICN',
-			followSymlink);
-	} else {
-		ret = GetBitmapFromAttribute(name, BEOS_LARGE_ICON_ATTRIBUTE, 
-'ICON',
-			followSymlink);
-	};
- #endif
-*/	
 	return ret;
-
 };
 
 // Loads 'attribute' of 'type' from file 'name'. Returns a BBitmap (Callers 

@@ -87,14 +87,14 @@ IM_DeskbarIcon::_init() {
 //	Load the Offline, Away, Online and Flash icons from disk
 	BString iconPath = iconDir.Path();
 	iconPath << "/DeskbarAway";
-	fAwayIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE,
+	fAwayIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
 		'ICON');
 	if ( !fAwayIcon )
 		LOG("deskbar", liHigh, "Error loading fAwayIcon");
 	
 	iconPath = iconDir.Path();
 	iconPath << "/DeskbarOnline";
-	fOnlineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE,
+	fOnlineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
 		'ICON');
 	if ( !fOnlineIcon )
 		LOG("deskbar", liHigh, "Error loading fOnlineIcon");
@@ -102,7 +102,7 @@ IM_DeskbarIcon::_init() {
 		
 	iconPath = iconDir.Path();
 	iconPath << "/DeskbarOffline";
-	fOfflineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE,
+	fOfflineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
 		'ICON');
 	if ( !fOfflineIcon )
 		LOG("deskbar", liHigh, "Error loading fOfflineIcon");
@@ -110,7 +110,7 @@ IM_DeskbarIcon::_init() {
 
 	iconPath = iconDir.Path();
 	iconPath << "/DeskbarFlash";
-	fFlashIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE,
+	fFlashIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
 		'ICON');
 	if ( !fFlashIcon )
 		LOG("deskbar", liHigh, "Error loading fFlashIcon");

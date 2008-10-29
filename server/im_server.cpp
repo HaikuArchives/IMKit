@@ -139,21 +139,21 @@ Server::Server()
 	iconPath << "/" ONLINE_TEXT;
 	
 	fIcons.AddPointer(ONLINE_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE));
+		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
 	fIcons.AddPointer(ONLINE_TEXT "_large", (const void *)GetBitmapFromAttribute(
 		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
 		
 	iconPath = prefsPath.Path();
 	iconPath << "/" AWAY_TEXT;
 	fIcons.AddPointer(AWAY_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE));
+		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
 	fIcons.AddPointer(AWAY_TEXT "_large", (const void *)GetBitmapFromAttribute(
 		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
 
 	iconPath = prefsPath.Path();
 	iconPath << "/" OFFLINE_TEXT;
 	fIcons.AddPointer(OFFLINE_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_SMALL_ICON_ATTRIBUTE));
+		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
 	fIcons.AddPointer(OFFLINE_TEXT "_large", (const void *)GetBitmapFromAttribute(
 		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
 	
@@ -1872,13 +1872,13 @@ Server::UpdateContactStatusAttribute( Contact & contact )
 		};	
 
 		if (small != NULL) {
-			if ( node.WriteAttr(BEOS_SMALL_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
+			if ( node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
 				small->BitsLength()) != small->BitsLength() )
 			{
 				LOG("im_server", liDebug, "Couldn't write small icon..");
 			}
 		} else {
-			node.RemoveAttr(BEOS_SMALL_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		};
 		
 		// SVG icon is a bit special atm
@@ -2021,10 +2021,10 @@ Server::SetAllOffline()
 		};	
 
 		if (small != NULL) {
-			node.WriteAttr(BEOS_SMALL_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
+			node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
 				small->BitsLength());
 		} else {
-			node.RemoveAttr(BEOS_SMALL_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		};
 #endif
 		
