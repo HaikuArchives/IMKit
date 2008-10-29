@@ -17,7 +17,7 @@ Addon yahoo :
 	YahooCallbacks.cpp
 	YahooConnection.cpp
 	: be stdc++.r4 libcommon.a yahoo2
-	: yahoo.rsrc
+	: Yahoo.rdef
 ;
 
 if $(IMKIT_IS_HAIKU)  = 1 {

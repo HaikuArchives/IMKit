@@ -37,4 +37,4 @@ if $(IMKIT_IS_ZETA) = 1 {
 	SubDirHdrs /boot/develop/headers/be/bone ;
 }
 
-InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit : jabber ;
+InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : jabber ;
