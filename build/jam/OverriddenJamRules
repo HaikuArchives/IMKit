@@ -36,7 +36,6 @@ rule Link
 
  	NEEDLIBS on $(1) = [ on $(1) return $(NEEDLIBS) ] ;
  	LINKLIBS on $(1) = [ on $(1) return $(LINKLIBS) ] ;
-	LINKFLAGS on $(1) += -fno-undefined ;
 
 	MODE on $(<) = $(EXEMODE) ;
 	on $(1) XRes $(1) : $(RESFILES) ;

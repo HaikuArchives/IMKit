@@ -31,3 +31,4 @@ Depends im_client : libcommon.a ;
 Depends im_client : libim.so ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;
+InstallSymlink $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client : $(IMKIT_COMMON_BIN_DIRECTORY)/im_client ;

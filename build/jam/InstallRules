@@ -1,0 +1,16 @@
+rule InstallSymlink
+{
+	# InstallSymlink linkname : source ;
+
+	LocalDepends install : $(>) ;
+	LocalDepends install : $(<) ;
+	LocalClean uninstall : $(<) ;
+
+	NoCare $(>) ;
+	InstallSymlink1 $(<) : $(>) ;
+}
+
+actions InstallSymlink1
+{
+	$(RM) $(<) && $(LN) -s $(>) $(<)
+}
