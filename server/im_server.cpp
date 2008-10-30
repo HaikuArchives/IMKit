@@ -28,6 +28,8 @@
 
 #include <kernel/fs_index.h>
 
+#include <DeskbarIcon.h>
+
 #ifdef ZETA
 #include <locale/Locale.h>
 #else
@@ -474,6 +476,21 @@ Server::MessageReceived( BMessage *msg )
 			break;
 	}
 }
+
+/**
+	Install deskbar icon.
+*/
+void Server::_InstallDeskbarIcon()
+{
+	entry_ref ref;
+
+	if (be_roster->FindApp(DESKBAR_ICON_SIG, &ref) == B_OK) {
+		BDeskbar deskbar;
+		deskbar.AddItem(&ref);
+	} else
+		LOG("im_server", liDebug, "_InstallDeskbarIcon: Couldn't find " DESKBAR_ICON_SIG);
+}
+
 
 /**
 	Initializes Contact-query and fetches initial list of matches
@@ -2246,69 +2263,110 @@ status_t
 Server::UpdateOwnSettings( BMessage & settings )
 {
 	LOG("im_server", liDebug, "Server::UpdateOwnSettings");
-	
-	bool auto_start=false;
-	
-	if ( settings.FindBool("auto_start", &auto_start ) == B_OK )
-	{
-		if ( auto_start )
-		{ // add auto-start
-			if ( system("grep -q AAA_im_server_BBB /boot/home/config/boot/UserBootscript") )
-			{ // not present in auto-start, add
-				system("echo \"# Added by IM Kit.      AAA_im_server_BBB\" >> /boot/home/config/boot/UserBootscript");
-				system("echo \"/boot/home/config/servers/im_server &  # AAA_im_server_BBB\" >> /boot/home/config/boot/UserBootscript");
-			}
-		} else
-		{ // remove auto-start
-			if ( system("grep -q AAA_im_server_BBB /boot/home/config/boot/UserBootscript") == 0 )
-			{ // present in auto-start, remove
-				system("grep -v AAA_im_server_BBB /boot/home/config/boot/UserBootscript > /tmp/im_kit_temp");
-				system("cp /tmp/im_kit_temp /boot/home/config/boot/UserBootscript");
-				system("rm /tmp/im_kit_temp");
-			}
+
+	bool auto_start = false;
+
+	if (settings.FindBool("auto_start", &auto_start) != B_OK)
+		auto_start = false;
+
+	BPath bootPath;
+	BString cmd;
+
+	// Find boot directory
+	if (find_directory(B_USER_BOOT_DIRECTORY, &bootPath, true, NULL) < B_OK) {
+		LOG("im_server", liHigh, "Couldn't find or create B_USER_BOOT_DIRECTORY");
+		return B_ERROR;
+	}
+
+	// Append UserBootscript to the path
+	bootPath.Append("UserBootscript");
+
+	if (auto_start) {
+		// im_server path
+		BPath serverPath;
+		if (find_directory(B_COMMON_SERVERS_DIRECTORY, &serverPath) < B_OK) {
+			LOG("im_server", liHigh, "Couldn't find B_COMMON_SERVERS_DIRECTORY");
+			return B_ERROR;
+		}
+		serverPath.Append("im_server");
+
+		// Open bootscript
+		BFile file(bootPath.Path(), B_READ_WRITE | B_CREATE_FILE | B_OPEN_AT_END);
+		if (file.InitCheck() != B_OK) {
+			// Error creating or opening the file
+			LOG("im_server", liHigh, "Couldn't open %s", bootPath.Path());
+			goto deskbar_option;
+		}
+
+		// Check if im_server has already been added to the script
+		cmd = "grep -q AAA_im_server_BBB ";
+		cmd += bootPath.Path();
+		if (system(cmd.String()) != 0) {
+			// Add im_server auto-start
+			BString run_cmd = "# Added by IM Kit.      AAA_im_server_BBB\n";
+			run_cmd.Append(serverPath.Path());
+			run_cmd += " & # AAA_im_server_BBB\n";
+			file.Write(run_cmd.String(), run_cmd.Length());
+		}
+	} else {
+		// Check if im_server has already been added to the script
+		cmd = "grep -q AAA_im_server_BBB ";
+		cmd += bootPath.Path();
+		if (system(cmd.String()) == 0) {
+			// Remove from auto-start
+			cmd = "grep -v AAA_im_server_BBB ";
+			cmd += bootPath.Path();
+			cmd += " > /tmp/im_kit_temp";
+			system(cmd.String());
+
+			cmd = "cp /tmp/im_kit_temp ";
+			cmd += bootPath.Path();
+			system(cmd.String());
+			system("rm /tmp/im_kit_temp");
 		}
 	}
-	
+
+deskbar_option:
 	bool deskbar_icon = true;
 	
 	if ( settings.FindBool("deskbar_icon", &deskbar_icon) != B_OK )
 		deskbar_icon = true;
 
-	BDeskbar db;
-	
-//	if ( db.RemoveItem( DESKBAR_ICON_NAME ) != B_OK )
-//		LOG("im_server", liDebug, "Error removing deskbar icon (this is ok..)");
-	
-	if ( deskbar_icon )
+	if (!deskbar_icon)
+		return B_OK;
+
+	bool isDeskbarRunning = true;
+	bool isInstalled = false;
+
 	{
-//		IM_DeskbarIcon * i = new IM_DeskbarIcon();
-		
-		int32 id=-1;
-		
-//		if ( db.AddItem( i, &id ) == B_OK )
-//		{
-//			LOG("im_server", liDebug, "Added Deskbar icon (locally created, id %ld)", id);
-//		} else
-		{ // couldn't add BView, try entry_ref
-			entry_ref ref;
-			
-			if ( be_roster->FindApp("application/x-vnd.beclan.im_kit-DeskbarIcon"/*IM_SERVER_SIG*/,&ref) == B_OK )
-			{
-				BPath p(&ref);
-				
-				if ( db.AddItem( &ref, &id ) != B_OK )
-					LOG("im_server", liHigh, "Error adding icon to deskbar!");
-				else
-					LOG("im_server", liDebug, "Added Deskbar icon (with ref, id %ld)", id);
-			} else
-			{
-				LOG("im_server", liHigh, "be_roster->FindApp() failed");
-			}
-		}
-		
-//		delete i;
+		// If the Deskbar is not alive, acknowledge this request to wake it up
+		BDeskbar deskbar;
+#ifdef __HAIKU__
+		isDeskbarRunning = deskbar.IsRunning();
+#endif
+		isInstalled = deskbar.HasItem(DESKBAR_ICON_NAME);
 	}
-	
+
+#ifdef __HAIKU__
+	// Wait up to 10 seconds for Deskbar to become available, in case it's not running yet
+	int32 tries = 10;
+	while (!isDeskbarRunning && --tries) {
+		BDeskbar deskbar;
+		if (deskbar.IsRunning()) {
+			isDeskbarRunning = true;
+			break;
+		}
+		snooze(1000000);
+	}
+#endif
+
+	if (!isDeskbarRunning) {
+		LOG("im_server", liHigh, "Deskbar is not running, giving up...");
+		return B_ERROR;
+	}
+
+	_InstallDeskbarIcon();
+
 	return B_OK;
 }
 

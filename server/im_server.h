@@ -76,6 +76,7 @@ class Server : public BApplication
 		virtual void ReadyToRun();
 		
 	private:
+		void	_InstallDeskbarIcon();
 		void	StartQuery();
 		void	HandleContactUpdate( BMessage * );
 		

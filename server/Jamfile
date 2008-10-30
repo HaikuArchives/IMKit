@@ -9,6 +9,7 @@
 SubDir IMKIT_TOP server ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
 
 Executable im_server :
 	im_server.cpp
