@@ -4,6 +4,11 @@ IM Kit - Building within Haiku source tree
 Put IM Kit source code into $HAIKUDIR/3rdparty/IMKit, where $HAIKUDIR is Haiku
 source code directory.
 
+Check it out with the usual method:
+
+$ cd $HAIKUDIR/3rdparty
+$ svn checkout http://svn.osdrawer.net/imkit/trunk IMKit
+
 == Enabling Open SSL ==
 
 If you want to build GoogleTalk and MSN you would need the OpenSSL optional package.
@@ -25,13 +30,23 @@ $ unzip ../download/openssl-0.9.8g-gcc2-2008-03-28.zip
 
 == Enabling InfoPopper client ==
 
-If you are building InfoPopper in the Haiku image too, put this line at the end of
-your $HAIKUDIR/build/jam/UserBuildConfig:
+If you want to build InfoPopper on the Haiku image, check it out:
+
+$ cd $HAIKUDIR/3rdparty
+$ svn checkout http://svn.osdrawer.net/infopopper/trunk InfoPopper
+
+Append those lines to your $HAIKUDIR/build/jam/UserBuildConfig:
 
 IMKIT_HAVE_INFOPOPPER = 1 ;
+DeferredSubInclude HAIKU_TOP 3rdparty InfoPopper : Jamfile.haiku ;
 
 == Building ==
 
 Your $HAIKUDIR/build/jam/UserBuildConfig must have this line at the end:
 
 DeferredSubInclude HAIKU_TOP 3rdparty IMKit : Jamfile.haiku ;
+
+Now build the image as usual:
+
+$ cd $HAIKUDIR
+$ jam -q
