@@ -10,12 +10,14 @@ SubDir IMKIT_TOP utils DeskbarIcon ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Addon IMDeskbarIcon :
+Executable IMDeskbarIcon :
+	DeskbarIconApp.cpp
+	DeskbarIconUtils.cpp
 	DeskbarIcon.cpp
 	AwayMessageWindow.cpp
 	QueryLooper.cpp
 	: be stdc++.r4 libim.so libcommon.a
-	: IMDeskbarIcon.rsrc
+	: DeskbarIcon.rdef DeskbarIcons.rdef
 ;
 
 Depends IMDeskbarIcon : libcommon.a ;

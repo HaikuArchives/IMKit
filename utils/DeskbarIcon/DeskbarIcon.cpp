@@ -21,14 +21,20 @@
 #define _T(str) (str)
 #endif
 
+#include "DeskbarIconUtils.h"
+
 const char *kTrackerQueryVolume = "_trk/qryvol1";
 const char *kTrackerQueryPredicate = "_trk/qrystr";
+
+extern "C" {
 
 BView *
 instantiate_deskbar_item()
 {
 	LOG("deskbar", liHigh, "IM: Instantiating Deskbar item");
 	return new IM_DeskbarIcon();
+}
+
 }
 
 //#pragma mark -
@@ -69,7 +75,7 @@ IM_DeskbarIcon::~IM_DeskbarIcon() {
 	delete fAwayIcon;
 	delete fOnlineIcon;
 	delete fOfflineIcon;
-	delete fFlashIcon;
+	delete fGenericIcon;
 	if ( fMsgRunner )
 		delete fMsgRunner;
 }
@@ -78,45 +84,36 @@ void
 IM_DeskbarIcon::_init() {
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::_init()");
 
-	BPath userDir;
-	find_directory(B_USER_SETTINGS_DIRECTORY, &userDir, true);
-	
-	BPath iconDir = userDir;
-	iconDir.Append("im_kit/icons");
-	
-//	Load the Offline, Away, Online and Flash icons from disk
-	BString iconPath = iconDir.Path();
-	iconPath << "/DeskbarAway";
-	fAwayIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
-		'ICON');
-	if ( !fAwayIcon )
+	image_info info;
+	if (our_image(info) != B_OK)
+		return;
+
+	BFile file(info.name, B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		return;
+
+	BResources resources(&file);
+	if (resources.InitCheck() < B_OK)
+		return;
+
+	fAwayIcon = GetIconFromResources(&resources, kDeskbarAwayIcon, B_MINI_ICON);
+	if (fAwayIcon == NULL)
 		LOG("deskbar", liHigh, "Error loading fAwayIcon");
-	
-	iconPath = iconDir.Path();
-	iconPath << "/DeskbarOnline";
-	fOnlineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
-		'ICON');
-	if ( !fOnlineIcon )
+
+	fOnlineIcon = GetIconFromResources(&resources, kDeskbarOnlineIcon, B_MINI_ICON);
+	if (fOnlineIcon == NULL)
 		LOG("deskbar", liHigh, "Error loading fOnlineIcon");
-	
-		
-	iconPath = iconDir.Path();
-	iconPath << "/DeskbarOffline";
-	fOfflineIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
-		'ICON');
-	if ( !fOfflineIcon )
+
+	fOfflineIcon = GetIconFromResources(&resources, kDeskbarOfflineIcon, B_MINI_ICON);
+	if (fOfflineIcon == NULL)
 		LOG("deskbar", liHigh, "Error loading fOfflineIcon");
+printf("\n\n\n\n\n\n%p\n", fOfflineIcon);
 	
+	fGenericIcon = GetIconFromResources(&resources, kDeskbarGenericIcon, B_MINI_ICON);
+	if (fGenericIcon == NULL)
+		LOG("deskbar", liHigh, "Error loading fGenericIcon");
 
-	iconPath = iconDir.Path();
-	iconPath << "/DeskbarFlash";
-	fFlashIcon = GetBitmapFromAttribute(iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE,
-		'ICON');
-	if ( !fFlashIcon )
-		LOG("deskbar", liHigh, "Error loading fFlashIcon");
-	
-
-//	Initial icon is the Offline icon
+	// Initial icon is the Offline icon
 	fCurrIcon = fModeIcon = fOfflineIcon;
 	fStatus = 2;
 
@@ -139,7 +136,10 @@ IM_DeskbarIcon::_init() {
 	getProtocolStates();
 	
 	fQueryMenu = NULL;
-	
+
+	BPath userDir;
+	find_directory(B_USER_SETTINGS_DIRECTORY, &userDir, true);
+
 	BPath middlePath = userDir;
 	middlePath.Append("im_kit/_MIDDLE_CLICK_ACTION_");
 	
@@ -254,7 +254,7 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 			
 			if ( (fFlashCount > 0) && ((fBlink++ % 2) || !fShouldBlink))
 			{
-				fCurrIcon = fFlashIcon;
+				fCurrIcon = fGenericIcon;
 			} else
 			{
 				fCurrIcon = fModeIcon;

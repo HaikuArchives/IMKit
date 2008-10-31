@@ -12,12 +12,19 @@ SubDirC++Flags $(IMKIT_DEFINES) ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Addon IMDeskbarIcon :
+local icon_libs ;
+if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
+	icon_libs = libicon.a libagg.a ;
+}
+
+Application IMDeskbarIcon :
+	DeskbarIconApp.cpp
+	DeskbarIconUtils.cpp
 	DeskbarIcon.cpp
 	AwayMessageWindow.cpp
 	QueryLooper.cpp
-	: be $(TARGET_LIBSTDC++) libim.so <IMKit>libcommon.a
-	: IMDeskbarIcon.rsrc
+	: be $(icon_libs) $(TARGET_LIBSTDC++) libim.so <IMKit>libcommon.a
+	: DeskbarIcon.rdef DeskbarIcons.rdef
 ;
 
 Depends IMDeskbarIcon : <IMKit>libcommon.a ;

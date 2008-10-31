@@ -24,7 +24,7 @@ Server im_server :
 	QueryLooper.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
 	  libim.so <IMKit>libcommon.a
-	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
+	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
 ;
 
 Depends im_server : <IMKit>libcommon.a ;

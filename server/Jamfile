@@ -16,7 +16,7 @@ Executable im_server :
 	im_server_main.cpp
 	QueryLooper.cpp
 	: be stdc++.r4 translation textencoding libim.so libcommon.a
-	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
+	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
 ;
 
 Depends im_server : libcommon.a ;

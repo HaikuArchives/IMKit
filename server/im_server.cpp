@@ -107,33 +107,6 @@ Server::Server()
 	
 	LoadAddons();
 	
-	// add deskbar icon
-/*	BDeskbar db;
-	
-	if ( db.RemoveItem( DESKBAR_ICON_NAME ) != B_OK )
-		LOG("im_server", liDebug, "Error removing deskbar icon (this is ok..)");
-*/	
-/*	This is taken care of by the UpdateOwnSettings() function now.
-	IM_DeskbarIcon * i = new IM_DeskbarIcon();
-	
-	if ( db.AddItem( i ) != B_OK )
-	{ // couldn't add BView, try entry_ref
-		entry_ref ref;
-		
-		if ( be_roster->FindApp(IM_SERVER_SIG,&ref) == B_OK )
-		{
-			BPath p(&ref);
-			
-			if ( db.AddItem( &ref ) != B_OK )
-				LOG("im_server", liHigh, "Error adding icon to deskbar!");
-		} else
-		{
-			LOG("im_server", liHigh, "be_roster->FindApp() failed");
-		}
-	}
-	
-	delete i;
-*/
 	prefsPath.Append("im_kit/icons");
 	
 	// load icons for "change icon depending on state"

@@ -37,11 +37,4 @@ enum {
 
 #endif // HAIKU_TARGET_PLATFORM_HAIKU
 
-enum {
-	kDeskbarOnlineIcon		= 3000,
-	kDeskbarOfflineIcon		= 3001,
-	kDeskbarAwayIcon		= 3002,
-	kDeskbarGenericIcon		= 3003,
-};
-
 #endif // IM_RESOURCES_H

@@ -25,6 +25,7 @@
 #include <common/BubbleHelper.h>
 #include "AwayMessageWindow.h"
 #include "QueryLooper.h"
+#include "DeskbarIconResources.h"
 
 #include <libim/Manager.h>
 #include <libim/Contact.h>
@@ -100,7 +101,7 @@ class _EXPORT IM_DeskbarIcon : public BView
 		BBitmap				*fOnlineIcon;
 		BBitmap				*fOfflineIcon;
 		BBitmap				*fAwayIcon;
-		BBitmap 			*fFlashIcon;
+		BBitmap 			*fGenericIcon;
 		
 		int					fStatus;
 		BubbleHelper		*fTip;
@@ -138,7 +139,5 @@ class _EXPORT IM_DeskbarIcon : public BView
 extern "C" _EXPORT BView * instantiate_deskbar_item();
 
 #define DESKBAR_ICON_NAME "IM_DeskbarIcon"
-#define DESKBAR_ICON_SIG "application/x-vnd.beclan.im_kit-DeskbarIcon"
-
 
 #endif

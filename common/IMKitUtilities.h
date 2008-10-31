@@ -1,11 +1,12 @@
 #ifndef IMUTILITIES_H
 #define IMUTILITIES_H
 
-#include <Bitmap.h>
-#include <Node.h>
+#include <interface/Bitmap.h>
 #include <kernel/fs_attr.h>
-#include <Path.h>
-#include <Entry.h>
+#include <storage/Node.h>
+#include <storage/Path.h>
+#include <storage/Entry.h>
+#include <storage/Mime.h>
 
 #include <stdlib.h>
 
@@ -21,10 +22,14 @@
 extern const int32 kSmallIcon;
 extern const int32 kLargeIcon;
 
+class BResources;
+
 BBitmap *GetTrackerIcon(BNode &, unsigned long, long *);
 
 BBitmap *GetBitmapFromAttribute(const char *name, const char *attribute,
 	type_code type = 'BBMP', bool followSymlink = true);
+
+BBitmap* GetIconFromResources(BResources* resources, int32 num, icon_size size);
 
 char *ReadAttribute(BNode node, const char *attribute, int32 *length = NULL);
 status_t WriteAttribute(BNode node, const char *attribute, const char *value,

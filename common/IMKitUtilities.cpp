@@ -1,12 +1,14 @@
 #include "IMKitUtilities.h"
 
-#include <string.h>
-#include <stdlib.h>
-
 #include <stdio.h>
-#include <NodeInfo.h>
+#include <string.h>
 
-#include <IconUtils.h>
+#include <storage/NodeInfo.h>
+#include <storage/Resources.h>
+
+#ifdef __HAIKU__
+#	include <IconUtils.h>
+#endif
 
 const int32 kSmallIcon = 16;
 const int32 kLargeIcon = 32;
@@ -121,6 +123,63 @@ BBitmap *GetBitmapFromAttribute(const char *name, const char *attribute,
 	};
 
 	return bitmap;
+}
+
+BBitmap* GetIconFromResources(BResources* resources, int32 num, icon_size size)
+{
+	if (resources == NULL)
+		return NULL;
+
+	size_t nbytes = 0;
+	const void* data = NULL;
+	type_code type;
+	color_space cspace;
+
+#ifdef __HAIKU__
+	// First, try to fetch a vector icon on Haiku
+	type = B_VECTOR_ICON_TYPE;
+	cspace = B_RGBA32;
+	data = resources->LoadResource(type, num, &nbytes);
+#endif
+
+	if (data == NULL) {
+		// Determine resource type from icon size
+		switch (size) {
+			case B_MINI_ICON:
+				type = B_MINI_ICON_TYPE;
+				break;
+			case B_LARGE_ICON:
+				type = B_LARGE_ICON_TYPE;
+				break;
+			default:
+				return NULL;
+		}
+
+		// Fetch bitmap icon
+		data = resources->LoadResource(type, num, &nbytes);
+		cspace = B_CMAP8;
+		if (data == NULL)
+			return NULL;
+	}
+
+	BBitmap* icon = new BBitmap(BRect(0, 0, size - 1, size - 1), cspace);
+	if (icon->InitCheck() < B_OK)
+		return NULL;
+
+	switch (type) {
+#ifdef __HAIKU__
+		case B_VECTOR_ICON_TYPE:
+			if (BIconUtils::GetVectorIcon((const uint8*)data, nbytes, icon) < B_OK) {
+				delete icon;
+				return NULL;
+			}
+			break;
+#endif
+		default:
+			icon->SetBits(data, size * size, 0, cspace);
+	}
+
+	return icon;
 }
 
 // Reads attribute from node. Returns contents (to be free()'d by user) or NULL on
