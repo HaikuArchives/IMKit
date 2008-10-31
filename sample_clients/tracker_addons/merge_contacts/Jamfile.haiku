@@ -11,8 +11,8 @@ SubDir HAIKU_TOP 3rdparty IMKit sample_clients tracker_addons merge_contacts ;
 Addon IM_Merge_contacts :
 	merge_contacts.cpp
 	: be
-	: merge_contacts.rdef
 ;
+AddResources IM_Merge_contacts : merge_contacts.rdef ;
 
 AddFilesToHaikuImage common add-ons Tracker : IM_Merge_contacts ;
 

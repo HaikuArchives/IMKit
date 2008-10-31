@@ -19,8 +19,8 @@ Addon yahoo :
 	YahooCallbacks.cpp
 	YahooConnection.cpp
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) <IMKit>libcommon.a yahoo2
-	: Yahoo.rdef
 ;
+AddResources yahoo : Yahoo.rdef ;
 
 AddFilesToHaikuImage common add-ons im_kit protocols : yahoo ;
 

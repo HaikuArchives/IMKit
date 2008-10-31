@@ -9,6 +9,7 @@
 SubDir HAIKU_TOP 3rdparty IMKit sample_clients im_infopopper ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(HAIKU_TOP) 3rdparty InfoPopper ] ;
 
 Application im_infopopper :
 	main.cpp

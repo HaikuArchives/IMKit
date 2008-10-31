@@ -13,11 +13,17 @@ SubDirC++Flags $(IMKIT_DEFINES) ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
 
+local icon_libs ;
+if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
+	icon_libs = libicon.a libagg.a ;
+}
+
 Server im_server :
 	im_server.cpp
 	im_server_main.cpp
 	QueryLooper.cpp
-	: be $(TARGET_LIBSTDC++) translation textencoding libim.so <IMKit>libcommon.a
+	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
+	  libim.so <IMKit>libcommon.a
 	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
 ;
 

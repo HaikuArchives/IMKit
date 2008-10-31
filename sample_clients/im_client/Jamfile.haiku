@@ -33,6 +33,7 @@ Depends im_client : <IMKit>libcommon.a ;
 Depends im_client : libim.so ;
 
 AddFilesToHaikuImage common bin : im_client ;
+AddSymlinkToHaikuImage common add-ons Tracker : /boot/common/bin/im_client ; 
 
 Package imkit-cvs :
 	im_client :

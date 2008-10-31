@@ -28,8 +28,8 @@ Addon msn :
 	Buddy.cpp
 	SSO.cpp 
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
-	: MSN.rdef
 ;
+AddResources msn : MSN.rdef ;
 
 Depends msn : <IMKit>libcommon.a ;
 Depends msn : libim.so ;

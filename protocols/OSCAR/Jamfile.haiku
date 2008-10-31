@@ -29,8 +29,8 @@ Addon aim :
 	Buddy.cpp
 	Group.cpp
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
-	: AIM.rdef
 ;
+AddResources aim : AIM.rdef ;
 
 Depends aim : <IMKit>libcommon.a ;
 Depends aim : libim.so ;
@@ -47,8 +47,8 @@ Addon icq :
 	Buddy.cpp
 	Group.cpp
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
-	: ICQ.rdef
 ;
+AddResources icq : ICQ.rdef ;
 
 Depends icq : <IMKit>libcommon.a ;
 Depends icq : libim.so ;
