@@ -13,7 +13,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 Executable im_binlogger :
 	logger.cpp
 	: be tracker libim.so libcommon.a
-	: logger.rsrc
+	: im_binlogger.rdef
 ;
 
 Depends im_binlogger : libcommon.a ;

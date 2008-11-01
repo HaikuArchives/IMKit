@@ -21,7 +21,7 @@ Executable im_binlog_viewer :
 	ColumnListView.cpp
 	ColumnTypes.cpp
 	: be stdc++.r4 tracker libim.so libcommon.a
-	: logger.rsrc
+	: im_binlog_viewer.rdef
 ;
 
 Depends im_binlog_viewer : libcommon.a ;

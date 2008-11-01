@@ -23,7 +23,7 @@ Application im_binlog_viewer :
 	ColumnListView.cpp
 	ColumnTypes.cpp
 	: be $(TARGET_LIBSTDC++) tracker libim.so <IMKit>libcommon.a
-	: logger.rsrc
+	: im_binlog_viewer.rdef
 ;
 
 Depends im_binlog_viewer : <IMKit>libcommon.a ;
