@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <Beep.h>
 #include <PropertyInfo.h>
+#include <Mime.h>
 
 #include <kernel/fs_index.h>
 
@@ -1128,7 +1129,7 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 	
 	// file created. set type and add connection
 	if ( file.WriteAttr(
-		"BEOS:TYPE", B_STRING_TYPE, 0,
+		"BEOS:TYPE", B_MIME_STRING_TYPE, 0,
 		"application/x-person", 21
 	) != 21 ) 
 	{ // error writing type
