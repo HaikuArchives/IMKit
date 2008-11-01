@@ -12,6 +12,6 @@ SubInclude IMKIT_TOP protocols Jabber ;
 if $(IMKIT_HAVE_OPENSSL) = 1 {
 	SubInclude IMKIT_TOP protocols MSN ;
 	SubInclude IMKIT_TOP protocols GoogleTalk ;
+	SubInclude IMKIT_TOP protocols OSCAR ;
 }
-SubInclude IMKIT_TOP protocols OSCAR ;
 #SubInclude IMKIT_TOP protocols Yahoo ;
