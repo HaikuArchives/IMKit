@@ -8,6 +8,8 @@
 
 #ifdef __HAIKU__
 #	include <IconUtils.h>
+#else
+#	include <storage/Mime.h>
 #endif
 
 const int32 kSmallIcon = 16;
@@ -143,6 +145,7 @@ BBitmap* GetIconFromResources(BResources* resources, int32 num, icon_size size)
 #endif
 
 	if (data == NULL) {
+#ifdef __HAIKU__
 		// Determine resource type from icon size
 		switch (size) {
 			case B_MINI_ICON:
@@ -154,6 +157,7 @@ BBitmap* GetIconFromResources(BResources* resources, int32 num, icon_size size)
 			default:
 				return NULL;
 		}
+#endif
 
 		// Fetch bitmap icon
 		data = resources->LoadResource(type, num, &nbytes);
