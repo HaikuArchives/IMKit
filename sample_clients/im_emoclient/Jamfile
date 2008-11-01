@@ -10,6 +10,8 @@ SubDir IMKIT_TOP sample_clients im_emoclient ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) common ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) sample_clients im_emoclient include ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) sample_clients im_emoclient BitmapMenu ] ;
 
@@ -34,11 +36,16 @@ Executable im_emoclient :
 	MenuBuilder.cpp
 	BitmapMenuItem.cpp
 	PopUpMenu.cpp
-	: be stdc++.r4 translation bsvg libcommon.a libexpat.a
+	: be stdc++.r4 translation bsvg libcommon.a libexpat.a libim.so
 	: im_emoclient.rsrc
 ;
 
 Depends im_emoclient : libcommon.a ;
 Depends im_emoclient : libexpat.a ;
+Depends im_emoclient : libim.so ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on im_emoclient += -lzeta -ltracker ;
+}
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_emoclient ;

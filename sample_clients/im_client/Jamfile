@@ -30,5 +30,9 @@ Executable im_client :
 Depends im_client : libcommon.a ;
 Depends im_client : libim.so ;
 
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on im_client += -lzeta -ltracker ;
+}
+
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;
 InstallSymlink $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client : $(IMKIT_COMMON_BIN_DIRECTORY)/im_client ;

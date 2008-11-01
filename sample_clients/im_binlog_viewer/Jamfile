@@ -27,4 +27,8 @@ Executable im_binlog_viewer :
 Depends im_binlog_viewer : libcommon.a ;
 Depends im_binlog_viewer : libim.so ;
 
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on im_binlog_viewer += -lzeta -ltracker ;
+}
+
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlog_viewer ;

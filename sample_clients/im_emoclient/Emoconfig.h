@@ -4,9 +4,9 @@
 #define Emoconfig_h_
 
 #include <Message.h>
-#include "xmltok.h"
-#include "expat.h"
-#include "xmlrole.h"
+#include "libexpat/xmltok.h"
+#include "libexpat/expat.h"
+#include "libexpat/xmlrole.h"
 
 
 class Emoconfig : public BMessage
