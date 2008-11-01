@@ -7,11 +7,7 @@
  */
 
 #include <app/Application.h>
-#ifdef __HAIKU__
 #	include <interface/Deskbar.h>
-#else
-#	include <Deskbar/Deskbar.h>
-#endif
 #include <interface/Alert.h>
 #include <storage/Entry.h>
 

@@ -93,8 +93,10 @@ IM_DeskbarIcon::_init() {
 		return;
 
 	BResources resources(&file);
+#ifdef __HAIKU__
 	if (resources.InitCheck() < B_OK)
 		return;
+#endif
 
 	fAwayIcon = GetIconFromResources(&resources, kDeskbarAwayIcon, B_MINI_ICON);
 	if (fAwayIcon == NULL)

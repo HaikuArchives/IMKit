@@ -15,8 +15,13 @@ extern "C" {
 status_t
 our_image(image_info& image)
 {
+	team_id team = 0;
+#ifdef __HAIKU__
+	team = B_CURRENT_TEAM;
+#endif
+
 	int32 cookie = 0;
-	while (get_next_image_info(B_CURRENT_TEAM, &cookie, &image) == B_OK) {
+	while (get_next_image_info(team, &cookie, &image) == B_OK) {
 		if ((char *)our_image >= (char *)image.text
 			&& (char *)our_image <= (char *)image.text + image.text_size)
 			return B_OK;
