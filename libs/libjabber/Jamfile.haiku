@@ -13,13 +13,15 @@ SubDirC++Flags $(IMKIT_DEFINES) ;
 local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
-SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+if $(USE_SSL) = 1 {
+	SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+}
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
 
 SubDirC++Flags -DSTDOUT=1 ;
 
-StaticLibrary <IMKit>libjabber.a :
+local sources =
 	JabberAgent.cpp
 	JabberContact.cpp
 	JabberElement.cpp
@@ -27,9 +29,13 @@ StaticLibrary <IMKit>libjabber.a :
 	JabberMessage.cpp
 	JabberPresence.cpp
 	JabberRegistration.cpp
-	JabberSSLPlug.cpp
 	JabberSocketPlug.cpp
 	SHA1.cpp
 ;
+if $(USE_SSL) = 1 {
+	sources += JabberSSLPlug.cpp ;
+}
+
+StaticLibrary <IMKit>libjabber.a : $(sources) ;
 
 Depends <IMKit>libjabber.a : <IMKit>libexpat.a ;
