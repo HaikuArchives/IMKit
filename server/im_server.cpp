@@ -469,7 +469,7 @@ void Server::_UpdateStatusIcons()
 	for (int i = kAvailableStatusIcon; i <= kOfflineStatusIcon; i++) {
 		StatusIcon* icon = new StatusIcon;
 
-		data = resources.LoadResource(B_VECTOR_ICON_TYPE, kAvailableStatusIcon + i, &size);
+		data = resources.LoadResource(B_VECTOR_ICON_TYPE, i, &size);
 		if (data != NULL)
 			icon->SetVectorIcon(data, size);
 
