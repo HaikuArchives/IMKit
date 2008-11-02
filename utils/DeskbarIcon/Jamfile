@@ -12,7 +12,6 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 Executable IMDeskbarIcon :
 	DeskbarIconApp.cpp
-	DeskbarIconUtils.cpp
 	DeskbarIcon.cpp
 	AwayMessageWindow.cpp
 	QueryLooper.cpp

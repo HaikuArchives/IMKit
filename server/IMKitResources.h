@@ -19,15 +19,24 @@ enum {
 
 #else // HAIKU_TARGET_PLATFORM_HAIKU
 
+// Icon indexes
+enum {
+	kAvailableStatusIcon		= 0,
+	kAwayStatusIcon			= 1,
+	kBlockStatusIcon		= 2,
+	kOfflineStatusIcon		= 3
+};
+
 enum {
 	kAvailableStatusIconLarge	= 1000,
-	kAvailableStatusIconSmall	= 1001,
-	kAwayStatusIconSmall		= 1002,
-	kAwayStatusIconLarge		= 1003,
-	kBlockStatusIconSmall		= 1004,
-	kBlockStatusIconLarge		= 1005,
-	kOfflineStatusIconSmall		= 1006,
-	kOfflineStatusIconLarge		= 1007,
+	kAwayStatusIconLarge		= 1001,
+	kBlockStatusIconLarge		= 1002,
+	kOfflineStatusIconLarge		= 1003,
+
+	kAvailableStatusIconSmall	= 1004,
+	kAwayStatusIconSmall		= 1005,
+	kBlockStatusIconSmall		= 1006,
+	kOfflineStatusIconSmall		= 1007,
 
 	kEmailIconSmall			= 2000,
 	kEmailIconLarge			= 2001,

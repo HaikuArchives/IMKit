@@ -37,6 +37,8 @@
 #define _T(str) (str)
 #endif
 
+#include "IMKitResources.h"
+
 using namespace IM;
 
 #define AUTOSTART_APPSIG_SETTING "autostart_appsig"
@@ -93,7 +95,6 @@ Server::Server()
 		if (dir.InitCheck() == B_OK)
 		{
 			dir.CreateDirectory("im_kit", NULL);
-			dir.CreateDirectory("im_kit/icons", NULL);
 			dir.CreateDirectory("im_kit/add-ons", NULL);
 			dir.CreateDirectory("im_kit/add-ons/protocols", NULL);
 			dir.CreateDirectory("im_kit/clients", NULL);
@@ -107,33 +108,10 @@ Server::Server()
 		UpdateOwnSettings(settings);
 	
 	LoadAddons();
-	
-	prefsPath.Append("im_kit/icons");
-	
-	// load icons for "change icon depending on state"
-	BString iconPath = prefsPath.Path();
-	iconPath << "/" ONLINE_TEXT;
-	
-	fIcons.AddPointer(ONLINE_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
-	fIcons.AddPointer(ONLINE_TEXT "_large", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
-		
-	iconPath = prefsPath.Path();
-	iconPath << "/" AWAY_TEXT;
-	fIcons.AddPointer(AWAY_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
-	fIcons.AddPointer(AWAY_TEXT "_large", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
 
-	iconPath = prefsPath.Path();
-	iconPath << "/" OFFLINE_TEXT;
-	fIcons.AddPointer(OFFLINE_TEXT "_small", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_MINI_ICON_ATTRIBUTE));
-	fIcons.AddPointer(OFFLINE_TEXT "_large", (const void *)GetBitmapFromAttribute(
-		iconPath.String(), BEOS_LARGE_ICON_ATTRIBUTE));
-	
 	RegisterSoundEvents();
+
+	_Init();
 	
 #ifdef ZETA
 	/* same badness as in DeskbarIcon.cpp */
@@ -176,7 +154,17 @@ Server::~Server()
 	UnloadAddons();
 	
 	SetAllOffline();
-	
+
+#if defined(__HAIKU__) || defined(BEOS)
+	map<int, StatusIcon*>::iterator it;
+
+	for (it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
+		StatusIcon* icon = it->second;
+		fStatusIcons.erase(it->first);
+		delete icon;
+	}
+#endif
+
 	LOG("im_server", liDebug, "~Server end");
 }
 
@@ -449,6 +437,67 @@ Server::MessageReceived( BMessage *msg )
 			BApplication::MessageReceived(msg);
 			break;
 	}
+}
+
+void Server::_Init()
+{
+#if defined(__HAIKU__) || defined(BEOS)
+	_UpdateStatusIcons();
+#endif
+}
+
+void Server::_UpdateStatusIcons()
+{
+	image_info info;	
+	if (our_image(info) != B_OK)
+		return;
+
+	BFile file(info.name, B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		return;
+
+	BResources resources(&file);
+	if (resources.InitCheck() < B_OK)
+		return;
+
+	size_t size = 0;
+	const void* data = NULL;
+
+#if defined(__HAIKU__)
+	LOG("im_server", liDebug, "Caching HVIF icons...");
+
+	for (int i = kAvailableStatusIcon; i <= kOfflineStatusIcon; i++) {
+		StatusIcon* icon = new StatusIcon;
+
+		data = resources.LoadResource(B_VECTOR_ICON_TYPE, kAvailableStatusIcon + i, &size);
+		if (data != NULL)
+			icon->SetVectorIcon(data, size);
+
+		if (!icon->IsEmpty())
+			fStatusIcons.insert(pair<int, StatusIcon*>(i, icon));
+	}
+#endif
+
+#if defined(BEOS)
+	LOG("im_server", liDebug, "Caching bitmap icons...");
+
+	for (int i = kAvailableStatusIcon; i <= kOfflineStatusIcon; i++) {
+		StatusIcon* icon = new StatusIcon;
+
+		// Mini icon
+		data = resources.LoadResource(B_MINI_ICON_TYPE, kAvailableStatusIconSmall + i, &size);
+		if (data != NULL)
+			icon->SetMiniIcon(data, size);
+
+		// Large icon
+		data = resources.LoadResource(B_LARGE_ICON_TYPE, kAvailableStatusIconLarge + i, &size);
+		if (data != NULL)
+			icon->SetLargeIcon(data, size);
+
+		if (!icon->IsEmpty())
+			fStatusIcons.insert(pair<int, StatusIcon*>(i, icon));
+	}
+#endif
 }
 
 /**
@@ -1832,46 +1881,45 @@ Server::UpdateContactStatusAttribute( Contact & contact )
 			// We SHOULD, on the other hand, bother with icons SOMEWHERE.
 			return;
 		}
-		
-		BBitmap *large = NULL;
-		BBitmap *small = NULL;
-		
-		BString pointerName = status;
-		pointerName << "_small";
-		
-		if ( fIcons.FindPointer(pointerName.String(), reinterpret_cast<void **>(&small)) != B_OK )
-		{
-			LOG("im_server", liDebug, "Couldn't find large icon..");
-		}
-		
-		pointerName = status;
-		pointerName << "_large";
-		
-		if ( fIcons.FindPointer(pointerName.String(), reinterpret_cast<void **>(&large)) != B_OK )
-		{
-			LOG("im_server", liDebug, "Couldn't find small icon..");
-		}
-		
-		if (large != NULL) {
-			if ( node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, 'ICON', 0, large->Bits(), 
-					large->BitsLength()) != large->BitsLength() )
-			{
-				LOG("im_server", liDebug, "Couldn't write large icon..");
-			}
-		} else {
-			node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
-		};	
 
-		if (small != NULL) {
-			if ( node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
-				small->BitsLength()) != small->BitsLength() )
-			{
-				LOG("im_server", liDebug, "Couldn't write small icon..");
-			}
-		} else {
-			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
-		};
-		
+#if defined(__HAIKU__) || defined(BEOS)
+		int32 iconIndex = kOfflineStatusIcon;
+
+		if (strcmp(status, ONLINE_TEXT) == 0)
+			iconIndex = kAvailableStatusIcon;
+		else if (strcmp(status, AWAY_TEXT) == 0)
+			iconIndex = kAwayStatusIcon;
+		else if (strcmp(status, BLOCKED_TEXT) == 0)
+			iconIndex = kBlockStatusIcon;
+		else if (strcmp(status, OFFLINE_TEXT) == 0)
+			iconIndex = kOfflineStatusIcon;
+
+		StatusIcon* icon = fStatusIcons[iconIndex];
+
+#	if defined(__HAIKU__)
+		// Add vector icon attribute
+		if (node.WriteAttr(BEOS_ICON_ATTRIBUTE, B_VECTOR_ICON_TYPE, 0, icon->VectorIcon(), icon->VectorIconSize()) != icon->VectorIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write HVIF icon attribute to contact...");
+			node.RemoveAttr(BEOS_ICON_ATTRIBUTE);
+		}
+
+		// Remove BeOS attributes for raster icons
+		node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
+		node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
+#	elif defined(BEOS)
+		// Add mini icon attribute
+		if (node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, B_MINI_ICON_TYPE, 0, icon->MiniIcon(), icon->MiniIconSize()) != icon->MiniIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write mini icon attribute to contact...");
+			node.RemoveAttribute(BEOS_MINI_ICON_ATTRIBUTE);
+		}
+
+		// Add large icon attribute
+		if (node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, B_LARGE_ICON_TYPE, 0, icon->LargeIcon(), icon->LargeIconSize()) != icon->LargeIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write large icon attribute to contact...");
+			node.RemoveAttribute(BEOS_LARGE_ICON_ATTRIBUTE);
+		}
+#	endif
+#elif defined(ZETA)
 		// SVG icon is a bit special atm
 		// Copy the BEOS_SVG_ICON_EXTRA thing is not needed in Zeta > RC3
 		BPath prefsPath;
@@ -1919,6 +1967,7 @@ Server::UpdateContactStatusAttribute( Contact & contact )
 				node.RemoveAttr(BEOS_SVG_EXTRA_ATTRIBUTE);
 			}
 		}
+#endif
 	}
 	
 	node.Unset();
@@ -1996,29 +2045,35 @@ Server::SetAllOffline()
 			LOG("im_server", liDebug, "  error.");
 		
 		BNode node(&entry);
-		
-#ifndef B_ZETA_VERSION
-		BBitmap *large = NULL;
-		BBitmap *small = NULL;
 
-		fIcons.FindPointer(OFFLINE_TEXT "_small", reinterpret_cast<void **>(&small));
-		fIcons.FindPointer(OFFLINE_TEXT "_large", reinterpret_cast<void **>(&large));
-		
-		if (large != NULL) {
-			node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, 'ICON', 0, large->Bits(), 
-				large->BitsLength());
-		} else {
-			node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
-		};	
+#if defined(__HAIKU__) || defined(BEOS)
+		int32 iconIndex = kOfflineStatusIcon;
+		StatusIcon* icon = fStatusIcons[iconIndex];
 
-		if (small != NULL) {
-			node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, 'MICN', 0, small->Bits(), 
-				small->BitsLength());
-		} else {
-			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
-		};
-#endif
-		
+#	if defined(__HAIKU__)
+		// Add vector icon attribute
+		if (node.WriteAttr(BEOS_ICON_ATTRIBUTE, B_VECTOR_ICON_TYPE, 0, icon->VectorIcon(), icon->VectorIconSize()) != icon->VectorIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write HVIF icon attribute to contact...");
+			node.RemoveAttr(BEOS_ICON_ATTRIBUTE);
+		}
+
+		// Remove BeOS attributes for raster icons
+		node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
+		node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
+#	elif defined(BEOS)
+		// Add mini icon attribute
+		if (node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, B_MINI_ICON_TYPE, 0, icon->MiniIcon(), icon->MiniIconSize()) != icon->MiniIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write mini icon attribute to contact...");
+			node.RemoveAttribute(BEOS_MINI_ICON_ATTRIBUTE);
+		}
+
+		// Add large icon attribute
+		if (node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, B_LARGE_ICON_TYPE, 0, icon->LargeIcon(), icon->LargeIconSize()) != icon->LargeIconSize()) {
+			LOG("im_server", liHigh, "Couldn't write large icon attribute to contact...");
+			node.RemoveAttribute(BEOS_LARGE_ICON_ATTRIBUTE);
+		}
+#	endif
+#elif defined(ZETA)
 		// SVG icon is a bit special atm
 		// Copy the BEOS_SVG_ICON_EXTRA thing is not needed in Zeta > RC3
 		BPath prefsPath;
@@ -2066,7 +2121,8 @@ Server::SetAllOffline()
 			}
 */
 		}
-		
+#endif
+
 		node.Unset();
 	}
 }

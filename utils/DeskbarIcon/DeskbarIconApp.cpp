@@ -11,7 +11,8 @@
 #include <interface/Alert.h>
 #include <storage/Entry.h>
 
-#include "DeskbarIconUtils.h"
+#include <common/IMKitUtilities.h>
+
 #include "DeskbarIconResources.h"
 
 class DeskbarIconApp : public BApplication

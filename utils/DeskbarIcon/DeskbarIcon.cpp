@@ -15,13 +15,13 @@
 #include <Path.h>
 #include <FindDirectory.h>
 
+#include <common/IMKitUtilities.h>
+
 #ifdef ZETA
 #include <locale/Locale.h>
 #else
 #define _T(str) (str)
 #endif
-
-#include "DeskbarIconUtils.h"
 
 const char *kTrackerQueryVolume = "_trk/qryvol1";
 const char *kTrackerQueryPredicate = "_trk/qrystr";

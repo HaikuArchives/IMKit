@@ -42,4 +42,6 @@ BBitmap *ReadNodeIcon(const char *name, int32 size = kSmallIcon,
 
 extern BBitmap * rescale_bitmap( const BBitmap * source, int32 width, int32 height = -1 );
 
+extern "C" status_t our_image(image_info& image);
+
 #endif

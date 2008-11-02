@@ -76,6 +76,8 @@ class Server : public BApplication
 		virtual void ReadyToRun();
 		
 	private:
+		void	_Init();
+		void	_UpdateStatusIcons();
 		void	_InstallDeskbarIcon();
 		void	StartQuery();
 		void	HandleContactUpdate( BMessage * );
@@ -168,15 +170,78 @@ class Server : public BApplication
 		map<string,string>			fStatus;// proto_id_string,status_string
 		
 		map<Contact,string>			fPreferredConnection;
-		
-		BMessage					fIcons;
-//		Names for SVG icons, only used on Zeta
-//#ifdef B_BEOS_VERSION = B_ZETA_VERSION
-//#define SVG_ONLINE_TEXT "svg_online"
-//#define SVG_AWAY_TEXT "svg_away"
-//#define SVG_OFFLINE_TEXT "svg_offline"
-//#endif
-		
+
+#if defined(__HAIKU__) || defined(BEOS)
+		class StatusIcon {
+			public:
+				StatusIcon()
+					: fVectorIcon(NULL),
+					fVectorIconSize(0),
+					fMiniIcon(NULL),
+					fMiniIconSize(0),
+					fLargeIcon(NULL),
+					fLargeIconSize(0)
+				{
+				}
+
+				~StatusIcon()
+				{
+					if (fVectorIcon != NULL)
+						free(fVectorIcon);
+					if (fMiniIcon != NULL)
+						free(fMiniIcon);
+					if (fLargeIcon != NULL)
+						free(fLargeIcon);
+				}
+
+				void SetVectorIcon(const void* data, size_t size)
+				{
+					fVectorIcon = malloc(size);
+					memcpy(fVectorIcon, data, size);
+					fVectorIconSize = size;
+				}
+
+				const void* VectorIcon() { return fVectorIcon; }
+				size_t VectorIconSize() { return fVectorIconSize; }
+
+				void SetMiniIcon(const void* data, size_t size)
+				{
+					fMiniIcon = malloc(size);
+					memcpy(fMiniIcon, data, size);
+					fMiniIconSize = size;
+				}
+
+				const void* MiniIcon() { return fMiniIcon; }
+				size_t MiniIconSize() { return fMiniIconSize; }
+
+				void SetLargeIcon(const void* data, size_t size)
+				{
+					fLargeIcon = malloc(size);
+					memcpy(fLargeIcon, data, size);
+					fLargeIconSize = size;
+				}
+
+				const void* LargeIcon() { return fLargeIcon; }
+				size_t LargeIconSize() { return fLargeIconSize; }
+
+				bool IsEmpty()
+				{
+					return ((fVectorIcon == NULL) &&
+					        (fMiniIcon == NULL) &&
+					        (fLargeIcon == NULL));
+				}
+
+			private:
+				void* fVectorIcon;
+				size_t fVectorIconSize;
+				void* fMiniIcon;
+				size_t fMiniIconSize;
+				void* fLargeIcon;
+				size_t fLargeIconSize;
+		};
+		map<int, StatusIcon*>			fStatusIcons;
+#endif
+
 		BMessenger					fDeskbarMsgr;
 };
 
