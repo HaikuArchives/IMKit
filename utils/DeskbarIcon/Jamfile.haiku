@@ -19,7 +19,6 @@ if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
 
 Application IMDeskbarIcon :
 	DeskbarIconApp.cpp
-	DeskbarIconUtils.cpp
 	DeskbarIcon.cpp
 	AwayMessageWindow.cpp
 	QueryLooper.cpp
