@@ -12,6 +12,8 @@ SubInclude HAIKU_TOP 3rdparty IMKit protocols Jabber ;
 if $(USE_SSL) = 1 {
 	SubInclude HAIKU_TOP 3rdparty IMKit protocols MSN ;
 	SubInclude HAIKU_TOP 3rdparty IMKit protocols GoogleTalk ;
+	SubInclude HAIKU_TOP 3rdparty IMKit protocols OSCAR ;
 }
-SubInclude HAIKU_TOP 3rdparty IMKit protocols OSCAR ;
-#SubInclude HAIKU_TOP 3rdparty IMKit protocols Yahoo ;
+if $(IMKIT_HAVE_LIBYAHOO2) = 1 {
+	SubInclude HAIKU_TOP 3rdparty IMKit protocols Yahoo ;
+}

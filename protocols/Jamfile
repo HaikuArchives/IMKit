@@ -14,4 +14,6 @@ if $(IMKIT_HAVE_OPENSSL) = 1 {
 	SubInclude IMKIT_TOP protocols GoogleTalk ;
 	SubInclude IMKIT_TOP protocols OSCAR ;
 }
-#SubInclude IMKIT_TOP protocols Yahoo ;
+if $(IMKIT_HAVE_LIBYAHOO2) = 1 {
+	SubInclude IMKIT_TOP protocols Yahoo ;
+}

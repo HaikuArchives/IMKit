@@ -16,6 +16,8 @@ is_zeta=0
 is_beos=0
 ssl_incdir=""
 ssl_libdir=""
+yahoo2_incdir=""
+yahoo2_libdir=""
 defines=""
 
 # Argument parsing
@@ -65,9 +67,12 @@ copyattrbin=`which_replacement copyattr`
 # Libraries
 have_infopopper=0
 have_openssl=0
+have_libyahoo2=0
 
 # Get common directories
+common_dir=`finddir B_COMMON_DIRECTORY`
 common_bindir=`finddir B_COMMON_BIN_DIRECTORY`
+common_incdir="$common_dir/include"
 common_libdir=`finddir B_COMMON_LIB_DIRECTORY`
 common_serversdir=`finddir B_COMMON_SERVERS_DIRECTORY`
 common_addonsdir=`finddir B_COMMON_ADDONS_DIRECTORY`
@@ -202,6 +207,28 @@ else
 	have_openssl=0
 fi
 
+# Check for libyahoo2 headers
+echo -n "Checking for libyahoo2 headers..."
+if [ -f $common_incdir/libyahoo2/yahoo2.h ]; then
+	echo "found"
+	yahoo2_incdir=$common_incdir
+	have_libyahoo2=1
+else
+	echo "not found"
+	have_libyahoo2=0
+fi
+
+# Check for libyahoo2 libraries
+echo -n "Checking for libyahoo2 libraries..."
+if [ -f $common_libdir/libyahoo2.so ]; then
+	echo "found"
+	yahoo2_libdir=$common_libdir
+	have_libyahoo2=1
+else
+	echo "not found"
+	have_libyahoo2=0
+fi
+
 # Check for InfoPopper
 echo -n "Checking for InfoPopper..."
 if [ -f $common_libdir/libinfopopper.so -o \
@@ -219,6 +246,8 @@ IMKIT_DEBUG = ${debug} ;
 IMKIT_CHECKMEM = ${checkmem} ;
 IMKIT_OPENSSL_INCDIR = ${ssl_incdir} ;
 IMKIT_OPENSSL_LIBDIR = ${ssl_libdir} ;
+IMKIT_LIBYAHOO2_INCDIR = ${yahoo2_incdir} ;
+IMKIT_LIBYAHOO2_LIBDIR = ${yahoo2_libdir} ;
 
 IMKIT_COMMON_BIN_DIRECTORY = ${common_bindir} ;
 IMKIT_COMMON_LIB_DIRECTORY = ${common_libdir} ;
@@ -238,6 +267,7 @@ IMKIT_IS_BEOS = ${is_beos} ;
 IMKIT_IS_ZETA = ${is_zeta} ;
 IMKIT_HAVE_INFOPOPPER = ${have_infopopper} ;
 IMKIT_HAVE_OPENSSL = ${have_openssl} ;
+IMKIT_HAVE_LIBYAHOO2 = ${have_libyahoo2} ;
 
 RC = ${rcbin} ;
 XRES = ${xresbin} ;

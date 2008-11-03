@@ -55,7 +55,8 @@
 /* Get these from http://libyahoo2.sourceforge.net/ */
 #include <libyahoo2/yahoo2.h>
 #include <libyahoo2/yahoo2_callbacks.h>
-#include <libyahoo2/yahoo_util.h>
+
+#include "yahoo_util.h"
 
 int fileno(FILE * stream);
 
@@ -574,7 +575,11 @@ static void connect_complete(void *data, int source, yahoo_input_condition /*con
 	int error, err_size = sizeof(error);
 
 //	ext_yahoo_remove_handler(0, ccd->tag);
+#ifdef __HAIKU__
+	getsockopt(source, SOL_SOCKET, SO_ERROR, &error, (socklen_t *)&err_size);
+#else
 	getsockopt(source, SOL_SOCKET, SO_ERROR, &error, (int *)&err_size);
+#endif
 	
 	if(error) {
 		close(source);
@@ -626,16 +631,18 @@ yahoo_io_thread( void * _data )
 {
 	YahooConnection * conn = (YahooConnection*)_data;
 	
-/*	conn->fID = yahoo_init_with_attributes(
+#if 0
+	conn->fID = yahoo_init_with_attributes(
 		conn->fYahooID, conn->fPassword,
 		//"local_host", local_host,
 		"pager_port", 23,
 		NULL
 	);
-*/	
+#else
 	conn->fID = yahoo_init(
 		conn->fYahooID, conn->fPassword
 	);
+#endif
 	
 	LOG(kProtocolName, liDebug, "yahoo_io_thread: id: %s, pass: %s", conn->fYahooID, conn->fPassword );
 	

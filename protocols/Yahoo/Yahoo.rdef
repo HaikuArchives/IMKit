@@ -1,5 +1,5 @@
 
-resource app_flags B_EXCLUSIVE_LAUNCH | B_BACKGROUND_APP;
+resource app_signature "application/x-vnd.beclan.im_kit.yahoo.protocol";
 
 resource app_version {
 	major  = 0,
@@ -9,12 +9,13 @@ resource app_version {
 	variety = B_APPV_ALPHA,
 	internal = 0,
 
-	short_info = "IM Server",
-	long_info = #'CSTR' array {
-		"IM Server © 2003-2004 Mikael Eiman et al.\nPart of the BeOS IM "
-		"Kit."
-	}
+	short_info = "IM Kit Yahoo! protocol",
+	long_info = "IM Kit © 2003-2008 IM Kit Team"
 };
+
+resource app_flags B_EXCLUSIVE_LAUNCH | B_BACKGROUND_APP;
+
+resource file_types message;
 
 #ifdef HAIKU_TARGET_PLATFORM_HAIKU
 
@@ -96,7 +97,3 @@ resource mini_icon array {
 };
 
 #endif // HAIKU_TARGET_PLATFORM_HAIKU
-
-resource app_signature "application/x-vnd.beclan.im_kit.yahoo.protocol";
-
-resource file_types message;

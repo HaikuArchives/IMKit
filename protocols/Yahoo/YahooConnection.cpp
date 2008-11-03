@@ -7,7 +7,9 @@
 // We include this for the ONLINE_TEXT, AWAY_TEXT and OFFLINE_TEXT defines
 #include <libim/Constants.h>
 
-#include <libyahoo2/yahoo_util.h>
+#include <libyahoo2/yahoo2.h>
+
+#include "yahoo_util.h"
 
 map<int, YahooConnection*> gYahooConnections;
 
