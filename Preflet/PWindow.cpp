@@ -4,6 +4,7 @@
 #include <Entry.h>
 #include <Roster.h>
 #include <ScrollView.h>
+#include <FindDirectory.h>
 
 #ifdef ZETA
 #include <locale/Locale.h>
@@ -95,15 +96,33 @@ PWindow::PWindow(void)
 	im_get_protocol_list(&protocols);
 	
 	if (protocols.FindString("protocol")) {
+		
+		BPath pPath;
+
+		if (find_directory(B_COMMON_ADDONS_DIRECTORY, &pPath) != B_OK)
+		{
+			if (find_directory(B_USER_ADDONS_DIRECTORY, &pPath) != B_OK)
+			{	
+				pPath.SetTo("/boot/home/config/add-ons/");
+			}
+		}
+		else
+		{
+			pPath.Append("im_kit");
+			pPath.Append("protocols");
+		}
+		
 		const char *protocol = NULL;
-//		FIX ME: Find the location of the im_server programmatically (By app signature?)
 		for (int16 i = 0; protocols.FindString("protocol", i, &protocol) == B_OK; i++) {
-			entry_ref ref;
-			//protocols.FindRef("ref", i, &ref);	
 			
-//			XXX Fix Me: Change to use find_directory()
-			BString protoPath = "/boot/home/config/add-ons/im_kit/protocols/";
-			protoPath << protocol;
+			entry_ref ref;
+
+			BPath newProtocolPath = pPath;
+			newProtocolPath.Append(protocol);
+			
+	
+			BString protoPath = newProtocolPath.Path();
+	
 			
 			BMessage protocol_settings;
 			BMessage protocol_template;
@@ -112,6 +131,8 @@ PWindow::PWindow(void)
 			im_load_protocol_template( protocol, &protocol_template );
 			
 			BBitmap *icon = ReadNodeIcon(protoPath.String(), kSmallIcon, true);
+			
+			
 			IconTextItem *item = new IconTextItem(protocol, icon);
 			fListView->AddUnder(item, protoItem);
 			
@@ -527,7 +548,6 @@ float PWindow::BuildGUI(BMessage viewTemplate, BMessage settings, BView *view) {
 			case B_INT32_TYPE: {
 				if (curr.FindInt32("valid_value")) {
 					
-					curr.PrintToStream();
 					// It's a "select one of these" setting
 					
 					freeText = false;
