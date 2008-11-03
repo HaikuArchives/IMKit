@@ -526,17 +526,39 @@ float PWindow::BuildGUI(BMessage viewTemplate, BMessage settings, BView *view) {
 			} break;
 			case B_INT32_TYPE: {
 				if (curr.FindInt32("valid_value")) {
+					
+					curr.PrintToStream();
 					// It's a "select one of these" setting
 					
 					freeText = false;
 					
 					menu = new BPopUpMenu(name);
 					
+					int32	def = 0;
+					status_t hasValue = settings.FindInt32(name, 0, &def);
+					
+					if (hasValue != B_OK)
+						hasValue = curr.FindInt32("default", 0, &def);
+					
+			
 					int32 v = 0;
 					for ( int j = 0; curr.FindInt32("valid_value",j,&v) == B_OK; j++ ) {
+						
 						sprintf(temp,"%ld", v);
-						menu->AddItem(new BMenuItem(temp, NULL));
+						BMenuItem *item = new BMenuItem(temp, NULL);
+						
+						if ( hasValue != B_OK && j == 0)
+							item->SetMarked(true);
+						else	
+						if (hasValue == B_OK && def == v)
+							item->SetMarked(true);
+							
+						menu->AddItem(item);
 					};
+					
+
+										
+					
 				} else {
 					// It's a free-text (but number) setting
 					int32 v = 0;
