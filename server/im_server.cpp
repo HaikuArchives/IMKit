@@ -1819,65 +1819,59 @@ Server::UpdateStatus( BMessage * msg )
 	and the icons too.
 */
 void
-Server::UpdateContactStatusAttribute( Contact & contact )
+Server::UpdateContactStatusAttribute(Contact& contact)
 {
-	// calculate total status for contact
+	// Calculate total status for contact
 	string new_status = OFFLINE_TEXT;
 	
-	for ( int i=0; i<contact.CountConnections(); i++ )
-	{
+	for (int i = 0; i < contact.CountConnections(); i++) {
 		char connection[512];
-		
+
 		contact.ConnectionAt(i,connection);
-		
+
 		string curr = fStatus[connection];
-		
-		if ( curr == ONLINE_TEXT )
-		{
+
+		if (curr == ONLINE_TEXT) {
 			new_status = ONLINE_TEXT;
 			break;
 		}
-		
-		if ( curr == AWAY_TEXT && new_status == OFFLINE_TEXT )
-		{
+
+		if (curr == AWAY_TEXT && new_status == OFFLINE_TEXT)
 			new_status = AWAY_TEXT;
-		}
 	}
-	
+
 	//LOG("im_server", liMedium, "STATUS_CHANGED total status is now %s", new_status.c_str());
-	
-	// update status attribute
+
+	// Update status attribute
 	BNode node(contact);
-	
-	if ( node.InitCheck() != B_OK )
-	{
+
+	if ( node.InitCheck() != B_OK ) {
 		_ERROR("ERROR: Invalid node when setting new status");
-	} else
-	{ // node exists, write status
+	} else {
+		// Node exists, write status
 		const char * status = new_status.c_str();
 		
 		// check if blocked
 		char old_status[256];
 		bool is_blocked = false;
 		
-		if ( contact.GetStatus(old_status, sizeof(old_status)) == B_OK )
-		{
+		if (contact.GetStatus(old_status, sizeof(old_status)) == B_OK) {
 			if ( strcmp(old_status, BLOCKED_TEXT) == 0 )
 				is_blocked = true;
 		}
-		
-		if ( !is_blocked )
-		{ // only update IM:status if not blocked
-			if ( strcmp(old_status, status) == 0 )
-			{ // status not changed, done
+
+		if (!is_blocked) {
+			// Only update IM:status if not blocked
+			if (strcmp(old_status, status) == 0)
+			{
+				// status not changed, done
 				node.Unset();
 				return;
 			}
-			
-			contact.SetStatus( status );
+
+			contact.SetStatus(status);
 		} else {
-			// blocked, don't bother updating icons.
-			
+			// Blocked, don't bother updating icons.
 			// We SHOULD, on the other hand, bother with icons SOMEWHERE.
 			return;
 		}
@@ -1923,53 +1917,48 @@ Server::UpdateContactStatusAttribute( Contact & contact )
 		// SVG icon is a bit special atm
 		// Copy the BEOS_SVG_ICON_EXTRA thing is not needed in Zeta > RC3
 		BPath prefsPath;
-	
+
 		// Get and set SVG icon
-		if (find_directory(B_USER_SETTINGS_DIRECTORY,&prefsPath,true,NULL) == B_OK)
-		{
+		if (find_directory(B_USER_SETTINGS_DIRECTORY, &prefsPath, true, NULL) == B_OK) {
 			prefsPath.Append("im_kit/icons/");
-			
-			BString path( prefsPath.Path() );
-			
-			path.Append( "/" );
-			path.Append( status );
-			
-			BNode svgNode( path.String() );
-			
-			LOG("im_server", liDebug, "SVG icon path: %s", path.String() );
-			
-			int32 len=0;
-			
-			void * svg_icon = ReadAttribute( svgNode, BEOS_SVG_ICON_ATTRIBUTE, &len );
-			
-			if ( len > 0 )
-			{
+
+			BString path(prefsPath.Path());
+
+			path.Append("/");
+			path.Append(status);
+
+			BNode svgNode(path.String());
+
+			LOG("im_server", liDebug, "SVG icon path: %s", path.String());
+
+			int32 len = 0;
+
+			void* svg_icon = ReadAttribute(svgNode, BEOS_SVG_ICON_ATTRIBUTE, &len);
+
+			if (len > 0) {
 				node.RemoveAttr(BEOS_SVG_ICON_ATTRIBUTE); // This is BAD, we shouldn't need this!
-				WriteAttribute( node, BEOS_SVG_ICON_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_ICON_ATTRIBUTE_TYPE );
-				free( svg_icon );
-			} else
-			{
+				WriteAttribute(node, BEOS_SVG_ICON_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_ICON_ATTRIBUTE_TYPE);
+				free(svg_icon);
+			} else {
 				LOG("im_server", liDebug, "Error reading attribute %s", BEOS_SVG_ICON_ATTRIBUTE);
 				node.RemoveAttr(BEOS_SVG_ICON_ATTRIBUTE);
 			}
-			
+
 			len = 0;
-			
-			svg_icon = ReadAttribute( svgNode, BEOS_SVG_EXTRA_ATTRIBUTE, &len );
-			
-			if ( len > 0 )
-			{
-				WriteAttribute( node, BEOS_SVG_EXTRA_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_EXTRA_ATTRIBUTE_TYPE );
-				free( svg_icon );
-			} else
-			{
+
+			svg_icon = ReadAttribute(svgNode, BEOS_SVG_EXTRA_ATTRIBUTE, &len);
+
+			if (len > 0) {
+				WriteAttribute(node, BEOS_SVG_EXTRA_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_EXTRA_ATTRIBUTE_TYPE);
+				free(svg_icon);
+			} else {
 				LOG("im_server", liDebug, "Error reading attribute %s", BEOS_SVG_EXTRA_ATTRIBUTE);
 				node.RemoveAttr(BEOS_SVG_EXTRA_ATTRIBUTE);
 			}
 		}
 #endif
 	}
-	
+
 	node.Unset();
 }
 
@@ -1981,69 +1970,62 @@ void
 Server::SetAllOffline()
 {
 	BVolumeRoster 	vroster;
-	BVolume			vol;
-	char 			volName[B_FILE_NAME_LENGTH];
+	BVolume		vol;
+	char 		volName[B_FILE_NAME_LENGTH];
 
 	vroster.Rewind();
-	
+
 	BMessage msg;
 	entry_ref entry;
-	
-	// query for all contacts on all drives first
-	//
-	while ( vroster.GetNextVolume(&vol) == B_OK )
-	{
+
+	// Query for all contacts on all drives first
+	while (vroster.GetNextVolume(&vol) == B_OK) {
 		if ((vol.InitCheck() != B_OK) || (vol.KnowsQuery() != true)) 
 			continue;
-		
+
 		vol.GetName(volName);
 		LOG("im_server", liLow, "SetAllOffline: Getting contacts on %s", volName);
-		
+
 		BQuery query;
-		
+
 		query.SetPredicate( "IM:connections=*" );
 		query.SetVolume(&vol);
 		query.Fetch();
-		
+
 		while ( query.GetNextRef(&entry) == B_OK )
-		{
 			msg.AddRef("contact",&entry);
-		}
 	}
-	
-	// set status of all found contacts to OFFLINE_TEXT (skipping blocked ones)
+
+	// Set status of all found contacts to OFFLINE_TEXT (skipping blocked ones)
 	char nickname[512], name[512], filename[512], status[512];
-	
+
 	Contact c;
-	for ( int i=0; msg.FindRef("contact",i,&entry) == B_OK; i++ )
-	{
+	for ( int i = 0; msg.FindRef("contact", i, &entry) == B_OK; i++) {
 		c.SetTo(&entry);
-		
-		if ( c.InitCheck() != B_OK )
+
+		if (c.InitCheck() != B_OK)
 			_ERROR("SetAllOffline: Contact invalid");
-		
-		if ( c.GetNickname(nickname,sizeof(nickname)) != B_OK )
-			strcpy(nickname,"<no nick>");
-		if ( c.GetName(name,sizeof(name)) != B_OK )
-			strcpy(name,"<no name>");
+
+		if (c.GetNickname(nickname,sizeof(nickname)) != B_OK)
+			strcpy(nickname, "<no nick>");
+		if (c.GetName(name,sizeof(name)) != B_OK)
+			strcpy(name, "<no name>");
 		BEntry e(&entry);
-		if ( e.GetName(filename) != B_OK )
-			strcpy(filename,"<no filename?!>");
-			
-		if ( c.GetStatus(status, sizeof(status)) == B_OK )
-		{
-			if ( strcmp(status, BLOCKED_TEXT) == 0 )
-			{
+		if (e.GetName(filename) != B_OK)
+			strcpy(filename, "<no filename?!>");
+
+		if (c.GetStatus(status, sizeof(status)) == B_OK) {
+			if (strcmp(status, BLOCKED_TEXT) == 0) {
 				LOG("im_server", liDebug, "Skipping blocked contact %s (%s), filename: %s", name, nickname, filename);
 				continue;
 			}
 		}
-		
+
 		LOG("im_server", liDebug, "Setting %s (%s) offline, filename: %s", name, nickname, filename);
-		
-		if ( c.SetStatus(OFFLINE_TEXT) != B_OK )
+
+		if (c.SetStatus(OFFLINE_TEXT) != B_OK)
 			LOG("im_server", liDebug, "  error.");
-		
+
 		BNode node(&entry);
 
 #if defined(__HAIKU__) || defined(BEOS)
@@ -2079,50 +2061,43 @@ Server::SetAllOffline()
 		BPath prefsPath;
 	
 		// Get and set SVG icon
-		if (find_directory(B_USER_SETTINGS_DIRECTORY,&prefsPath,true,NULL) == B_OK)
-		{
+		if (find_directory(B_USER_SETTINGS_DIRECTORY, &prefsPath, true, NULL) == B_OK) {
 			prefsPath.Append("im_kit/icons/");
+
+			BString path(prefsPath.Path());
+			path.Append("/" OFFLINE_TEXT);
+
+			BNode svgNode(path.String());
+
+			LOG("im_server", liDebug, "SVG icon path: %s", path.String());
+
+			int32 len = 0;
 			
-			BString path( prefsPath.Path() );
-			
-			path.Append( "/" OFFLINE_TEXT );
-			
-			BNode svgNode( path.String() );
-			
-			LOG("im_server", liDebug, "SVG icon path: %s", path.String() );
-			
-			int32 len=0;
-			
-			void * svg_icon = ReadAttribute( svgNode, BEOS_SVG_ICON_ATTRIBUTE, &len );
-			
-			if ( len > 0 )
-			{
+			void* svg_icon = ReadAttribute(svgNode, BEOS_SVG_ICON_ATTRIBUTE, &len);
+
+			if (len > 0) {
 				node.RemoveAttr(BEOS_SVG_ICON_ATTRIBUTE);
-				WriteAttribute( node, BEOS_SVG_ICON_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_ICON_ATTRIBUTE_TYPE );
-				free( svg_icon );
-			} else
-			{
+				WriteAttribute(node, BEOS_SVG_ICON_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_ICON_ATTRIBUTE_TYPE);
+				free(svg_icon);
+			} else {
 				LOG("im_server", liDebug, "Error reading attribute %s", BEOS_SVG_ICON_ATTRIBUTE);
 				node.RemoveAttr(BEOS_SVG_ICON_ATTRIBUTE);
 			}
-			
+
 /*			len = 0;
 			
 			svg_icon = ReadAttribute( svgNode, BEOS_SVG_EXTRA_ATTRIBUTE, &len );
 			
-			if ( len > 0 )
-			{
+			if ( len > 0 ) {
 				WriteAttribute( node, BEOS_SVG_EXTRA_ATTRIBUTE, (char*)svg_icon, len, BEOS_SVG_EXTRA_ATTRIBUTE_TYPE );
 				free( svg_icon );
-			} else
-			{
+			} else {
 				LOG("im_server", liDebug, "Error reading attribute %s", BEOS_SVG_EXTRA_ATTRIBUTE);
 				node.RemoveAttr(BEOS_SVG_EXTRA_ATTRIBUTE);
 			}
 */
 		}
 #endif
-
 		node.Unset();
 	}
 }
