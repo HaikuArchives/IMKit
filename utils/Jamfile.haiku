@@ -13,3 +13,4 @@ SubInclude HAIKU_TOP 3rdparty IMKit utils DeskbarIcon ;
 SubInclude HAIKU_TOP 3rdparty IMKit utils gimicq-import ;
 SubInclude HAIKU_TOP 3rdparty IMKit utils mimetype ;
 SubInclude HAIKU_TOP 3rdparty IMKit utils IconSetter ;
+SubInclude HAIKU_TOP 3rdparty IMKit utils ProtocolLoader ;

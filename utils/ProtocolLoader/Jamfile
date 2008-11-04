@@ -3,6 +3,7 @@
 # Distributed under the terms of the MIT License.
 #
 # Authors:
+#		Michael Davidson <slaad@bong.com.au>
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
@@ -10,6 +11,7 @@ SubDir IMKIT_TOP utils ProtocolLoader ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
+SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 Executable ProtocolLoader :
 	main.cpp
@@ -25,4 +27,6 @@ if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
 
-InstallLib $(IMKIT_APPS_DIRECTORY)/imkit : ProtocolLoader ;
+LINKFLAGS on ProtocolLoader += -L$(IMKIT_OPENSSL_LIBDIR) ;
+
+InstallLib $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;

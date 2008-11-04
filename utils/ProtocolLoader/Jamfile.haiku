@@ -1,0 +1,36 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit utils ProtocolLoader ;
+
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
+local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) server ] ;
+SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+
+Application ProtocolLoader :
+	main.cpp
+	ProtocolLoaderApplication.cpp
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
+	: ProtocolLoader.rdef
+;
+
+Depends ProtocolLoader : <IMKit>libcommon.a ;
+Depends ProtocolLoader : libim.so ;
+
+LINKFLAGS on ProtocolLoader += -L$(sslDir)/lib ;
+
+AddFilesToHaikuImage apps im_kit : ProtocolLoader ;
+
+Package imkit-cvs :
+	ProtocolLoader :
+	boot apps im_kit
+;
