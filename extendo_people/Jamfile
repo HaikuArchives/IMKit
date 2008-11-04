@@ -16,5 +16,3 @@ Executable People :
 	: be
 	: people.rsrc
 ;
-
-InstallFile $(IMKIT_BEOS_PREFERENCES_DIRECTORY) : InstantMessaging ;

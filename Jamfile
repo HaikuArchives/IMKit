@@ -17,3 +17,4 @@ SubInclude IMKIT_TOP Preflet ;
 SubInclude IMKIT_TOP sample_clients ;
 SubInclude IMKIT_TOP protocols ;
 SubInclude IMKIT_TOP utils ;
+SubInclude IMKIT_TOP extendo_people ;
