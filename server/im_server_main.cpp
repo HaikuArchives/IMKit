@@ -42,7 +42,7 @@ int main( int numarg, const char ** argv )
 	
 	// check commandline args
 	int curr = 1;
-	
+
 	while ( curr < numarg )
 	{
 		if ( strcmp(argv[curr], "-v") == 0 )

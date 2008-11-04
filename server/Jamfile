@@ -15,6 +15,9 @@ Executable im_server :
 	im_server.cpp
 	im_server_main.cpp
 	QueryLooper.cpp
+	ContactHandle.cpp
+	ProtocolManager.cpp
+	ProtocolInfo.cpp
 	: be stdc++.r4 translation textencoding libim.so libcommon.a
 	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
 ;
@@ -25,5 +28,7 @@ Depends im_server : libim.so ;
 if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on im_server += -lzeta -ltracker ;
 }
+
+LINKFLAGS on im_server += -L$(IMKIT_TOP)/libim -lim ;
 
 InstallBin $(IMKIT_COMMON_SERVERS_DIRECTORY) : im_server ;

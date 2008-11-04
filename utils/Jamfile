@@ -13,3 +13,4 @@ SubInclude IMKIT_TOP utils DeskbarIcon ;
 SubInclude IMKIT_TOP utils gimicq-import ;
 SubInclude IMKIT_TOP utils mimetype ;
 SubInclude IMKIT_TOP utils IconSetter ;
+SubInclude IMKIT_TOP utils ProtocolLoader ;

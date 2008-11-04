@@ -1,5 +1,10 @@
 #include "im_server.h"
 
+#include "Private/Constants.h"
+#include "ProtocolInfo.h"
+#include "ProtocolManager.h"
+#include "ProtocolSpecification.h"
+
 #include <libim/Constants.h>
 #include <libim/Helpers.h>
 #include <TranslationUtils.h>
@@ -39,7 +44,11 @@
 
 #include "IMKitResources.h"
 
+#include <signal.h>
+
 using namespace IM;
+
+//#pragma mark Constants
 
 #define AUTOSTART_APPSIG_SETTING "autostart_appsig"
 
@@ -50,10 +59,15 @@ using namespace IM;
 #define kImStatusAwaySound 		"IM Status: Away"
 #define kImStatusOfflineSound	"IM Status: Offline"
 
+const char *kProtocolLoaderSig = "application/x-vnd.beclan.im_kit.ProtocolLoader";
+const char *kAppName = "im_server";
+
+//#pragma mark Functions
+
 void
 _ERROR( const char * error, BMessage * msg )
 {
-	LOG("im_server", liHigh, error, msg);
+	LOG(kAppName, liHigh, error, msg);
 }
 
 void
@@ -72,19 +86,22 @@ _SEND_ERROR( const char * text, BMessage * msg )
 		msg->SendReply(&err);
 	} else
 	{ // no recipient for message replies, write to stdout
-		LOG("im_server", liHigh, "ERROR: %s",text);
+		LOG(kAppName, liHigh, "ERROR: %s",text);
 	}
 }
+
+//#pragma mark Constructor
 
 /**
 	Default constructor. (Starts People-query and ?) loads add-ons
 */
 Server::Server()
 :	BApplication(IM_SERVER_SIG),
-	fIsQuiting(false),
-	fCurProtocol(NULL)
+	fIsQuitting(false),
+	fCurProtocol(NULL),
+	fProtocol(new ProtocolManager())
 {
-	LOG("im_server", liHigh, "Starting im_server");
+	LOG(kAppName, liHigh, "Starting im_server");
 	
 	BPath prefsPath;
 	
@@ -107,7 +124,7 @@ Server::Server()
 	if ( im_load_client_settings("im_server", &settings) == B_OK )
 		UpdateOwnSettings(settings);
 	
-	LoadAddons();
+	LoadProtocols();
 
 	RegisterSoundEvents();
 
@@ -119,6 +136,13 @@ Server::Server()
 	if( path.InitCheck() == B_OK )
 		be_locale.LoadLanguageFile( path.Path() );
 #endif
+
+	struct sigaction childExitedAction;
+	childExitedAction.sa_handler = (__signal_func_ptr)&Server::ChildExited;
+	childExitedAction.sa_mask = 0;
+	childExitedAction.sa_flags = 0;
+	childExitedAction.sa_userdata = this;
+	sigaction(SIGCHLD, &childExitedAction, NULL);
 	
 	Run();
 }
@@ -128,31 +152,30 @@ Server::Server()
 */
 Server::~Server()
 {
-	LOG("im_server", liDebug, "~Server start");
+	LOG(kAppName, liDebug, "~Server start");
 	
-	// broadcast STATUS_SET (offline) for all !offline protocols
-	map<string,Protocol*>::iterator p;
-	
-	for ( p = fProtocols.begin(); p != fProtocols.end(); p++ )
-	{
-		if ( fStatus[ (p->second)->GetSignature() ] != OFFLINE_TEXT )
-		{ // need to set this protocol offline
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new AllProtocolSpecification());
+	for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {
+		ProtocolInfo *info = (*pIt);
+		
+		if (fStatus[info->Signature()] != OFFLINE_TEXT) {
+			// Non-offline protocol - set to offline		
 			BMessage msg(MESSAGE);
 			msg.AddInt32("im_what", STATUS_SET);
-			msg.AddString("protocol", (p->second)->GetSignature() );
+			msg.AddString("protocol", info->Signature());
 			msg.AddString("status", OFFLINE_TEXT);
 			msg.AddString("total_status", OFFLINE_TEXT);
 			
-			Broadcast( &msg );
-			handleDeskbarMessage( &msg );
+			Broadcast(&msg);
+			handleDeskbarMessage(&msg);
 		}
-	}
-	// done broadcasting STATUS_SET
-	
+	};
+
 	StopAutostartApps();
-	
-	UnloadAddons();
-	
+
+	fProtocol->Unload();
+	delete fProtocol;
+
 	SetAllOffline();
 
 #if defined(__HAIKU__) || defined(BEOS)
@@ -165,7 +188,7 @@ Server::~Server()
 	}
 #endif
 
-	LOG("im_server", liDebug, "~Server end");
+	LOG(kAppName, liDebug, "~Server end");
 }
 
 #define PROTOCOL_PROPERTY "Protocol"
@@ -223,7 +246,8 @@ Server::ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 
 			case B_NAME_SPECIFIER:
 			{
 				const char *name = specifier->FindString("name");
-				fCurProtocol = fProtocols[name];
+				
+				fCurProtocol = fProtocol->FindProtocol(new SignatureProtocolSpecification(name));
 				msg->PopSpecifier();
 				return this;
 			}
@@ -251,7 +275,7 @@ Server::ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 
 bool
 Server::QuitRequested()
 {
-	fIsQuiting = true;
+	fIsQuitting = true;
 
 	while (CountWindows() > 0) {
 		BMessenger msgr(WindowAt(0));
@@ -281,17 +305,24 @@ Server::MessageReceived( BMessage *msg )
 			//TODO: Error handling.
 			if(strcmp(property, PROTOCOLS_PROPERTY)==0) {
 				BMessage reply(B_REPLY);
-				map<Protocol *,AddOnInfo>::iterator it = fAddOnInfo.begin();
-				for(;it!=fAddOnInfo.end(); it++) {
-					Protocol *protocol = it->first;
-					reply.AddString("result", protocol->GetSignature());
-				}
+
+				list<ProtocolInfo *> info = fProtocol->FindProtocols(new AllProtocolSpecification());
+				
+				for (list<ProtocolInfo *>::iterator it = info.begin(); it != info.end(); it++) {
+					ProtocolInfo *info = (*it);
+				
+					reply.AddString("result", info->Signature());
+				};
+
 				msg->SendReply(&reply);
+				
 			} else if(strcmp(property, STATUS_PROPERTY)==0) {
 				BMessage reply(B_REPLY);
-				if(fCurProtocol) {
-					reply.AddString("result",fStatus[fCurProtocol->GetSignature()].c_str());
-				}
+
+				if (fCurProtocol != NULL) {
+					reply.AddString("result", fStatus[fCurProtocol->Signature()].c_str());
+				};
+				
 				msg->SendReply(&reply);
 				fCurProtocol = NULL;
 			} else {
@@ -315,7 +346,7 @@ Server::MessageReceived( BMessage *msg )
 				statusMessage.AddInt32("im_what", IM::SET_STATUS);
 				statusMessage.AddString("status", data);
 				if(fCurProtocol) {
-					statusMessage.AddString("protocol",fCurProtocol->GetSignature());
+					statusMessage.AddString("protocol", fCurProtocol->Signature());
 				}
 				Process(&statusMessage);
 				msg->SendReply(&reply);
@@ -419,7 +450,7 @@ Server::MessageReceived( BMessage *msg )
 		
 		case IS_IM_SERVER_SHUTTING_DOWN: {
 			BMessage reply(IS_IM_SERVER_SHUTTING_DOWN);
-			reply.AddBool("isShuttingDown", fIsQuiting);
+			reply.AddBool("isShuttingDown", fIsQuitting);
 			
 			msg->SendReply( &reply );
 		} break;
@@ -431,6 +462,81 @@ Server::MessageReceived( BMessage *msg )
 		case MESSAGE:
 			Process(msg);
 			break;
+		
+		case Private::PROTOCOL_STARTED: {
+			const char *instanceID;
+			const char *signature;
+			const char *friendlySignature;
+			uint32 capabilities;
+			uint32 encoding;
+			BMessenger msgr;
+					
+			if (msg->FindString("instance_id", &instanceID) != B_OK) return;
+			if (msg->FindString("signature", &signature) != B_OK) return;
+			if (msg->FindString("friendly_signature", &friendlySignature) != B_OK) return;
+			if (msg->FindMessenger("messenger", &msgr) != B_OK) return;
+			if (msg->FindInt32("capabilities", (int32 *)&capabilities) != B_OK) return;
+			if (msg->FindInt32("encoding", (int32 *)&encoding) != B_OK) return;
+
+			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
+
+			if (info == NULL) {
+				LOG(kAppName, liHigh, "Got a PROTOCOL_STARTED message for an unexpected protocol: %s (%s)", signature, instanceID);
+				return;
+			}
+	
+			info->Messenger(new BMessenger(msgr));
+			info->Signature(signature);
+			info->FriendlySignature(friendlySignature);
+			info->Capabilities(capabilities);
+			
+			BMessage add(MESSAGE);
+			add.AddInt32("im_what", REGISTER_CONTACTS);
+
+			GetContactsForProtocol(signature, &add);
+			info->Process(&add);
+		
+			// Inform everyone of the new protocol
+			BMessage changed(LOADED_PROTOCOLS_CHANGED);
+			Broadcast(&changed);
+		} break;
+		
+		case Private::PROTOCOL_KILLED:
+		case Private::PROTOCOL_STOPPED: {
+			// Remove the protocol info
+			const char *instanceID;
+			
+			if (msg->FindString("instance_id", &instanceID) != B_OK) return;
+			
+			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
+			if (info == NULL) {
+				LOG(kAppName, liHigh, "Got a PROTOCOL_STOPPED message for a protocol we don't know about");
+				return;
+			};
+		
+			info->Stop();
+
+			// Update our status and those of our contacts
+			ProtocolOffline(info->Signature());
+
+			// Tell everyone the protocol has gone offline
+			BMessage offline(MESSAGE);
+			offline.AddInt32("im_what", STATUS_SET);
+			offline.AddString("protocol", info->Signature());
+			offline.AddString("status", OFFLINE_TEXT);
+			offline.AddString("total_status", TotalStatus());
+				
+			handleDeskbarMessage(&offline);
+
+			// Broadcast the message
+			BMessage changed(LOADED_PROTOCOLS_CHANGED);		
+			Broadcast(&changed);
+			
+			if ((msg->what == Private::PROTOCOL_KILLED) && (fIsQuitting == false)) {
+				// Restart the protocol
+				fProtocol->RestartProtocols(new InstanceProtocolSpecification(instanceID));
+			};
+		} break;
 		
 		// Other messages
 		default:
@@ -457,8 +563,10 @@ void Server::_UpdateStatusIcons()
 		return;
 
 	BResources resources(&file);
+#if defined(__HAIKU__)
 	if (resources.InitCheck() < B_OK)
 		return;
+#endif
 
 	size_t size = 0;
 	const void* data = NULL;
@@ -511,7 +619,7 @@ void Server::_InstallDeskbarIcon()
 		BDeskbar deskbar;
 		deskbar.AddItem(&ref);
 	} else
-		LOG("im_server", liDebug, "_InstallDeskbarIcon: Couldn't find " DESKBAR_ICON_SIG);
+		LOG(kAppName, liDebug, "_InstallDeskbarIcon: Couldn't find " DESKBAR_ICON_SIG);
 }
 
 
@@ -538,7 +646,7 @@ Server::StartQuery()
 			continue;
 		
 		vol.GetName(volName);
-		LOG("im_server", liLow, "StartQuery: Getting contacts on %s", volName);
+		LOG(kAppName, liLow, "StartQuery: Getting contacts on %s", volName);
 		
 		BQuery * query = new BQuery();
 		
@@ -569,7 +677,7 @@ Server::StartQuery()
 	Load protocol add-ons and init them
 */
 status_t
-Server::LoadAddons()
+Server::LoadProtocols()
 {
 	BDirectory settingsDir; // base directory for protocol settings
 	BDirectory addonsDir; // directory for protocol addons
@@ -579,209 +687,51 @@ Server::LoadAddons()
 	
 	// STEP 1: Check if we can access settings for the protocols!
 	BPath path;
-	if ((rc_set=find_directory(B_USER_SETTINGS_DIRECTORY,&path,true)) != B_OK ||
-		(rc_set=path.Append("im_kit/add-ons/protocols")) != B_OK ||
-		(rc_set=settingsDir.SetTo(path.Path())) != B_OK)
-	{ // we couldn't access the settings directory for the protocols!
-		LOG("im_server", liHigh, "cannot access protocol settings directory: %s, error 0x%lx (%s)!", path.Path(), rc_set, strerror(rc_set));
+	if ((rc_set = find_directory(B_USER_SETTINGS_DIRECTORY,&path,true)) != B_OK ||
+		(rc_set = path.Append("im_kit/add-ons/protocols")) != B_OK ||
+		(rc_set = settingsDir.SetTo(path.Path())) != B_OK) {
+		
+		// we couldn't access the settings directory for the protocols!
+		LOG(kAppName, liHigh, "Cannot access protocol settings directory: %s, error 0x%lx (%s)!", path.Path(), rc_set, strerror(rc_set));
 		return rc_set;
 	}
 
 	// Okies, we've been able to access our critical dirs, so now we should be sure we can load any addons that are there
-	UnloadAddons(); // make sure we don't load any addons twice
+	fProtocol->Unload();
 	
 	// STEP 2a: Check if we can access the system add-on directory for the protocols!
-	if ((rc_sys=find_directory(B_COMMON_ADDONS_DIRECTORY, &path, true)) != B_OK ||
-		(rc_sys=path.Append("im_kit/protocols")) != B_OK ||
-		(rc_sys=addonsDir.SetTo(path.Path())) != B_OK)
-	{ // we couldn't access the addons directory for the protocols!
-		LOG("im_server", liHigh, "cannot access system protocol addon directory: %s, error 0x%lx (%s)!", path.Path(), rc_sys, strerror(rc_sys));
-	}
-	else
-		LoadAddonsFromDir( &addonsDir, &settingsDir );
+	BPath commonAddon;
+	if ((rc_sys = find_directory(B_COMMON_ADDONS_DIRECTORY, &commonAddon, true)) != B_OK ||
+		(rc_sys = commonAddon.Append("im_kit/protocols")) != B_OK ||
+		(rc_sys = addonsDir.SetTo(commonAddon.Path())) != B_OK) {
+
+		// we couldn't access the addons directory for the protocols!
+		LOG(kAppName, liHigh, "Cannot access system protocol addon directory: %s, error 0x%lx (%s)!", commonAddon.Path(), rc_sys, strerror(rc_sys));
+	} else {
+		fProtocol->LoadFromDirectory(addonsDir, settingsDir);
+	};
 
 	// STEP 2b: Check if we can access the user add-on directory for the protocols!
-	if ((rc_user=find_directory(B_USER_ADDONS_DIRECTORY, &path, true)) != B_OK ||
-		(rc_user=path.Append("im_kit/protocols")) != B_OK ||
-		(rc_user=addonsDir.SetTo(path.Path())) != B_OK)
-	{ // we couldn't access the addons directory for the protocols!
-		LOG("im_server", liHigh, "cannot access user protocol addon directory: %s, error 0x%lx (%s)!", path.Path(), rc_user, strerror(rc_user));
-	}
-	else
-		LoadAddonsFromDir( &addonsDir, &settingsDir );
+	BPath userAddon;
+	if ((rc_user = find_directory(B_USER_ADDONS_DIRECTORY, &userAddon, true)) != B_OK ||
+		(rc_user = userAddon.Append("im_kit/protocols")) != B_OK ||
+		(rc_user = addonsDir.SetTo(userAddon.Path())) != B_OK) {
+		// we couldn't access the addons directory for the protocols!
+		LOG(kAppName, liHigh, "Cannot access user protocol addon directory: %s, error 0x%lx (%s)!", userAddon.Path(), rc_user, strerror(rc_user));
+	} else {
+		if (userAddon != commonAddon) {
+			fProtocol->LoadFromDirectory(addonsDir, settingsDir);
+		} else {
+			LOG(kAppName, liMedium, "User addon path is the same as system addon path - skipping");
+		};
+	};
 	
-	if( ( rc_sys != B_OK ) && ( rc_user != B_OK ) )
+	if ((rc_sys != B_OK) && (rc_user != B_OK)) {
 		return B_ERROR;
-	else
-	{
-		LOG("im_server", liMedium, "All add-ons loaded.");
+	} else {
+		LOG(kAppName, liMedium, "All add-ons loaded.");
 		return B_OK;
 	}
-}
-
-/**
-	Load protocol add-ons from a specific dir and init them
-*/
-void
-Server::LoadAddonsFromDir( BDirectory* addonsDir, BDirectory* settingsDir )
-{
-	// get path
-	status_t rc;
-	BPath path;
-	BEntry entry;
-	addonsDir->Rewind();
-	while( addonsDir->GetNextEntry( (BEntry*)&entry, TRUE ) == B_NO_ERROR )
-	{ // continue until no more files
-		if( entry.InitCheck() != B_NO_ERROR )
-			continue;
-	
-		if( entry.GetPath(&path) != B_NO_ERROR )
-			continue;
-
-		
-		image_id curr_image = load_add_on( path.Path() );
-		if( curr_image < 0 )
-		{
-			LOG("im_server", liHigh, "load_add_on() fail, file [%s]: %s (%i)", path.Path(),
-				strerror(curr_image), curr_image);
-			continue;
-		}
-		
-		status_t res;
-		// get name
-		Protocol * (* load_protocol) ();
-		res = get_image_symbol( 
-			curr_image, "load_protocol", 
-			B_SYMBOL_TYPE_TEXT, 
-			(void **)&load_protocol
-		);
-		
-		if ( res != B_OK )
-		{
-			LOG("im_server", liHigh, "get_image_symbol(load_protocol) fail, file [%s]", path.Path());
-			unload_add_on( curr_image );
-			continue;
-		}
-		
-		Protocol * protocol = load_protocol();
-		
-		if ( !protocol )
-		{
-			LOG("im_server", liHigh, "load_protocol() fail, file [%s]", path.Path());
-			unload_add_on( curr_image );
-			continue;
-		}
-		
-		LOG("im_server", liHigh, "Protocol loaded: [%s]", protocol->GetSignature());
-		
-		// try to read settings from protocol attribute
-		BNode node(settingsDir,protocol->GetSignature());
-		if (node.InitCheck() == B_OK)
-		{ // okies, ready to roll
-			attr_info info;
-
-			fStatus[protocol->GetSignature()] = OFFLINE_TEXT;
-
-			if ((rc=node.GetAttrInfo("im_settings", &info)) == B_OK &&
-				info.type == B_RAW_TYPE && info.size > 0)
-			{ // found an attribute with data
-				char* settings = new char[info.size]; // FIXME: does new[] throw when memory exhausted?
-				node.ReadAttr("im_settings", info.type, 0, settings, info.size);
-
-				LOG("im_server", liLow, "Read settings data");
-				
-				BMessage settings_msg;
-				if ( settings_msg.Unflatten(settings) == B_OK )
-				{
-					protocol->UpdateSettings(settings_msg);
-				}
-				else
-				{
-					_ERROR("Error unflattening settings");
-				}
-				
-				delete settings;
-			}
-			else
-			{
-				_ERROR("No settings found");
-			}
-		} // done handling settings
-
-		if ((rc=protocol->Init( BMessenger(this) )) != B_OK)
-		{
-			LOG("im_server", liHigh, "Error initializing protocol '%s' (error 0x%ld/%s)!", protocol->GetSignature(), rc, strerror(rc));
-			//FIXME: does protocol->Shutdown() have to be called?
-			delete protocol;
-			unload_add_on( curr_image );
-		}
-		else
-		{
-			// add to list
-			fProtocols[protocol->GetSignature()] = protocol;
-			
-			// add to fAddOnInfo
-			AddOnInfo pinfo;
-			pinfo.protocol = protocol;
-			pinfo.image = curr_image;
-			pinfo.signature = protocol->GetSignature();
-			pinfo.path = path.Path();
-			fAddOnInfo[protocol] = pinfo;
-			
-			// get protocol settings template
-			BMessage tmplate = protocol->GetSettingsTemplate();
-			
-			im_save_protocol_template( protocol->GetSignature(), &tmplate );
-		}
-	} // while()
-}
-
-/**
-	Unloads add-on images after shutting them down.
-*/
-void
-Server::UnloadAddons()
-{
-	map<Protocol*,AddOnInfo>::iterator i;
-	
-	for ( i=fAddOnInfo.begin(); i != fAddOnInfo.end(); i++ )
-	{
-		i->first->Shutdown();
-	}
-
-	team_info info;
-	thread_info threadinfo;
-	int32 cookie = 0;
-	
-	int32 protoCount = fProtocols.size();
-
-	memset(&info, 0, sizeof(info));
-
-	if (get_thread_info(find_thread(NULL), &threadinfo) < B_OK)
-		return;
-	if (get_team_info(threadinfo.team, &info) < B_OK)
-		return;
-	
-	// this kind of assumes each protocol always has
-	// at least one thread loaded, which may be incorrect
-	// in any case, we give the protocol add-ons some time
-	// to shut down all their ancilliary threads before
-	// unloading the add-ons themselves.
-	while (info.thread_count > (protoCount + 1) /*XXX*/&& (cookie++ < 100))
-	{
-		printf("info.thread_count = %ld, protoCount + 1 = %ld\n", info.thread_count, (protoCount + 1));
-		get_team_info(info.team, &info);
-		snooze(20000);
-	}
-
-	for ( i=fAddOnInfo.begin(); i != fAddOnInfo.end(); i++ )
-	{
-		unload_add_on(i->second.image);
-	}
-
-	
-	fAddOnInfo.clear();
-	fProtocols.clear();
 }
 
 /**
@@ -791,7 +741,7 @@ Server::UnloadAddons()
 void
 Server::AddEndpoint( BMessenger msgr )
 {
-	LOG("im_server", liDebug, "Endpoint added");
+	LOG(kAppName, liDebug, "Endpoint added");
 	fMessengers.push_back(msgr);
 }
 
@@ -801,7 +751,7 @@ Server::AddEndpoint( BMessenger msgr )
 void
 Server::RemoveEndpoint( BMessenger msgr )
 {
-	LOG("im_server", liDebug, "Endpoint removed");
+	LOG(kAppName, liDebug, "Endpoint removed");
 	fMessengers.remove(msgr);
 }
 
@@ -903,27 +853,23 @@ Server::Broadcast( BMessage * msg )
 {
 	// add friendly protocol name if applicable
 	const char * protocol;
-	for ( int i=0; msg->FindString("protocol",i,&protocol)==B_OK; i++ )
-	{
-		map<string,Protocol*>::iterator proto;
-		proto = fProtocols.find( protocol );
-		
-		if ( proto != fProtocols.end() )
-			msg->AddString( "userfriendly", proto->second->GetFriendlySignature() );
-		else
-			msg->AddString("userfriendly", "<invalid protocol>");
+	for (int i = 0; msg->FindString("protocol", i, &protocol) == B_OK; i++) {
+		const char *friendly = "<invalid protocol>";
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+
+		if (info != NULL) friendly = info->FriendlySignature();
+		msg->AddString("userfriendly", friendly);
 	}
 	// done adding fancy names
 	
 	list<BMessenger>::iterator i;
 	
-	for ( i=fMessengers.begin(); i != fMessengers.end(); i++ )
-	{
-		if ( !(*i).IsTargetLocal() )
-		{
-			(*i).SendMessage(msg);
-		} else
-		{
+	for (i = fMessengers.begin(); i != fMessengers.end(); i++) {
+		BMessenger msgr = (*i);
+		
+		if (msgr.IsTargetLocal() == false) {
+			msgr.SendMessage(msg);
+		} else {
 			_ERROR("Broadcast(): messenger local");
 		}
 	}
@@ -1004,7 +950,7 @@ Server::FindContact( const char * proto_id )
 	// some sanity checks here
 	if ( proto_id == NULL )
 	{
-		LOG("im_server", liHigh, "Server::FindContact() called with NULL proto_id");
+		LOG(kAppName, liHigh, "Server::FindContact() called with NULL proto_id");
 		return result;
 	}
 	// next part is a bounded strlen(), perhaps there's a 'real' one to use instead?
@@ -1014,17 +960,17 @@ Server::FindContact( const char * proto_id )
 		;
 	if ( dummyLen >= maxProtoIdLen )
 	{
-		LOG("im_server", liHigh, "Server::FindContact() called with too long proto_id");
+		LOG(kAppName, liHigh, "Server::FindContact() called with too long proto_id");
 		return result;
 	}
 	if ( connection_id(proto_id).size() == 0 )
 	{
-		LOG("im_server", liHigh, "Server::FindContact() called with invalid proto_id - no id");
+		LOG(kAppName, liHigh, "Server::FindContact() called with invalid proto_id - no id");
 		return result;
 	}
 	if ( connection_protocol(proto_id).size() == 0 )
 	{
-		LOG("im_server", liHigh, "Server::FindContact() called with invalid proto_id - no protocol");
+		LOG(kAppName, liHigh, "Server::FindContact() called with invalid proto_id - no protocol");
 		return result;
 	}
 	// done sanity checks
@@ -1078,7 +1024,7 @@ Server::FindContact( const char * proto_id )
 		
 		BQuery query;
 
-		LOG("im_server", liHigh, "FindContact BQuery::SetPredicate(\"%s\") on volume %s", pred.c_str(), volName);
+		LOG(kAppName, liHigh, "FindContact BQuery::SetPredicate(\"%s\") on volume %s", pred.c_str(), volName);
 		
 		query.SetPredicate( pred.c_str() );
 		
@@ -1090,7 +1036,7 @@ Server::FindContact( const char * proto_id )
 		
 		if ( query.GetNextRef(&entry) == B_OK )
 		{
-			LOG("im_server", liHigh, "FindContact found \"%s\"", entry.name);		
+			LOG(kAppName, liHigh, "FindContact found \"%s\"", entry.name);		
 			
 			result.SetTo(entry);
 			break;
@@ -1104,10 +1050,10 @@ list<Contact>
 Server::FindAllContacts( const char * proto_id )
 {
 	list<Contact> results;
-	
 	list< pair<ContactHandle, list<string>* > >::iterator iter;
 	
-	for ( iter=fContacts.begin(); iter!=fContacts.end(); iter++ ) {
+	for (iter=fContacts.begin(); iter!=fContacts.end(); iter++) {
+
 		for ( list<string>::iterator j=(*iter).second->begin(); j != (*iter).second->end(); j++ ) {
 			if ( *j == proto_id ) {
 				results.push_back( Contact(iter->first.entry) );
@@ -1127,7 +1073,7 @@ Server::FindAllContacts( const char * proto_id )
 Contact
 Server::CreateContact( const char * proto_id, const char *namebase )
 {
-	LOG("im_server", liHigh, "Creating new contact for connection [%s]", proto_id);
+	LOG(kAppName, liHigh, "Creating new contact for connection [%s]", proto_id);
 	
 	Contact result;
 	
@@ -1170,11 +1116,11 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 	
 	if ( dir.FindEntry(filename,&entry) != B_OK )
 	{
-		LOG("im_server", liHigh, "Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]",filename);
+		LOG(kAppName, liHigh, "Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]",filename);
 		return result;
 	}
 	
-	LOG("im_server", liDebug, "  created file [%s]", filename);
+	LOG(kAppName, liDebug, "  created file [%s]", filename);
 	
 	// file created. set type and add connection
 	if ( file.WriteAttr(
@@ -1187,7 +1133,7 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 		return result;
 	}
 	
-	LOG("im_server", liDebug, "  wrote type");
+	LOG(kAppName, liDebug, "  wrote type");
 	
 	// file created. set type and add connection
 	result.SetTo( entry );
@@ -1197,14 +1143,14 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 		return Contact();
 	}
 	
-	LOG("im_server", liDebug, "  wrote connection");
+	LOG(kAppName, liDebug, "  wrote connection");
 	
 	if ( result.SetStatus(OFFLINE_TEXT) != B_OK )
 	{
 		return Contact();
 	}
 	
-	LOG("im_server", liDebug, "  wrote status");
+	LOG(kAppName, liDebug, "  wrote status");
 	
 	// post request info about this contact
 	BMessage msg(MESSAGE);
@@ -1215,7 +1161,7 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 	
 	BMessenger(this).SendMessage(&msg);
 	
-	LOG("im_server", liDebug, "  done.");
+	LOG(kAppName, liDebug, "  done.");
 	
 	return result;
 }
@@ -1246,7 +1192,7 @@ Server::selectConnection( BMessage * msg, Contact & contact )
 		{
 			if ( fStatus[connection_protocol(connection)] != OFFLINE_TEXT )
 			{
-				LOG("im_server", liDebug, "Using preferred connection %s", connection );
+				LOG(kAppName, liDebug, "Using preferred connection %s", connection );
 				
 				if ( !protocol )
 					msg->AddString("protocol", connection_protocol(connection).c_str());
@@ -1256,7 +1202,7 @@ Server::selectConnection( BMessage * msg, Contact & contact )
 				return B_OK;
 			}
 		}
-		LOG("im_server", liDebug, "Preferred connection [%s] not online", connection);
+		LOG(kAppName, liDebug, "Preferred connection [%s] not online", connection);
 	}
 	
 	// look for an online protocol
@@ -1286,37 +1232,36 @@ Server::selectConnection( BMessage * msg, Contact & contact )
 				if ( !protocol )
 					msg->AddString("protocol", connection_protocol(curr).c_str());
 				msg->AddString("id", connection_id(curr).c_str());
-				LOG("im_server", liDebug, "Using online connection %s", curr.c_str() );
+				LOG(kAppName, liDebug, "Using online connection %s", curr.c_str() );
 				return B_OK;
 			}
 		}
 	}
+
+	// Obtain a list off Offline capable Protocols	
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new CapabilityProtocolSpecification(Protocol::OFFLINE_MESSAGES));
+
+	for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {
+		ProtocolInfo *info = (*pIt);
+
+		// check if contact has a connection for this protocol
+		if (contact.FindConnection(info->Signature(), connection) == B_OK ) {
+
+			// make sure we're online with this protocol
+			if (fStatus[info->Signature()] != OFFLINE_TEXT) {
+				LOG(kAppName, liDebug, "Using offline connection %s", connection );
+				
+				if ( !protocol )
+					msg->AddString("protocol", connection_protocol(connection).c_str());
+				if ( !id )
+					msg->AddString("id", connection_id(connection).c_str());
+				
+				return B_OK;
+			};
+		};
+	};	
 	
-	// no online protocol found, look for one capable of offline messaging
-	for ( map<string,Protocol*>::iterator p = fProtocols.begin();
-			p != fProtocols.end(); p++ )
-	{ // loop over protocols
-		if ( p->second->HasCapability( Protocol::OFFLINE_MESSAGES ) )
-		{ // does this protocol handle offline messages?
-			if ( contact.FindConnection( p->second->GetSignature(), connection ) == B_OK )
-			{ // check if contact has a connection for this protocol
-				if ( fStatus[p->second->GetSignature()] != OFFLINE_TEXT )
-				{ // make sure we're online with this protocol
-					LOG("im_server", liDebug, "Using offline connection %s", connection );
-					
-					if ( !protocol )
-						msg->AddString("protocol", connection_protocol(connection).c_str());
-					if ( !id )
-						msg->AddString("id", connection_id(connection).c_str());
-					
-					return B_OK;
-				}
-			}
-		}
-	}
-	
-	// No matching protocol!
-	
+	// No matching Protocol
 	return B_ERROR;
 }
 
@@ -1333,7 +1278,7 @@ Server::IsMessageOk( BMessage * msg )
 	{
 		if ( strlen(str) == 0 || strlen(str) > 100 )
 		{
-			LOG("im_server", liHigh, "IsMessageOk(): invalid protocol present");
+			LOG(kAppName, liHigh, "IsMessageOk(): invalid protocol present");
 		}
 	}
 	
@@ -1341,7 +1286,7 @@ Server::IsMessageOk( BMessage * msg )
 	{
 		if ( strlen(str) == 0 || strlen(str) > 100 )
 		{
-			LOG("im_server", liHigh, "IsMessageOk(): invalid id present");
+			LOG(kAppName, liHigh, "IsMessageOk(): invalid id present");
 		}
 	}
 	
@@ -1357,7 +1302,7 @@ Server::MessageToProtocols( BMessage * msg )
 
 	if ( !IsMessageOk(msg) )
 	{
-		LOG("im_server", liHigh, "Bad message in MessageToProtocols()");
+		LOG(kAppName, liHigh, "Bad message in MessageToProtocols()");
 		return;
 	}
 	
@@ -1375,7 +1320,7 @@ Server::MessageToProtocols( BMessage * msg )
 		
 		if ( selectConnection(msg, contact) != B_OK )
 		{ // No available connection, can't send message!
-			LOG("im_server", liHigh, "Can't send message, no possible connection");
+			LOG(kAppName, liHigh, "Can't send message, no possible connection");
 			
 			// send ERROR message here..
 			BMessage error(ERROR);
@@ -1436,10 +1381,13 @@ Server::MessageToProtocols( BMessage * msg )
 	
 	// copy message so we can broadcast it later, with data intact
 	BMessage client_side_msg(*msg);
+	const char *signature = NULL;
 	
-	if ( msg->FindString("protocol") == NULL )
+	msg->FindString("protocol", &signature);
+	
+	if (signature == NULL)
 	{ // no protocol specified, send to all?
-		LOG("im_server", liLow, "No protocol specified");
+		LOG(kAppName, liLow, "No protocol specified");
 		
 		int32 im_what=-1;
 		msg->FindInt32("im_what", &im_what);
@@ -1448,16 +1396,12 @@ Server::MessageToProtocols( BMessage * msg )
 		{ // send these messages to all loaded protocols
 			case SET_STATUS:
 			{
-				LOG("im_server", liLow, "  SET_STATUS - Sending to all protocols");
-				map<string,Protocol*>::iterator i;
+				LOG(kAppName, liLow, "SET_STATUS - Sending to all protocols");
 				
-				for ( i=fProtocols.begin(); i != fProtocols.end(); i++ )
-				{
-					if ( i->second->Process(msg) != B_OK )
-					{
-						_ERROR("Protocol reports error processing message");
-					}
-				}
+				if (fProtocol->MessageProtocols(new AllProtocolSpecification(), msg) != B_OK) {
+					_ERROR("One or more protocols did not receive our SET_STATUS");
+				};
+								
 			}	break;
 			default:
 				_ERROR("Invalid message", msg);
@@ -1465,31 +1409,20 @@ Server::MessageToProtocols( BMessage * msg )
 		}
 	} else
 	{ // protocol mapped
-		if ( fProtocols.find(msg->FindString("protocol")) == fProtocols.end() )
-		{ // invalid protocol, report and skip
-			_ERROR("Protocol not loaded or not installed", msg);
-			
-			printf("looking for [%s], loaded protocols:\n", msg->FindString("protocol") );
-			
-			map<string,Protocol*>::iterator i;
-			
-			for ( i=fProtocols.begin(); i != fProtocols.end(); i++ )
-			{
-				printf("  [%s]\n", i->first.c_str());
-			}
-			
-			printf("  end of list.\n");
-			
+	
+		const char *protocol = msg->FindString("protocol");
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		
+		if (info == NULL) {
+			// invalid protocol, report and skip
+			_ERROR("Protocol not loaded or not installed", msg);			
 			_SEND_ERROR("Protocol not loaded or not installed", msg);
 			return;
 		}
-		
-		Protocol * p = fProtocols[msg->FindString("protocol")];		
-		
-		if ( p->GetEncoding() != 0xffff )
-		{ // convert to desired charset
-			int32 charset = p->GetEncoding();
-			
+	
+		int32 charset = info->Encoding();
+		if (charset != 0xffff) {
+			// convert to desired charset		
 			msg->AddInt32("charset", charset );
 			client_side_msg.AddInt32("charset", charset);
 			
@@ -1530,8 +1463,8 @@ Server::MessageToProtocols( BMessage * msg )
 			}
 		} // done converting charset
 		
-		if ( p->Process(msg) != B_OK )
-		{
+		
+		if (info->Process(msg) != B_OK) {
 			_SEND_ERROR("Protocol reports error processing message", msg);
 			return;
 		}
@@ -1539,7 +1472,7 @@ Server::MessageToProtocols( BMessage * msg )
 	
 	// broadcast client_side_msg, since clients want utf8 text, and that has
 	// been replaced in msg with protocol-specific data
-	Broadcast( &client_side_msg );
+	Broadcast(&client_side_msg);
 }
 
 
@@ -1551,13 +1484,13 @@ Server::MessageFromProtocols( BMessage * msg )
 {
 	if ( !IsMessageOk(msg) )
 	{
-		LOG("im_server", liHigh, "Bad message in MessageFromProtocols()");
+		LOG(kAppName, liHigh, "Bad message in MessageFromProtocols()");
 		return;
 	}
 	
 	const char *protocol = NULL;
 	if (msg->FindString("protocol", &protocol) != B_OK) {
-		LOG("im_server", liHigh, "Got a message with no protocol!");
+		LOG(kAppName, liHigh, "Got a message with no protocol!");
 		return;
 	}
 	
@@ -1631,7 +1564,7 @@ Server::MessageFromProtocols( BMessage * msg )
 		string proto_id( string(protocol) + string(":") + string(id) );
 		
 		contact = FindContact(proto_id.c_str());
-		
+	
 		if ( contact.InitCheck() != B_OK )
 		{ // No matching contact, create a new one!
 			contact.SetTo( CreateContact( proto_id.c_str() , id ) );
@@ -1640,10 +1573,10 @@ Server::MessageFromProtocols( BMessage * msg )
 			BMessage connection(MESSAGE);
 			connection.AddInt32("im_what", REGISTER_CONTACTS);
 			connection.AddString("id", id);
-			
-			Protocol * p = fProtocols[protocol];
-			
-			p->Process( &connection );			
+
+			ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+LOG("im_server", liHigh, "REGISTER_CONTACTS: %p", info);
+			if (info) info->Process(&connection);
 		}
 		
 		// add all matching contacts to message
@@ -1658,13 +1591,13 @@ Server::MessageFromProtocols( BMessage * msg )
 				
 				if ( strcmp(status,BLOCKED_TEXT) == 0 )
 				{ // contact blocked, dropping message!
-					LOG("im_server", liHigh, "Dropping message from blocked contact [%s:%s]", protocol, id);
+					LOG(kAppName, liHigh, "Dropping message from blocked contact [%s:%s]", protocol, id);
 				} else {
 					msg->AddRef( "contact", *iter );
 					if ( fPreferredConnection[*iter] != proto_id )
 					{ // set preferred connection to this one if it's no already that
 						fPreferredConnection[*iter] = proto_id;
-						LOG("im_server", liLow, "Setting preferred connection for contact to %s", proto_id.c_str() );
+						LOG(kAppName, liLow, "Setting preferred connection for contact to %s", proto_id.c_str() );
 					}
 				}
 			} else {
@@ -1675,17 +1608,17 @@ Server::MessageFromProtocols( BMessage * msg )
 	}
 	
 	if (im_what == SET_BUDDY_ICON) {
-		LOG("im_server", liHigh, "Got a buddy icon from a protocol!");
+		LOG(kAppName, liHigh, "Got a buddy icon from a protocol!");
 		const uchar *data;
 		int32 bytes = -1;
 		entry_ref ref;
 		
 		if (msg->FindRef("contact", &ref) != B_OK) {
-			LOG("im_server", liHigh, "No contact in buddy message.");
+			LOG(kAppName, liHigh, "No contact in buddy message.");
 			return;
 		}
 		if (msg->FindData("icondata", B_RAW_TYPE, (const void **)&data, &bytes) !=  B_OK) {
-			LOG("im_server", liHigh, "No icondata in buddy message.");
+			LOG(kAppName, liHigh, "No icondata in buddy message.");
 		} else {
 			// Fetch the protocol again... there's a weird memory corruption error happening
 			const char *protocol = NULL;
@@ -1698,18 +1631,18 @@ Server::MessageFromProtocols( BMessage * msg )
 			BBitmap *icon = BTranslationUtils::GetBitmap(&buffer);
 			
 			if ( !icon ) {
-				LOG("im_server", liHigh, "Unable to decode buddy icon.");
+				LOG(kAppName, liHigh, "Unable to decode buddy icon.");
 			} else {
-				LOG("im_server", liDebug, "Setting %s's icon to be %p\n", protocol, icon);
+				LOG(kAppName, liDebug, "Setting %s's icon to be %p\n", protocol, icon);
 
 				status_t ret = contact.SetBuddyIcon(protocol, icon);
-				LOG("im_server", liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
+				LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
 				
 				if ( ret == B_OK && contact.GetBuddyIcon("general") == NULL )
 				{
-					LOG("im_server", liDebug, "Also setting the general icon, since none was set\n");
+					LOG(kAppName, liDebug, "Also setting the general icon, since none was set\n");
 					ret = contact.SetBuddyIcon("general", icon);
-					LOG("im_server", liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
+					LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
 				}
 				
 				BMessage update(MESSAGE);
@@ -1734,7 +1667,7 @@ Server::MessageFromProtocols( BMessage * msg )
 	}
 	
 	if ( im_what == CONTACT_AUTHORIZED && protocol != NULL ) {
-		LOG("im_server", liLow, "Creating new contact on authorization. ID : %s", id);
+		LOG(kAppName, liLow, "Creating new contact on authorization. ID : %s", id);
 	} else {
 		// send it
 		Broadcast(msg);
@@ -1764,7 +1697,7 @@ Server::UpdateStatus( BMessage * msg )
 	
 	string new_status = status;
 	
-	LOG("im_server", liMedium, "STATUS_CHANGED [%s] is now %s",proto_id.c_str(),new_status.c_str());
+	LOG(kAppName, liMedium, "STATUS_CHANGED [%s] is now %s",proto_id.c_str(),new_status.c_str());
 	
 	// add old status to msg
 	if ( fStatus[proto_id] != "" )
@@ -1840,7 +1773,7 @@ Server::UpdateContactStatusAttribute(Contact& contact)
 			new_status = AWAY_TEXT;
 	}
 
-	//LOG("im_server", liMedium, "STATUS_CHANGED total status is now %s", new_status.c_str());
+	//LOG(kAppName, liMedium, "STATUS_CHANGED total status is now %s", new_status.c_str());
 
 	// Update status attribute
 	BNode node(contact);
@@ -2152,7 +2085,7 @@ Server::GetContactsForProtocol( const char * _protocol, BMessage * msg )
 			continue;
 		
 		vol.GetName(volName);
-		LOG("im_server", liLow, "GetContactsForProtocol: Looking for contacts on %s with protocol %s", volName, protocol);
+		LOG(kAppName, liLow, "GetContactsForProtocol: Looking for contacts on %s with protocol %s", volName, protocol);
 		query.PushAttr("IM:connections");
 		query.PushString(protocol);
 		query.PushOp(B_CONTAINS);
@@ -2183,7 +2116,7 @@ Server::GetContactsForProtocol( const char * _protocol, BMessage * msg )
 		};
 	};
 	
-	//LOG("im_server", liDebug, "GetConnectionsForProcol(%s)", msg, protocol );
+	//LOG(kAppName, liDebug, "GetConnectionsForProcol(%s)", msg, protocol );
 	
 	refs.clear();
 }
@@ -2267,7 +2200,7 @@ Server::GenerateSettingsTemplate()
 status_t
 Server::UpdateOwnSettings( BMessage & settings )
 {
-	LOG("im_server", liDebug, "Server::UpdateOwnSettings");
+	LOG(kAppName, liDebug, "Server::UpdateOwnSettings");
 
 	bool auto_start = false;
 
@@ -2279,7 +2212,7 @@ Server::UpdateOwnSettings( BMessage & settings )
 
 	// Find boot directory
 	if (find_directory(B_USER_BOOT_DIRECTORY, &bootPath, true, NULL) < B_OK) {
-		LOG("im_server", liHigh, "Couldn't find or create B_USER_BOOT_DIRECTORY");
+		LOG(kAppName, liHigh, "Couldn't find or create B_USER_BOOT_DIRECTORY");
 		return B_ERROR;
 	}
 
@@ -2290,7 +2223,7 @@ Server::UpdateOwnSettings( BMessage & settings )
 		// im_server path
 		BPath serverPath;
 		if (find_directory(B_COMMON_SERVERS_DIRECTORY, &serverPath) < B_OK) {
-			LOG("im_server", liHigh, "Couldn't find B_COMMON_SERVERS_DIRECTORY");
+			LOG(kAppName, liHigh, "Couldn't find B_COMMON_SERVERS_DIRECTORY");
 			return B_ERROR;
 		}
 		serverPath.Append("im_server");
@@ -2299,7 +2232,7 @@ Server::UpdateOwnSettings( BMessage & settings )
 		BFile file(bootPath.Path(), B_READ_WRITE | B_CREATE_FILE | B_OPEN_AT_END);
 		if (file.InitCheck() != B_OK) {
 			// Error creating or opening the file
-			LOG("im_server", liHigh, "Couldn't open %s", bootPath.Path());
+			LOG(kAppName, liHigh, "Couldn't open %s", bootPath.Path());
 			goto deskbar_option;
 		}
 
@@ -2366,7 +2299,7 @@ deskbar_option:
 #endif
 
 	if (!isDeskbarRunning) {
-		LOG("im_server", liHigh, "Deskbar is not running, giving up...");
+		LOG(kAppName, liHigh, "Deskbar is not running, giving up...");
 		return B_ERROR;
 	}
 
@@ -2404,7 +2337,7 @@ Server::StartAutostartApps()
 			
 			if ( auto_start && app_sig)
 			{
-				LOG("im_server", liLow, "Starting app [%s]", app_sig );
+				LOG(kAppName, liLow, "Starting app [%s]", app_sig );
 				be_roster->Launch( app_sig );
 			}
 		}
@@ -2440,7 +2373,7 @@ Server::StopAutostartApps()
 			
 			if ( auto_start && app_sig)
 			{
-				LOG("im_server", liLow, "Stopping app [%s]", app_sig );
+				LOG(kAppName, liLow, "Stopping app [%s]", app_sig );
 				BMessenger msgr( app_sig );
 				msgr.SendMessage( B_QUIT_REQUESTED );
 			}
@@ -2457,15 +2390,15 @@ Server::handleDeskbarMessage( BMessage * msg )
 	switch ( msg->what )
 	{
 		case REGISTER_DESKBAR_MESSENGER:
-			LOG("im_server", liDebug, "Got Deskbar messenger");
+			LOG(kAppName, liDebug, "Got Deskbar messenger");
 			msg->FindMessenger("msgr", &fDeskbarMsgr);
 			break;
 		
 		default:
-			LOG("im_server", liDebug, "Forwarding message to Deskbar");
+			LOG(kAppName, liDebug, "Forwarding message to Deskbar");
 			if ( fDeskbarMsgr.SendMessage(msg) != B_OK )
 			{
-				LOG("im_server", liMedium, "Error sending message to Deskbar");
+				LOG(kAppName, liMedium, "Error sending message to Deskbar");
 			}
 			break;
 	}
@@ -2478,7 +2411,6 @@ void
 Server::handle_STATUS_SET( BMessage * msg )
 {
 	const char * protocol = msg->FindString("protocol");
-	
 	const char * status = msg->FindString("status");
 		
 	if ( !status )
@@ -2489,97 +2421,40 @@ Server::handle_STATUS_SET( BMessage * msg )
 	
 	if ( strcmp(ONLINE_TEXT,status) == 0 )
 	{ // we're online. register contacts. (should be: only do this if we were offline)
-		LOG("im_server", liMedium, "Status changed for %s to %s", protocol, status );
-		if ( fProtocols.find(protocol) == fProtocols.end() )
-		{
+		LOG(kAppName, liMedium, "Status changed for %s to %s", protocol, status );
+
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		if (info == NULL) {
 			_ERROR("ERROR: STATUS_SET: Protocol not loaded",msg);
 			return;
 		}
-		
-		Protocol * p = fProtocols[protocol];
-		
+			
 		// THIS IS NOT CORRECT! We need to do this on a "connected" message, not on
 		// status changed!
 		system_beep( kImConnectedSound );
 		
 		BMessage connections(MESSAGE);
 		connections.AddInt32("im_what", REGISTER_CONTACTS);
-		GetContactsForProtocol( p->GetSignature(), &connections );
-		
-		p->Process( &connections );
+		GetContactsForProtocol(info->Signature(), &connections);
+
+		info->Process(&connections);
 	}
 	
-	if ( strcmp(OFFLINE_TEXT,status) == 0 )
-	{ // we're offline. set all connections for protocol to offline
-		if ( fProtocols.find(protocol) == fProtocols.end() )
-		{
+	if (strcmp(OFFLINE_TEXT,status) == 0) {
+		// we're offline. set all connections for protocol to offline
+		if (ProtocolOffline(protocol) != B_OK) {
 			_ERROR("ERROR: STATUS_SET: Protocol not loaded",msg);
 			return;
-		}
-		
-		system_beep( kImDisconnectedSound );
-		
-		BMessage contacts;
-		
-		GetContactsForProtocol(protocol, &contacts );
-		
-		for ( int i=0; contacts.FindString("id", i); i++ )
-		{
-			string proto_id;
-			proto_id += protocol;
-			proto_id += ":";
-			proto_id += contacts.FindString("id", i);
-			
-			LOG("im_server", liDebug, "Protocol offline, setting %s offline", proto_id.c_str() );
-			
-			if ( fStatus[proto_id] != OFFLINE_TEXT  && fStatus[proto_id] != "" )
-			{ // only send a message if there's been a change.
-				BMessage update(MESSAGE);
-				update.AddInt32("im_what", STATUS_CHANGED);
-				update.AddString("protocol", protocol);
-				update.AddString("id", contacts.FindString("id",i) );
-				update.AddString("status", OFFLINE_TEXT);
-				
-				BMessenger(this).SendMessage( &update );
-				
-				fStatus[proto_id] = OFFLINE_TEXT;
-				
-				// update status attribute
-				list<Contact> contacts = FindAllContacts( proto_id.c_str() );
-				
-				for ( list<Contact>::iterator iter = contacts.begin(); iter != contacts.end(); iter++ )
-				{
-					UpdateContactStatusAttribute( *iter );
-				}
-			} else {
-				LOG("im_server", liDebug, "Already offline, or no previous status" );
-			}
-		}
-	}
-	//fAddOnInfo[protocol].online_status = status;
-	
+		};
+	};
+
 	// Find out 'total' online status
 	fStatus[protocol] = status;
 	
-	string total_status = OFFLINE_TEXT;
-	
-	for ( map<string,Protocol*>::iterator i = fProtocols.begin(); i != fProtocols.end(); i++ )
-	{
-		
-		if ( fStatus[i->second->GetSignature()] == ONLINE_TEXT )
-		{
-			total_status = ONLINE_TEXT;
-			break;
-		}
-		
-		if ( fStatus[i->second->GetSignature()] == AWAY_TEXT )
-		{
-			total_status = AWAY_TEXT;
-		}
-	}
-	
+	string total_status = TotalStatus();
+
 	msg->AddString("total_status", total_status.c_str() );
-	LOG("im_server", liMedium, "Total status changed to %s", total_status.c_str() );
+	LOG(kAppName, liMedium, "Total status changed to %s", total_status.c_str() );
 	// end 'Find out total status'
 	
 	handleDeskbarMessage(msg);
@@ -2621,15 +2496,17 @@ Server::reply_GET_CONTACT_STATUS( BMessage * msg )
 	Get list of current own online status per protocol
 */
 void Server::reply_GET_OWN_STATUSES(BMessage *msg) {
-	LOG("im_server", liLow, "Got own status request. There are %i statuses",
-		fStatus.size());
+	LOG(kAppName, liLow, "Got own status request. There are %i statuses", fStatus.size());
+
 	BMessage reply(B_REPLY);
 
-	map <string, Protocol *>::iterator pit;
-	for (pit = fProtocols.begin(); pit != fProtocols.end(); pit++) {
-		Protocol *p = pit->second;
-		reply.AddString("protocol", p->GetSignature());
-		reply.AddString("status", fStatus[p->GetSignature()].c_str());
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new AllProtocolSpecification());
+
+	for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {
+		ProtocolInfo *info = (*pIt);
+
+		reply.AddString("protocol", info->Signature());
+		reply.AddString("status", fStatus[info->Signature()].c_str());
 	};
 
 	sendReply(msg,&reply);
@@ -2638,21 +2515,23 @@ void Server::reply_GET_OWN_STATUSES(BMessage *msg) {
 /**
 	Returns a list of currently loaded protocols
 */
-void
-Server::reply_GET_LOADED_PROTOCOLS( BMessage * msg )
-{
-	BMessage reply( ACTION_PERFORMED );
+void Server::reply_GET_LOADED_PROTOCOLS( BMessage * msg ) {
+	BMessage reply(ACTION_PERFORMED);
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new AllProtocolSpecification());
+	list<ProtocolInfo *>::iterator it;
 	
-	map<string,Protocol*>::iterator i;
-	
-	for ( i = fProtocols.begin(); i != fProtocols.end(); i++ )
-	{
-		reply.AddString("protocol", i->second->GetSignature() );
+	for (it = protocols.begin(); it != protocols.end(); it++) {
+		ProtocolInfo *info = (*it);
 		entry_ref ref;
-		get_ref_for_path(fAddOnInfo[i->second].path.String(), &ref);
-		reply.AddRef("ref", &ref);
-	}
-	
+		
+		if ((info->HasValidMessenger() == true) && (get_ref_for_path(info->Path().Path(), &ref) == B_OK)) {
+			reply.AddString("protocol", info->Signature());
+			reply.AddRef("ref", &ref);
+		} else {
+			LOG(kAppName, liLow, "reply_GET_LOADED_PROTOCOLS: Found a half-loaded protocol: %s", info->Path().Path());
+		};
+	};
+
 	sendReply(msg,&reply);
 }
 
@@ -2728,9 +2607,10 @@ Server::handle_SETTINGS_UPDATED( BMessage * msg )
 	const char * sig;
 	
 	if ( (sig = msg->FindString("protocol")) != NULL )
-	{ // notify protocol of change in settings
-		if ( fProtocols.find(sig) == fProtocols.end() )
-		{
+	{
+		// notify protocol of change in settings
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(sig));
+		if (info == NULL) {
 			_ERROR("Cannot notify protocol of changed settings, not loaded");
 			return;
 		}
@@ -2738,9 +2618,7 @@ Server::handle_SETTINGS_UPDATED( BMessage * msg )
 		if ( im_load_protocol_settings(sig, &settings) != B_OK )
 			return;
 		
-		Protocol * protocol = fProtocols[sig];
-		
-		if ( protocol->UpdateSettings(settings) != B_OK )
+		if ( info->UpdateSettings(&settings) != B_OK )
 		{
 			_ERROR("Protocol settings invalid", msg);
 		}
@@ -2790,15 +2668,14 @@ Server::reply_GET_CONTACTS_FOR_PROTOCOL( BMessage * msg )
 {
 	if ( msg->FindString("protocol") == NULL )
 	{
-		msg->SendReply( ERROR );
-		
+		msg->SendReply( ERROR );	
 		return;
 	}
 	
 	BMessage reply(ACTION_PERFORMED);
 	
 	GetContactsForProtocol( msg->FindString("protocol"), &reply );
-	
+
 	sendReply(msg,&reply);
 }
 
@@ -2813,26 +2690,24 @@ Server::ContactMonitor_Added( ContactHandle handle )
 		}
 	}
 	
-	Contact contact(&handle.entry);
-	
+	Contact contact(&handle.entry);	
 	list<string> * connections = new list<string>();
-	
 	char connection[512];
-	
+
 	for ( int i=0; contact.ConnectionAt(i,connection) == B_OK; i++ )
 	{
 		connections->push_back( connection );
 		
 		Connection conn( connection );
 		
-		if ( fProtocols.find(conn.Protocol()) != fProtocols.end() )
-		{ // protocol loaded, register connection
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+		if (info != NULL) {
 			BMessage add(MESSAGE);
 			add.AddInt32("im_what", REGISTER_CONTACTS);
 			add.AddString("id", conn.ID());
-			
-			(fProtocols[conn.Protocol()])->Process(&add);
-		}
+
+			info->Process(&add);			
+		};
 	}
 	
 	connections->sort();
@@ -2845,7 +2720,7 @@ Server::ContactMonitor_Added( ContactHandle handle )
 	
 	fContacts.push_back( pair<ContactHandle,list<string>* >(handle, connections) );
 
-	LOG("im_server", liDebug, "Contact added (%s)", handle.entry.name);
+	LOG(kAppName, liDebug, "Contact added (%s)", handle.entry.name);
 }
 
 void
@@ -2878,17 +2753,18 @@ Server::ContactMonitor_Modified( ContactHandle handle )
 				if ( k == connections.end() )
 				{ // connection removed!
 					removed.push_back( j->c_str() );
-					LOG("im_server", liDebug, "Connection removed: %s", j->c_str() );
+					LOG(kAppName, liDebug, "Connection removed: %s", j->c_str() );
 					
 					Connection conn( j->c_str() );
 					
-					if ( fProtocols.find(conn.Protocol()) != fProtocols.end() )
-					{ // protocol loaded, unregister connection
+					ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+					if (info != NULL) {
+						// protocol loaded, unregister connection
 						BMessage remove(MESSAGE);
 						remove.AddInt32("im_what", UNREGISTER_CONTACTS);
 						remove.AddString("id", conn.ID() );
-						
-						(fProtocols[conn.Protocol()])->Process(&remove);
+					
+						info->Process(&remove);	
 						
 						// remove from fStatus too
 						map<string,string>::iterator iter = fStatus.find(*j);
@@ -2911,17 +2787,18 @@ Server::ContactMonitor_Modified( ContactHandle handle )
 				if ( k == (*i).second->end() )
 				{ // connection added!
 					(*i).second->push_back( j->c_str() );
-					LOG("im_server", liDebug, "Connection added: %s", j->c_str() );
+					LOG(kAppName, liDebug, "Connection added: %s", j->c_str() );
 					
 					Connection conn( j->c_str() );
 					
-					if ( fProtocols.find(conn.Protocol()) != fProtocols.end() )
-					{ // protocol loaded, register connection
+					ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+					if (info != NULL) {
+						// protocol loaded, register connection
 						BMessage remove(MESSAGE);
 						remove.AddInt32("im_what", REGISTER_CONTACTS);
 						remove.AddString("id", conn.ID() );
 						
-						(fProtocols[conn.Protocol()])->Process(&remove);
+						info->Process(&remove);
 					}
 				}
 			}
@@ -2959,7 +2836,7 @@ Server::ContactMonitor_Removed( ContactHandle handle )
 	{
 		if ( (*i).first == handle )
 		{
-			LOG("im_server", liDebug, "Contact removed (%s)", (*i).first.entry.name);
+			LOG(kAppName, liDebug, "Contact removed (%s)", (*i).first.entry.name);
 			
 			for ( list<string>::iterator j = i->second->begin(); j != i->second->end(); j++ )
 			{ // unregister connections
@@ -2971,13 +2848,14 @@ Server::ContactMonitor_Removed( ContactHandle handle )
 					// don't unregister if there's a contact still using it
 					continue;
 				
-				if ( fProtocols.find(conn.Protocol()) != fProtocols.end() )
-				{ // protocol loaded, unregister connection
+				ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+				if (info != NULL) {
+					// protocol loaded, unregister connection
 					BMessage remove(MESSAGE);
 					remove.AddInt32("im_what", UNREGISTER_CONTACTS);
 					remove.AddString("id", conn.ID() );
 					
-					(fProtocols[conn.Protocol()])->Process(&remove);
+					info->Process(&remove);
 				}
 				
 				// remove from fStatus too
@@ -2992,7 +2870,6 @@ Server::ContactMonitor_Removed( ContactHandle handle )
 			return;
 		}
 	}
-
 }
 
 void
@@ -3024,11 +2901,11 @@ Server::CheckIndexes()
 			DIR *indexes;
 			struct dirent *ent;
 						
-			LOG("im_server", liDebug, "%s is suitable for indexing", volName);
+			LOG(kAppName, liDebug, "%s is suitable for indexing", volName);
 			
 			indexes = fs_open_index_dir(volume.Device());
 			if (indexes == NULL) {
-				LOG("im_server", liLow, "Error opening indexes on %s", volName);
+				LOG(kAppName, liLow, "Error opening indexes on %s", volName);
 				continue;
 			};
 
@@ -3042,13 +2919,13 @@ Server::CheckIndexes()
 			
 			if (isConnIndexed == false) {
 				int res = fs_create_index(volume.Device(), "IM:connections", B_STRING_TYPE, 0);
-				LOG("im_server", liMedium, "Added IM:connections to %s: %s (%i)",
+				LOG(kAppName, liMedium, "Added IM:connections to %s: %s (%i)",
 					volName, strerror(res), res);
 				madeIndex = true;
 			};
 			if (isStatusIndexed == false) {
 				int res = fs_create_index(volume.Device(), "IM:status", B_STRING_TYPE, 0);
-				LOG("im_server", liMedium, "Added IM:status to %s: %s (%i)",
+				LOG(kAppName, liMedium, "Added IM:status to %s: %s (%i)",
 					volName, strerror(res), res);
 				madeIndex = true;
 			};
@@ -3074,6 +2951,7 @@ Server::CheckIndexes()
 void
 Server::ReadyToRun()
 {
+LOG(kAppName, liHigh, "ReadyToRun()");
 	CheckIndexes();
 	StartQuery();
 	SetAllOffline();
@@ -3088,15 +2966,120 @@ Server::sendReply( BMessage * msg, BMessage * reply )
 	const char * protocol;
 	for ( int i=0; reply->FindString("protocol",i,&protocol)==B_OK; i++ )
 	{
-		map<string,Protocol*>::iterator proto;
-		proto = fProtocols.find( protocol );
+		const char *userfriendly = "<invalid protocol>";
+		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
 		
-		if ( proto != fProtocols.end() )
-			reply->AddString( "userfriendly", proto->second->GetFriendlySignature() );
-		else
-			reply->AddString("userfriendly", "<invalid protocol>");
+		if (info != NULL) {
+			userfriendly = info->FriendlySignature();
+		};
+		
+		reply->AddString("userfriendly",  userfriendly);
 	}
 	// done adding fancy names
 	
 	msg->SendReply(reply);
 }
+
+const char *Server::TotalStatus(void) {
+	string total_status = OFFLINE_TEXT;
+	
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new AllProtocolSpecification());
+	for (list<ProtocolInfo *>::iterator i = protocols.begin(); i != protocols.end(); i++) {
+		ProtocolInfo *info = (*i);
+	
+		if (fStatus[info->Signature()] == ONLINE_TEXT) {
+			total_status = ONLINE_TEXT;
+			break;
+		};
+		
+		if (fStatus[info->Signature()] == AWAY_TEXT) {
+			total_status = AWAY_TEXT;
+		};
+	};
+
+	return total_status.c_str();	
+};
+
+status_t Server::ProtocolOffline(const char *signature) {
+	ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(signature));
+
+	if (info == NULL) {
+		LOG(kAppName, liHigh, "Unexpected protocol went offline: %s", signature);
+		return B_ERROR;
+	};
+		
+	system_beep(kImDisconnectedSound);
+	
+	BMessage contacts;
+	GetContactsForProtocol(signature, &contacts);
+	
+	for (int i = 0; contacts.FindString("id", i); i++) {
+		string proto_id;
+		proto_id += signature;
+		proto_id += ":";
+		proto_id += contacts.FindString("id", i);
+		
+		LOG(kAppName, liDebug, "Protocol offline, setting %s offline", proto_id.c_str() );
+		
+		if ((fStatus[proto_id] != OFFLINE_TEXT)  && (fStatus[proto_id] != "")) {
+			// only send a message if there's been a change.
+			BMessage update(MESSAGE);
+			update.AddInt32("im_what", STATUS_CHANGED);
+			update.AddString("protocol", signature);
+			update.AddString("id", contacts.FindString("id",i));
+			update.AddString("status", OFFLINE_TEXT);
+			
+			BMessenger(this).SendMessage(&update);
+			
+			fStatus[proto_id] = OFFLINE_TEXT;
+			
+			// update status attribute
+			list<Contact> contacts = FindAllContacts(proto_id.c_str());
+			
+			for (list<Contact>::iterator it = contacts.begin(); it != contacts.end(); it++) {
+				UpdateContactStatusAttribute(*it);
+			};
+		} else {
+			LOG(kAppName, liDebug, "Already offline, or no previous status" );
+		}
+	}
+		
+	fStatus[signature] = OFFLINE_TEXT;
+		
+	return B_OK;
+};
+
+
+void Server::ChildExited(int /*sig */, void *data, struct vreg */*regs */) {
+	Server *server = (Server *)data;
+
+	if (server->fIsQuitting == false) {
+		
+		ProtocolSpecification *spec = new ExitedProtocolSpecification();
+		list<ProtocolInfo *> protocols = server->fProtocol->FindProtocols(spec, false);
+	
+		for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {
+			ProtocolInfo *info = (*pIt);
+	
+			if (server->ProtocolOffline(info->Signature()) == B_OK) {
+				// Tell everyone the protocol has gone offline
+				BMessage offline(MESSAGE);
+				offline.AddInt32("im_what", STATUS_SET);
+				offline.AddString("protocol", info->Signature());
+				offline.AddString("status", OFFLINE_TEXT);
+				offline.AddString("total_status", server->TotalStatus());
+					
+				server->handleDeskbarMessage(&offline);
+	
+				// Broadcast the message
+				BMessage changed(LOADED_PROTOCOLS_CHANGED);		
+				server->Broadcast(&changed);
+			};
+		};
+		
+		server->fProtocol->RestartProtocols(spec, false);
+				
+		delete spec;
+	};
+}
+

@@ -21,3 +21,7 @@ StaticLibrary libcommon.a :
 	SettingsFile.cpp
 	htmlparse.cpp
 ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on libcommon.a += -lzeta -ltracker ;
+}

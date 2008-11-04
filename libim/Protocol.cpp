@@ -16,3 +16,7 @@ Protocol::HasCapability( capability_bitmask cap )
 	return (m_capabilities & cap) != 0;
 }
 
+uint32
+Protocol::Capabilities(void) {
+	return m_capabilities;
+};

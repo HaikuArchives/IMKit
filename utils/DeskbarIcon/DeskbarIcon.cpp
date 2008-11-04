@@ -499,8 +499,14 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 			}
 		} break;
 		
-		default:
+		case IM::LOADED_PROTOCOLS_CHANGED: {
+			// Rebuild the protocol menu
+			fDirtyStatusMenu = true;
+		} break;
+		
+		default: { 
 			BView::MessageReceived(msg);
+		} break;
 	}
 }
 

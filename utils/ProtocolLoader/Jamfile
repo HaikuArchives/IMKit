@@ -1,0 +1,28 @@
+#
+# Copyright 2008, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir IMKIT_TOP utils ProtocolLoader ;
+
+SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
+
+Executable ProtocolLoader :
+	main.cpp
+	ProtocolLoaderApplication.cpp
+	: be stdc++.r4 libim.so libcommon.a ssl crypto
+	: ProtocolLoader.rdef
+;
+
+Depends ProtocolLoader : libcommon.a ;
+Depends ProtocolLoader : libim.so ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
+}
+
+InstallLib $(IMKIT_APPS_DIRECTORY)/imkit : ProtocolLoader ;

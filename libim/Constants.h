@@ -123,7 +123,9 @@ enum message_what_codes {
 	/*
 		IM server status messages
 	*/
-	IS_IM_SERVER_SHUTTING_DOWN = 'IMsd'
+	IS_IM_SERVER_SHUTTING_DOWN = 'IMsd',
+	
+	LOADED_PROTOCOLS_CHANGED = 'LPRC',
 };
 
 /**
@@ -147,6 +149,7 @@ enum im_progress_state_type {
 };
 
 #define IM_SERVER_SIG "application/x-vnd.beclan.im_kit"
+#define IM_PROTOCOL_LOADER_SIG "application/x-vnd.im_kit.protocol_loader"
 
 // Valid IM:status texts
 #define ONLINE_TEXT		"Available"

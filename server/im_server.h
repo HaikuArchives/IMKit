@@ -16,49 +16,13 @@
 
 #include <libim/Contact.h>
 #include <libim/Protocol.h>
-#include "AddOnInfo.h"
 
-/**
-	Used by Contact monitor.
-*/
-class ContactHandle
-{
-	public:
-		ino_t node;
-		entry_ref entry;
-		
-		ContactHandle()
-		{
-		}
-		
-		ContactHandle( const ContactHandle & c )
-		:	node( c.node )
-		{
-			entry.directory = c.entry.directory;
-			entry.device = c.entry.device;
-			entry.set_name( c.entry.name );
-		}
-		
-		bool operator < ( const ContactHandle & c ) const
-		{
-			if ( entry.device != c.entry.device )
-				return entry.device < c.entry.device;
-			
-			return node < c.node;
-		}
-		
-		bool operator == ( const ContactHandle & c ) const
-		{
-/*			printf("%Ld, %ld vs %Ld, %ld\n", 
-				node, entry.device, 
-				c.node, c.entry.device
-			);
-*/			
-			return node == c.node && entry.device == c.entry.device;
-		}
-};
+#include "ContactHandle.h"
 
 namespace IM {
+
+class ProtocolInfo;
+class ProtocolManager;
 
 class Server : public BApplication
 {
@@ -88,9 +52,7 @@ class Server : public BApplication
 		
 		void		RegisterSoundEvents();
 		void		CheckIndexes();
-		status_t	LoadAddons();
-		void		LoadAddonsFromDir( BDirectory* addonsDir, BDirectory* settingsDir );
-		void		UnloadAddons();
+		status_t	LoadProtocols();
 		
 		bool	IsMessageOk( BMessage * );
 		void	Process( BMessage * );
@@ -135,6 +97,10 @@ class Server : public BApplication
 		
 		status_t	selectConnection( BMessage * msg, Contact & contact );
 		
+		const char	*TotalStatus(void);
+		status_t	ProtocolOffline(const char *signature);
+		static void	ChildExited(int signal, void *data, struct vreg *regs);
+		
 		/**
 			Contact monitoring functions
 		*/
@@ -147,15 +113,13 @@ class Server : public BApplication
 		
 		list<BQuery*>				fQueries;
 		list<BMessenger>			fMessengers;
-		map<string,Protocol*>		fProtocols;
-		map<Protocol*,AddOnInfo>	fAddOnInfo;
-		bool						fIsQuiting;
+		bool						fIsQuitting;
 		
 		/**
 		 * Remove when protocols deal with scripting. Currently all is done in the
 		 * application.
 		 */
-		Protocol                   *fCurProtocol;
+		ProtocolInfo				*fCurProtocol;
 		
 		/**
 			entry_ref, list of connections.
@@ -243,6 +207,8 @@ class Server : public BApplication
 #endif
 
 		BMessenger					fDeskbarMsgr;
+		
+		ProtocolManager				*fProtocol;
 };
 
 };

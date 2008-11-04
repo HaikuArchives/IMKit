@@ -86,6 +86,7 @@ class Protocol
 		*/
 		bool HasCapability( capability_bitmask );
 	
+		uint32 Capabilities(void);
 	private:
 		uint32	m_capabilities;
 };
