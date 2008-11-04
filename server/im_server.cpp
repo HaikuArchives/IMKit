@@ -463,7 +463,7 @@ Server::MessageReceived( BMessage *msg )
 			Process(msg);
 			break;
 		
-		case Private::PROTOCOL_STARTED: {
+		case IM::Private::PROTOCOL_STARTED: {
 			const char *instanceID;
 			const char *signature;
 			const char *friendlySignature;
@@ -501,8 +501,8 @@ Server::MessageReceived( BMessage *msg )
 			Broadcast(&changed);
 		} break;
 		
-		case Private::PROTOCOL_KILLED:
-		case Private::PROTOCOL_STOPPED: {
+		case IM::Private::PROTOCOL_KILLED:
+		case IM::Private::PROTOCOL_STOPPED: {
 			// Remove the protocol info
 			const char *instanceID;
 			
@@ -532,7 +532,7 @@ Server::MessageReceived( BMessage *msg )
 			BMessage changed(LOADED_PROTOCOLS_CHANGED);		
 			Broadcast(&changed);
 			
-			if ((msg->what == Private::PROTOCOL_KILLED) && (fIsQuitting == false)) {
+			if ((msg->what == IM::Private::PROTOCOL_KILLED) && (fIsQuitting == false)) {
 				// Restart the protocol
 				fProtocol->RestartProtocols(new InstanceProtocolSpecification(instanceID));
 			};
