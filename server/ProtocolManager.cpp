@@ -5,6 +5,9 @@
 #include "Private/Constants.h"
 
 #include <app/Roster.h>
+#include <storage/VolumeRoster.h>
+#include <storage/Volume.h>
+#include <storage/Query.h>
 #include <storage/Entry.h>
 #include <support/Autolock.h>
 #include <support/Locker.h>
@@ -72,12 +75,36 @@ ProtocolManager::ProtocolManager(void)
 	: fProtocol(new ProtocolStore()),
 	fLock(new BLocker("ProtocolManager")) {
 	
+	LOG("im_server", liHigh, "Finding ProtocolLoader with signature "IM_PROTOCOL_LOADER_SIG);
+
 	entry_ref ref;
 	if (be_roster->FindApp(IM_PROTOCOL_LOADER_SIG, &ref) != B_OK) {
-		LOG("im_server", liHigh, "Could not find ProtocolLoader");
-	};
-	
+		// Try with a query and take the first result
+		BVolumeRoster vroster;
+		BVolume volume;
+		char volName[B_FILE_NAME_LENGTH];
+
+		vroster.Rewind();
+
+		while (vroster.GetNextVolume(&volume) == B_OK) {
+			if ((volume.InitCheck() != B_OK) || (!volume.KnowsQuery()))
+				continue;
+
+			volume.GetName(volName);
+			LOG("im_server", liDebug, "ProtocolManager: Finding ProtocolLoader with a query on %s", volName);
+
+			BQuery* query = new BQuery();
+			query->SetPredicate("((BEOS:APP_SIG==\""IM_PROTOCOL_LOADER_SIG"\")&&(BEOS:TYPE==\"application/x-vnd.Be-elfexecutable\"))");
+			query->SetVolume(&volume);
+			query->Fetch();
+
+			if (query->GetNextRef(&ref) == B_OK)
+				break;
+		}
+	}
 	fLoaderPath = BPath(&ref);
+
+	LOG("im_server", liHigh, "ProtocolLoader path: %s", fLoaderPath.Path());
 };
 
 ProtocolManager::~ProtocolManager(void) {
