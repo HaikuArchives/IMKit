@@ -74,3 +74,15 @@ actions ResComp1
 {
 	cat "$(2[2-])" | $(CC) -E $(CCDEFS) $(HDRS) - | egrep -v '^#' | $(2[1]) --auto-names -o "$(1)" -
 }
+
+# SVGIcon <target> : <icon>
+rule SVGIcon
+{
+	Depends $(1) : $(SVGICONTOOL) ;
+	SVGIcon1 $(1) $(2) : $(SVGICONTOOL) ;
+}
+
+actions SVGIcon1
+{
+	$(2) $(1[1]) Build STD_ICON 1 -1 SVG "$(1[2])" ;
+}

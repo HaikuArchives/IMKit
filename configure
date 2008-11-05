@@ -63,6 +63,7 @@ settypebin=`which_replacement settype`
 mimesetbin=`which_replacement mimeset`
 setversionbin=`which_replacement setversion`
 copyattrbin=`which_replacement copyattr`
+svgicontool=`which_replacement IconTool`
 
 # Libraries
 have_infopopper=0
@@ -275,6 +276,7 @@ SETTYPE = ${settypebin} ;
 MIMESET = ${mimesetbin} ;
 SETVERSION = ${setversionbin} ;
 COPYATTR = ${copyattrbin} ;
+SVGICONTOOL = ${svgicontool} ;
 
 DEFINES += ${defines} ;
 EOF
