@@ -10,23 +10,18 @@ SubDir HAIKU_TOP 3rdparty IMKit utils ProtocolLoader ;
 
 SubDirC++Flags $(IMKIT_DEFINES) ;
 
-local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
-
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) server ] ;
-SubDirSysHdrs [ FDirName $(sslDir) include ] ;
 
 Application ProtocolLoader :
 	main.cpp
 	ProtocolLoaderApplication.cpp
-	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a
 	: ProtocolLoader.rdef
 ;
 
 Depends ProtocolLoader : <IMKit>libcommon.a ;
 Depends ProtocolLoader : libim.so ;
-
-LINKFLAGS on ProtocolLoader += -L$(sslDir)/lib ;
 
 AddFilesToHaikuImage apps im_kit : ProtocolLoader ;
 

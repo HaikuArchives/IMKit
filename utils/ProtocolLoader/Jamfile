@@ -11,12 +11,11 @@ SubDir IMKIT_TOP utils ProtocolLoader ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
-SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 Executable ProtocolLoader :
 	main.cpp
 	ProtocolLoaderApplication.cpp
-	: be stdc++.r4 libim.so libcommon.a ssl crypto
+	: be stdc++.r4 libim.so libcommon.a 
 	: ProtocolLoader.rdef
 ;
 
@@ -26,7 +25,5 @@ Depends ProtocolLoader : libim.so ;
 if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
-
-LINKFLAGS on ProtocolLoader += -L$(IMKIT_OPENSSL_LIBDIR) ;
 
 InstallLib $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;
