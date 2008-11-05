@@ -8,10 +8,15 @@ zuMi created the following HVIF icons:
   * AIM protocol
   * ICQ protocol
   * GoogleTalk protocol
+  * Yahoo protocol (2 icons)
+  * MSN protocol (3 icons)
   * im_logger client (from Haiku's Misc_Scroll)
   * im_binlogger client (from Haiku's Misc_Scroll)
   * im_binlog_viewer client (from Haiku's Misc_Scroll)
   * im_server, Preflet and IMDeskbarIcon (which are Haiku's App_Chat)
+  * im_infopopper client
+  * Address Book
+  * IM_Merge_contacts utility
 
 zuMi created the following SVG icons:
 

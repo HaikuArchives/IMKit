@@ -14,7 +14,7 @@ Executable im_infopopper :
 	main.cpp
 	IMInfoApp.cpp
 	: be stdc++.r4 libim.so libcommon.a infopopper
-	: im_infopopper.rsrc
+	: im_infopopper.rdef
 ;
 
 Depends im_infopopper : libcommon.a ;

@@ -119,7 +119,8 @@ PWindow::PWindow(void)
 
 			BPath newProtocolPath = pPath;
 			newProtocolPath.Append(protocol);
-			
+
+			printf("---------- %s\n", protocol);
 	
 			BString protoPath = newProtocolPath.Path();
 	

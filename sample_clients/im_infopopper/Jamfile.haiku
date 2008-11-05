@@ -15,7 +15,7 @@ Application im_infopopper :
 	main.cpp
 	IMInfoApp.cpp
 	: be $(TARGET_LIBSTDC++) libim.so <IMKit>libcommon.a libinfopopper.so
-	: im_infopopper.rsrc
+	: im_infopopper.rdef
 ;
 
 Depends im_infopopper : <IMKit>libcommon.a ;
