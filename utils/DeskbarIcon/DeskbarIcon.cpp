@@ -109,8 +109,7 @@ IM_DeskbarIcon::_init() {
 	fOfflineIcon = GetIconFromResources(&resources, kDeskbarOfflineIcon, B_MINI_ICON);
 	if (fOfflineIcon == NULL)
 		LOG("deskbar", liHigh, "Error loading fOfflineIcon");
-printf("\n\n\n\n\n\n%p\n", fOfflineIcon);
-	
+
 	fGenericIcon = GetIconFromResources(&resources, kDeskbarGenericIcon, B_MINI_ICON);
 	if (fGenericIcon == NULL)
 		LOG("deskbar", liHigh, "Error loading fGenericIcon");
@@ -502,6 +501,7 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 		case IM::LOADED_PROTOCOLS_CHANGED: {
 			// Rebuild the protocol menu
 			fDirtyStatusMenu = true;
+			LOG("deskbar", liDebug, "Received IM::LOADED_PROTOCOLS_CHANGED");
 		} break;
 		
 		default: { 
