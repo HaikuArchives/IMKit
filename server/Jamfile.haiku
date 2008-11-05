@@ -25,6 +25,7 @@ Server im_server :
 	ContactHandle.cpp
 	ProtocolManager.cpp
 	ProtocolInfo.cpp
+	StatusIcon.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
 	  libim.so <IMKit>libcommon.a
 	: im_server.rdef ContactStatusIcons.rdef Icons.rdef

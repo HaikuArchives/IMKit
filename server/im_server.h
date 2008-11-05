@@ -23,6 +23,7 @@ namespace IM {
 
 class ProtocolInfo;
 class ProtocolManager;
+class StatusIcon;
 
 class Server : public BApplication
 {
@@ -135,76 +136,7 @@ class Server : public BApplication
 		
 		map<Contact,string>			fPreferredConnection;
 
-#if defined(__HAIKU__) || defined(BEOS)
-		class StatusIcon {
-			public:
-				StatusIcon()
-					: fVectorIcon(NULL),
-					fVectorIconSize(0),
-					fMiniIcon(NULL),
-					fMiniIconSize(0),
-					fLargeIcon(NULL),
-					fLargeIconSize(0)
-				{
-				}
-
-				~StatusIcon()
-				{
-					if (fVectorIcon != NULL)
-						free(fVectorIcon);
-					if (fMiniIcon != NULL)
-						free(fMiniIcon);
-					if (fLargeIcon != NULL)
-						free(fLargeIcon);
-				}
-
-				void SetVectorIcon(const void* data, size_t size)
-				{
-					fVectorIcon = malloc(size);
-					memcpy(fVectorIcon, data, size);
-					fVectorIconSize = size;
-				}
-
-				const void* VectorIcon() { return fVectorIcon; }
-				size_t VectorIconSize() { return fVectorIconSize; }
-
-				void SetMiniIcon(const void* data, size_t size)
-				{
-					fMiniIcon = malloc(size);
-					memcpy(fMiniIcon, data, size);
-					fMiniIconSize = size;
-				}
-
-				const void* MiniIcon() { return fMiniIcon; }
-				size_t MiniIconSize() { return fMiniIconSize; }
-
-				void SetLargeIcon(const void* data, size_t size)
-				{
-					fLargeIcon = malloc(size);
-					memcpy(fLargeIcon, data, size);
-					fLargeIconSize = size;
-				}
-
-				const void* LargeIcon() { return fLargeIcon; }
-				size_t LargeIconSize() { return fLargeIconSize; }
-
-				bool IsEmpty()
-				{
-					return ((fVectorIcon == NULL) &&
-					        (fMiniIcon == NULL) &&
-					        (fLargeIcon == NULL));
-				}
-
-			private:
-				void* fVectorIcon;
-				size_t fVectorIconSize;
-				void* fMiniIcon;
-				size_t fMiniIconSize;
-				void* fLargeIcon;
-				size_t fLargeIconSize;
-		};
-		map<int, StatusIcon*>			fStatusIcons;
-#endif
+		map<int, StatusIcon *>		fStatusIcons;
 
 		BMessenger					fDeskbarMsgr;
 		

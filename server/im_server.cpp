@@ -4,6 +4,9 @@
 #include "ProtocolInfo.h"
 #include "ProtocolManager.h"
 #include "ProtocolSpecification.h"
+#include "StatusIcon.h"
+
+#include "common/IMKitUtilities.h"
 
 #include <libim/Constants.h>
 #include <libim/Helpers.h>
@@ -130,7 +133,7 @@ Server::Server()
 
 	_Init();
 	
-#ifdef ZETA
+#if defined(ZETA)
 	/* same badness as in DeskbarIcon.cpp */
 	BPath path( "/boot/apps/Internet/IMKit/Language/Dictionaries/im_server" );
 	if( path.InitCheck() == B_OK )
@@ -178,7 +181,6 @@ Server::~Server()
 
 	SetAllOffline();
 
-#if defined(__HAIKU__) || defined(BEOS)
 	map<int, StatusIcon*>::iterator it;
 
 	for (it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
@@ -186,7 +188,6 @@ Server::~Server()
 		fStatusIcons.erase(it->first);
 		delete icon;
 	}
-#endif
 
 	LOG(kAppName, liDebug, "~Server end");
 }
@@ -547,9 +548,7 @@ Server::MessageReceived( BMessage *msg )
 
 void Server::_Init()
 {
-#if defined(__HAIKU__) || defined(BEOS)
 	_UpdateStatusIcons();
-#endif
 }
 
 void Server::_UpdateStatusIcons()
@@ -575,35 +574,40 @@ void Server::_UpdateStatusIcons()
 	LOG("im_server", liDebug, "Caching HVIF icons...");
 
 	for (int i = kAvailableStatusIcon; i <= kOfflineStatusIcon; i++) {
-		StatusIcon* icon = new StatusIcon;
+		StatusIcon *icon = new StatusIcon();
 
 		data = resources.LoadResource(B_VECTOR_ICON_TYPE, i, &size);
-		if (data != NULL)
+		if (data != NULL) {
 			icon->SetVectorIcon(data, size);
+		};
 
-		if (!icon->IsEmpty())
+		if (icon->IsEmpty() == false) {
 			fStatusIcons.insert(pair<int, StatusIcon*>(i, icon));
+		};
 	}
 #endif
 
-#if defined(BEOS)
+#if defined(BEOS) || defined(ZETA)
 	LOG("im_server", liDebug, "Caching bitmap icons...");
 
 	for (int i = kAvailableStatusIcon; i <= kOfflineStatusIcon; i++) {
-		StatusIcon* icon = new StatusIcon;
+		StatusIcon *icon = new StatusIcon();
 
 		// Mini icon
 		data = resources.LoadResource(B_MINI_ICON_TYPE, kAvailableStatusIconSmall + i, &size);
-		if (data != NULL)
+		if (data != NULL) {
 			icon->SetMiniIcon(data, size);
+		};
 
 		// Large icon
 		data = resources.LoadResource(B_LARGE_ICON_TYPE, kAvailableStatusIconLarge + i, &size);
-		if (data != NULL)
+		if (data != NULL) {
 			icon->SetLargeIcon(data, size);
+		};
 
-		if (!icon->IsEmpty())
+		if (icon->IsEmpty() == false) {
 			fStatusIcons.insert(pair<int, StatusIcon*>(i, icon));
+		};
 	}
 #endif
 }
@@ -1809,7 +1813,6 @@ Server::UpdateContactStatusAttribute(Contact& contact)
 			return;
 		}
 
-#if defined(__HAIKU__) || defined(BEOS)
 		int32 iconIndex = kOfflineStatusIcon;
 
 		if (strcmp(status, ONLINE_TEXT) == 0)
@@ -1823,7 +1826,7 @@ Server::UpdateContactStatusAttribute(Contact& contact)
 
 		StatusIcon* icon = fStatusIcons[iconIndex];
 
-#	if defined(__HAIKU__)
+#if defined(__HAIKU__)
 		// Add vector icon attribute
 		if (node.WriteAttr(BEOS_ICON_ATTRIBUTE, B_VECTOR_ICON_TYPE, 0, icon->VectorIcon(), icon->VectorIconSize()) != icon->VectorIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write HVIF icon attribute to contact...");
@@ -1833,20 +1836,20 @@ Server::UpdateContactStatusAttribute(Contact& contact)
 		// Remove BeOS attributes for raster icons
 		node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
-#	elif defined(BEOS)
+#else
 		// Add mini icon attribute
 		if (node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, B_MINI_ICON_TYPE, 0, icon->MiniIcon(), icon->MiniIconSize()) != icon->MiniIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write mini icon attribute to contact...");
-			node.RemoveAttribute(BEOS_MINI_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		}
 
 		// Add large icon attribute
 		if (node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, B_LARGE_ICON_TYPE, 0, icon->LargeIcon(), icon->LargeIconSize()) != icon->LargeIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write large icon attribute to contact...");
-			node.RemoveAttribute(BEOS_LARGE_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
 		}
-#	endif
-#elif defined(ZETA)
+#endif
+#if defined(ZETA)
 		// SVG icon is a bit special atm
 		// Copy the BEOS_SVG_ICON_EXTRA thing is not needed in Zeta > RC3
 		BPath prefsPath;
@@ -1961,11 +1964,10 @@ Server::SetAllOffline()
 
 		BNode node(&entry);
 
-#if defined(__HAIKU__) || defined(BEOS)
 		int32 iconIndex = kOfflineStatusIcon;
 		StatusIcon* icon = fStatusIcons[iconIndex];
 
-#	if defined(__HAIKU__)
+#if defined(__HAIKU__)
 		// Add vector icon attribute
 		if (node.WriteAttr(BEOS_ICON_ATTRIBUTE, B_VECTOR_ICON_TYPE, 0, icon->VectorIcon(), icon->VectorIconSize()) != icon->VectorIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write HVIF icon attribute to contact...");
@@ -1975,20 +1977,20 @@ Server::SetAllOffline()
 		// Remove BeOS attributes for raster icons
 		node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
-#	elif defined(BEOS)
+#else
 		// Add mini icon attribute
 		if (node.WriteAttr(BEOS_MINI_ICON_ATTRIBUTE, B_MINI_ICON_TYPE, 0, icon->MiniIcon(), icon->MiniIconSize()) != icon->MiniIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write mini icon attribute to contact...");
-			node.RemoveAttribute(BEOS_MINI_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_MINI_ICON_ATTRIBUTE);
 		}
 
 		// Add large icon attribute
 		if (node.WriteAttr(BEOS_LARGE_ICON_ATTRIBUTE, B_LARGE_ICON_TYPE, 0, icon->LargeIcon(), icon->LargeIconSize()) != icon->LargeIconSize()) {
 			LOG("im_server", liHigh, "Couldn't write large icon attribute to contact...");
-			node.RemoveAttribute(BEOS_LARGE_ICON_ATTRIBUTE);
+			node.RemoveAttr(BEOS_LARGE_ICON_ATTRIBUTE);
 		}
-#	endif
-#elif defined(ZETA)
+#endif
+#if defined(ZETA)
 		// SVG icon is a bit special atm
 		// Copy the BEOS_SVG_ICON_EXTRA thing is not needed in Zeta > RC3
 		BPath prefsPath;
