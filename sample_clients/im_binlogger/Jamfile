@@ -20,3 +20,7 @@ Depends im_binlogger : libcommon.a ;
 Depends im_binlogger : libim.so ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlogger ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	SVGIcon im_binlogger : [ FDirName $(IMKIT_TOP) icons imkit clients im_binlogger.svg ] ;
+}

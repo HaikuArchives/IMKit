@@ -36,3 +36,7 @@ if $(IMKIT_IS_ZETA) = 1 {
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;
 InstallSymlink $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client : $(IMKIT_COMMON_BIN_DIRECTORY)/im_client ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	SVGIcon im_client : [ FDirName $(IMKIT_TOP) icons imkit im_client.svg ] ;
+}

@@ -47,3 +47,7 @@ if $(IMKIT_IS_ZETA) = 1 {
 LINKFLAGS on msn += -L$(IMKIT_OPENSSL_LIBDIR) ;
 
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : msn ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	SVGIcon msn : [ FDirName $(IMKIT_TOP) icons imkit protocols MSN.svg ] ;
+}

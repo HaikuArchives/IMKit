@@ -32,3 +32,7 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlog_viewer ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	SVGIcon im_binlog_viewer : [ FDirName $(IMKIT_TOP) icons imkit clients im_binlog_viewer.svg ] ;
+}
