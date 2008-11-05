@@ -1,9 +1,24 @@
 IM Kit Credits
 ==============
 
+If you are not in this list, just send us an email.
+We will add you!
+
+== Code ==
+
+Code contributors in alphabetical order:
+
+  * Bruno G. "bga" Albuquerque
+  * Andrea "xeD" Anzani
+  * Michael "slaad" Davidson
+  * Mikael "m_eiman" Eiman
+  * Pier Luigi "plfiorini" Fiorini
+  * Oliver "OliverH" Hartmann
+  * Mikael "tic" Jansson
+
 == Icons ==
 
-zuMi created the following HVIF icons:
+Michele "zuMi" Frau created the following HVIF icons:
 
   * AIM protocol
   * ICQ protocol
@@ -18,11 +33,11 @@ zuMi created the following HVIF icons:
   * Address Book
   * IM_Merge_contacts utility
 
-zuMi created the following SVG icons:
+Michele "zuMi" Frau created the following SVG icons:
 
   * GoogleTalk protocol
 
-plfiorini created the following HVIF icons:
+Pier Luigi "plfiorini" Fiorini created the following HVIF icons:
 
   * Jabber protocol (from the SVG version with a bit of cleanup)
   * Deskbar icons (from Haiku's File_Person_small)
