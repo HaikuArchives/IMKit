@@ -387,16 +387,21 @@ im_save_client_template( const char * client, const BMessage * msg )
 
 // CLIENT / PROTOCOL LIST
 
-void
-im_get_file_list( const char * path, const char * msg_field, BMessage * msg )
+static void
+im_get_file_list(const char* path, const char* msg_field, BMessage* list)
 {
 	BDirectory dir(path);
-	
 	entry_ref ref;
-	
-	while ( dir.GetNextRef(&ref) == B_OK )
-	{
-		msg->AddString(msg_field, ref.name );
+	BMessage* msg;
+
+	LOG("helpers", liDebug, "im_get_file_list() - %s", path);
+
+	while (dir.GetNextRef(&ref) == B_OK) {
+		LOG("helpers", liDebug, "- Adding %s/%s", path, ref.name);
+		msg = new BMessage();
+		msg->AddString("path", path);
+		msg->AddString("file", ref.name);
+		list->AddMessage(msg_field, msg);
 	}
 }
 
@@ -416,19 +421,18 @@ im_get_protocol_list(BMessage* list)
 	}
 }
 
+
 void
-im_get_client_list( BMessage * list )
+im_get_client_list(BMessage* list)
 {
 	BPath path;
-	
-	if (find_directory(B_USER_SETTINGS_DIRECTORY,&path,true,NULL) != B_OK)
-		return;
-	
-	path.Append("im_kit/clients");
-	
-	printf("%s\n", path.Path() );
 
-	im_get_file_list( path.Path(), "client", list);
+	// TODO: Do a query for application/x-vnd.imkit.*_client
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL) != B_OK)
+		return;
+	path.Append("im_kit/clients");
+
+	im_get_file_list(path.Path(), "client", list);
 }
 
 void

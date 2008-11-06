@@ -20,41 +20,43 @@ BubbleHelper gHelper;
 
 PWindow::PWindow(void)
 	: BWindow(BRect(5, 25, 480, 285), "Instant Messaging", B_TITLED_WINDOW,
-	 B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS) {
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
+	fView(NULL),
+	fSave(NULL),
+	fRevert(NULL),
+	fListView(NULL),
+	fBox(NULL),
+	fCurrentView(NULL),
+	fCurrentIndex(0)
+{
 #ifdef ZETA
 	app_info ai;
-	be_app->GetAppInfo( &ai );
+	be_app->GetAppInfo(&ai);
+
 	BPath path;
-	BEntry entry( &ai.ref, true );
-	entry.GetPath( &path );
-	path.GetParent( &path );
-	path.Append( "Language/Dictionaries/InstantMessaging" );
+	BEntry entry(&ai.ref, true);
+	entry.GetPath(&path);
+	path.GetParent(&path);
+	path.Append("Language/Dictionaries/InstantMessaging");
+
 	BString path_string;
-	
-	if( path.InitCheck() != B_OK )
-		path_string.SetTo( "Language/Dictionaries/InstantMessaging" );
+
+	if (path.InitCheck() != B_OK)
+		path_string.SetTo("Language/Dictionaries/InstantMessaging");
 	else
-		path_string.SetTo( path.Path() );
-	
-	be_locale.LoadLanguageFile( path_string.String() );
+		path_string.SetTo(path.Path());
+
+	be_locale.LoadLanguageFile(path_string.String());
 #endif
-	
+	BMessage msg;
+
 	fManager = new IM::Manager(BMessenger(this));
-	
-	fCurrentIndex = 0;
-	fCurrentView = NULL;
-	fBox = NULL;
-	fView = NULL;
-	fSave = NULL;
-	fRevert = NULL;
-	fListView = NULL;
-	fBox = NULL;
 
 	BRect frame = Bounds();
 
 	fView = new BView(frame, "PrefView", B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
-
 	AddChild(fView);
+
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 	fView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	fView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -65,10 +67,13 @@ PWindow::PWindow(void)
 	fView->SetHighColor(0, 0, 0, 0);
 #endif
 
+	// Outline list view frame
 	frame.left = kEdgeOffset;
 	frame.top = kEdgeOffset;
 	frame.bottom = Bounds().bottom - kEdgeOffset;
 	frame.right = 120;
+
+	// Outline list view
 	fListView = new BOutlineListView(frame, "LISTVIEW", B_SINGLE_SELECTION_LIST);
 
 	font_height fontHeight;
@@ -79,198 +84,183 @@ PWindow::PWindow(void)
 		B_V_SCROLL_BAR_WIDTH, kEdgeOffset, 	fView->Bounds().right - kEdgeOffset,
 		fView->Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset)), "BOX",
 		B_FOLLOW_ALL_SIDES);
-	fBox->SetLabel("IM Server");
-	
+	fBox->SetLabel(_T("IM Server"));
+
 	fView->AddChild(fBox);
 
 	frame = fBox->Bounds();
 	frame.InsetBy(kEdgeOffset, kEdgeOffset);
 	frame.top += fFontHeight;
 	frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
-	// PROTOCOLS
 
-	IconTextItem *protoItem = new IconTextItem(_T("Protocols"), NULL);
+	/*
+	 * Protocols
+	 */
+
+	IconTextItem* protoItem = new IconTextItem(_T("Protocols"), NULL);
 	fListView->AddItem(protoItem);
-	
+
 	BMessage protocols;
 	im_get_protocol_list(&protocols);
-	
-	if (protocols.FindString("protocol")) {
-		
-		BPath pPath;
 
-		if (find_directory(B_COMMON_ADDONS_DIRECTORY, &pPath) != B_OK)
-		{
-			if (find_directory(B_USER_ADDONS_DIRECTORY, &pPath) != B_OK)
-			{	
-				pPath.SetTo("/boot/home/config/add-ons/");
-			}
-		}
-		else
-		{
-			pPath.Append("im_kit");
-			pPath.Append("protocols");
-		}
-		
-		const char *protocol = NULL;
-		for (int16 i = 0; protocols.FindString("protocol", i, &protocol) == B_OK; i++) {
-			
-			entry_ref ref;
+	for (int32 i = 0; protocols.FindMessage("protocol", i, &msg) == B_OK; i++) {
+		const char* path;
+		const char* file;
+		BPath protoPath;
 
-			BPath newProtocolPath = pPath;
-			newProtocolPath.Append(protocol);
+		// Get protocol add-on path and file
+		msg.FindString("path", &path);
+		msg.FindString("file", &file);
+		protoPath.SetTo(path);
+		protoPath.Append(file);
 
-			printf("---------- %s\n", protocol);
-	
-			BString protoPath = newProtocolPath.Path();
-	
-			
-			BMessage protocol_settings;
-			BMessage protocol_template;
-			
-			im_load_protocol_settings( protocol, &protocol_settings );
-			im_load_protocol_template( protocol, &protocol_template );
-			
-			BBitmap *icon = ReadNodeIcon(protoPath.String(), kSmallIcon, true);
-			
-			
-			IconTextItem *item = new IconTextItem(protocol, icon);
-			fListView->AddUnder(item, protoItem);
-			
-			protocol_template.AddString("protocol", protocol); // for identification when saving
-			
-			pair <BMessage, BMessage> p(protocol_settings, protocol_template);
-			fAddOns[protocol] = p; //pair<BMessage, BMessage>(settings, tmplate);
-			
-			BView *view = new BView(frame, protocol, B_FOLLOW_NONE,
-				B_WILL_DRAW);
+		// Add protocol item
+		BBitmap* icon = ReadNodeIcon(protoPath.Path(), kSmallIcon, true);
+		IconTextItem* item = new IconTextItem(file, icon);
+		fListView->AddUnder(item, protoItem);
+
+		// Load settings
+		BMessage protocol_settings;
+		im_load_protocol_settings(file, &protocol_settings);
+
+		// Load template
+		BMessage protocol_template;
+		im_load_protocol_template(file, &protocol_template);
+		protocol_template.AddString("protocol", protoPath.Path());
+
+		pair<BMessage, BMessage> p(protocol_settings, protocol_template);
+		fAddOns[file] = p;
+
+		BView *view = new BView(frame, file, B_FOLLOW_NONE, B_WILL_DRAW);
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
-			view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
 #else
-			view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetHighColor(0, 0, 0, 0);
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(0, 0, 0, 0);
 #endif
-			
-			float settings_height = BuildGUI(protocol_template, protocol_settings, view);
-			
-			BScrollView * scroller = new BScrollView(
-				"scroller", view, B_FOLLOW_ALL,
-				0, false, true
-			);
-			view->ResizeTo( view->Bounds().Width(), settings_height );
-			
-			float scroll_height = scroller->Bounds().Height();
-			float diff = settings_height - scroll_height;
-			if ( diff < 0 ) diff = 0;
-			
-			scroller->ScrollBar(B_VERTICAL)->SetRange(0, diff);
 
-			view = scroller;
-					
-			fPrefViews[protocol] = view;
-			fBox->AddChild(view);
-			if ( fBox->CountChildren() > 1 ) {
-				view->Hide();
-			} else {
-				fBox->SetLabel(protocol);
-				fCurrentView = view;
-				fCurrentIndex = fListView->IndexOf(item);
-				fListView->Select(fCurrentIndex);
-			};
-		};
+		float settings_height = BuildGUI(protocol_template, protocol_settings, view);
+	
+		BScrollView* scroller = new BScrollView("scroller", view, B_FOLLOW_ALL, 0, false, true);
+		view->ResizeTo(view->Bounds().Width(), settings_height);
+
+		float scroll_height = scroller->Bounds().Height();
+		float diff = settings_height - scroll_height;
+		if (diff < 0)
+			diff = 0;
+
+		scroller->ScrollBar(B_VERTICAL)->SetRange(0, diff);
+
+		view = scroller;
+
+		fPrefViews[file] = view;
+		fBox->AddChild(view);
+		if (fBox->CountChildren() > 1)
+			view->Hide();
+		else {
+			fBox->SetLabel(file);
+			fCurrentView = view;
+			fCurrentIndex = fListView->IndexOf(item);
+			fListView->Select(fCurrentIndex);
+		}
 	}
-	
-	
-	// CLIENTS
-	
+
+	/*
+	 * Clients
+	 */
+
+	IconTextItem* clientItem = new IconTextItem(_T("Clients"), NULL);
+	fListView->AddItem(clientItem);
+
 	BMessage clients;
 	im_get_client_list(&clients);
 
-	IconTextItem *clientItem = new IconTextItem(_T("Clients"), NULL);
-	fListView->AddItem(clientItem);
-	
-	if (clients.FindString("client")) {
-		const char *client = NULL;
-		
-//		FIX ME: Find the location of the im_server programmatically (By app signature?)
-		for (int16 i = 0; clients.FindString("client", i, &client) == B_OK; i++) {
-			entry_ref ref;
-			//protocols.FindRef("ref", i, &ref);	
-			
-			BMessage client_settings;
-			BMessage client_template;
-			
-			im_load_client_settings( client, &client_settings );
-			im_load_client_template( client, &client_template );
-			
-			if ( client_settings.FindString("app_sig") ) {
-				be_roster->FindApp( client_settings.FindString("app_sig"), &ref );
-			}
+	for (int32 i = 0; clients.FindMessage("client", i, &msg) == B_OK; i++) {
+		const char* path;
+		const char* file;
+		BPath clientPath;
+		entry_ref ref;
 
-			BBitmap *icon = ReadNodeIcon(BPath(&ref).Path(), kSmallIcon, true);
-			IconTextItem *item = new IconTextItem(client, icon);
+		// Get protocol add-on path and file
+		msg.FindString("path", &path);
+		msg.FindString("file", &file);
+		clientPath.SetTo(path);
+		clientPath.Append(file);
 
-			if (strcmp(client, "im_server") == 0) {
-				IconTextItem *server = new IconTextItem(_T("Server"), icon);
-				fListView->AddItem(server, 0);
-				fListView->AddUnder(item, server);
-			} else {
-				fListView->AddUnder(item, clientItem);
-			};
-			
-			client_template.AddString("client", client); // for identification when saving
-			
-			pair <BMessage, BMessage> p(client_settings, client_template);
-			fAddOns[client] = p; //pair<BMessage, BMessage>(settings, tmplate);
-			
-			BView *view = new BView(frame, client, B_FOLLOW_ALL_SIDES,
-				B_WILL_DRAW);
+		// Load settings
+		BMessage client_settings;
+		im_load_client_settings(file, &client_settings);
+
+		// Load template
+		BMessage client_template;
+		im_load_client_template(file, &client_template);
+
+		if (client_settings.FindString("app_sig")) {
+			be_roster->FindApp(client_settings.FindString("app_sig"), &ref);
+			client_template.AddString("client", file);
+		}
+
+		// Add client item
+		BBitmap* icon = ReadNodeIcon(BPath(&ref).Path(), kSmallIcon, true);
+		IconTextItem* item = new IconTextItem(file, icon);
+
+		// Add im_server
+		if (strcmp(file, "im_server") == 0) {
+			IconTextItem* server = new IconTextItem(_T("Server"), icon);
+			fListView->AddItem(server, 0);
+			fListView->AddUnder(item, server);
+		} else
+			fListView->AddUnder(item, clientItem);
+
+		pair<BMessage, BMessage> p(client_settings, client_template);
+		fAddOns[file] = p;
+
+		BView* view = new BView(frame, file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
-			view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
 #else
-			view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-			view->SetHighColor(0, 0, 0, 0);
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(0, 0, 0, 0);
 #endif
 
-			float settings_height = BuildGUI(client_template, client_settings, view);
-			
-			BScrollView * scroller = new BScrollView(
-				"scroller", view, B_FOLLOW_ALL,
-				0, false, true
-			);
-			view->ResizeTo( view->Bounds().Width(), settings_height );
-			
-			float scroll_height = scroller->Bounds().Height();
-			float diff = settings_height - scroll_height;
-			if ( diff < 0 ) diff = 0;
-			
-			scroller->ScrollBar(B_VERTICAL)->SetRange(0, diff);
-
-			view = scroller;
-				
-			fPrefViews[client] = view;
-			fBox->AddChild(view);
-			if (fBox->CountChildren() > 1 ) {
-				view->Hide();
-			} else {
-				fBox->SetLabel(client);
-				fCurrentView = view;
-				fCurrentIndex = fListView->IndexOf(item);
-				fListView->Select(fCurrentIndex);
-			};
-		};
-	}
+		float settings_height = BuildGUI(client_template, client_settings, view);
 	
-	BScrollView *scroller = new BScrollView("list scroller", fListView, B_FOLLOW_LEFT |
-		B_FOLLOW_BOTTOM, 0, false, true);
+		BScrollView* scroller = new BScrollView("scroller", view, B_FOLLOW_ALL, 0, false, true);
+		view->ResizeTo(view->Bounds().Width(), settings_height);
+
+		float scroll_height = scroller->Bounds().Height();
+		float diff = settings_height - scroll_height;
+		if (diff < 0)
+			diff = 0;
+
+		scroller->ScrollBar(B_VERTICAL)->SetRange(0, diff);
+
+		view = scroller;
+
+		fPrefViews[file] = view;
+		fBox->AddChild(view);
+		if (fBox->CountChildren() > 1)
+			view->Hide();
+		else {
+			fBox->SetLabel(file);
+			fCurrentView = view;
+			fCurrentIndex = fListView->IndexOf(item);
+			fListView->Select(fCurrentIndex);
+		}
+	}
+
+	// Scrollbars
+	BScrollView* scroller = new BScrollView("list scroller", fListView,
+		B_FOLLOW_LEFT | B_FOLLOW_BOTTOM, 0, false, true);
 	fView->AddChild(scroller);
 
+	// Save button's frame
 	frame = fView->Frame();
 	frame.InsetBy(kEdgeOffset, kEdgeOffset);
 	frame.bottom -= (kEdgeOffset * 2);
@@ -278,13 +268,16 @@ PWindow::PWindow(void)
 	frame.left = frame.right - (be_plain_font->StringWidth(_T("Save")) +
 		(kControlOffset * 2));
 
+	// Save button
 	fSave = new BButton(frame, "Save", _T("Save"), new BMessage(SAVE));
 	fView->AddChild(fSave);
 
+	// Revert button's frame
 	frame.right = frame.left - kControlOffset;
 	frame.left = frame.right - (be_plain_font->StringWidth(_T("Revert")) +
 		(kControlOffset * 2));
 
+	// Revert button
 	fRevert = new BButton(frame, "Revert", _T("Revert"), new BMessage(REVERT));
 	fView->AddChild(fRevert);
 	fRevert->SetEnabled(false);
@@ -292,12 +285,15 @@ PWindow::PWindow(void)
 	fListView->MakeFocus();
 	fListView->SetSelectionMessage(new BMessage(LISTCHANGED));
 	fListView->SetTarget(this);
-	
+
 	Show();
 	fView->Show();	
-};
+}
 
-bool PWindow::QuitRequested(void) {
+
+bool
+PWindow::QuitRequested(void)
+{
 	view_map::iterator vIt;
 	for (vIt = fPrefViews.begin(); vIt != fPrefViews.end(); vIt++) {
 		BView *view = vIt->second;
