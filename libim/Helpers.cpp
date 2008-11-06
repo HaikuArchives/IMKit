@@ -408,16 +408,21 @@ im_get_file_list(const char* path, const char* msg_field, BMessage* list)
 void
 im_get_protocol_list(BMessage* list)
 {
-	BPath path;
+	BPath commonPath;
+	BPath userPath;
 
-	if (find_directory(B_COMMON_ADDONS_DIRECTORY, &path, true, NULL) == B_OK) {
-		path.Append("im_kit/protocols");
-		im_get_file_list(path.Path(), "protocol", list);
+	if (find_directory(B_COMMON_ADDONS_DIRECTORY, &commonPath, true, NULL) == B_OK) {
+		commonPath.Append("im_kit/protocols");
+		im_get_file_list(commonPath.Path(), "protocol", list);
 	}
 
-	if (find_directory(B_USER_ADDONS_DIRECTORY, &path, true, NULL) == B_OK) {
-		path.Append("im_kit/protocols");
-		im_get_file_list(path.Path(), "protocol", list);
+	if (find_directory(B_USER_ADDONS_DIRECTORY, &userPath, true, NULL) == B_OK) {
+		userPath.Append("im_kit/protocols");
+		
+		// On some platforms B_USER_ADDONS_DIRECTORY is the same as B_COMMON_ADDONS_DIRECTORY
+		if (userPath != commonPath) {
+			im_get_file_list(userPath.Path(), "protocol", list);
+		};
 	}
 }
 
