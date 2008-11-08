@@ -1,6 +1,7 @@
 #ifndef PROTOCOLINFO_H
 #define PROTOCOLINFO_H
 
+#include <app/Message.h>
 #include <kernel/OS.h>
 #include <support/String.h>
 #include <storage/Path.h>
@@ -24,12 +25,15 @@ namespace IM {
 			void			Signature(const char *signature);
 			const char		*FriendlySignature(void);
 			void			FriendlySignature(const char *signature);		
-			BMessenger		*Messenger(void);
-			void			Messenger(BMessenger *messenger);
 			uint32			Capabilities(void);
 			void			Capabilities(uint32 caps);
 			uint32			Encoding(void);
 			void			Encoding(uint32 encoding);
+			BMessage		SettingsTemplate(void);
+			void			SettingsTemplate(BMessage settings);
+
+			BMessenger		*Messenger(void);
+			void			Messenger(BMessenger *messenger);
 
 			// Informational Methods
 			bool			HasCapability(uint32 capability);
@@ -51,11 +55,12 @@ namespace IM {
 
 			BString			fSignature;
 			BString			fFriendlySignature;
+			uint32			fCapabilities;
+			uint32			fEncoding;
+			BMessage		fSettingsTemplate;
 			
 			thread_id		fThreadID;
 			BMessenger		*fMessenger;
-			uint32			fCapabilities;
-			uint32			fEncoding;
 	};
 
 };

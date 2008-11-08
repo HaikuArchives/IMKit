@@ -26,3 +26,7 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallBin $(IMKIT_BEOS_PREFERENCES_DIRECTORY) : InstantMessaging ;
+
+if $(IMKIT_IS_ZETA) = 1 {
+	SVGIcon InstantMessaging : [ FDirName $(IMKIT_TOP) icons imkit InstantMessaging.svg ] ;
+}

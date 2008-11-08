@@ -9,27 +9,27 @@ namespace IM {
 								StatusIcon(void);
 								~StatusIcon(void);
 									
-			void				SetVectorIcon(const void *data, size_t size);
+			void				SetVectorIcon(const void *data, ssize_t size);
 			const void			*VectorIcon(void);
-			size_t				VectorIconSize(void);
+			ssize_t				VectorIconSize(void);
 			
-			void				SetMiniIcon(const void *data, size_t size);
+			void				SetMiniIcon(const void *data, ssize_t size);
 			const void			* MiniIcon(void);
-			size_t				MiniIconSize(void);
+			ssize_t				MiniIconSize(void);
 	
-			void				SetLargeIcon(const void *data, size_t size);
+			void				SetLargeIcon(const void *data, ssize_t size);
 			const void			*LargeIcon(void);
-			size_t				LargeIconSize(void);
+			ssize_t				LargeIconSize(void);
 	
 			bool				IsEmpty(void);
 	
 		private:
 			void				*fVectorIcon;
-			size_t				fVectorIconSize;
+			ssize_t				fVectorIconSize;
 			void 				*fMiniIcon;
-			size_t				fMiniIconSize;
+			ssize_t				fMiniIconSize;
 			void				*fLargeIcon;
-			size_t				fLargeIconSize;
+			ssize_t				fLargeIconSize;
 	};
 };
 		

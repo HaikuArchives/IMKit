@@ -470,14 +470,16 @@ Server::MessageReceived( BMessage *msg )
 			const char *friendlySignature;
 			uint32 capabilities;
 			uint32 encoding;
+			BMessage settings;
 			BMessenger msgr;
 					
 			if (msg->FindString("instance_id", &instanceID) != B_OK) return;
 			if (msg->FindString("signature", &signature) != B_OK) return;
 			if (msg->FindString("friendly_signature", &friendlySignature) != B_OK) return;
-			if (msg->FindMessenger("messenger", &msgr) != B_OK) return;
 			if (msg->FindInt32("capabilities", (int32 *)&capabilities) != B_OK) return;
 			if (msg->FindInt32("encoding", (int32 *)&encoding) != B_OK) return;
+			if (msg->FindMessage("template", &settings) != B_OK) return;
+			if (msg->FindMessenger("messenger", &msgr) != B_OK) return;
 
 			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
 
@@ -486,10 +488,11 @@ Server::MessageReceived( BMessage *msg )
 				return;
 			}
 	
-			info->Messenger(new BMessenger(msgr));
 			info->Signature(signature);
 			info->FriendlySignature(friendlySignature);
 			info->Capabilities(capabilities);
+			info->SettingsTemplate(settings);
+			info->Messenger(new BMessenger(msgr));
 			
 			BMessage add(MESSAGE);
 			add.AddInt32("im_what", REGISTER_CONTACTS);

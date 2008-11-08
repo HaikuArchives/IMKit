@@ -16,10 +16,11 @@ ProtocolInfo::ProtocolInfo(BPath path, BPath settings)
 	fSettingsPath(settings),
 	fSignature(""),
 	fFriendlySignature(""),
-	fThreadID(B_ERROR),
-	fMessenger(NULL),
 	fCapabilities(0),
-	fEncoding(0xffff) {
+	fEncoding(0xffff),
+	fThreadID(B_ERROR),
+	fMessenger(NULL) {
+
 	
 	fInstanceID = fPath.Path();
 	fInstanceID << "->";
@@ -64,15 +65,6 @@ void ProtocolInfo::FriendlySignature(const char *signature) {
 	fFriendlySignature = signature;
 };
 
-BMessenger *ProtocolInfo::Messenger(void) {
-	return fMessenger;
-};
-
-void ProtocolInfo::Messenger(BMessenger *messenger) {
-	if (fMessenger) delete fMessenger;
-	fMessenger = messenger;
-};
-
 uint32 ProtocolInfo::Capabilities(void) {
 	return fCapabilities;
 };
@@ -87,6 +79,23 @@ uint32 ProtocolInfo::Encoding(void) {
 
 void ProtocolInfo::Encoding(uint32 encoding) {
 	encoding = fEncoding;
+};
+
+BMessage ProtocolInfo::SettingsTemplate(void) {
+	return fSettingsTemplate;
+};
+
+void ProtocolInfo::SettingsTemplate(BMessage settings) {
+	fSettingsTemplate = settings;
+};
+
+BMessenger *ProtocolInfo::Messenger(void) {
+	return fMessenger;
+};
+
+void ProtocolInfo::Messenger(BMessenger *messenger) {
+	if (fMessenger) delete fMessenger;
+	fMessenger = messenger;
 };
 
 //#pragma mark Informational Methods

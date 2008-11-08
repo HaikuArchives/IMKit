@@ -33,12 +33,15 @@ ProtocolLoaderApplication::~ProtocolLoaderApplication(void) {
 //#pragma mark BApplication Hooks
 
 void ProtocolLoaderApplication::ReadyToRun(void) {
+	BMessage settings = fProtocol->GetSettingsTemplate();
+
 	BMessage reg(IM::Private::PROTOCOL_STARTED);
 	reg.AddString("instance_id", fInstanceID);
 	reg.AddString("signature", fProtocol->GetSignature());
 	reg.AddString("friendly_signature", fProtocol->GetFriendlySignature());
 	reg.AddInt32("capabilities", fProtocol->Capabilities());
 	reg.AddInt32("encoding", fProtocol->GetEncoding());
+	reg.AddMessage("template", &settings);
 	reg.AddMessenger("messenger", BMessenger(this));
 
 	fManager = new IM::Manager(this);

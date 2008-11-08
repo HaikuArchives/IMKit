@@ -137,7 +137,7 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 			ProtocolInfo *info = new ProtocolInfo(addonPath, settingsPath);
 			fProtocol->Add(info->InstanceID(), info);
 
-			LOG("im_server", liDebug, "Loading protocol from %s (%s)", fLoaderPath.Path(),
+			LOG("im_server", liMedium, "Loading protocol from %s (%s)", fLoaderPath.Path(),
 				settingsPath.Path());
 			info->Start(fLoaderPath.Path());
 		};
