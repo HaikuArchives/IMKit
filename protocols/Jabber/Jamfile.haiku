@@ -22,6 +22,7 @@ Addon jabber :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libexpat.a <IMKit>libjabber.a
 ;
 AddResources jabber : Jabber.rdef ;
+AddResources jabber : ProtocolTemplate.rdef ;
 
 Depends jabber : <IMKit>libexpat.a ;
 Depends jabber : <IMKit>libjabber.a ;

@@ -1,10 +1,17 @@
 #include "Jabber.h"
+
 #include <stdio.h>
+
+#include <image.h>
+#include <storage/File.h>
+#include <storage/Resources.h>
+
 #include <libim/Constants.h>
 #include <libim/Helpers.h>
 #include <libjabber/JabberSocketPlug.h>
 
 #include <libjabber/States.h>
+
 #include "string.h"
 
 const char *  kProtocolName = "jabber";
@@ -325,36 +332,25 @@ Jabber::GetFriendlySignature()
 BMessage
 Jabber::GetSettingsTemplate()
 {
-	BMessage main_msg(IM::SETTINGS_TEMPLATE);
-	
-	BMessage user_msg;
-	user_msg.AddString("name","username");
-	user_msg.AddString("description", "Username"); 
-	user_msg.AddInt32("type",B_STRING_TYPE);
-	
-	BMessage serv_msg;
-	serv_msg.AddString("name","server");
-	serv_msg.AddString("description", "Server"); 
-	serv_msg.AddInt32("type",B_STRING_TYPE);
-	
-	BMessage pass_msg;
-	pass_msg.AddString("name","password");
-	pass_msg.AddString("description", "Password");
-	pass_msg.AddInt32("type",B_STRING_TYPE);
-	pass_msg.AddBool("is_secret", true);
-	
-	BMessage res;
-	res.AddString("name","resource");
-	res.AddString("description", "Resource");
-	res.AddString("default", "IM Kit Jabber AddOn");
-	res.AddInt32("type",B_STRING_TYPE);
-		
-	main_msg.AddMessage("setting", &user_msg);
-	main_msg.AddMessage("setting", &serv_msg);
-	main_msg.AddMessage("setting", &pass_msg);
-	main_msg.AddMessage("setting", &res);
-	
-	return main_msg;
+	BMessage msg(IM::SETTINGS_TEMPLATE);
+
+	image_info image;
+	if (get_image_info(B_CURRENT_TEAM, &image) < B_OK)
+		return msg;
+
+	BFile file(image.name, B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		return msg;
+
+	BResources resources(&file);
+	if (resources.InitCheck() < B_OK)
+		return msg;
+
+	size_t size;
+	const void* data = resources.LoadResource(B_MESSAGE_TYPE, 1000, &size);
+
+	msg.Unflatten((const char*)data);
+	return msg;
 }
 
 status_t

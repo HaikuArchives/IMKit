@@ -17,7 +17,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
 Addon jabber :
 	Jabber.cpp
 	: be stdc++.r4 libim.so libexpat.a libjabber.a
-	: Jabber.rdef
+	: Jabber.rdef ProtocolTemplate.rdef
 ;
 
 Depends jabber : libexpat.a ;

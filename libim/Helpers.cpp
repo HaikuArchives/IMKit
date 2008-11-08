@@ -9,6 +9,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <Path.h>
+#include <File.h>
+#include <Resources.h>
 #include <FindDirectory.h>
 
 log_importance g_verbosity_level = liDebug;
@@ -274,17 +276,21 @@ im_load_protocol_settings( const char * protocol, BMessage * msg )
 }
 
 status_t
-im_load_protocol_template( const char * protocol, BMessage * msg )
+im_load_protocol_template(const char* protocol, BMessage* msg)
 {
-	BPath path;
-	
-	if (find_directory(B_USER_SETTINGS_DIRECTORY,&path,true,NULL) != B_OK)
+	BFile file(protocol, B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
 		return B_ERROR;
-		
-	path.Append("im_kit/add-ons/protocols");
-	path.Append( protocol );
-		
-	return im_load_template( path.Path(), msg );
+
+	BResources resources(&file);
+	if (resources.InitCheck() < B_OK)
+		return B_ERROR;
+
+	size_t size;
+	const void* data = resources.LoadResource(B_MESSAGE_TYPE, 1000, &size);
+
+	msg->Unflatten((const char*)data);
+	return B_OK;
 }
 
 status_t

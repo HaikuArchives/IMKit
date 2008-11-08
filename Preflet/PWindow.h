@@ -55,6 +55,7 @@ class PWindow : public BWindow {
 	private:
 		float					BuildGUI(BMessage viewTemplate, BMessage settings,
 									BView *view);
+		void					CenterWindowOnScreen();
 	
 		BView					*fView;
 		BButton					*fSave;

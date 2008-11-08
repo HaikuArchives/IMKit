@@ -3,14 +3,15 @@
 const float kEdgeOffset = 2.0;
 const rgb_color kHighlight = {140, 140, 140, 255};
 
-IconTextItem::IconTextItem(const char *text, BBitmap *icon = NULL) 
+IconTextItem::IconTextItem(const char *name, const char *text, BBitmap *icon) 
 	: fIcon(NULL),
 	fIconHeight(0),
-	fIconWidth(0) {
-
+	fIconWidth(0)
+{
+	fName = name;
 	fText = text;
 	fIcon = icon;
-};
+}
 
 IconTextItem::~IconTextItem(void) {
 	delete fIcon;
@@ -50,6 +51,10 @@ void IconTextItem::DrawItem(BView *owner, BRect frame, bool complete) {
 
 const char *IconTextItem::Text(void) const {
 	return fText.String();
+};
+
+const char *IconTextItem::Name(void) const {
+	return fName.String();
 };
 
 const BBitmap *IconTextItem::Icon(void) const {

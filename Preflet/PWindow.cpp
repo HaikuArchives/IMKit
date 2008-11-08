@@ -4,6 +4,7 @@
 #include <Entry.h>
 #include <Roster.h>
 #include <ScrollView.h>
+#include <Screen.h>
 #include <FindDirectory.h>
 
 #ifdef ZETA
@@ -19,7 +20,7 @@ const float kDividerWidth = 100;
 BubbleHelper gHelper;
 
 PWindow::PWindow(void)
-	: BWindow(BRect(5, 25, 480, 285), "Instant Messaging", B_TITLED_WINDOW,
+	: BWindow(BRect(0, 0, 520, 320), _T("Instant Messaging"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
 	fView(NULL),
 	fSave(NULL),
@@ -71,7 +72,7 @@ PWindow::PWindow(void)
 	frame.left = kEdgeOffset;
 	frame.top = kEdgeOffset;
 	frame.bottom = Bounds().bottom - kEdgeOffset;
-	frame.right = 120;
+	frame.right = 180;
 
 	// Outline list view
 	fListView = new BOutlineListView(frame, "LISTVIEW", B_SINGLE_SELECTION_LIST);
@@ -97,7 +98,7 @@ PWindow::PWindow(void)
 	 * Protocols
 	 */
 
-	IconTextItem* protoItem = new IconTextItem(_T("Protocols"), NULL);
+	IconTextItem* protoItem = new IconTextItem("protocols", _T("Protocols"));
 	fListView->AddItem(protoItem);
 
 	BMessage protocols;
@@ -107,6 +108,7 @@ PWindow::PWindow(void)
 		const char* path;
 		const char* file;
 		BPath protoPath;
+		BView* view;
 
 		// Get protocol add-on path and file
 		msg.FindString("path", &path);
@@ -116,7 +118,7 @@ PWindow::PWindow(void)
 
 		// Add protocol item
 		BBitmap* icon = ReadNodeIcon(protoPath.Path(), kSmallIcon, true);
-		IconTextItem* item = new IconTextItem(file, icon);
+		IconTextItem* item = new IconTextItem(protoPath.Path(), file, icon);
 		fListView->AddUnder(item, protoItem);
 
 		// Load settings
@@ -125,13 +127,16 @@ PWindow::PWindow(void)
 
 		// Load template
 		BMessage protocol_template;
-		im_load_protocol_template(file, &protocol_template);
+		im_load_protocol_template(protoPath.Path(), &protocol_template);
 		protocol_template.AddString("protocol", protoPath.Path());
 
+		// Mapping protocol add-on to settings and template
 		pair<BMessage, BMessage> p(protocol_settings, protocol_template);
-		fAddOns[file] = p;
+		fAddOns[protoPath.Path()] = p;
 
-		BView *view = new BView(frame, file, B_FOLLOW_NONE, B_WILL_DRAW);
+		// Create settings view
+		view = new BView(frame, protoPath.Path(), B_FOLLOW_NONE, B_WILL_DRAW);
+		fPrefViews[protoPath.Path()] = view;
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -156,7 +161,6 @@ PWindow::PWindow(void)
 
 		view = scroller;
 
-		fPrefViews[file] = view;
 		fBox->AddChild(view);
 		if (fBox->CountChildren() > 1)
 			view->Hide();
@@ -172,7 +176,7 @@ PWindow::PWindow(void)
 	 * Clients
 	 */
 
-	IconTextItem* clientItem = new IconTextItem(_T("Clients"), NULL);
+	IconTextItem* clientItem = new IconTextItem("clients", _T("Clients"), NULL);
 	fListView->AddItem(clientItem);
 
 	BMessage clients;
@@ -205,18 +209,18 @@ PWindow::PWindow(void)
 
 		// Add client item
 		BBitmap* icon = ReadNodeIcon(BPath(&ref).Path(), kSmallIcon, true);
-		IconTextItem* item = new IconTextItem(file, icon);
+		IconTextItem* item = new IconTextItem(clientPath.Path(), file, icon);
 
 		// Add im_server
 		if (strcmp(file, "im_server") == 0) {
-			IconTextItem* server = new IconTextItem(_T("Server"), icon);
+			IconTextItem* server = new IconTextItem("server", _T("Server"), icon);
 			fListView->AddItem(server, 0);
 			fListView->AddUnder(item, server);
 		} else
 			fListView->AddUnder(item, clientItem);
 
 		pair<BMessage, BMessage> p(client_settings, client_template);
-		fAddOns[file] = p;
+		fAddOns[clientPath.Path()] = p;
 
 		BView* view = new BView(frame, file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
@@ -243,7 +247,7 @@ PWindow::PWindow(void)
 
 		view = scroller;
 
-		fPrefViews[file] = view;
+		fPrefViews[clientPath.Path()] = view;
 		fBox->AddChild(view);
 		if (fBox->CountChildren() > 1)
 			view->Hide();
@@ -286,6 +290,7 @@ PWindow::PWindow(void)
 	fListView->SetSelectionMessage(new BMessage(LISTCHANGED));
 	fListView->SetTarget(this);
 
+	CenterWindowOnScreen();
 	Show();
 	fView->Show();	
 }
@@ -357,12 +362,13 @@ void PWindow::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
 		case LISTCHANGED: {
 			int32 index = msg->FindInt32("index");
-			if (index < 0) return;
+			if (index < 0)
+				return;
 			
 			IconTextItem *item = (IconTextItem *)fListView->ItemAt(index);
 			if (item == NULL) return;
 			
-			view_map::iterator vIt = fPrefViews.find(item->Text());
+			view_map::iterator vIt = fPrefViews.find(item->Name());
 			if (vIt == fPrefViews.end()) {
 				fListView->Select(fCurrentIndex);
 				return;
@@ -485,145 +491,139 @@ void PWindow::MessageReceived(BMessage *msg) {
 	};
 };
 
-float PWindow::BuildGUI(BMessage viewTemplate, BMessage settings, BView *view) {
+
+float
+PWindow::BuildGUI(BMessage viewTemplate, BMessage settings, BView* view)
+{
 	BMessage curr;
 	float yOffset = kEdgeOffset + kControlOffset;
 	float xOffset = 0;
-	
+
 	const float kControlWidth = view->Bounds().Width() - (kEdgeOffset * 2);
-	
-	for (int i=0; viewTemplate.FindMessage("setting",i,&curr) == B_OK; i++ ) {
+
+	for (int32 i = 0; viewTemplate.FindMessage("setting", i, &curr) == B_OK; i++) {
 		char temp[512];
-		
-		// get text etc from template
-		const char * name = curr.FindString("name");
-		const char * desc = curr.FindString("description");
-		const char * value = NULL;
+
+		// Get stuff from template
+		const char* name = curr.FindString("name");
+		const char* desc = curr.FindString("description");
+		const char* value = NULL;
 		int32 type = -1;
 		bool secret = false;
 		bool freeText = true;
 		bool multiLine = false;
-		BView *control = NULL;
-		BMenu *menu = NULL;
-		
-		if ( name != NULL && strcmp(name,"app_sig") == 0 ) {
+		BView* control = NULL;
+		BMenu* menu = NULL;
+
+		if (name != NULL && strcmp(name,"app_sig") == 0) {
 			// skip app-sig setting
 			continue;
 		}
-		
+
 		if (curr.FindInt32("type", &type) != B_OK) {
-			printf("Error getting type for %s, skipping\n", name);
+			LOG("preflet", liMedium, "Error getting type for %s, skipping", name);
 			continue;
-		};
+		}
 		
 		switch (type) {
 			case B_STRING_TYPE: {
 				if (curr.FindString("valid_value")) {
 					// It's a "select one of these" setting
-					
+
 					freeText = false;
-			
-					menu = new BPopUpMenu(name);
-//					menu->SetDivider(be_plain_font->StringWidth(name) + 10);
-					
-					for (int j = 0; curr.FindString("valid_value", j); j++) {
-						menu->AddItem(new BMenuItem(curr.FindString("valid_value", j),NULL));
-					};
-					
+
+					menu = new BPopUpMenu(name);		
+					for (int j = 0; curr.FindString("valid_value", j); j++)
+						menu->AddItem(new BMenuItem(curr.FindString("valid_value", j), NULL));
+
 					value = settings.FindString(name);
-					
-					if (value) menu->FindItem(value)->SetMarked(true);
+					if (value)
+						menu->FindItem(value)->SetMarked(true);
 				} else {
 					// It's a free-text setting
-					
-					if (curr.FindBool("multi_line", &multiLine) != B_OK) multiLine = false;
+					if (curr.FindBool("multi_line", &multiLine) != B_OK)
+						multiLine = false;
 					value = settings.FindString(name);
-					if (!value) value = curr.FindString("default");
-					if (curr.FindBool("is_secret",&secret) != B_OK) secret = false;
+					if (!value)
+						value = curr.FindString("default");
+					if (curr.FindBool("is_secret",&secret) != B_OK)
+						secret = false;
 				}
 			} break;
 			case B_INT32_TYPE: {
 				if (curr.FindInt32("valid_value")) {
-					
 					// It's a "select one of these" setting
-					
+
 					freeText = false;
-					
+
 					menu = new BPopUpMenu(name);
-					
-					int32	def = 0;
+
+					int32 def = 0;
 					status_t hasValue = settings.FindInt32(name, 0, &def);
-					
+
 					if (hasValue != B_OK)
 						hasValue = curr.FindInt32("default", 0, &def);
-					
-			
-					int32 v = 0;
-					for ( int j = 0; curr.FindInt32("valid_value",j,&v) == B_OK; j++ ) {
-						
-						sprintf(temp,"%ld", v);
-						BMenuItem *item = new BMenuItem(temp, NULL);
-						
-						if ( hasValue != B_OK && j == 0)
-							item->SetMarked(true);
-						else	
-						if (hasValue == B_OK && def == v)
-							item->SetMarked(true);
-							
-						menu->AddItem(item);
-					};
-					
 
-										
-					
+					int32 v = 0;
+					for (int j = 0; curr.FindInt32("valid_value",j,&v) == B_OK; j++) {
+						sprintf(temp,"%ld", v);
+
+						BMenuItem* item = new BMenuItem(temp, NULL);
+
+						if (hasValue != B_OK && j == 0)
+							item->SetMarked(true);
+						else if (hasValue == B_OK && def == v)
+							item->SetMarked(true);
+
+						menu->AddItem(item);
+					}
 				} else {
 					// It's a free-text (but number) setting
 					int32 v = 0;
-					if (settings.FindInt32(name,&v) == B_OK) {
-						sprintf(temp,"%ld",v);
+					if (settings.FindInt32(name, &v) == B_OK) {
+						sprintf(temp,"%ld", v);
 						value = temp;
-					} else if ( curr.FindInt32("default",&v) == B_OK ) {
-						sprintf(temp,"%ld",v);
+					} else if (curr.FindInt32("default", &v) == B_OK) {
+						sprintf(temp,"%ld", v);
 						value = temp;
 					}
-					if (curr.FindBool("is_secret",&secret) != B_OK) secret = false;
+					if (curr.FindBool("is_secret",&secret) != B_OK)
+						secret = false;
 				}
 			} break;
 			case B_BOOL_TYPE: {
 				bool active;
-				
+
 				if (settings.FindBool(name, &active) != B_OK) {
 					if (curr.FindBool("default", &active) != B_OK) {
 						active = false;
-					};
-				};
-			
-				control = new BCheckBox(BRect(0, 0, kControlWidth, fFontHeight),
-					name, _T(desc), NULL);
-				if (active) ((BCheckBox*)control)->SetValue(B_CONTROL_ON);
-			} break;			
-			default: {
+					}
+				}
+
+				control = new BCheckBox(BRect(0, 0, kControlWidth, fFontHeight), name, _T(desc), NULL);
+				if (active)
+					((BCheckBox*)control)->SetValue(B_CONTROL_ON);
+			} break;
+			default:
 				continue;
-			};
-		};
-		
-		if (!value) value = "";
+		}
+
+		if (!value)
+			value = "";
 		
 		if (!control) {
 			if (freeText) {
-				if (multiLine == false) {
+				if (!multiLine) {
 					control = new BTextControl(
-						BRect(0, 0, kControlWidth, fFontHeight), name,
-						_T(desc), value, NULL);
+						BRect(0, 0, kControlWidth, fFontHeight), name, _T(desc), value, NULL);
 					if (secret) {
-						((BTextControl *)control)->TextView()->HideTyping(true);
-						((BTextControl *)control)->SetText(_T(value));
-					};
-					((BTextControl *)control)->SetDivider(kDividerWidth);
+						((BTextControl*)control)->TextView()->HideTyping(true);
+						((BTextControl*)control)->SetText(_T(value));
+					}
+					((BTextControl*)control)->SetDivider(kDividerWidth);
 				} else {
 					BRect labelRect(0, 0, kDividerWidth, fFontHeight);
-					BStringView *label = new BStringView(labelRect, "NA", _T(desc),
-						B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
+					BStringView* label = new BStringView(labelRect, "NA", _T(desc), B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
 					view->AddChild(label);
 					label->MoveTo(kEdgeOffset, yOffset);
 
@@ -634,36 +634,44 @@ float PWindow::BuildGUI(BMessage viewTemplate, BMessage settings, BView *view) {
 					textRect.OffsetTo(1.0, 1.0);
 
 					xOffset = kEdgeOffset + kDividerWidth;
-					BTextView *textView = new BTextView(rect, name, textRect,
-						B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+					BTextView *textView = new BTextView(rect, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
-					control = new BScrollView("NA", textView, B_FOLLOW_ALL_SIDES,
-						B_WILL_DRAW | B_NAVIGABLE, false, true);
+					control = new BScrollView("NA", textView, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_NAVIGABLE, false, true);
 					textView->SetText(_T(value));			
-				};
+				}
 			} else {
-				control = new BMenuField(BRect(0, 0, kControlWidth, fFontHeight),
-					name, _T(desc), menu);
+				control = new BMenuField(BRect(0, 0, kControlWidth, fFontHeight), name, _T(desc), menu);
 				((BMenuField *)control)->SetDivider(kDividerWidth);
-			};
-		};
-		
-		if ( curr.FindString("help") )
-		{
-			gHelper.SetHelp(control, strdup(curr.FindString("help")));
+			}
 		}
-		
+
+		if (curr.FindString("help"))
+			gHelper.SetHelp(control, strdup(curr.FindString("help")));
+
 		view->AddChild(control);
-			
+
 		float h, w = 0;
 		control->GetPreferredSize(&w, &h);
 		control->MoveTo(kEdgeOffset + xOffset, yOffset);
 		yOffset += kControlOffset + h;
 		xOffset = 0;
-	};
-	
-	if ( yOffset < view->Bounds().Height() )
+	}
+
+	if (yOffset < view->Bounds().Height())
 		yOffset = view->Bounds().Height();
-	
-	return yOffset;//view->ResizeTo( view->Bounds().Width(), yOffset );
-};
+
+	return yOffset;
+}
+
+
+void PWindow::CenterWindowOnScreen()
+{
+	BRect screenFrame = BScreen().Frame();
+	BPoint pt;
+
+	pt.x = screenFrame.Width()/2 - Bounds().Width()/2;
+	pt.y = screenFrame.Height()/2 - Bounds().Height()/2;
+
+	if (screenFrame.Contains(pt))
+		MoveTo(pt);
+}
