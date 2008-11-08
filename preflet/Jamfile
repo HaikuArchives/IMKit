@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP Preflet ;
+SubDir IMKIT_TOP preflet ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
@@ -25,8 +25,8 @@ if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on InstantMessaging += -lzeta -ltracker ;
 }
 
-InstallBin $(IMKIT_BEOS_PREFERENCES_DIRECTORY) : InstantMessaging ;
-
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon InstantMessaging : [ FDirName $(IMKIT_TOP) icons imkit InstantMessaging.svg ] ;
 }
+
+InstallBin $(IMKIT_BEOS_PREFERENCES_DIRECTORY) : InstantMessaging ;

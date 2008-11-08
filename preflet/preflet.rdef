@@ -1,5 +1,7 @@
 
-resource app_signature "application/x-vnd.beclan-IMKitPrefs";
+#include "PResources.h"
+
+resource app_signature PREFLET_SIGNATURE;
 
 resource app_version {
 	major  = 0,

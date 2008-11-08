@@ -1,28 +1,25 @@
+/*
+ * Copyright 2003-2008, IM Kit Team.
+ * Distributed under the terms of the MIT License.
+ */
 #ifndef PAPPLICATION_H
 #define PAPPLICATION_H
 
-#include "main.h"
-
-#include <Application.h>
-#include <Window.h>
+#include <app/Application.h>
 
 class PWindow;
-class BApplication;
 
-class PApplication : public BApplication {
+class PApplication : public BApplication
+{
 	public:
-	
-						PApplication(void);
-						~PApplication(void);
-						
-		virtual bool	QuitRequested(void);
-		virtual void	MessageReceived(BMessage *msg);
+				PApplication();
 
-		virtual void	ReadyToRun(void);
-				
+		virtual bool	QuitRequested();
+
+		virtual void	ReadyToRun();
+
 	private:
-		PWindow			*fWindow;
+		PWindow*	fWindow;
 };
 
-#endif
-
+#endif // PAPPLICATION_H

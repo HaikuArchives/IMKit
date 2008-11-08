@@ -1,38 +1,33 @@
+/*
+ * Copyright 2003-2008, IM Kit Team.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Michael Davidson <slaad@bong.com.au>
+ *		Mikael Eiman <m_eiman@eiman.tv>
+ *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ */
+
 #include "PApplication.h"
+#include "PWindow.h"
+#include "PResources.h"
 
 PApplication::PApplication(void)
-	: BApplication("application/x-vnd.beclan-IMKitPrefs") {
-};
+	: BApplication(PREFLET_SIGNATURE)
+{
+}
 
-PApplication::~PApplication(void) {
-//	delete fWindow;
-};
 
-void PApplication::ReadyToRun(void) {
+void
+PApplication::ReadyToRun()
+{
 	fWindow = new PWindow();
-};
+	fWindow->Show();
+}
 
-bool PApplication::QuitRequested(void) {
+
+bool
+PApplication::QuitRequested()
+{
 	return true;
-};
-
-void PApplication::MessageReceived(BMessage *msg) {
-	//msg->PrintToStream();
-	BApplication::MessageReceived(msg);
-
-//	switch (msg->what) {
-//		case PRIMARY:
-//		case SECONDARY:
-//		case TERTIARY:
-//		case KEY_SET: {
-//
-//			BMessenger msgr(fWindow);
-//			msgr.SendMessage(msg);
-//
-//		} break;
-//		default: {
-//			BApplication::MessageReceived(msg);
-//		};
-//	};
-};
-
+}
