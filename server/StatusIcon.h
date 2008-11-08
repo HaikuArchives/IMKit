@@ -14,7 +14,7 @@ namespace IM {
 			ssize_t				VectorIconSize(void);
 			
 			void				SetMiniIcon(const void *data, ssize_t size);
-			const void			* MiniIcon(void);
+			const void			*MiniIcon(void);
 			ssize_t				MiniIconSize(void);
 	
 			void				SetLargeIcon(const void *data, ssize_t size);

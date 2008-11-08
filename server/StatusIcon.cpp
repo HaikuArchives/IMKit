@@ -15,6 +15,7 @@ StatusIcon::StatusIcon(void)
 	fLargeIconSize(0) {
 }
 	
+
 StatusIcon::~StatusIcon(void) {
 	if (fVectorIcon != NULL) free(fVectorIcon);
 	if (fMiniIcon != NULL) free(fMiniIcon);

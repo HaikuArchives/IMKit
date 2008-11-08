@@ -181,13 +181,11 @@ Server::~Server()
 
 	SetAllOffline();
 
-	map<int, StatusIcon*>::iterator it;
-
-	for (it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
+	for (map<int, StatusIcon*>::iterator it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
 		StatusIcon* icon = it->second;
-		fStatusIcons.erase(it->first);
 		delete icon;
 	}
+	fStatusIcons.clear();
 
 	LOG(kAppName, liDebug, "~Server end");
 }
@@ -1193,7 +1191,6 @@ Server::selectConnection( BMessage * msg, Contact & contact )
 		(fPreferredConnection[contact].length() < 100)) {
 		strncpy(connection, fPreferredConnection[contact].c_str(), sizeof(connection));
 		connection[sizeof(connection)-1] = 0;
-		printf("Copied %s into connection\n", fPreferredConnection[contact].c_str());
 		
 		if ( fStatus[connection].length() > 0 && fStatus[connection] != OFFLINE_TEXT )
 		{
