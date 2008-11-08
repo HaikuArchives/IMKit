@@ -1,8 +1,18 @@
-#include "main.h"
+/*
+ * Copyright 2003-2008, IM Kit Team.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ */
 
-int main(void) {
+#include "PApplication.h"
+
+int
+main(int argc, char* argv[])
+{
 	PApplication app;
 	
 	app.Run();
-//	delete be_app;
+	return 0;
 }
