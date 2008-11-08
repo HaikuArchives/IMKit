@@ -15,6 +15,7 @@
 #endif
 
 #include "PWindow.h"
+#include "PView.h"
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -27,6 +28,40 @@ PWindow::PWindow()
 	: BWindow(BRect(0, 0, 520, 320), _T("Instant Messaging"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS)
 {
+#ifdef ZETA
+	app_info ai;
+	be_app->GetAppInfo(&ai);
+
+	BPath path;
+	BEntry entry(&ai.ref, true);
+
+	entry.GetPath(&path);
+	path.GetParent(&path);
+	path.Append("Language/Dictionaries/InstantMessaging");
+
+	BString path_string;
+
+	if (path.InitCheck() != B_OK)
+		path_string.SetTo("Language/Dictionaries/InstantMessaging");
+	else
+		path_string.SetTo(path.Path());
+
+	be_locale.LoadLanguageFile(path_string.String());
+#endif
+
+#ifdef __HAIKU__
+	// Build layout
+	SetLayout(new BGroupLayout(B_HORIZONTAL));
+#endif
+
+	// Add top view to the layout
+	PView* top = new PView();
+#ifdef __HAIKU__
+	GetLayout()->AddView(top);
+#else
+	AddChild(top);
+#endif
+
 	CenterWindowOnScreen();
 }
 
