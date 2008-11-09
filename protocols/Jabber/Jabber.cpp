@@ -335,7 +335,11 @@ Jabber::GetSettingsTemplate()
 	BMessage msg(IM::SETTINGS_TEMPLATE);
 
 	image_info image;
-	if (get_image_info(B_CURRENT_TEAM, &image) < B_OK)
+	team_id team = 0;
+#if defined(__HAIKU__)
+	team = B_CURRENT_TEAM;
+#endif
+	if (get_image_info(team, &image) < B_OK)
 		return msg;
 
 	BFile file(image.name, B_READ_ONLY);
@@ -343,8 +347,10 @@ Jabber::GetSettingsTemplate()
 		return msg;
 
 	BResources resources(&file);
+#if defined(__HAIKU__)
 	if (resources.InitCheck() < B_OK)
 		return msg;
+#endif
 
 	size_t size;
 	const void* data = resources.LoadResource(B_MESSAGE_TYPE, 1000, &size);
