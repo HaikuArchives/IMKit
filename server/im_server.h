@@ -60,10 +60,7 @@ class Server : public BApplication {
 		
 		void					AddEndpoint(BMessenger);
 		void					RemoveEndpoint(BMessenger);
-		
-		status_t				GetSettings(const char * protocol, BMessage*);
-		status_t				SetSettings(const char * protocol, BMessage*);
-		BMessage				GenerateSettingsTemplate(void);
+				BMessage				GenerateSettingsTemplate(void);
 		status_t				UpdateOwnSettings(BMessage &);
 		void					InitSettings(void);
 		
