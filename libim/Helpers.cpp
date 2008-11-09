@@ -283,8 +283,9 @@ im_load_protocol_template(const char* protocol, BMessage* msg)
 		return B_ERROR;
 
 	BResources resources(&file);
-	if (resources.InitCheck() < B_OK)
-		return B_ERROR;
+#if defined(__HAIKU__)
+	if (resources.InitCheck() < B_OK) return B_ERROR;
+#endif
 
 	size_t size;
 	const void* data = resources.LoadResource(B_MESSAGE_TYPE, 1000, &size);
