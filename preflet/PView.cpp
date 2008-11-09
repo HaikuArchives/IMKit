@@ -42,12 +42,15 @@ const float kEdgeOffset = 5.0;
 const float kDividerWidth = 100;
 #endif
 
-PView::PView()
-	: BView("top", 0, NULL)
+PView::PView(BRect bounds)
+	: BView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW)
 {
 	BRect frame;
 	font_height fontHeight;
 	BMessage msg;
+
+	be_bold_font->GetHeight(&fontHeight);
+	float fFontHeight = fontHeight.descent + fontHeight.leading + fontHeight.ascent;
 
 	// Set background color
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -70,10 +73,11 @@ PView::PView()
 
 	// Add main view
 #ifndef __HAIKU__
+
 	frame.left = fListView->Bounds().right + (kEdgeOffset * 3) + B_V_SCROLL_BAR_WIDTH;
 	frame.top = kEdgeOffset;
-	frame.right = fView->Bounds().right - kEdgeOffset;
-	frame.bottom = fView->Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset));
+	frame.right = Bounds().right - kEdgeOffset;
+	frame.bottom = Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset);
 #endif
 	fBox = new BBox(frame, "box", B_FOLLOW_ALL_SIDES);
 	fBox->SetLabel(_T("IM Server"));

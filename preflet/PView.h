@@ -11,10 +11,9 @@
 class BOutlineListView;
 class BBox;
 
-class PView : public BView
-{
+class PView : public BView {
 	public:
-					PView();
+							PView(BRect bounds);
 
 	private:
 		BOutlineListView*	fListView;

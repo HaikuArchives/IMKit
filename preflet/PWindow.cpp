@@ -18,11 +18,16 @@
 #include "PView.h"
 
 #ifdef ZETA
+#	include <app/Roster.h>
 #	include <locale/Locale.h>
+#	include <storage/Path.h>
 #else
 #	define _T(str) (str)
 #endif
 
+#ifndef B_AUTO_UPDATE_SIZE_LIMITS
+#define B_AUTO_UPDATE_SIZE_LIMITS 0
+#endif
 
 PWindow::PWindow()
 	: BWindow(BRect(0, 0, 520, 320), _T("Instant Messaging"), B_TITLED_WINDOW,
@@ -55,7 +60,7 @@ PWindow::PWindow()
 #endif
 
 	// Add top view to the layout
-	PView* top = new PView();
+	PView* top = new PView(Bounds());
 #ifdef __HAIKU__
 	GetLayout()->AddView(top);
 #else
