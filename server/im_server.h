@@ -25,102 +25,101 @@ class ProtocolInfo;
 class ProtocolManager;
 class StatusIcon;
 
-class Server : public BApplication
-{
+class Server : public BApplication {
 	public:
-		Server();
-		virtual ~Server();
+								Server(void);
+		virtual					~Server(void);
 		
+		// Scripting Hooks
 		virtual status_t GetSupportedSuites(BMessage *);
 		virtual BHandler *ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 what, const char *property);
-		
-		virtual bool QuitRequested();
-		
-		virtual void MessageReceived( BMessage * );
-		
-		virtual void ReadyToRun();
+
+		// BApplication Hooks		
+		virtual bool 			QuitRequested(void);
+		virtual void			MessageReceived(BMessage *msg);
+		virtual void			ReadyToRun(void);
 		
 	private:
-		void	_Init();
-		void	_UpdateStatusIcons();
-		void	_InstallDeskbarIcon();
-		void	StartQuery();
-		void	HandleContactUpdate( BMessage * );
+		void					_Init(void);
+		void					_UpdateStatusIcons(void);
+		void					_InstallDeskbarIcon(void);
+		void					StartQuery(void);
+		void					HandleContactUpdate(BMessage *);
 		
-		Contact			FindContact( const char * proto_id );
-		list<Contact>	FindAllContacts( const char * proto_id );
-		Contact			CreateContact( const char * proto_id , const char *namebase );
+		Contact					FindContact(const char * proto_id);
+		list<Contact>			FindAllContacts(const char * proto_id);
+		Contact					CreateContact(const char * proto_id, const char *namebase);
 		
-		void		RegisterSoundEvents();
-		void		CheckIndexes();
-		status_t	LoadProtocols();
+		void					RegisterSoundEvents(void);
+		void					CheckIndexes(void);
+		status_t				LoadProtocols(void);
 		
-		bool	IsMessageOk( BMessage * );
-		void	Process( BMessage * );
-		void	Broadcast( BMessage * );
+		bool					IsMessageOk(BMessage *);
+		void					Process(BMessage *);
+		void					Broadcast(BMessage *);
 		
-		void	AddEndpoint( BMessenger );
-		void	RemoveEndpoint( BMessenger );
+		void					AddEndpoint(BMessenger);
+		void					RemoveEndpoint(BMessenger);
 		
-		status_t	GetSettings(const char * protocol, BMessage*);
-		status_t	SetSettings(const char * protocol, BMessage*);
-		BMessage	GenerateSettingsTemplate();
-		status_t	UpdateOwnSettings( BMessage & );
-		void		InitSettings();
+		status_t				GetSettings(const char * protocol, BMessage*);
+		status_t				SetSettings(const char * protocol, BMessage*);
+		BMessage				GenerateSettingsTemplate(void);
+		status_t				UpdateOwnSettings(BMessage &);
+		void					InitSettings(void);
 		
-		void	handleDeskbarMessage( BMessage * );
+		void					handleDeskbarMessage(BMessage *);
 		
-		void	MessageToProtocols(BMessage*);
-		void	MessageFromProtocols(BMessage*);
+		void					MessageToProtocols(BMessage*);
+		void					MessageFromProtocols(BMessage*);
+
+		void					UpdateStatus(BMessage*);
+		void					SetAllOffline(void);
+		void					handle_STATUS_SET(BMessage *);
+		void					UpdateContactStatusAttribute(Contact &);
 		
-		void	UpdateStatus(BMessage*);
-		void	SetAllOffline();
-		void	handle_STATUS_SET( BMessage * );
-		void	UpdateContactStatusAttribute( Contact & );
+		void					GetContactsForProtocol(const char * protocol, BMessage * msg);
 		
-		void	GetContactsForProtocol( const char * protocol, BMessage * msg );
-		
-		void	StartAutostartApps();
-		void	StopAutostartApps();
+		void					StartAutostartApps(void);
+		void					StopAutostartApps(void);
 		
 		// Adds "userfriendly" protocol strings, then sends reply
-		void	sendReply(BMessage* msg, BMessage* reply);
+		void					sendReply(BMessage* msg, BMessage* reply);
 		
-		void	reply_GET_LOADED_PROTOCOLS(BMessage*);
-		void	reply_SERVER_BASED_CONTACT_LIST(BMessage*);
-		void	reply_GET_CONTACT_STATUS( BMessage * );
-		void	reply_UPDATE_CONTACT_STATUS( BMessage * );
-		void	reply_GET_OWN_STATUSES(BMessage *msg);
-		void	reply_GET_CONTACTS_FOR_PROTOCOL( BMessage * );
-		void	reply_GET_ALL_CONTACTS(BMessage *);
+		void					reply_GET_LOADED_PROTOCOLS(BMessage*);
+		void					reply_SERVER_BASED_CONTACT_LIST(BMessage*);
+		void					reply_GET_CONTACT_STATUS( BMessage * );
+		void					reply_UPDATE_CONTACT_STATUS( BMessage * );
+		void					reply_GET_OWN_STATUSES(BMessage *msg);
+		void					reply_GET_CONTACTS_FOR_PROTOCOL( BMessage * );
+		void					reply_GET_ALL_CONTACTS(BMessage *);
 		
-		void	handle_SETTINGS_UPDATED(BMessage *);
+		void					handle_SETTINGS_UPDATED(BMessage *);
 		
-		status_t	selectConnection( BMessage * msg, Contact & contact );
+		status_t				selectConnection(BMessage * msg, Contact & contact);
 		
-		const char	*TotalStatus(void);
-		status_t	ProtocolOffline(const char *signature);
-		static void	ChildExited(int signal, void *data, struct vreg *regs);
+		const char				*TotalStatus(void);
+		status_t				ProtocolOffline(const char *signature);
+		static void				ChildExited(int signal, void *data, struct vreg *regs);
 		
 		/**
 			Contact monitoring functions
 		*/
-		void ContactMonitor_Added( ContactHandle );
-		void ContactMonitor_Modified( ContactHandle );
-		void ContactMonitor_Moved( ContactHandle from, ContactHandle to );
-		void ContactMonitor_Removed( ContactHandle );
+		void					ContactMonitor_Added(ContactHandle);
+		void					ContactMonitor_Modified(ContactHandle);
+		void					ContactMonitor_Moved(ContactHandle from, ContactHandle to);
+		void					ContactMonitor_Removed(ContactHandle);
 		
 		// Variables
 		
-		list<BQuery*>				fQueries;
-		list<BMessenger>			fMessengers;
-		bool						fIsQuitting;
+		list<BQuery*>			fQueries;
+		list<BMessenger>		fMessengers;
+		bool					fIsQuitting;
 		
 		/**
 		 * Remove when protocols deal with scripting. Currently all is done in the
 		 * application.
 		 */
-		ProtocolInfo				*fCurProtocol;
+		ProtocolInfo			*fCurProtocol;
 		
 		/**
 			entry_ref, list of connections.
@@ -132,15 +131,15 @@ class Server : public BApplication
 		/*	Used to store both <protocol>:<id> and <protocol> status.
 			In other words, both own status per protocol and contact
 			status per connection */
-		map<string,string>			fStatus;// proto_id_string,status_string
+		map<string,string>		fStatus;// proto_id_string,status_string
 		
-		map<Contact,string>			fPreferredConnection;
+		map<Contact,string>		fPreferredConnection;
 
-		map<int, StatusIcon *>		fStatusIcons;
+		map<int, StatusIcon *>	fStatusIcons;
 
-		BMessenger					fDeskbarMsgr;
+		BMessenger				fDeskbarMsgr;
 		
-		ProtocolManager				*fProtocol;
+		ProtocolManager			*fProtocol;
 };
 
 };

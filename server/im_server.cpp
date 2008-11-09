@@ -190,6 +190,8 @@ Server::~Server()
 	LOG(kAppName, liDebug, "~Server end");
 }
 
+//#pragma mark Scripting Hooks
+
 #define PROTOCOL_PROPERTY "Protocol"
 #define PROTOCOLS_PROPERTY "Protocols"
 #define STATUS_PROPERTY "Status"
@@ -267,7 +269,7 @@ Server::ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 
 	return BApplication::ResolveSpecifier(msg, index, specifier, what, property);
 }
 
-
+//#pragma mark BApplication Hooks
 
 /**
 */
@@ -546,6 +548,8 @@ Server::MessageReceived( BMessage *msg )
 			break;
 	}
 }
+
+//#pragma mark Private
 
 void Server::_Init()
 {
