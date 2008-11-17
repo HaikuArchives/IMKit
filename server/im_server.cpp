@@ -505,6 +505,7 @@ Server::MessageReceived( BMessage *msg )
 			Broadcast(&changed);
 		} break;
 		
+		case IM::Private::PROTOCOL_COULD_NOT_START:
 		case IM::Private::PROTOCOL_KILLED:
 		case IM::Private::PROTOCOL_STOPPED: {
 			// Remove the protocol info
@@ -514,7 +515,7 @@ Server::MessageReceived( BMessage *msg )
 			
 			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
 			if (info == NULL) {
-				LOG(kAppName, liHigh, "Got a PROTOCOL_STOPPED message for a protocol we don't know about");
+				LOG(kAppName, liHigh, "Got a PROTOCOL_STOPPED / PROTOCOL_KILLED / PROTOCOL_COULD_NOT_START message for a protocol we don't know about: %s", instanceID);
 				return;
 			};
 		
@@ -539,6 +540,14 @@ Server::MessageReceived( BMessage *msg )
 			if ((msg->what == IM::Private::PROTOCOL_KILLED) && (fIsQuitting == false)) {
 				// Restart the protocol
 				fProtocol->RestartProtocols(new InstanceProtocolSpecification(instanceID));
+			};
+			
+			if (msg->what == IM::Private::PROTOCOL_COULD_NOT_START) {
+				const char *reason = NULL;
+				if (msg->FindString("reason", &reason) != B_OK) reason = NULL;
+				
+				LOG(kAppName, liHigh, "Got a PROTOCOL_COULD_NOT_START message for %s: %s", instanceID, (reason != NULL) ? reason : "No reason obtained");
+				info->Stop();
 			};
 		} break;
 		
@@ -2506,7 +2515,12 @@ void Server::reply_GET_OWN_STATUSES(BMessage *msg) {
 
 	BMessage reply(B_REPLY);
 
-	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(new AllProtocolSpecification());
+	list<ProtocolInfo *> protocols = fProtocol->FindProtocols(
+		new NotSpecification<ProtocolInfo *>(
+			new ExitedProtocolSpecification()
+		)
+	);
+
 
 	for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {
 		ProtocolInfo *info = (*pIt);
@@ -3061,7 +3075,10 @@ void Server::ChildExited(int /*sig */, void *data, struct vreg */*regs */) {
 
 	if (server->fIsQuitting == false) {
 		
-		ProtocolSpecification *spec = new ExitedProtocolSpecification();
+		ProtocolSpecification *spec = new AndSpecification<ProtocolInfo *>(
+			new ExitedProtocolSpecification(),
+			new AllowRestartProtocolSpecification()
+		);
 		list<ProtocolInfo *> protocols = server->fProtocol->FindProtocols(spec, false);
 	
 		for (list<ProtocolInfo *>::iterator pIt = protocols.begin(); pIt != protocols.end(); pIt++) {

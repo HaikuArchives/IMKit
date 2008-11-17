@@ -43,6 +43,15 @@ void appKilled(int /*sig*/) {
 	};
 }
 
+void SendNoStartMessage(const char *instanceID, const char *reason) {
+	IM::Manager manager;
+	BMessage msg(IM::Private::PROTOCOL_COULD_NOT_START);
+	msg.AddString("instance_id", instanceID);
+	if (reason != NULL) msg.AddString("reason", reason);
+	
+	manager.SendMessage(&msg);
+};
+
 int main(int argc, char *argv[]) {
 	// Check that we have a protocol path
 	if (argc < 4) {
@@ -62,6 +71,7 @@ int main(int argc, char *argv[]) {
 	
 	if (result != B_OK) {
 		LOG(kApplicationName, liHigh, "Settings file is not valid: %s (%i)", strerror(result), result);
+		SendNoStartMessage(gInstanceID.String(), "Settings file is not valid");
 
 		return B_ERROR;
 	};
@@ -69,6 +79,8 @@ int main(int argc, char *argv[]) {
 	image_id curr_image = load_add_on( path.Path() );
 	if (curr_image < 0) {
 		LOG(kApplicationName, liHigh, "Could not load add on: %s (%i)", strerror(curr_image), curr_image);
+		SendNoStartMessage(gInstanceID.String(), "Could not load add on");
+		
 		return B_ERROR;
 	}
 
@@ -77,8 +89,8 @@ int main(int argc, char *argv[]) {
 	result = get_image_symbol(curr_image, "load_protocol", B_SYMBOL_TYPE_TEXT, (void **)&load_protocol);
 	
 	if (result != B_OK) {
-		LOG(kApplicationName, liHigh, "Could not load symbol (load_protocol): %s (%i)",
-			strerror(result), result);
+		LOG(kApplicationName, liHigh, "Could not load symbol (load_protocol): %s (%i)", strerror(result), result);
+		SendNoStartMessage(gInstanceID.String(), "Add-on is invalid");
 
 		unload_add_on(curr_image);		
 		return B_ERROR;
@@ -88,6 +100,7 @@ int main(int argc, char *argv[]) {
 	
 	if (protocol == NULL) {
 		LOG(kApplicationName, liHigh, "Could not instantiate Protocol");
+		SendNoStartMessage(gInstanceID.String(), "Could not instantiate Protocol");
 
 		unload_add_on(curr_image);
 		return B_ERROR;
@@ -112,6 +125,7 @@ int main(int argc, char *argv[]) {
 			protocol->UpdateSettings(settings);
 		} else {
 			LOG(kApplicationName, liHigh, "Could not unflatten settings message");
+			SendNoStartMessage(gInstanceID.String(), "Could not unflatten settings message");
 
 			free(buffer);
 			
@@ -136,12 +150,8 @@ int main(int argc, char *argv[]) {
 		sigaction(SIGSEGV, &killedAction, NULL);
 	};
 	
-	ProtocolLoaderApplication app(gInstanceID.String(), protocol, settings, &result);
-	if (result == B_OK) {
-		app.Run();
-	};
+	ProtocolLoaderApplication app(gInstanceID.String(), protocol, settings);
+	app.Run();
 	
-	return result;
-	
-	return B_OK; 
+	return B_OK;
 };

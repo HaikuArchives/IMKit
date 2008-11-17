@@ -1,6 +1,8 @@
 #ifndef PROTOCOLMANAGER_H
 #define PROTOCOLMANAGER_H
 
+#include "ProtocolSpecification.h"
+
 #include <storage/Directory.h>
 #include <storage/Path.h>
 #include <support/String.h>
@@ -13,7 +15,6 @@ class BMessage;
 namespace IM {
 
 	class ProtocolInfo;	
-	class ProtocolSpecification;
 	class ProtocolStore;
 
 	class ProtocolManager {

@@ -19,7 +19,8 @@ ProtocolInfo::ProtocolInfo(BPath path, BPath settings)
 	fCapabilities(0),
 	fEncoding(0xffff),
 	fThreadID(B_ERROR),
-	fMessenger(NULL) {
+	fMessenger(NULL),
+	fAllowRestart(false) {
 
 	
 	fInstanceID = fPath.Path();
@@ -113,10 +114,16 @@ bool ProtocolInfo::HasValidMessenger(void) {
 	return ((fMessenger != NULL) && (fMessenger->IsValid()));
 };
 
+bool ProtocolInfo::IsRestartAllowed(void) {
+	return fAllowRestart;
+};
+
 //#pragma mark Control Methods
 
 status_t ProtocolInfo::Start(const char *loader) {
 	status_t result = B_ERROR;
+
+	fAllowRestart = true;
 
 	const char *arguments[] = {
 		loader,						// Path to the ProtocolLoader
@@ -141,6 +148,8 @@ void ProtocolInfo::Stop(void) {
 	
 	fMessenger = new BMessenger();
 	fThreadID = B_ERROR;
+	
+	fAllowRestart = false;
 };
 
 //#pragma mark Message Methods

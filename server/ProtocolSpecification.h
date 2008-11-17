@@ -2,16 +2,12 @@
 #define PROTOCOLSPECIFICATION_H
 
 #include "ProtocolInfo.h"
+#include "Specification.h"
 
 #include <support/String.h>
 
 namespace IM {
-
-	class ProtocolSpecification {
-		public:
-			virtual				~ProtocolSpecification(void) {};
-			virtual bool		IsSatisfiedBy(ProtocolInfo *info) = 0;
-	};
+	typedef Specification<ProtocolInfo *> ProtocolSpecification;
 	
 	class AllProtocolSpecification : public ProtocolSpecification {
 		public:
@@ -70,6 +66,13 @@ namespace IM {
 		public:
 			virtual bool		IsSatisfiedBy(ProtocolInfo *info) {
 									return info->HasExited();
+								};
+	};
+	
+	class AllowRestartProtocolSpecification : public ProtocolSpecification {
+		public:
+			virtual bool		IsSatisfiedBy(ProtocolInfo *info) {
+									return info->IsRestartAllowed();
 								};
 	};
 };

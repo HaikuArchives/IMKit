@@ -9,7 +9,7 @@
 //#pragma mark Constructors
 
 ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Protocol *protocol,
-	BMessage settings, status_t *error)
+	BMessage settings)
 	
 	: BApplication(IM_PROTOCOL_LOADER_SIG),
 	fInstanceID(instanceID),
@@ -17,9 +17,7 @@ ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Pro
 	fSettings(settings),
 	fManager(NULL) {
 	
-	if (protocol == NULL) {
-		*error = B_ERROR;
-	} else {
+	if (protocol != NULL) {
 		rename_thread(find_thread(NULL), fProtocol->GetFriendlySignature());
 	};
 };

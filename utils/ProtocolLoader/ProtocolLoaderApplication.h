@@ -14,8 +14,7 @@ using namespace IM;
 class ProtocolLoaderApplication : public BApplication {
 	public:
 								ProtocolLoaderApplication(const char *instanceID,
-									Protocol *protocol, BMessage settings,
-									status_t *error);
+									Protocol *protocol, BMessage settings);
 								~ProtocolLoaderApplication(void);
 	
 		// BApplication Hooks

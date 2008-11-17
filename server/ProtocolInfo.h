@@ -39,6 +39,7 @@ namespace IM {
 			bool			HasCapability(uint32 capability);
 			bool			HasValidMessenger(void);
 			bool			HasExited(void);
+			bool			IsRestartAllowed(void);
 
 			// Control Methods
 			status_t		Start(const char *loader);
@@ -61,6 +62,7 @@ namespace IM {
 			
 			thread_id		fThreadID;
 			BMessenger		*fMessenger;
+			bool			fAllowRestart;
 	};
 
 };
