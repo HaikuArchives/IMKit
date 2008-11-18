@@ -22,6 +22,8 @@ Preference InstantMessaging :
 	PApplication.cpp
 	PWindow.cpp
 	PView.cpp
+	PSettingsOverview.cpp
+	PClientsOverview.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
 	  libim.so <IMKit>libcommon.a
 	: preflet.rdef

@@ -8,18 +8,44 @@
 #include <interface/View.h>
 #include <interface/Button.h>
 
+#include <map>
+
 class BOutlineListView;
-class BBox;
+class IconTextItem;
+
+typedef map<BString, BView*> view_map;
+typedef pair<BMessage, BMessage> addons_pair;
+typedef map<BString, addons_pair> addons_map;
 
 class PView : public BView {
 	public:
-							PView(BRect bounds);
+						PView(BRect bounds);
+
+		virtual void	AttachedToWindow();
+		virtual void	MessageReceived(BMessage* msg);
+
+	private:
+			void		LoadProtocols();
+			void		LoadClients();
+			float		BuildGUI(BMessage viewTemplate, BMessage settings, BView* view);
 
 	private:
 		BOutlineListView*	fListView;
-		BBox*				fBox;
+		IconTextItem*		fServersItem;
+		IconTextItem*		fProtocolsItem;
+		IconTextItem*		fClientsItem;
+
+		BView*				fMainView;
 		BButton*			fRevert;
 		BButton*			fSave;
+
+		view_map			fViews;
+		addons_map			fAddOns;
+
+		BView*				fCurrentView;
+		int32				fCurrentIndex;
+
+		float				fFontHeight;
 };
 
 #endif // PVIEW_H

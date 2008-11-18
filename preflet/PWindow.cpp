@@ -26,12 +26,16 @@
 #endif
 
 #ifndef B_AUTO_UPDATE_SIZE_LIMITS
-#define B_AUTO_UPDATE_SIZE_LIMITS 0
+#	define B_AUTO_UPDATE_SIZE_LIMITS 0
+#endif
+
+#ifndef B_CLOSE_ON_ESCAPE
+#	define B_CLOSE_ON_ESCAPE 0
 #endif
 
 PWindow::PWindow()
-	: BWindow(BRect(0, 0, 520, 320), _T("Instant Messaging"), B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS)
+	: BWindow(BRect(0, 0, 720, 340), _T("Instant Messaging"), B_TITLED_WINDOW,
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE)
 {
 #ifdef ZETA
 	app_info ai;
@@ -60,11 +64,11 @@ PWindow::PWindow()
 #endif
 
 	// Add top view to the layout
-	PView* top = new PView(Bounds());
+	fView = new PView(Bounds());
 #ifdef __HAIKU__
-	GetLayout()->AddView(top);
+	GetLayout()->AddView(fView);
 #else
-	AddChild(top);
+	AddChild(fView);
 #endif
 
 	CenterWindowOnScreen();

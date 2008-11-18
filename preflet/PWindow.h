@@ -7,6 +7,8 @@
 
 #include <interface/Window.h>
 
+class PView;
+
 class PWindow : public BWindow
 {
 	public:
@@ -16,6 +18,9 @@ class PWindow : public BWindow
 
 	private:
 		void		CenterWindowOnScreen();
+
+	private:
+		PView*		fView;
 };
 
 #endif // PWINDOW_H
