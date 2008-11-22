@@ -236,40 +236,6 @@ const char * AIMProtocol::GetFriendlySignature() {
 	return "AIM";
 }
 
-BMessage AIMProtocol::GetSettingsTemplate() {
-	BMessage main_msg(IM::SETTINGS_TEMPLATE);
-	
-	BMessage user_msg;
-	user_msg.AddString("name","screenname");
-	user_msg.AddString("description", "Screen Name");
-	user_msg.AddInt32("type",B_STRING_TYPE);
-	
-	BMessage pass_msg;
-	pass_msg.AddString("name","password");
-	pass_msg.AddString("description", "Password");
-	pass_msg.AddInt32("type",B_STRING_TYPE);
-	pass_msg.AddBool("is_secret", true);
-
-	BMessage profile;
-	profile.AddString("name", "profile");
-	profile.AddString("description", "User Profile");
-	profile.AddInt32("type", B_STRING_TYPE);
-	profile.AddString("default", "IM Kit: AIM user");
-	profile.AddBool("multi_line", true);
-
-	BMessage icon;
-	icon.AddString("name", "icon");
-	icon.AddString("description", "Buddy Icon");
-	icon.AddInt32("type", B_STRING_TYPE);
-		
-	main_msg.AddMessage("setting",&user_msg);
-	main_msg.AddMessage("setting",&pass_msg);
-	main_msg.AddMessage("setting", &profile);
-	main_msg.AddMessage("setting", &icon);
-	
-	return main_msg;
-}
-
 status_t AIMProtocol::UpdateSettings( BMessage & msg ) {
 	const char * screenname = NULL;
 	const char * password = NULL;

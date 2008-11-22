@@ -210,50 +210,6 @@ const char * MSNProtocol::GetFriendlySignature() {
 	return "MSN";
 }
 
-BMessage MSNProtocol::GetSettingsTemplate() {
-	BMessage main_msg(IM::SETTINGS_TEMPLATE);
-	
-	BMessage user_msg;
-	user_msg.AddString("name","passport");
-	user_msg.AddString("description", "Passport Email");
-	user_msg.AddInt32("type",B_STRING_TYPE);
-	
-	BMessage pass_msg;
-	pass_msg.AddString("name","password");
-	pass_msg.AddString("description", "Password");
-	pass_msg.AddInt32("type",B_STRING_TYPE);
-	pass_msg.AddBool("is_secret", true);
-	
-	BMessage screen_msg;
-	screen_msg.AddString("name", "displayname");
-	screen_msg.AddString("description", "Display Name");
-	screen_msg.AddInt32("type", B_STRING_TYPE);
-
-	BMessage homePhoneMsg;
-	homePhoneMsg.AddString("name", "homephone");
-	homePhoneMsg.AddString("description", "Home Phone Number");
-	homePhoneMsg.AddInt32("type", B_STRING_TYPE);
-	
-	BMessage workPhoneMsg;
-	workPhoneMsg.AddString("name", "workphone");
-	workPhoneMsg.AddString("description", "Work Phone Number");
-	workPhoneMsg.AddInt32("type", B_STRING_TYPE);
-	
-	BMessage mobilePhoneMsg;
-	mobilePhoneMsg.AddString("name", "mobilephone");
-	mobilePhoneMsg.AddString("description", "Mobile Phone Number");
-	mobilePhoneMsg.AddInt32("type", B_STRING_TYPE);
-	
-	main_msg.AddMessage("setting", &user_msg);
-	main_msg.AddMessage("setting", &pass_msg);
-	main_msg.AddMessage("setting", &screen_msg);
-//	main_msg.AddMessage("setting", &homePhoneMsg);
-//	main_msg.AddMessage("setting", &workPhoneMsg);
-//	main_msg.AddMessage("setting", &mobilePhoneMsg);
-	
-	return main_msg;
-}
-
 status_t MSNProtocol::UpdateSettings( BMessage & msg ) {
 	const char *passport = NULL;
 	const char *password = NULL;

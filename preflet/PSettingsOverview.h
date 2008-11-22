@@ -7,9 +7,22 @@
 
 #include <interface/View.h>
 
+class BButton;
+
 class PSettingsOverview : public BView {
 	public:
-			PSettingsOverview(BRect bounds);
+				PSettingsOverview(BRect bounds);
+
+		virtual void	AttachedToWindow();
+
+	private:
+		BButton*	fServersButton;
+		BButton*	fClientsButton;
+		BButton*	fProtocolsButton;
 };
+
+const int32 kMsgEditServers = 'Mesr';
+const int32 kMsgEditProtocols = 'Mpro';
+const int32 kMsgEditClients = 'Mcli';
 
 #endif // PSETTINGS_OVERVIEW_H

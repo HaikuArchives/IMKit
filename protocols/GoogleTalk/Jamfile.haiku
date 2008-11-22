@@ -25,6 +25,7 @@ Addon gtalk :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libexpat.a <IMKit>libjabber.a ssl crypto
 ;
 AddResources gtalk : GoogleTalk.rdef ;
+AddResources gtalk : ProtocolTemplate.rdef ;
 
 Depends gtalk : <IMKit>libexpat.a ;
 Depends gtalk : <IMKit>libjabber.a ;

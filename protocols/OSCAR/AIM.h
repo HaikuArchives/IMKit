@@ -29,7 +29,6 @@ class AIMProtocol : public IM::Protocol, public OSCARHandler {
 		status_t 			Process(BMessage *msg);
 		const char 			*GetSignature(void);
 		const char 			*GetFriendlySignature(void);
-		BMessage			GetSettingsTemplate();
 		status_t 			UpdateSettings(BMessage &settings);
 		uint32 				GetEncoding(void);
 

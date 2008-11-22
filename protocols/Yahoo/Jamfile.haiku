@@ -25,6 +25,7 @@ Addon yahoo :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) <IMKit>libcommon.a yahoo2
 ;
 AddResources yahoo : Yahoo.rdef ;
+AddResources yahoo : ProtocolTemplate.rdef ;
 
 Depends yahoo : <IMKit>libcommon.a ;
 

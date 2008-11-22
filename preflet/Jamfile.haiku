@@ -23,6 +23,8 @@ Preference InstantMessaging :
 	PWindow.cpp
 	PView.cpp
 	PSettingsOverview.cpp
+	PServersOverview.cpp
+	PProtocolsOverview.cpp
 	PClientsOverview.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
 	  libim.so <IMKit>libcommon.a

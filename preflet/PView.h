@@ -8,6 +8,8 @@
 #include <interface/View.h>
 #include <interface/Button.h>
 
+#include <libim/Manager.h>
+
 #include <map>
 
 class BOutlineListView;
@@ -27,7 +29,7 @@ class PView : public BView {
 	private:
 			void		LoadProtocols();
 			void		LoadClients();
-			float		BuildGUI(BMessage viewTemplate, BMessage settings, BView* view);
+			float		BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view);
 
 	private:
 		BOutlineListView*	fListView;
@@ -46,6 +48,8 @@ class PView : public BView {
 		int32				fCurrentIndex;
 
 		float				fFontHeight;
+
+		IM::Manager*			fManager;
 };
 
 #endif // PVIEW_H

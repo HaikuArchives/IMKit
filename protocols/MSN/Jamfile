@@ -25,7 +25,7 @@ Addon msn :
 	Buddy.cpp
 	SSO.cpp 
 	: be stdc++.r4 libim.so libcommon.a ssl crypto
-	: MSN.rdef
+	: MSN.rdef ProtocolTemplate.rdef
 ;
 
 Depends msn : libcommon.a ;

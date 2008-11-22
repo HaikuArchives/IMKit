@@ -25,7 +25,7 @@ Addon aim :
 	Buddy.cpp
 	Group.cpp
 	: be stdc++.r4 textencoding libim.so libcommon.a crypto
-	: AIM.rdef
+	: AIM.rdef AIMProtocolTemplate.rdef
 ;
 
 Depends aim : libcommon.a ;
@@ -43,7 +43,7 @@ Addon icq :
 	Buddy.cpp
 	Group.cpp
 	: be stdc++.r4 textencoding libim.so libcommon.a crypto
-	: ICQ.rdef
+	: ICQ.rdef ICQProtocolTemplate.rdef
 ;
 
 Depends icq : libcommon.a ;

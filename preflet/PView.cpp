@@ -12,6 +12,7 @@
 #	include <interface/GroupLayoutBuilder.h>
 #	include <interface/GridLayoutBuilder.h>
 #endif
+#include <interface/Box.h>
 #include <interface/OutlineListView.h>
 #include <interface/ScrollView.h>
 #include <interface/CheckBox.h>
@@ -36,9 +37,12 @@
 #include <common/BubbleHelper.h>
 
 #include <libim/Helpers.h>
+#include <libim/Constants.h>
 
 #include "PView.h"
 #include "PSettingsOverview.h"
+#include "PServersOverview.h"
+#include "PProtocolsOverview.h"
 #include "PClientsOverview.h"
 
 const int32 kRevert      = 'Mrvt';
@@ -67,6 +71,9 @@ PView::PView(BRect bounds)
 
 	// Calculate inset
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
+	// IM Manager
+	fManager = new IM::Manager(BMessenger(this));
 
 	// Outline list view
 #ifdef __HAIKU__
@@ -107,15 +114,23 @@ PView::PView(BRect bounds)
 	// Servers item
 	fServersItem = new IconTextItem("servers", _T("Servers"));
 	fListView->AddItem(fServersItem);
+	fViews["servers"] = new PServersOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["servers"]);
+	fViews["servers"]->Hide();
 
 	// Protocols item
 	fProtocolsItem = new IconTextItem("protocols", _T("Protocols"));
 	fListView->AddItem(fProtocolsItem);
+	fViews["protocols"] = new PProtocolsOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["protocols"]);
+	fViews["protocols"]->Hide();
 
 	// Clients item
 	fClientsItem = new IconTextItem("clients", _T("Clients"));
 	fListView->AddItem(fClientsItem);
 	fViews["clients"] = new PClientsOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["clients"]);
+	fViews["clients"]->Hide();
 
 	// Add protocols and clients
 	LoadProtocols();
@@ -182,6 +197,106 @@ PView::MessageReceived(BMessage* msg)
 			fCurrentIndex = index;
 		} break;
 
+		case kMsgEditServers:
+			fListView->Select(fListView->IndexOf(fServersItem));
+			break;
+
+		case kMsgEditProtocols:
+			fListView->Select(fListView->IndexOf(fProtocolsItem));
+			break;
+
+		case kMsgEditClients:
+			fListView->Select(fListView->IndexOf(fClientsItem));
+			break;
+
+		case kSave: {
+			BMessage cur;
+			BMessage tmplate;
+			BMessage settings;
+			BMessage reply;
+
+			int current = fListView->CurrentSelection();
+			if (current < 0) {
+				printf("Error, no selection when trying to update\n");
+				return;
+			}
+
+			IconTextItem* item = (IconTextItem *)fListView->ItemAt(current);
+			addons_pair p = fAddOns[item->Name()];
+
+			tmplate = p.second;			
+			BView *panel = FindView(item->Name());
+
+			for (int i = 0; tmplate.FindMessage("setting", i, &cur) == B_OK; i++) {
+				const char *name = cur.FindString("name");
+				int32 type = -1;
+
+				cur.FindInt32("type", &type);
+
+				if (dynamic_cast<BTextControl*>(panel->FindView(name))) {
+					// Free text
+					BTextControl* ctrl = (BTextControl*)panel->FindView(name);
+
+					switch (type) {
+						case B_STRING_TYPE:
+							settings.AddString(name, ctrl->Text());
+							break;
+						case B_INT32_TYPE:
+							settings.AddInt32(name, atoi(ctrl->Text()));
+							break;
+						default:
+							return;
+					}
+				} else if (dynamic_cast<BMenuField*>(panel->FindView(name))) {
+					// Provided option
+					BMenuField* ctrl = (BMenuField*)panel->FindView(name);
+					BMenuItem* item = ctrl->Menu()->FindMarked();
+
+					if (!item)
+						return;
+
+					switch (type) {
+						case B_STRING_TYPE:
+							settings.AddString(name, item->Label());
+							break;
+						case  B_INT32_TYPE:
+							settings.AddInt32(name, atoi(item->Label()));
+							break;
+						default:
+							return;
+					}
+				} else if (dynamic_cast<BCheckBox*>(panel->FindView(name))) {
+					// Boolean setting
+					BCheckBox* box = (BCheckBox*)panel->FindView(name);
+
+					if (box->Value() == B_CONTROL_ON)
+						settings.AddBool(name, true);
+					else
+						settings.AddBool(name, false);
+				} else if (dynamic_cast<BTextView*>(panel->FindView(name))) {
+					BTextView* view = (BTextView *)panel->FindView(name);
+					settings.AddString(name, view->Text());
+				}
+			}
+
+			status_t res = B_ERROR;
+			BMessage updMessage(IM::SETTINGS_UPDATED);
+
+			if (tmplate.FindString("protocol")) {
+				res = im_save_protocol_settings(tmplate.FindString("protocol"), &settings);
+				updMessage.AddString("protocol", tmplate.FindString("protocol"));
+			} else if (tmplate.FindString("client")) {
+				res = im_save_client_settings( tmplate.FindString("client"), &settings);
+				updMessage.AddString("client", tmplate.FindString("client"));
+			} else
+				LOG("Preflet", liHigh, "Failed to determine type of settings");
+
+			if (res != B_OK)
+				LOG("Preflet", liHigh, "Error when saving settings");
+			else
+				fManager->SendMessage(&updMessage);
+		}
+
 		default:
 			BView::MessageReceived(msg);
 	}
@@ -210,11 +325,11 @@ PView::LoadProtocols()
 
 		// Load settings
 		BMessage protocol_settings;
-		im_load_protocol_settings(file, &protocol_settings);
+		im_load_protocol_settings(protoPath.Path(), &protocol_settings);
 
 		// Load template
 		BMessage protocol_template;
-		im_load_protocol_template(file, &protocol_template);
+		im_load_protocol_template(protoPath.Path(), &protocol_template);
 		protocol_template.AddString("protocol", protoPath.Path());
 
 		// Add protocol item
@@ -223,10 +338,10 @@ PView::LoadProtocols()
 		fListView->AddUnder(item, fProtocolsItem);
 
 		BView* view = new BView(BRect(0, 0, 1, 1), file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+		BuildGUI(protocol_template, protocol_settings, file, view);
 		fViews[protoPath.Path()] = view;
-		view->Hide();
 		fMainView->AddChild(view);
-		BuildGUI(protocol_template, protocol_settings, view);
+		view->Hide();
 	}
 }
 
@@ -246,7 +361,7 @@ PView::LoadClients()
 		BPath clientPath;
 		entry_ref ref;
 
-		// Get protocol add-on path and file
+		// Get client path and file
 		msg.FindString("path", &path);
 		msg.FindString("file", &file);
 		clientPath.SetTo(path);
@@ -278,17 +393,18 @@ PView::LoadClients()
 		pair<BMessage, BMessage> p(client_settings, client_template);
 		fAddOns[clientPath.Path()] = p;
 
+		// Create settings view
 		BView* view = new BView(BRect(0, 0, 1, 1), file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+		BuildGUI(client_template, client_settings, file, view);
 		fViews[clientPath.Path()] = view;
-		view->Hide();
 		fMainView->AddChild(view);
-		BuildGUI(client_template, client_settings, view);
+		view->Hide();
 	}
 }
 
 
 float
-PView::BuildGUI(BMessage viewTemplate, BMessage settings, BView* view)
+PView::BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 {
 	BMessage curr;
 #ifdef __HAIKU__
@@ -303,10 +419,23 @@ PView::BuildGUI(BMessage viewTemplate, BMessage settings, BView* view)
 	const float kControlWidth = view->Bounds().Width() - (kEdgeOffset * 2);
 #endif
 
-	for (int32 i = 0; viewTemplate.FindMessage("setting", i, &curr) == B_OK; i++) {
+#ifdef __HAIKU__
+	BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), NULL, viewName);
+	descLabel->SetAlignment(B_ALIGN_LEFT);
+	descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+
+	BBox* divider = new BBox(BRect(0, 0, 1, 1), B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
+		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
+	divider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+
+	layout.Add(descLabel);
+	layout.Add(divider);
+#endif
+
+	for (int32 i = 0; templ.FindMessage("setting", i, &curr) == B_OK; i++) {
 		char temp[512];
 
-		// Get stuff from template
+		// Get stuff from templ
 		const char* name = curr.FindString("name");
 		const char* desc = curr.FindString("description");
 		const char* value = NULL;
@@ -327,7 +456,7 @@ PView::BuildGUI(BMessage viewTemplate, BMessage settings, BView* view)
 			LOG("preflet", liMedium, "Error getting type for %s, skipping", name);
 			continue;
 		}
-		
+
 		switch (type) {
 			case B_STRING_TYPE: {
 				if (curr.FindString("valid_value")) {

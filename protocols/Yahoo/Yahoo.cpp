@@ -193,28 +193,6 @@ Yahoo::GetFriendlySignature()
 	return "Yahoo";
 }
 
-BMessage
-Yahoo::GetSettingsTemplate()
-{
-	BMessage main_msg(IM::SETTINGS_TEMPLATE);
-	
-	BMessage user_msg;
-	user_msg.AddString("name","yahooID");
-	user_msg.AddString("description", "Yahoo! ID");
-	user_msg.AddInt32("type",B_STRING_TYPE);
-	
-	BMessage pass_msg;
-	pass_msg.AddString("name","password");
-	pass_msg.AddString("description", "Password");
-	pass_msg.AddInt32("type",B_STRING_TYPE);
-	pass_msg.AddBool("is_secret", true);
-	
-	main_msg.AddMessage("setting", &user_msg);
-	main_msg.AddMessage("setting", &pass_msg);
-	
-	return main_msg;
-}
-
 status_t
 Yahoo::UpdateSettings( BMessage & msg )
 {

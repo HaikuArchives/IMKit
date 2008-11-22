@@ -9,7 +9,9 @@
 
 class PClientsOverview : public BView {
 	public:
-			PClientsOverview(BRect bounds);
+				PClientsOverview(BRect bounds);
 };
+
+const int32 kMsgEditClient = 'Mecl';
 
 #endif // PCLIENTS_OVERVIEW_H

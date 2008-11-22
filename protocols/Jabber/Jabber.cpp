@@ -329,36 +329,6 @@ Jabber::GetFriendlySignature()
 
 
 
-BMessage
-Jabber::GetSettingsTemplate()
-{
-	BMessage msg(IM::SETTINGS_TEMPLATE);
-
-	image_info image;
-	team_id team = 0;
-#if defined(__HAIKU__)
-	team = B_CURRENT_TEAM;
-#endif
-	if (get_image_info(team, &image) < B_OK)
-		return msg;
-
-	BFile file(image.name, B_READ_ONLY);
-	if (file.InitCheck() < B_OK)
-		return msg;
-
-	BResources resources(&file);
-#if defined(__HAIKU__)
-	if (resources.InitCheck() < B_OK)
-		return msg;
-#endif
-
-	size_t size;
-	const void* data = resources.LoadResource(B_MESSAGE_TYPE, 1000, &size);
-
-	msg.Unflatten((const char*)data);
-	return msg;
-}
-
 status_t
 Jabber::UpdateSettings( BMessage & msg )
 {

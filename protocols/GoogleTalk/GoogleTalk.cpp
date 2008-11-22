@@ -337,45 +337,6 @@ GoogleTalk::GetFriendlySignature()
 	return "Google Talk";
 }
 
-
-
-
-
-BMessage
-GoogleTalk::GetSettingsTemplate()
-{
-	BMessage main_msg(IM::SETTINGS_TEMPLATE);
-	
-	BMessage user_msg;
-	user_msg.AddString("name","username");
-	user_msg.AddString("description", "Gmail Username"); 
-	user_msg.AddInt32("type",B_STRING_TYPE);
-	/*
-	BMessage serv_msg;
-	serv_msg.AddString("name","server");
-	serv_msg.AddString("description", "Google Server"); 
-	serv_msg.AddInt32("type",B_STRING_TYPE);
-	*/
-	BMessage pass_msg;
-	pass_msg.AddString("name","password");
-	pass_msg.AddString("description", "Gmail Password");
-	pass_msg.AddInt32("type",B_STRING_TYPE);
-	pass_msg.AddBool("is_secret", true);
-	
-	BMessage res;
-	res.AddString("name","resource");
-	res.AddString("description", "Resource");
-	res.AddString("default", "IM Kit GoogleTalk AddOn");
-	res.AddInt32("type",B_STRING_TYPE);
-		
-	main_msg.AddMessage("setting", &user_msg);
-	//main_msg.AddMessage("setting", &serv_msg);
-	main_msg.AddMessage("setting", &pass_msg);
-	main_msg.AddMessage("setting", &res);
-	
-	return main_msg;
-}
-
 status_t
 GoogleTalk::UpdateSettings( BMessage & msg )
 {

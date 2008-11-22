@@ -149,8 +149,8 @@ int main(int argc, char *argv[]) {
 			
 		sigaction(SIGSEGV, &killedAction, NULL);
 	};
-	
-	ProtocolLoaderApplication app(gInstanceID.String(), protocol, settings);
+
+	ProtocolLoaderApplication app(gInstanceID.String(), protocol, path.Path(), settings);
 	app.Run();
 	
 	return B_OK;

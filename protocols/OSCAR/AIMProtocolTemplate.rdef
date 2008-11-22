@@ -1,0 +1,25 @@
+resource(1000) message('IMst') {
+	"setting" = message {
+		"name" = "screenname",
+		"description" = "Screen Name",
+		int32 "type" = 'CSTR'
+	},
+	"setting" = message {
+		"name" = "password",
+		"description" = "Password",
+		int32 "type" = 'CSTR',
+		"is_secret" = true
+	},
+	"setting" = message {
+		"name" = "profile",
+		"description" = "User Profile",
+		"default" = "IM Kit: AIM user",
+		int32 "type" = 'CSTR',
+		"multi_line" = true
+	},
+	"setting" = message {
+		"name" = "icon",
+		"description" = "Buddy Icon",
+		int32 "type" = 'CSTR'
+	}
+};

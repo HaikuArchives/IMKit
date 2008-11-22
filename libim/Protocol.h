@@ -40,14 +40,7 @@ class Protocol
 			Return a user friendly version of the signature. "ICQ" for "ICQ".
 		*/
 		virtual const char * GetFriendlySignature()=0;
-		
-		/**
-			Return a BMessage containing the various settings that can
-			be made to affect the service. See im_server specification
-			for more info.
-		*/
-		virtual BMessage GetSettingsTemplate()=0;
-		
+
 		/**
 			Settings have been changed, update internal settings to match
 			those in the message. Also called before the initial Init() call 

@@ -31,6 +31,7 @@ Addon aim :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
 ;
 AddResources aim : AIM.rdef ;
+AddResources aim : AIMProtocolTemplate.rdef ;
 
 Depends aim : <IMKit>libcommon.a ;
 Depends aim : libim.so ;
@@ -49,6 +50,7 @@ Addon icq :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
 ;
 AddResources icq : ICQ.rdef ;
+AddResources icq : ICQProtocolTemplate.rdef ;
 
 Depends icq : <IMKit>libcommon.a ;
 Depends icq : libim.so ;

@@ -5,18 +5,20 @@
 #include <libim/Constants.h>
 #include <libim/Manager.h>
 #include <libim/Protocol.h>
+#include <libim/Helpers.h>
 
 //#pragma mark Constructors
 
 ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Protocol *protocol,
-	BMessage settings)
+	const char* path, BMessage settings)
 	
 	: BApplication(IM_PROTOCOL_LOADER_SIG),
 	fInstanceID(instanceID),
 	fProtocol(protocol),
+	fProtoName(path),
 	fSettings(settings),
 	fManager(NULL) {
-	
+
 	if (protocol != NULL) {
 		rename_thread(find_thread(NULL), fProtocol->GetFriendlySignature());
 	};
@@ -31,7 +33,9 @@ ProtocolLoaderApplication::~ProtocolLoaderApplication(void) {
 //#pragma mark BApplication Hooks
 
 void ProtocolLoaderApplication::ReadyToRun(void) {
-	BMessage settings = fProtocol->GetSettingsTemplate();
+	BMessage settings;
+
+	im_load_protocol_template(fProtoName.String(), &settings);
 
 	BMessage reg(IM::Private::PROTOCOL_STARTED);
 	reg.AddString("instance_id", fInstanceID);

@@ -30,6 +30,7 @@ Addon msn :
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
 ;
 AddResources msn : MSN.rdef ;
+AddResources msn : ProtocolTemplate.rdef ;
 
 Depends msn : <IMKit>libcommon.a ;
 Depends msn : libim.so ;

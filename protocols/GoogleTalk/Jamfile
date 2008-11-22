@@ -18,7 +18,7 @@ SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 Addon gtalk :
 	GoogleTalk.cpp
 	: be stdc++.r4 libim.so libexpat.a libjabber.a ssl crypto
-	: GoogleTalk.rdef
+	: GoogleTalk.rdef ProtocolTemplate.rdef
 ;
 
 Depends gtalk : libexpat.a ;

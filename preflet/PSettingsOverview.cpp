@@ -24,10 +24,6 @@
 #	define _T(str) (str)
 #endif
 
-const int32 kMsgEditServers = 'Mesr';
-const int32 kMsgEditProtocols = 'Mpro';
-const int32 kMsgEditClients = 'Mcli';
-
 PSettingsOverview::PSettingsOverview(BRect bounds)
 	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
 {
@@ -73,9 +69,9 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
 	divider3->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
-	BButton* serversButton = new BButton(frame, "servers_edit", _T("Edit..."), new BMessage(kMsgEditServers));
-	BButton* protocolsButton = new BButton(frame, "protocols_edit", _T("Edit..."), new BMessage(kMsgEditProtocols));
-	BButton* clientsButton = new BButton(frame, "clients_edit", _T("Edit..."), new BMessage(kMsgEditClients));
+	fServersButton = new BButton(frame, "servers_edit", _T("Edit..."), new BMessage(kMsgEditServers));
+	fProtocolsButton = new BButton(frame, "protocols_edit", _T("Edit..."), new BMessage(kMsgEditProtocols));
+	fClientsButton = new BButton(frame, "clients_edit", _T("Edit..."), new BMessage(kMsgEditClients));
 
 #ifdef __HAIKU__
 	// Build the layout
@@ -88,7 +84,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
 			.Add(serversDescLabel, 0, 3, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 4)
-			.Add(serversButton, 1, 4)
+			.Add(fServersButton, 1, 4)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 5, 2)
 
 			.Add(protocolsLabel, 0, 6, 2)
@@ -96,7 +92,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 8, 2)
 			.Add(protocolsDescLabel, 0, 9, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 10)
-			.Add(protocolsButton, 1, 11)
+			.Add(fProtocolsButton, 1, 11)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 12, 2)
 
 			.Add(clientsLabel, 0, 13, 2)
@@ -104,7 +100,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 15, 2)
 			.Add(clientsDescLabel, 0, 16, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 17)
-			.Add(clientsButton, 1, 17)
+			.Add(fClientsButton, 1, 17)
 		)
 
 		.AddGlue()
@@ -113,4 +109,13 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 #else
 	AddChild(serversLabel);
 #endif
+}
+
+
+void
+PSettingsOverview::AttachedToWindow()
+{
+	fServersButton->SetTarget(Parent()->Parent());
+	fProtocolsButton->SetTarget(Parent()->Parent());
+	fClientsButton->SetTarget(Parent()->Parent());
 }

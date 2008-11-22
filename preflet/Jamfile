@@ -16,6 +16,8 @@ Executable InstantMessaging :
 	PWindow.cpp
 	PView.cpp
 	PSettingsOverview.cpp
+	PServersOverview.cpp
+	PProtocolsOverview.cpp
 	PClientsOverview.cpp
 	: be stdc++.r4 translation textencoding libim.so libcommon.a
 	: preflet.rdef
