@@ -2,7 +2,7 @@
 #define PROTOCOLSPECIFICATION_H
 
 #include "ProtocolInfo.h"
-#include "Specification.h"
+#include "common/Specification.h"
 
 #include <support/String.h>
 
