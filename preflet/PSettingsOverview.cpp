@@ -33,6 +33,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	BStringView* serversLabel = new BStringView(frame, NULL, _T("Servers"));
 	serversLabel->SetAlignment(B_ALIGN_LEFT);
 	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	serversLabel->SetFont(be_bold_font);
 
 	BStringView* serversDescLabel = new BStringView(frame, NULL,
 		_T("The server is responsible for the IM Kit activity."));
@@ -46,6 +47,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
 	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
 	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	protocolsLabel->SetFont(be_bold_font);
 
 	BStringView* protocolsDescLabel = new BStringView(frame, NULL,
 		_T("Protocols communicate with instant messaging networks."));
@@ -59,6 +61,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	BStringView* clientsLabel = new BStringView(frame, NULL, _T("Clients"));
 	clientsLabel->SetAlignment(B_ALIGN_LEFT);
 	clientsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	clientsLabel->SetFont(be_bold_font);
 
 	BStringView* clientsDescLabel = new BStringView(frame, NULL,
 		_T("Clients provide the interface between you, the user, and the Server."));

@@ -33,6 +33,7 @@ PProtocolsOverview::PProtocolsOverview(BRect bounds)
 	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
 	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
 	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	protocolsLabel->SetFont(be_bold_font);
 
 	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);

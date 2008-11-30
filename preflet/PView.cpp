@@ -44,6 +44,7 @@
 #include "PServersOverview.h"
 #include "PProtocolsOverview.h"
 #include "PClientsOverview.h"
+#include "PAccountsView.h"
 
 const int32 kRevert      = 'Mrvt';
 const int32 kSave        = 'Msav';
@@ -307,6 +308,7 @@ void
 PView::LoadProtocols()
 {
 	BMessage msg;
+	BRect frame(0, 0, 1, 1);
 
 	// Adding protocol items
 	BMessage protocols;
@@ -323,6 +325,7 @@ PView::LoadProtocols()
 		protoPath.SetTo(path);
 		protoPath.Append(file);
 
+#if 0
 		// Load settings
 		BMessage protocol_settings;
 		im_load_protocol_settings(protoPath.Path(), &protocol_settings);
@@ -331,17 +334,26 @@ PView::LoadProtocols()
 		BMessage protocol_template;
 		im_load_protocol_template(protoPath.Path(), &protocol_template);
 		protocol_template.AddString("protocol", protoPath.Path());
+#endif
 
 		// Add protocol item
 		BBitmap* icon = ReadNodeIcon(protoPath.Path(), B_MINI_ICON, true);
 		IconTextItem* item = new IconTextItem(protoPath.Path(), file, icon);
 		fListView->AddUnder(item, fProtocolsItem);
 
-		BView* view = new BView(BRect(0, 0, 1, 1), file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
-		BuildGUI(protocol_template, protocol_settings, file, view);
-		fViews[protoPath.Path()] = view;
-		fMainView->AddChild(view);
+		// Create protocol settings view
+		BView* view = new PAccountsView(frame, &protoPath);
+
+		// Add settings for the current protocol
+		BMessage accounts, account;
+		im_load_protocol_accounts(protoPath.Path(), &accounts);
+		for (int32 i = 0; accounts.FindMessage("account", i, &account) == B_OK; i++) {
+		}
+
+		// Add protocol settings view
 		view->Hide();
+		fMainView->AddChild(view);
+		fViews[protoPath.Path()] = view;
 	}
 }
 

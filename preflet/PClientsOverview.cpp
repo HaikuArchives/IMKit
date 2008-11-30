@@ -41,6 +41,7 @@ PClientsOverview::PClientsOverview(BRect bounds)
 	BStringView* autostartLabel = new BStringView(frame, NULL, _T("Autostart"));
 	autostartLabel->SetAlignment(B_ALIGN_LEFT);
 	autostartLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	autostartLabel->SetFont(be_bold_font);
 
 	BRect textRect(0, 0, 200, B_SIZE_UNLIMITED);
 	BTextView* descLabel = new BTextView(frame, NULL, textRect,
