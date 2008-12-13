@@ -40,6 +40,7 @@ extern log_importance g_verbosity_level;
 // settings management.
 extern status_t im_load_protocol_settings( const char * protocol, BMessage * settings );
 extern status_t im_load_protocol_template(const char *protocol, BMessage* msg);
+extern status_t im_load_protocol_accounts(const char* protocol, BMessage* msg);
 extern status_t im_load_client_settings( const char * client, BMessage * settings );
 extern status_t im_load_client_template( const char * client, BMessage * tmplate );
 

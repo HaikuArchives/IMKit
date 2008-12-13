@@ -276,6 +276,56 @@ im_load_protocol_settings( const char * protocol, BMessage * msg )
 }
 
 status_t
+im_load_protocol_accounts(const char* protocol, BMessage* msg)
+{
+	BPath path;
+
+	// Find user settings directory
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL) != B_OK)
+		return B_ERROR;
+	path.Append("im_kit/add-ons/protocols");
+
+	// Now search for files inside this directory
+	BDirectory dir(path.Path());
+	entry_ref ref;
+	while (dir.GetNextRef(&ref) == B_OK) {
+		const int32 kDataChunkSize = 128 * 1024;
+		char* data = (char *)malloc(kDataChunkSize);
+
+		BNode node(&ref);
+		if (node.InitCheck() != B_OK) {
+			free(data);
+			continue;
+		}
+
+		int32 num_read = node.ReadAttr("im_settings", B_RAW_TYPE, 0, data, kDataChunkSize);
+		if (num_read <= 0) {
+			node.Unset();
+			free(data);
+			continue;
+		}
+
+		BMessage tempMsg;
+		if (tempMsg.Unflatten(data) != B_OK) {
+			node.Unset();
+			free(data);
+			continue;
+		}
+
+		char protoName[B_PATH_NAME_LENGTH + 1];
+		if (tempMsg.FindString("protocol", (const char**)&protoName) == B_OK) {
+			if (strcmp(protocol, protoName) == 0)
+				msg->Unflatten(data);
+		}
+
+		node.Unset();
+		free(data);
+	}
+
+	return B_OK;
+}
+
+status_t
 im_load_protocol_template(const char* protocol, BMessage* msg)
 {
 	BFile file(protocol, B_READ_ONLY);

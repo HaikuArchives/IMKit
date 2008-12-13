@@ -8,6 +8,7 @@
 #include <interface/View.h>
 
 class BPath;
+class BWindow;
 class BButton;
 
 class PAccountsView : public BView
@@ -24,6 +25,9 @@ class PAccountsView : public BView
 		BButton*	fDelButton;
 		BButton*	fCancelButton;
 		BButton*	fOkButton;
+
+	private:
+				void	CenterWindowOnScreen(BWindow* window);
 };
 
 #endif // PACCOUNTS_VIEW_H

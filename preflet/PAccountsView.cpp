@@ -13,6 +13,8 @@
 #include <interface/OutlineListView.h>
 #include <interface/ScrollView.h>
 #include <interface/Button.h>
+#include <interface/TextControl.h>
+#include <interface/Screen.h>
 #include <interface/Window.h>
 #include <storage/Path.h>
 
@@ -60,7 +62,9 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	// Buttons
 	fAddButton = new BButton(frame, "add", _T("Add account..."), new BMessage(kAddAccount));
 	fEditButton = new BButton(frame, "edit", _T("Edit account..."), new BMessage(kEditAccount));
+	fEditButton->SetEnabled(false);
 	fDelButton = new BButton(frame, "del", _T("Remove..."), new BMessage(kDelAccount));
+	fDelButton->SetEnabled(false);
 
 #ifdef __HAIKU__
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
@@ -85,6 +89,8 @@ void
 PAccountsView::AttachedToWindow()
 {
 	fAddButton->SetTarget(this);
+	fEditButton->SetTarget(this);
+	fDelButton->SetTarget(this);
 }
 
 
@@ -95,10 +101,12 @@ PAccountsView::MessageReceived(BMessage* msg)
 		case kAddAccount: {
 			BRect frame(0, 0, 1, 1);
 
-			BWindow* window = new BWindow(frame, _T("Add account"), B_TITLED_WINDOW,
+			BWindow* window = new BWindow(BRect(0, 0, 320, 240), _T("Add account"), B_TITLED_WINDOW,
 				B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE);
-			BView* view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+			BView* view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 			view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+
+			BTextControl* fAccountName = new BTextControl(frame, "account_name", _T("Account name:"), NULL, NULL);
 
 			fCancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kMsgCancel));
 			fOkButton = new BButton(frame, "ok", _T("OK"), new BMessage(kMsgOk));
@@ -107,6 +115,8 @@ PAccountsView::MessageReceived(BMessage* msg)
 			float inset = ceilf(be_plain_font->Size() * 0.7f);
 			view->SetLayout(new BGroupLayout(B_VERTICAL));
 			view->AddChild(BGroupLayoutBuilder(B_VERTICAL)
+				.Add(fAccountName)
+
 				.AddGroup(B_HORIZONTAL, 2.0f)
 					.AddGlue()
 					.Add(fCancelButton)
@@ -116,10 +126,29 @@ PAccountsView::MessageReceived(BMessage* msg)
 				.SetInsets(inset, inset, inset, inset)
 			);
 #else
+			view->AddChild(fAccountName);
+			view->AddChild(fCancelButton);
+			view->AddChild(fOkButton);
 #endif
 
+			view->Show();
 			window->AddChild(view);
+			CenterWindowOnScreen(window);
 			window->Show();
 		} break;
 	}
+}
+
+
+void
+PAccountsView::CenterWindowOnScreen(BWindow* window)
+{
+	BRect screenFrame = BScreen().Frame();
+	BPoint pt;
+
+	pt.x = screenFrame.Width()/2 - Bounds().Width()/2;
+	pt.y = screenFrame.Height()/2 - Bounds().Height()/2;
+
+	if (screenFrame.Contains(pt))
+		window->MoveTo(pt);
 }
