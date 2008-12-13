@@ -32,14 +32,15 @@ PServersOverview::PServersOverview(BRect bounds)
 
 	BStringView* serversLabel = new BStringView(frame, NULL, _T("Servers"));
 	serversLabel->SetAlignment(B_ALIGN_LEFT);
-	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	serversLabel->SetFont(be_bold_font);
 
 	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
 #ifdef __HAIKU__
+	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 
@@ -54,5 +55,6 @@ PServersOverview::PServersOverview(BRect bounds)
 	);
 #else
 	AddChild(serversLabel);
+	AddChild(divider1);
 #endif
 }

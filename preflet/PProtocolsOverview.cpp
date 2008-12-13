@@ -31,6 +31,7 @@ PProtocolsOverview::PProtocolsOverview(BRect bounds)
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
 	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
+#ifdef __HAIKU__
 	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
 	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	protocolsLabel->SetFont(be_bold_font);
@@ -39,7 +40,6 @@ PProtocolsOverview::PProtocolsOverview(BRect bounds)
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
 	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
-#ifdef __HAIKU__
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 

@@ -39,6 +39,7 @@ PClientsOverview::PClientsOverview(BRect bounds)
 #endif
 
 	BStringView* autostartLabel = new BStringView(frame, NULL, _T("Autostart"));
+#ifdef __HAIKU__
 	autostartLabel->SetAlignment(B_ALIGN_LEFT);
 	autostartLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	autostartLabel->SetFont(be_bold_font);
@@ -60,6 +61,7 @@ PClientsOverview::PClientsOverview(BRect bounds)
 	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
 	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+#endif
 
 #ifdef __HAIKU__
 	int32 row = 5;

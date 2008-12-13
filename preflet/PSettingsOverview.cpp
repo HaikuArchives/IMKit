@@ -18,65 +18,103 @@
 
 #include "PSettingsOverview.h"
 
+#include "common/MultiLineStringView.h"
+
 #ifdef ZETA
 #	include <locale/Locale.h>
 #else
 #	define _T(str) (str)
 #endif
 
+//#pragma mark Constants
+
+const char *kServerDesc = "The server is responsible for handling contact statuses, loading protocols and communicating between the protocols and clients.";
+
+//#pragma mark Constructor
+
 PSettingsOverview::PSettingsOverview(BRect bounds)
 	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
 {
 	BRect frame(0, 0, 1, 1);
+	
+#ifndef __HAIKU__
+	frame = Bounds();
+#endif
+
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
+
+	font_height fh;
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
-	BStringView* serversLabel = new BStringView(frame, NULL, _T("Servers"));
+	BRect frameServersLabel(frame);
+#ifndef __HAIKU__
+	frameServersLabel.bottom = headingFontHeight;
+#endif
+
+	BStringView* serversLabel = new BStringView(frameServersLabel, NULL, _T("Servers"));
 	serversLabel->SetAlignment(B_ALIGN_LEFT);
-	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	serversLabel->SetFont(be_bold_font);
+	serversLabel->SetFont(&headingFont);
 
-	BStringView* serversDescLabel = new BStringView(frame, NULL,
-		_T("The server is responsible for the IM Kit activity."));
-	serversDescLabel->SetAlignment(B_ALIGN_LEFT);
-	serversDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	BRect frameDivider1(frame);
+#ifndef __HAIKU__
+	frameDivider1.top = frameServersLabel.bottom + inset;
+	frameDivider1.bottom = frameDivider1.top + 1.5f;
+#endif
 
-	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
+	BBox* divider1 = new BBox(frameDivider1, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+
+	BRect frameServersDescLabel(frame);
+#ifndef __HAIKU__
+	frameServersDescLabel.top = frameDivider1.bottom + inset;
+	frameServersDescLabel.bottom = frame.bottom;
+#endif
+
+	MultiLineStringView* serversDescLabel = new MultiLineStringView(NULL, _T(kServerDesc), frameServersDescLabel.Width());
+	serversDescLabel->MoveTo(frameServersDescLabel.left, frameServersDescLabel.top);
+	serversDescLabel->ResizeToPreferred();
 
 	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
 	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
-	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	protocolsLabel->SetFont(be_bold_font);
+	protocolsLabel->SetFont(&headingFont);
 
 	BStringView* protocolsDescLabel = new BStringView(frame, NULL,
 		_T("Protocols communicate with instant messaging networks."));
 	protocolsDescLabel->SetAlignment(B_ALIGN_LEFT);
-	protocolsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 
 	BBox* divider2 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider2->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
 	BStringView* clientsLabel = new BStringView(frame, NULL, _T("Clients"));
 	clientsLabel->SetAlignment(B_ALIGN_LEFT);
-	clientsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	clientsLabel->SetFont(be_bold_font);
+	clientsLabel->SetFont(&headingFont);
 
 	BStringView* clientsDescLabel = new BStringView(frame, NULL,
 		_T("Clients provide the interface between you, the user, and the Server."));
 	clientsDescLabel->SetAlignment(B_ALIGN_LEFT);
-	clientsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 
 	BBox* divider3 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider3->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
 	fServersButton = new BButton(frame, "servers_edit", _T("Edit..."), new BMessage(kMsgEditServers));
 	fProtocolsButton = new BButton(frame, "protocols_edit", _T("Edit..."), new BMessage(kMsgEditProtocols));
 	fClientsButton = new BButton(frame, "clients_edit", _T("Edit..."), new BMessage(kMsgEditClients));
 
 #ifdef __HAIKU__
+	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	serversDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	protocolsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	divider2->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	clientsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	clientsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	divider3->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 
@@ -111,6 +149,16 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	);
 #else
 	AddChild(serversLabel);
+	AddChild(divider1);
+	AddChild(serversDescLabel);
+//	AddChild(fServersButton);
+//	AddChild(divider2);
+//	AddChild(protocolsDescLabel);
+//	AddChild(fProtocolsButton);
+//	AddChild(clientsLabel);
+//	AddChild(divider3);
+//	AddChild(clientsDescLabel);
+//	AddChild(fClientsButton);
 #endif
 }
 
@@ -118,6 +166,16 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 void
 PSettingsOverview::AttachedToWindow()
 {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+
 	fServersButton->SetTarget(Parent()->Parent());
 	fProtocolsButton->SetTarget(Parent()->Parent());
 	fClientsButton->SetTarget(Parent()->Parent());

@@ -70,9 +70,6 @@ PView::PView(BRect bounds)
 	// Set background color
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 
-	// Calculate inset
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
-
 	// IM Manager
 	fManager = new IM::Manager(BMessenger(this));
 
@@ -82,6 +79,7 @@ PView::PView(BRect bounds)
 #else
 	frame = BRect(kEdgeOffset, kEdgeOffset, 180, Bounds().bottom - kEdgeOffset);
 #endif
+
 	fListView = new BOutlineListView(frame, "listview", B_SINGLE_SELECTION_LIST,
 		B_FOLLOW_ALL_SIDES);
 	fListView->SetSelectionMessage(new BMessage(kListChanged));
@@ -93,15 +91,34 @@ PView::PView(BRect bounds)
 #ifdef __HAIKU__
 	frame = BRect(0, 0, 1, 1);
 #else
-	frame = BRect(fListView->Bounds().right + (kEdgeOffset * 3) + B_V_SCROLL_BAR_WIDTH,
-		kEdgeOffset, Bounds().right - kEdgeOffset, Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset));
+	frame.left = fListView->Bounds().right + (kEdgeOffset * 3) + B_V_SCROLL_BAR_WIDTH;
+	frame.top = kEdgeOffset;
+	frame.right = Bounds().right - kEdgeOffset;
+	frame.bottom = Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset);
 #endif
 	fMainView = new BView(frame, "box", B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
+	BRect frameSave(frame);
+	BRect frameRevert(frame);
+
+#ifndef __HAIKU__
+	frameSave = Bounds();
+
+	frameSave.InsetBy(kEdgeOffset, kEdgeOffset);
+	frameSave.bottom -= (kEdgeOffset * 2);
+	frameSave.top = frameSave.bottom - ((fontHeight.descent + fontHeight.leading + fontHeight.ascent));
+	frameSave.left = frameSave.right - (be_plain_font->StringWidth(_T("Save")) + (kControlOffset * 2));
+
+	frameRevert.top = frameSave.top;
+	frameRevert.bottom = frameSave.bottom;
+	frameRevert.right = frameSave.left - kControlOffset;
+	frameRevert.left = frameRevert.right - (be_plain_font->StringWidth(_T("Revert")) + (kControlOffset * 2));
+#endif
+
 	// Save and revert buttons
-	fRevert = new BButton(frame, "revert", _T("Revert"), new BMessage(kRevert));
+	fRevert = new BButton(frameRevert, "revert", _T("Revert"), new BMessage(kRevert));
 	fRevert->SetEnabled(false);
-	fSave = new BButton(frame, "save", _T("Save"), new BMessage(kSave));
+	fSave = new BButton(frameSave, "save", _T("Save"), new BMessage(kSave));
 
 	// Settings item
 	IconTextItem* settingsItem = new IconTextItem("settings", _T("Settings"));
@@ -138,6 +155,9 @@ PView::PView(BRect bounds)
 	LoadClients();
 
 #ifdef __HAIKU__
+	// Calculate inset
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
 	// Build the layout
 	SetLayout(new BGroupLayout(B_VERTICAL));
 
@@ -166,17 +186,27 @@ PView::PView(BRect bounds)
 void
 PView::AttachedToWindow()
 {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+
 	fListView->SetTarget(this);
 	fRevert->SetTarget(this);
 	fSave->SetTarget(this);
 }
-
 
 void
 PView::MessageReceived(BMessage* msg)
 {
 	switch (msg->what) {
 		case kListChanged: {
+
 			int32 index = msg->FindInt32("index");
 			if (index < 0)
 				return;
@@ -196,6 +226,8 @@ PView::MessageReceived(BMessage* msg)
 			fCurrentView = vIt->second;
 			fCurrentView->Show();
 			fCurrentIndex = index;
+			
+			printf("CurrentView (%s - [%p]) - %s\n", fCurrentView->Name(), fCurrentView, fCurrentView->IsHidden() ? "hidden" : "visible");
 		} break;
 
 		case kMsgEditServers:
@@ -345,10 +377,10 @@ PView::LoadProtocols()
 		BView* view = new PAccountsView(frame, &protoPath);
 
 		// Add settings for the current protocol
-		BMessage accounts, account;
-		im_load_protocol_accounts(protoPath.Path(), &accounts);
-		for (int32 i = 0; accounts.FindMessage("account", i, &account) == B_OK; i++) {
-		}
+//		BMessage accounts, account;
+//		im_load_protocol_accounts(protoPath.Path(), &accounts);
+//		for (int32 i = 0; accounts.FindMessage("account", i, &account) == B_OK; i++) {
+//		}
 
 		// Add protocol settings view
 		view->Hide();
