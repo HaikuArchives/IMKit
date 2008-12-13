@@ -1,6 +1,5 @@
 #include "MultiLineStringView.h"
 
-#include <stdio.h>
 #include <ctype.h>
 
 //#pragma mark Public
@@ -87,6 +86,7 @@ void MultiLineStringView::CalculateWrapping(const char *text) {
 	int16 length = 0;
 	int16 offset = 0;
 	int16 spaceCount = 0;
+	int16 lastBreak = 0;
 	BFont font;
 
 	GetFont(&font);
@@ -100,39 +100,48 @@ void MultiLineStringView::CalculateWrapping(const char *text) {
 		breakPos.push_back(wordLen + offset);
 		offset += wordLen + 1;
 	};
-	
+		
 	spaceCount = breakPos.size();
 	fLines.clear();
 	
 	for (int32 i = 0; i < spaceCount; i++) {
 		BString line = "";
-		bool wasWhiteSpace = isspace(breakPos[offset]);
+		bool wasWhiteSpace = isspace(text[lastBreak]);
 
 		// If this space char is a newline, force a new line
 		if (text[breakPos[i]] == '\n') {
-			line.SetTo(text + breakPos[offset], breakPos[i] - breakPos[offset]);
-			offset = i;
-		} else {	
-			line.SetTo(text + breakPos[offset], breakPos[i] - breakPos[offset]);
+			line.SetTo(text + lastBreak, breakPos[i] - lastBreak);
+			lastBreak = breakPos[i];
+		} else {
+			line.SetTo(text + lastBreak, breakPos[i] - lastBreak);
 			if (font.StringWidth(line.String()) > fWidth) {
-				line.SetTo(text + breakPos[offset], breakPos[i - 1] - breakPos[offset]);
-				offset = i - 1;
+				line.SetTo(text + lastBreak, breakPos[i - 1] - lastBreak);
+				lastBreak = breakPos[i - 1];
 			} else {
 				continue;
 			};
 		};
-		
+			
 		line.ReplaceAll("\n", "");
 		if (wasWhiteSpace) line.Remove(0, 1);
+		
+		fLines.push_back(line);
+	};
+
+	// Trailing content...
+	if (lastBreak < length) {
+		BString line = "";
+		line.SetTo(text + lastBreak, length - lastBreak);
+		line.ReplaceAll("\n", "");
+
+		if (isspace(text[lastBreak])) line.Remove(0, 1);
+		
 		fLines.push_back(line);
 	};
 	
-	if (offset < spaceCount) {
-		BString line = "";
-		line.SetTo(text + breakPos[offset], length - breakPos[offset]);
-		line.ReplaceAll("\n", "");
-		if (isspace(breakPos[offset])) line.Remove(0, 1);
-		fLines.push_back(line);
+	// This will occur if the text is small enough to fit on one line - append all of the text
+	if (fLines.empty() == true) {
+		fLines.push_back(text);
 	};
 };
 
