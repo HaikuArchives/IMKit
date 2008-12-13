@@ -232,7 +232,7 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 };
 
 
-ProtocolInfo *ProtocolManager::FindProtocol(ProtocolSpecification *match, bool canDelete = true) {
+ProtocolInfo *ProtocolManager::FindFirstProtocol(ProtocolSpecification *match, bool canDelete = true) {
 	ProtocolInfo *info = NULL;
 	BAutolock lock(fLock);
 	

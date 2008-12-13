@@ -28,7 +28,7 @@ namespace IM {
 			status_t			Unload(void);
 			
 			status_t			MessageProtocols(ProtocolSpecification *match, BMessage *message, bool canDelete = true, bool appendSignature = true);
-			ProtocolInfo		*FindProtocol(ProtocolSpecification *match, bool canDelete = true);
+			ProtocolInfo		*FindFirstProtocol(ProtocolSpecification *match, bool canDelete = true);
 			list<ProtocolInfo *>FindProtocols(ProtocolSpecification *match, bool canDelete = true);
 								
 		private:

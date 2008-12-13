@@ -248,7 +248,7 @@ Server::ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 
 			{
 				const char *name = specifier->FindString("name");
 				
-				fCurProtocol = fProtocol->FindProtocol(new SignatureProtocolSpecification(name));
+				fCurProtocol = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(name));
 				msg->PopSpecifier();
 				return this;
 			}
@@ -481,7 +481,7 @@ Server::MessageReceived( BMessage *msg )
 			if (msg->FindMessage("template", &settings) != B_OK) return;
 			if (msg->FindMessenger("messenger", &msgr) != B_OK) return;
 
-			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
+			ProtocolInfo *info = fProtocol->FindFirstProtocol(new InstanceProtocolSpecification(instanceID));
 
 			if (info == NULL) {
 				LOG(kAppName, liHigh, "Got a PROTOCOL_STARTED message for an unexpected protocol: %s (%s)", signature, instanceID);
@@ -513,7 +513,7 @@ Server::MessageReceived( BMessage *msg )
 			
 			if (msg->FindString("instance_id", &instanceID) != B_OK) return;
 			
-			ProtocolInfo *info = fProtocol->FindProtocol(new InstanceProtocolSpecification(instanceID));
+			ProtocolInfo *info = fProtocol->FindFirstProtocol(new InstanceProtocolSpecification(instanceID));
 			if (info == NULL) {
 				LOG(kAppName, liHigh, "Got a PROTOCOL_STOPPED / PROTOCOL_KILLED / PROTOCOL_COULD_NOT_START message for a protocol we don't know about: %s", instanceID);
 				return;
@@ -873,7 +873,7 @@ Server::Broadcast( BMessage * msg )
 	const char * protocol;
 	for (int i = 0; msg->FindString("protocol", i, &protocol) == B_OK; i++) {
 		const char *friendly = "<invalid protocol>";
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(protocol));
 
 		if (info != NULL) friendly = info->FriendlySignature();
 		msg->AddString("userfriendly", friendly);
@@ -1428,7 +1428,7 @@ Server::MessageToProtocols( BMessage * msg )
 	{ // protocol mapped
 	
 		const char *protocol = msg->FindString("protocol");
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(protocol));
 		
 		if (info == NULL) {
 			// invalid protocol, report and skip
@@ -1591,7 +1591,7 @@ Server::MessageFromProtocols( BMessage * msg )
 			connection.AddInt32("im_what", REGISTER_CONTACTS);
 			connection.AddString("id", id);
 
-			ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+			ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(protocol));
 LOG("im_server", liHigh, "REGISTER_CONTACTS: %p", info);
 			if (info) info->Process(&connection);
 		}
@@ -2438,7 +2438,7 @@ Server::handle_STATUS_SET( BMessage * msg )
 	{ // we're online. register contacts. (should be: only do this if we were offline)
 		LOG(kAppName, liMedium, "Status changed for %s to %s", protocol, status );
 
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(protocol));
 		if (info == NULL) {
 			_ERROR("ERROR: STATUS_SET: Protocol not loaded",msg);
 			return;
@@ -2629,7 +2629,7 @@ Server::handle_SETTINGS_UPDATED( BMessage * msg )
 	if ( (sig = msg->FindString("protocol")) != NULL )
 	{
 		// notify protocol of change in settings
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(sig));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(sig));
 		if (info == NULL) {
 			_ERROR("Cannot notify protocol of changed settings, not loaded");
 			return;
@@ -2720,7 +2720,7 @@ Server::ContactMonitor_Added( ContactHandle handle )
 		
 		Connection conn( connection );
 		
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(conn.Protocol()));
 		if (info != NULL) {
 			BMessage add(MESSAGE);
 			add.AddInt32("im_what", REGISTER_CONTACTS);
@@ -2777,7 +2777,7 @@ Server::ContactMonitor_Modified( ContactHandle handle )
 					
 					Connection conn( j->c_str() );
 					
-					ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+					ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(conn.Protocol()));
 					if (info != NULL) {
 						// protocol loaded, unregister connection
 						BMessage remove(MESSAGE);
@@ -2811,7 +2811,7 @@ Server::ContactMonitor_Modified( ContactHandle handle )
 					
 					Connection conn( j->c_str() );
 					
-					ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+					ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(conn.Protocol()));
 					if (info != NULL) {
 						// protocol loaded, register connection
 						BMessage remove(MESSAGE);
@@ -2868,7 +2868,7 @@ Server::ContactMonitor_Removed( ContactHandle handle )
 					// don't unregister if there's a contact still using it
 					continue;
 				
-				ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(conn.Protocol()));
+				ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(conn.Protocol()));
 				if (info != NULL) {
 					// protocol loaded, unregister connection
 					BMessage remove(MESSAGE);
@@ -2987,7 +2987,7 @@ Server::sendReply( BMessage * msg, BMessage * reply )
 	for ( int i=0; reply->FindString("protocol",i,&protocol)==B_OK; i++ )
 	{
 		const char *userfriendly = "<invalid protocol>";
-		ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(protocol));
 		
 		if (info != NULL) {
 			userfriendly = info->FriendlySignature();
@@ -3021,7 +3021,7 @@ const char *Server::TotalStatus(void) {
 };
 
 status_t Server::ProtocolOffline(const char *signature) {
-	ProtocolInfo *info = fProtocol->FindProtocol(new SignatureProtocolSpecification(signature));
+	ProtocolInfo *info = fProtocol->FindFirstProtocol(new SignatureProtocolSpecification(signature));
 
 	if (info == NULL) {
 		LOG(kAppName, liHigh, "Unexpected protocol went offline: %s", signature);

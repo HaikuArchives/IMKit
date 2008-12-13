@@ -1,5 +1,5 @@
-#ifndef SPECIFICATION_H
-#define SPECIFICATION_H
+#ifndef COMMON_SPECIFICATION_H
+#define COMMON_SPECIFICATION_H
 
 namespace IM {
 
