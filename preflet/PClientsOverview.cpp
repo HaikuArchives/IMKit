@@ -109,7 +109,6 @@ PClientsOverview::PClientsOverview(BRect bounds)
 		.AddGlue()
 		.SetInsets(inset, inset, inset, inset)
 	);
-descLabel->Frame().PrintToStream();
 #else
 	AddChild(autostartLabel);
 #endif

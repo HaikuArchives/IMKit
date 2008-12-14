@@ -29,7 +29,6 @@ class PView : public BView {
 	private:
 			void		LoadProtocols();
 			void		LoadClients();
-			float		BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view);
 
 	private:
 		BOutlineListView*	fListView;

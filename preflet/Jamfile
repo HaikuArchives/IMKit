@@ -20,6 +20,8 @@ Executable InstantMessaging :
 	PProtocolsOverview.cpp
 	PClientsOverview.cpp
 	PAccountsView.cpp
+	PAccountDialog.cpp
+	PUtils.cpp
 	: be stdc++.r4 translation textencoding libim.so libcommon.a
 	: preflet.rdef
 ;

@@ -20,14 +20,10 @@ class PAccountsView : public BView
 		virtual void	MessageReceived(BMessage* msg);
 
 	private:
+		BPath*		fProtoPath;
 		BButton*	fAddButton;
 		BButton*	fEditButton;
 		BButton*	fDelButton;
-		BButton*	fCancelButton;
-		BButton*	fOkButton;
-
-	private:
-				void	CenterWindowOnScreen(BWindow* window);
 };
 
 #endif // PACCOUNTS_VIEW_H
