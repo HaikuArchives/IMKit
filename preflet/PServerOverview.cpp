@@ -16,7 +16,7 @@
 #	include <interface/SpaceLayoutItem.h>
 #endif
 
-#include "PServersOverview.h"
+#include "PServerOverview.h"
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -24,7 +24,7 @@
 #	define _T(str) (str)
 #endif
 
-PServersOverview::PServersOverview(BRect bounds)
+PServerOverview::PServerOverview(BRect bounds)
 	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
 {
 	BRect frame(0, 0, 1, 1);

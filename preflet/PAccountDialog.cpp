@@ -82,7 +82,7 @@ PAccountDialog::PAccountDialog(const char* title, BPath* addonPath)
 	view->AddChild(fAccountName);
 	view->AddChild(cancelButton);
 	view->AddChild(okButton);
-	window->AddChild(view);
+	AddChild(view);
 #endif
 
 	CenterWindowOnScreen(this);

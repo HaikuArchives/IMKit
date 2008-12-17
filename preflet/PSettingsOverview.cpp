@@ -18,6 +18,7 @@
 
 #include "PSettingsOverview.h"
 
+#include "common/Divider.h"
 #include "common/MultiLineStringView.h"
 
 #ifdef ZETA
@@ -50,33 +51,47 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
-	BRect frameServersLabel(frame);
+	BRect frameServerLabel(frame);
 #ifndef __HAIKU__
-	frameServersLabel.bottom = headingFontHeight;
+	frameServerLabel.bottom = headingFontHeight;
 #endif
 
-	BStringView* serversLabel = new BStringView(frameServersLabel, NULL, _T("Servers"));
-	serversLabel->SetAlignment(B_ALIGN_LEFT);
-	serversLabel->SetFont(&headingFont);
+	BStringView* serverLabel = new BStringView(frameServerLabel, NULL, _T("Server"));
+	serverLabel->SetAlignment(B_ALIGN_LEFT);
+	serverLabel->SetFont(&headingFont);
 
 	BRect frameDivider1(frame);
 #ifndef __HAIKU__
-	frameDivider1.top = frameServersLabel.bottom + inset;
-	frameDivider1.bottom = frameDivider1.top + 1.5f;
+	frameDivider1.top = frameServerLabel.bottom + inset;
+//	frameDivider1.bottom = frameDivider1.top + 5.0f;
+//	frameDivider1.bottom = frameDivider1.top + 25.0f;
+frameDivider1.bottom = 100;
 #endif
 
-	BBox* divider1 = new BBox(frameDivider1, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
+	Divider* divider1 = new Divider(frameDivider1, "divider1", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 
-	BRect frameServersDescLabel(frame);
+	BRect frameServerDescLabel(frame);
 #ifndef __HAIKU__
-	frameServersDescLabel.top = frameDivider1.bottom + inset;
-	frameServersDescLabel.bottom = frame.bottom;
+	frameServerDescLabel.top = frameDivider1.bottom + inset;
+	frameServerDescLabel.bottom = frame.bottom;
 #endif
 
-	MultiLineStringView* serversDescLabel = new MultiLineStringView(NULL, _T(kServerDesc), frameServersDescLabel.Width());
-	serversDescLabel->MoveTo(frameServersDescLabel.left, frameServersDescLabel.top);
-	serversDescLabel->ResizeToPreferred();
+	MultiLineStringView* serverDescLabel = new MultiLineStringView(NULL, _T(kServerDesc), frameServerDescLabel.Width());
+	serverDescLabel->MoveTo(frameServerDescLabel.left, frameServerDescLabel.top);
+	serverDescLabel->ResizeToPreferred();
+	
+	BRect frameServerButton(frame);
+#ifndef __HAIKU__
+	frameServerButton.top = serverDescLabel->Frame().bottom + inset;
+	frameServerButton.bottom = frameServerButton.top + 20;
+#endif
+
+	fServerButton = new BButton(frameServerButton, "server_edit", _T("Edit..."), new BMessage(kMsgEditServer));
+#ifndef __HAIKU__
+	fServerButton->ResizeToPreferred();
+	BRect frameServerPreferred = fServerButton->Frame();
+	fServerButton->MoveTo(frame.right - inset - frameServerPreferred.Width(), frameServerButton.top);
+#endif
 
 	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
 	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
@@ -100,13 +115,12 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	BBox* divider3 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
 
-	fServersButton = new BButton(frame, "servers_edit", _T("Edit..."), new BMessage(kMsgEditServers));
 	fProtocolsButton = new BButton(frame, "protocols_edit", _T("Edit..."), new BMessage(kMsgEditProtocols));
 	fClientsButton = new BButton(frame, "clients_edit", _T("Edit..."), new BMessage(kMsgEditClients));
 
 #ifdef __HAIKU__
-	serversLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	serversDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	serverLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	serverDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	protocolsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
@@ -120,12 +134,12 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
 		.Add(BGridLayoutBuilder(0.0f, 1.0f)
-			.Add(serversLabel, 0, 0, 2)
+			.Add(serverLabel, 0, 0, 2)
 			.Add(divider1, 0, 1, 2)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
-			.Add(serversDescLabel, 0, 3, 2)
+			.Add(serverDescLabel, 0, 3, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 4)
-			.Add(fServersButton, 1, 4)
+			.Add(fServerButton, 1, 4)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 5, 2)
 
 			.Add(protocolsLabel, 0, 6, 2)
@@ -148,12 +162,12 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 		.SetInsets(inset, inset, inset, inset)
 	);
 #else
-	AddChild(serversLabel);
+	AddChild(serverLabel);
 	AddChild(divider1);
-	AddChild(serversDescLabel);
-//	AddChild(fServersButton);
-//	AddChild(divider2);
-//	AddChild(protocolsDescLabel);
+	AddChild(serverDescLabel);
+	AddChild(fServerButton);
+	AddChild(divider2);
+	AddChild(protocolsDescLabel);
 //	AddChild(fProtocolsButton);
 //	AddChild(clientsLabel);
 //	AddChild(divider3);
@@ -176,7 +190,7 @@ PSettingsOverview::AttachedToWindow()
 	SetHighColor(0, 0, 0, 0);
 #endif
 
-	fServersButton->SetTarget(Parent()->Parent());
+	fServerButton->SetTarget(Parent()->Parent());
 	fProtocolsButton->SetTarget(Parent()->Parent());
 	fClientsButton->SetTarget(Parent()->Parent());
 }

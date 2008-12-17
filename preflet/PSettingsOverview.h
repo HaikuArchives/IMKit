@@ -11,17 +11,17 @@ class BButton;
 
 class PSettingsOverview : public BView {
 	public:
-				PSettingsOverview(BRect bounds);
+							PSettingsOverview(BRect bounds);
 
-		virtual void	AttachedToWindow();
+		virtual void		AttachedToWindow();
 
 	private:
-		BButton*	fServersButton;
-		BButton*	fClientsButton;
-		BButton*	fProtocolsButton;
+		BButton				*fServerButton;
+		BButton				*fClientsButton;
+		BButton				*fProtocolsButton;
 };
 
-const int32 kMsgEditServers = 'Mesr';
+const int32 kMsgEditServer = 'Mesr';
 const int32 kMsgEditProtocols = 'Mpro';
 const int32 kMsgEditClients = 'Mcli';
 

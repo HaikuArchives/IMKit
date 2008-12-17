@@ -69,7 +69,11 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 	float yOffset = kEdgeOffset + kControlOffset;
 	float xOffset = 0;
 
+	font_height fontHeight;
+	be_bold_font->GetHeight(&fontHeight);
+
 	const float kControlWidth = view->Bounds().Width() - (kEdgeOffset * 2);
+	const float kFontHeight = fontHeight.descent + fontHeight.leading + fontHeight.ascent;
 #endif
 
 #ifdef __HAIKU__
@@ -186,7 +190,7 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 				}
 
 #ifndef __HAIKU__
-				frame = BRect(0, 0, kControlWidth, fFontHeight);
+				frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
 				control = new BCheckBox(frame, name, _T(desc), NULL);
 				if (active)
@@ -203,7 +207,7 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 			if (freeText) {
 				if (!multiLine) {
 #ifndef __HAIKU__
-					frame = BRect(0, 0, kControlWidth, fFontHeight);
+					frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
 					control = new BTextControl(frame, name, _T(desc), value, NULL);
 					if (secret) {
@@ -213,7 +217,7 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 					((BTextControl*)control)->SetDivider(kDividerWidth);
 				} else {
 #ifndef __HAIKU__
-					frame  = BRect(0, 0, kDividerWidth, fFontHeight);
+					frame  = BRect(0, 0, kDividerWidth, kFontHeight);
 #endif
 					BStringView* label = new BStringView(frame, "NA", _T(desc), B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
 #ifdef __HAIKU__
@@ -222,7 +226,7 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 					view->AddChild(label);
 					label->MoveTo(kEdgeOffset, yOffset);
 
-					frame = BRect(0, 0, kControlWidth - kDividerWidth, fFontHeight * 4);
+					frame = BRect(0, 0, kControlWidth - kDividerWidth, kFontHeight * 4);
 					frame.right -= B_V_SCROLL_BAR_WIDTH + kEdgeOffset + kControlOffset;
 
 					xOffset = kEdgeOffset + kDividerWidth;
@@ -239,7 +243,7 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 				}
 			} else {
 #ifndef __HAIKU__
-				frame = BRect(0, 0, kControlWidth, fFontHeight);
+				frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
 				control = new BMenuField(frame, name, _T(desc), menu);
 				((BMenuField *)control)->SetDivider(kDividerWidth);

@@ -40,15 +40,17 @@
 
 #include "PView.h"
 #include "PSettingsOverview.h"
-#include "PServersOverview.h"
+#include "PServerOverview.h"
 #include "PProtocolsOverview.h"
 #include "PClientsOverview.h"
 #include "PAccountsView.h"
 #include "PUtils.h"
 
-const int32 kRevert      = 'Mrvt';
-const int32 kSave        = 'Msav';
+const int32 kRevert = 'Mrvt';
+const int32 kSave = 'Msav';
 const int32 kListChanged = 'Mlsc';
+const float kEdgeOffset  = 5.0f;
+const float kControlOffset = 5.0f;
 
 PView::PView(BRect bounds)
 	: BView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
@@ -123,12 +125,12 @@ PView::PView(BRect bounds)
 	fCurrentIndex = fListView->IndexOf(settingsItem);
 	fListView->Select(fCurrentIndex);
 
-	// Servers item
-	fServersItem = new IconTextItem("servers", _T("Servers"));
-	fListView->AddItem(fServersItem);
-	fViews["servers"] = new PServersOverview(fMainView->Bounds());
-	fMainView->AddChild(fViews["servers"]);
-	fViews["servers"]->Hide();
+	// Server item
+	fServerItem = new IconTextItem("Server", _T("Server"));
+	fListView->AddItem(fServerItem);
+	fViews["server"] = new PServerOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["server"]);
+	fViews["server"]->Hide();
 
 	// Protocols item
 	fProtocolsItem = new IconTextItem("protocols", _T("Protocols"));
@@ -224,8 +226,8 @@ PView::MessageReceived(BMessage* msg)
 			printf("CurrentView (%s - [%p]) - %s\n", fCurrentView->Name(), fCurrentView, fCurrentView->IsHidden() ? "hidden" : "visible");
 		} break;
 
-		case kMsgEditServers:
-			fListView->Select(fListView->IndexOf(fServersItem));
+		case kMsgEditServer:
+			fListView->Select(fListView->IndexOf(fServerItem));
 			break;
 
 		case kMsgEditProtocols:
@@ -424,7 +426,7 @@ PView::LoadClients()
 
 		// Add im_server
 		if (strcmp(file, "im_server") == 0)
-			fListView->AddUnder(item, fServersItem);
+			fListView->AddUnder(item, fServerItem);
 		else
 			fListView->AddUnder(item, fClientsItem);
 

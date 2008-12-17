@@ -21,34 +21,34 @@ typedef map<BString, addons_pair> addons_map;
 
 class PView : public BView {
 	public:
-						PView(BRect bounds);
+								PView(BRect bounds);
 
-		virtual void	AttachedToWindow();
-		virtual void	MessageReceived(BMessage* msg);
-
-	private:
-			void		LoadProtocols();
-			void		LoadClients();
+		virtual void			AttachedToWindow();
+		virtual void			MessageReceived(BMessage* msg);
 
 	private:
-		BOutlineListView*	fListView;
-		IconTextItem*		fServersItem;
-		IconTextItem*		fProtocolsItem;
-		IconTextItem*		fClientsItem;
+		void					LoadProtocols();
+		void					LoadClients();
 
-		BView*				fMainView;
-		BButton*			fRevert;
-		BButton*			fSave;
+	private:
+		BOutlineListView		*fListView;
+		IconTextItem			*fServerItem;
+		IconTextItem			*fProtocolsItem;
+		IconTextItem			*fClientsItem;
 
-		view_map			fViews;
-		addons_map			fAddOns;
+		BView					*fMainView;
+		BButton					*fRevert;
+		BButton					*fSave;
 
-		BView*				fCurrentView;
-		int32				fCurrentIndex;
+		view_map				fViews;
+		addons_map				fAddOns;
 
-		float				fFontHeight;
+		BView*					fCurrentView;
+		int32					fCurrentIndex;
 
-		IM::Manager*			fManager;
+		float					fFontHeight;
+
+		IM::Manager				*fManager;
 };
 
 #endif // PVIEW_H
