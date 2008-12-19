@@ -28,10 +28,8 @@ Divider::~Divider() {
 
 //#pragma mark BView Hooks
 
-#include <stdio.h>
- 
 void Divider::Draw(BRect updateRect) {
-	BRect frame = Frame();
+	BRect bounds = Bounds();
 
 	rgb_color view_color = ViewColor();
 	
@@ -41,11 +39,11 @@ void Divider::Draw(BRect updateRect) {
 	PushState();
 
 		SetHighColor(view_color);
-		FillRect(frame);
+		FillRect(bounds);
 	
 		if (fOrient == B_HORIZONTAL) {
-			BPoint left(frame.left, (frame.Height() / 2) + frame.top);
-			BPoint right(frame.right, left.y);
+			BPoint left(bounds.left, (bounds.Height() / 2) + bounds.top);
+			BPoint right(bounds.right, left.y);
 			
 			BPoint fudge(PenSize(), PenSize());
 
@@ -59,8 +57,8 @@ void Divider::Draw(BRect updateRect) {
 			SetHighColor(shadow);
 			StrokeLine(left, right);
 		} else {
-			BPoint top((frame.Width() / 2) + frame.left, frame.top);
-			BPoint bottom(top.x, frame.bottom);
+			BPoint top((bounds.Width() / 2) + bounds.left, bounds.top);
+			BPoint bottom(top.x, bounds.bottom);
 			
 			BPoint fudge(PenSize(), PenSize());
 			
@@ -76,6 +74,16 @@ void Divider::Draw(BRect updateRect) {
 		};
 		
 	PopState();
+};
+
+void Divider::GetPreferredSize(float *width, float *height) {
+	if (fOrient == B_HORIZONTAL) {
+		*width = Bounds().Width();
+		*height = (PenSize() * 4);	// Two widths for padding (either side) + line + shadow
+	} else {
+		*height = Bounds().Height();
+		*width = (PenSize() * 4);	// Two widths for padding (either side) + line + shadow
+	};
 };
 
 //#pragma BArchivable Hooks

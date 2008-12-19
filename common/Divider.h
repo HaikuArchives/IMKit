@@ -14,6 +14,7 @@ class Divider : public BView {
 	    
 	    // BView Hooks
     	virtual void		Draw(BRect updateRect);
+		virtual void		GetPreferredSize(float *width, float *height);
     	
 		// BArchivable Hooks
 		status_t			Archive(BMessage *archive, bool deep = true) const;
