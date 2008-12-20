@@ -8,17 +8,38 @@
 #include <interface/View.h>
 
 class BButton;
+class BStringView;
+
+class Divider;
+class MultiLineStringView;
 
 class PSettingsOverview : public BView {
 	public:
 							PSettingsOverview(BRect bounds);
 
+		// BWindow Hooks
 		virtual void		AttachedToWindow();
 
 	private:
+#ifndef __HAIKU__
+		void				LayoutGUI(void);
+#endif
+
+		BStringView			*fServerLabel;
+		Divider				*fServerDivider;
+		MultiLineStringView	*fServerDesc;
 		BButton				*fServerButton;
-		BButton				*fClientsButton;
+		
+		BStringView			*fProtocolsLabel;
+		Divider				*fProtocolDivider;
+		MultiLineStringView	*fProtocolsDesc;
 		BButton				*fProtocolsButton;
+			
+
+		BStringView			*fClientsLabel;
+		Divider				*fClientsDivider;
+		MultiLineStringView	*fClientsDesc;		
+		BButton				*fClientsButton;
 };
 
 const int32 kMsgEditServer = 'Mesr';
