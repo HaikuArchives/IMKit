@@ -129,26 +129,27 @@ PView::PView(BRect bounds)
 	fCurrentIndex = fListView->IndexOf(settingsItem);
 	fListView->Select(fCurrentIndex);
 
+	// Clients item
+	fClientsItem = new IconTextItem("clients", _T("Clients"));
+	fListView->AddUnder(fClientsItem, settingsItem);
+	fViews["clients"] = new PClientsOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["clients"]);
+	fViews["clients"]->Hide();
+
+	// Protocols item
+	fProtocolsItem = new IconTextItem("protocols", _T("Protocols"));
+	fListView->AddUnder(fProtocolsItem, settingsItem);
+	fViews["protocols"] = new PProtocolsOverview(fMainView->Bounds());
+	fMainView->AddChild(fViews["protocols"]);
+	fViews["protocols"]->Hide();
+	
 	// Server item
-	fServerItem = new IconTextItem("Server", _T("Server"));
+	fServerItem = new IconTextItem("server", _T("Server"));
 	fListView->AddUnder(fServerItem, settingsItem);
 	fViews["server"] = new PServerOverview(fMainView->Bounds());
 	fMainView->AddChild(fViews["server"]);
 	fViews["server"]->Hide();
 
-	// Protocols item
-	fProtocolsItem = new IconTextItem("protocols", _T("Protocols"));
-	fListView->AddItem(fProtocolsItem);
-	fViews["protocols"] = new PProtocolsOverview(fMainView->Bounds());
-	fMainView->AddChild(fViews["protocols"]);
-	fViews["protocols"]->Hide();
-
-	// Clients item
-	fClientsItem = new IconTextItem("clients", _T("Clients"));
-	fListView->AddItem(fClientsItem);
-	fViews["clients"] = new PClientsOverview(fMainView->Bounds());
-	fMainView->AddChild(fViews["clients"]);
-	fViews["clients"]->Hide();
 
 	// Add protocols and clients
 	LoadProtocols();
@@ -207,14 +208,11 @@ PView::MessageReceived(BMessage* msg)
 {
 	switch (msg->what) {
 		case kListChanged: {
+			int32 index = B_ERROR;
+			if (msg->FindInt32("index", &index) != B_OK) return;
 
-			int32 index = msg->FindInt32("index");
-			if (index < 0)
-				return;
-
-			IconTextItem* item = (IconTextItem *)fListView->ItemAt(index);
-			if (item == NULL)
-				return;
+			IconTextItem* item = (IconTextItem *)fListView->FullListItemAt(index);
+			if (item == NULL) return;
 
 			view_map::iterator vIt = fViews.find(item->Name());
 			if (vIt == fViews.end()) {
@@ -222,13 +220,10 @@ PView::MessageReceived(BMessage* msg)
 				return;
 			}
 
-			if (fCurrentView != NULL)
-				fCurrentView->Hide();
+			if (fCurrentView != NULL) fCurrentView->Hide();
 			fCurrentView = vIt->second;
 			fCurrentView->Show();
 			fCurrentIndex = index;
-			
-			printf("CurrentView (%s - [%p]) - %s\n", fCurrentView->Name(), fCurrentView, fCurrentView->IsHidden() ? "hidden" : "visible");
 		} break;
 
 		case kSave: {
