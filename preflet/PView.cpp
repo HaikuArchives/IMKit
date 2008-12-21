@@ -46,11 +46,15 @@
 #include "PAccountsView.h"
 #include "PUtils.h"
 
+//#pragma mark Constants
+
 const int32 kRevert = 'Mrvt';
 const int32 kSave = 'Msav';
 const int32 kListChanged = 'Mlsc';
 const float kEdgeOffset  = 5.0f;
 const float kControlOffset = 5.0f;
+
+//#pragma mark Constructors
 
 PView::PView(BRect bounds)
 	: BView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
@@ -119,7 +123,7 @@ PView::PView(BRect bounds)
 	// Settings item
 	IconTextItem* settingsItem = new IconTextItem("settings", _T("Settings"));
 	fListView->AddItem(settingsItem);
-	fViews["settings"] = new PSettingsOverview(fMainView->Bounds());
+	fViews["settings"] = new PSettingsOverview(this, fMainView->Bounds());
 	fMainView->AddChild(fViews["settings"]);
 	fCurrentView = fViews["settings"];
 	fCurrentIndex = fListView->IndexOf(settingsItem);
@@ -178,6 +182,7 @@ PView::PView(BRect bounds)
 #endif
 }
 
+//#pragma mark BView Hooks
 
 void
 PView::AttachedToWindow()
@@ -225,18 +230,6 @@ PView::MessageReceived(BMessage* msg)
 			
 			printf("CurrentView (%s - [%p]) - %s\n", fCurrentView->Name(), fCurrentView, fCurrentView->IsHidden() ? "hidden" : "visible");
 		} break;
-
-		case kMsgEditServer:
-			fListView->Select(fListView->IndexOf(fServerItem));
-			break;
-
-		case kMsgEditProtocols:
-			fListView->Select(fListView->IndexOf(fProtocolsItem));
-			break;
-
-		case kMsgEditClients:
-			fListView->Select(fListView->IndexOf(fClientsItem));
-			break;
 
 		case kSave: {
 			BMessage cur;
@@ -331,6 +324,21 @@ PView::MessageReceived(BMessage* msg)
 	}
 }
 
+//#pragma mark MultipleViewHandler Hooks
+
+void PView::ShowServerOverview(void) {
+	fListView->Select(fListView->IndexOf(fServerItem));
+};
+
+void PView::ShowProtocolsOverview(void) {
+	fListView->Select(fListView->IndexOf(fProtocolsItem));
+};
+
+void PView::ShowClientsOverview(void) {
+	fListView->Select(fListView->IndexOf(fClientsItem));
+};
+
+//#pragma mark Private
 
 void
 PView::LoadProtocols()

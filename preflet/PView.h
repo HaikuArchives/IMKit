@@ -12,6 +12,8 @@
 
 #include <map>
 
+#include "MultipleViewHandler.h"
+
 class BOutlineListView;
 class IconTextItem;
 
@@ -19,12 +21,18 @@ typedef map<BString, BView*> view_map;
 typedef pair<BMessage, BMessage> addons_pair;
 typedef map<BString, addons_pair> addons_map;
 
-class PView : public BView {
+class PView : public BView, public MultipleViewHandler {
 	public:
 								PView(BRect bounds);
 
-		virtual void			AttachedToWindow();
-		virtual void			MessageReceived(BMessage* msg);
+		// BView Hooks
+		virtual void			AttachedToWindow(void);
+		virtual void			MessageReceived(BMessage *msg);
+
+		virtual void			ShowServerOverview(void);
+		virtual void			ShowProtocolsOverview(void);
+		virtual void			ShowClientsOverview(void);
+
 
 	private:
 		void					LoadProtocols();

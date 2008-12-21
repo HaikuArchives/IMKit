@@ -18,6 +18,7 @@
 #endif
 
 #include "PSettingsOverview.h"
+#include "MultipleViewHandler.h"
 
 #include "common/Divider.h"
 #include "common/MultiLineStringView.h"
@@ -34,10 +35,15 @@ const char *kServerDesc = "The Server is responsible for handling contact status
 const char *kProtocolsDesc = "Protocols are responsible for sending and receiving messages, status updates and other information to Instant Messaging networks";
 const char *kClientsDesc = "Clients are responsible for sending and receiving information to the Server. They provide functionality such as status notification, logging and sending and receiving messages."; 
 
+const int32 kMsgEditServer = 'Mesr';
+const int32 kMsgEditProtocols = 'Mpro';
+const int32 kMsgEditClients = 'Mcli';
+
 //#pragma mark Constructor
 
-PSettingsOverview::PSettingsOverview(BRect bounds)
+PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	fHandler(handler),
 	fServerLabel(NULL),
 	fServerDivider(NULL),
 	fServerDesc(NULL),
@@ -178,10 +184,30 @@ PSettingsOverview::AttachedToWindow()
 	SetHighColor(0, 0, 0, 0);
 #endif
 
-	fServerButton->SetTarget(Parent()->Parent());
-	fProtocolsButton->SetTarget(Parent()->Parent());
-	fClientsButton->SetTarget(Parent()->Parent());
-}
+	fServerButton->SetTarget(this);
+	fProtocolsButton->SetTarget(this);
+	fClientsButton->SetTarget(this);
+};
+
+void PSettingsOverview::MessageReceived(BMessage *msg) {
+	switch (msg->what) {
+		case kMsgEditServer: {
+			fHandler->ShowServerOverview();
+		} break;
+		
+		case kMsgEditProtocols: {
+			fHandler->ShowProtocolsOverview();
+		} break;
+		
+		case kMsgEditClients: {
+			fHandler->ShowClientsOverview();
+		} break;
+		
+		default: {
+			BView::MessageReceived(msg);
+		} break;
+	};
+};
 
 //#pragma mark Private
 

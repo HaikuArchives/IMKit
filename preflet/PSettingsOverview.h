@@ -12,18 +12,21 @@ class BStringView;
 
 class Divider;
 class MultiLineStringView;
+class MultipleViewHandler;
 
 class PSettingsOverview : public BView {
 	public:
-							PSettingsOverview(BRect bounds);
+							PSettingsOverview(MultipleViewHandler *handler, BRect bounds);
 
 		// BWindow Hooks
 		virtual void		AttachedToWindow();
+		virtual void		MessageReceived(BMessage *msg);
 
 	private:
 #ifndef __HAIKU__
 		void				LayoutGUI(void);
 #endif
+		MultipleViewHandler	*fHandler;
 
 		BStringView			*fServerLabel;
 		Divider				*fServerDivider;
@@ -41,9 +44,5 @@ class PSettingsOverview : public BView {
 		MultiLineStringView	*fClientsDesc;		
 		BButton				*fClientsButton;
 };
-
-const int32 kMsgEditServer = 'Mesr';
-const int32 kMsgEditProtocols = 'Mpro';
-const int32 kMsgEditClients = 'Mcli';
 
 #endif // PSETTINGS_OVERVIEW_H
