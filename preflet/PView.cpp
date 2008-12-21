@@ -131,7 +131,7 @@ PView::PView(BRect bounds)
 
 	// Server item
 	fServerItem = new IconTextItem("Server", _T("Server"));
-	fListView->AddItem(fServerItem);
+	fListView->AddUnder(fServerItem, settingsItem);
 	fViews["server"] = new PServerOverview(fMainView->Bounds());
 	fMainView->AddChild(fViews["server"]);
 	fViews["server"]->Hide();
