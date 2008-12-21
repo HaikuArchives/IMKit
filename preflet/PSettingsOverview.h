@@ -31,7 +31,7 @@ class PSettingsOverview : public BView {
 		BButton				*fServerButton;
 		
 		BStringView			*fProtocolsLabel;
-		Divider				*fProtocolDivider;
+		Divider				*fProtocolsDivider;
 		MultiLineStringView	*fProtocolsDesc;
 		BButton				*fProtocolsButton;
 			

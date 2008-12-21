@@ -34,7 +34,7 @@
 #endif
 
 PWindow::PWindow()
-	: BWindow(BRect(0, 0, 720, 340), _T("Instant Messaging"), B_TITLED_WINDOW,
+	: BWindow(BRect(0, 0, 720, 400), _T("Instant Messaging"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE)
 {
 #ifdef ZETA

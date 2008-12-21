@@ -30,8 +30,9 @@
 
 //#pragma mark Constants
 
-const char *kServerDesc = "The server is responsible for handling contact statuses, loading protocols and communicating between the protocols and clients.";
-const char *kProtocolsDesc = "Protocols communicate with instant messaging networks.";
+const char *kServerDesc = "The Server is responsible for handling contact statuses, loading protocols and communicating between the protocols and clients.";
+const char *kProtocolsDesc = "Protocols are responsible for sending and receiving messages, status updates and other information to Instant Messaging networks";
+const char *kClientsDesc = "Clients are responsible for sending and receiving information to the Server. They provide functionality such as status notification, logging and sending and receiving messages."; 
 
 //#pragma mark Constructor
 
@@ -42,7 +43,7 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	fServerDesc(NULL),
 	fServerButton(NULL),
 	fProtocolsLabel(NULL),
-	fProtocolDivider(NULL),
+	fProtocolsDivider(NULL),
 	fProtocolsDesc(NULL),
 	fProtocolsButton(NULL),
 	fClientsLabel(NULL),
@@ -51,116 +52,67 @@ PSettingsOverview::PSettingsOverview(BRect bounds)
 	fClientsButton(NULL)
 {
 	BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
+	frame = Frame();
+	frame.InsetBy(inset * 2, inset * 2);
+#endif
 	BFont headingFont(be_bold_font);
 	headingFont.SetSize(headingFont.Size() * 1.2f);
 
-	font_height fh;
-	headingFont.GetHeight(&fh);
-	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
-	
-#ifndef __HAIKU__
-	frame = Bounds();
-frame.PrintToStream();
-	frame.InsetBy(inset * 2, inset * 2);
-	frame.OffsetBy(inset, inset);
-#endif
-
-	BRect frameServerLabel(frame);
-#ifndef __HAIKU__
-	frameServerLabel.bottom = frameServerLabel.top + headingFontHeight;
-#endif
-
-	fServerLabel = new BStringView(frameServerLabel, "ServerLabel", _T("Server"));
+	// Server Details
+	fServerLabel = new BStringView(frame, "ServerLabel", _T("Server"));
 	fServerLabel->SetAlignment(B_ALIGN_LEFT);
 	fServerLabel->SetFont(&headingFont);
 
-	BRect frameDivider1(frame);
-#ifndef __HAIKU__
-	frameDivider1.top = frameServerLabel.bottom + inset;
-	frameDivider1.bottom = frameDivider1.top + 25.0f;
-#endif
-
-	fServerDivider = new Divider(frameDivider1, "divider1", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fServerDivider = new Divider(frame, "ServerDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fServerDivider->ResizeToPreferred();
-	frameDivider1 = fServerDivider->Frame();
 
-	BRect frameServerDescLabel(frame);
-#ifndef __HAIKU__
-	frameServerDescLabel.top = frameDivider1.bottom + inset;
-	frameServerDescLabel.bottom = frame.bottom;
-#endif
-
-	fServerDesc = new MultiLineStringView(frameServerDescLabel, "ServersDesc", _T(kServerDesc));
-	fServerDesc->MoveTo(frameServerDescLabel.left, frameServerDescLabel.top);
+	fServerDesc = new MultiLineStringView(frame, "ServersDesc", _T(kServerDesc));
 	fServerDesc->ResizeToPreferred();
-	
-	BRect frameServerButton(frame);
-#ifndef __HAIKU__
-	frameServerButton.top = fServerDesc->Frame().bottom + inset;
-	frameServerButton.bottom = frameServerButton.top + 20;
-#endif
 
-	fServerButton = new BButton(frameServerButton, "server_edit", _T("Edit..."), new BMessage(kMsgEditServer));
-#ifndef __HAIKU__
+	fServerButton = new BButton(frame, "ServerEdit", _T("Edit..."), new BMessage(kMsgEditServer));
 	fServerButton->ResizeToPreferred();
-	BRect frameServerPreferred = fServerButton->Frame();
-	fServerButton->MoveTo(frame.right - inset - frameServerPreferred.Width(), frameServerButton.top);
-#endif
 
-	BRect frameProtocolsLabel(frame);
-#ifndef __HAIKU__
-	frameProtocolsLabel.top = frameServerButton.bottom + inset;
-	frameProtocolsLabel.bottom = frameProtocolsLabel.top + headingFontHeight;
-#endif
-
-	fProtocolsLabel = new BStringView(frameProtocolsLabel, "Protocols", _T("Protocols"));
+	// Protocol Details
+	fProtocolsLabel = new BStringView(frame, "Protocols", _T("Protocols"));
 	fProtocolsLabel->SetAlignment(B_ALIGN_LEFT);
 	fProtocolsLabel->SetFont(&headingFont);
 
-	BRect frameDivider2(frame);
-#ifndef __HAIKU__
-	frameDivider2.top = frameProtocolsLabel.bottom + inset;
-	frameDivider2.bottom = frameDivider2.top + 25.0f;
-#endif
+	fProtocolsDivider = new Divider(frame, "ProtocolDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fProtocolsDivider->ResizeToPreferred();
 
-	fProtocolDivider = new Divider(frameDivider2, "ProtocolDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
-	fProtocolDivider->ResizeToPreferred();
-	frameDivider2 = fProtocolDivider->Frame();
-
-	BRect frameProtocolsDescLabel(frame);
-#ifndef __HAIKU__
-	frameProtocolsDescLabel.top = frameDivider2.bottom + inset;
-	frameProtocolsDescLabel.bottom = frame.bottom;
-#endif
-	fProtocolsDesc = new MultiLineStringView(frameProtocolsDescLabel, "ProtocolsDesc", _T(kProtocolsDesc));
-	fProtocolsDesc->MoveTo(frameProtocolsDescLabel.left, frameProtocolsDescLabel.top);
+	fProtocolsDesc = new MultiLineStringView(frame, "ProtocolsDesc", _T(kProtocolsDesc));
 	fProtocolsDesc->ResizeToPreferred();
 
+	fProtocolsButton = new BButton(frame, "ProtocolEdit", _T("Edit..."), new BMessage(kMsgEditProtocols));
+	fProtocolsButton->ResizeToPreferred();
+
+	// Client Details
 	fClientsLabel = new BStringView(frame, "ClientsLabel", _T("Clients"));
 	fClientsLabel->SetAlignment(B_ALIGN_LEFT);
 	fClientsLabel->SetFont(&headingFont);
 
-	BStringView *clientsDescLabel = new BStringView(frame, NULL,
-		_T("Clients provide the interface between you, the user, and the Server."));
-	clientsDescLabel->SetAlignment(B_ALIGN_LEFT);
+	fClientsDivider = new Divider(frame, "ClientsDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fClientsDivider->ResizeToPreferred();
+	
+	fClientsDesc = new MultiLineStringView(frame, "ClientsDesc", _T(kClientsDesc));
+	fClientsDesc->ResizeToPreferred();
 
-	BBox *divider3 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-
-	fProtocolsButton = new BButton(frame, "protocols_edit", _T("Edit..."), new BMessage(kMsgEditProtocols));
-	fClientsButton = new BButton(frame, "clients_edit", _T("Edit..."), new BMessage(kMsgEditClients));
+	fClientsButton = new BButton(frame, "ClientsEdit", _T("Edit..."), new BMessage(kMsgEditClients));
+	fClientsButton->ResizeToPreferred();
 
 #ifdef __HAIKU__
 	fServerLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	fServerDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fServerDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fServerDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fProtocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fProtocolsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fProtocolsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	fProtocolDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fClientsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	clientsDescLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	divider3->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fClientDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fClientsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
@@ -176,7 +128,7 @@ frame.PrintToStream();
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 5, 2)
 
 			.Add(fProtocolsLabel, 0, 6, 2)
-			.Add(fProtocolDivider, 0, 7, 2)
+			.Add(fProtocolsDivider, 0, 7, 2)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 8, 2)
 			.Add(fProtocolsDesc, 0, 9, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 10)
@@ -184,9 +136,9 @@ frame.PrintToStream();
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 12, 2)
 
 			.Add(fClientsLabel, 0, 13, 2)
-			.Add(divider3, 0, 14, 2)
+			.Add(fClientDivider, 0, 14, 2)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 15, 2)
-			.Add(clientsDescLabel, 0, 16, 2)
+			.Add(fClientsDesc, 0, 16, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 17)
 			.Add(fClientsButton, 1, 17)
 		)
@@ -200,13 +152,13 @@ frame.PrintToStream();
 	AddChild(fServerDesc);
 	AddChild(fServerButton);
 	AddChild(fProtocolsLabel);
-	AddChild(fProtocolDivider);
+	AddChild(fProtocolsDivider);
 	AddChild(fProtocolsDesc);
-//	AddChild(fProtocolsButton);
-//	AddChild(fClientsLabel);
-//	AddChild(divider3);
-//	AddChild(clientsDescLabel);
-//	AddChild(fClientsButton);
+	AddChild(fProtocolsButton);
+	AddChild(fClientsLabel);
+	AddChild(fClientsDivider);
+	AddChild(fClientsDesc);
+	AddChild(fClientsButton);
 
 	LayoutGUI();
 #endif
@@ -236,6 +188,68 @@ PSettingsOverview::AttachedToWindow()
 #ifndef __HAIKU__
 
 void PSettingsOverview::LayoutGUI(void) {
+	font_height fh;
+	BFont headingFont(be_bold_font);
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+	
+	BRect frame = Bounds();
+	frame.InsetBy(inset * 2, inset * 2);
+	frame.OffsetBy(inset, inset);
+
+	// Server related controls
+	fServerLabel->ResizeToPreferred();
+	BRect frameServerLabel = fServerLabel->Frame();
+
+	BRect frameServerDivider = fServerDivider->Frame();
+	fServerDivider->MoveTo(frameServerDivider.left, frameServerLabel.bottom + inset);
+	frameServerDivider = fServerDivider->Frame();
+
+	BRect frameServerDesc = fServerDesc->Frame();
+	fServerDesc->MoveTo(frameServerDesc.left, frameServerDivider.bottom + inset);
+	frameServerDesc = fServerDesc->Frame();
+
+	BRect frameServerButton = fServerButton->Frame();
+	fServerButton->MoveTo(frame.right - inset - frameServerButton.Width(), frameServerDesc.bottom + inset);
+	frameServerButton = fServerButton->Frame();
+
+	// Protocol related controls
+	fProtocolsLabel->ResizeToPreferred();
+	BRect frameProtocolsLabel = fProtocolsLabel->Frame();
+	fProtocolsLabel->MoveTo(frameProtocolsLabel.left, frameServerButton.bottom + inset);
+	frameProtocolsLabel = fProtocolsLabel->Frame();
+	frameProtocolsLabel.PrintToStream();
+	
+	BRect frameProtocolsDivider = fProtocolsDivider->Frame();
+	fProtocolsDivider->MoveTo(frameProtocolsDivider.left, frameProtocolsLabel.bottom + inset);
+	frameProtocolsDivider = fProtocolsDivider->Frame();
+	
+	BRect frameProtocolsDesc = fProtocolsDesc->Frame();
+	fProtocolsDesc->MoveTo(frameProtocolsDesc.left, frameProtocolsDivider.bottom + inset);
+	frameProtocolsDesc = fProtocolsDesc->Frame();
+
+	BRect frameProtocolsButton = fProtocolsButton->Frame();
+	fProtocolsButton->MoveTo(frame.right - inset - frameProtocolsButton.Width(), frameProtocolsDesc.bottom + inset);
+	frameProtocolsButton = fProtocolsButton->Frame();
+	
+	// Client related controls
+	fClientsLabel->ResizeToPreferred();
+	BRect frameClientsLabel = fClientsLabel->Frame();
+	fClientsLabel->MoveTo(frameClientsLabel.left, frameProtocolsButton.bottom + inset);
+	frameClientsLabel = fClientsLabel->Frame();
+
+	BRect frameClientsDivider = fClientsDivider->Frame();
+	fClientsDivider->MoveTo(frameClientsDivider.left, frameClientsLabel.bottom + inset);
+	frameClientsDivider = fClientsDivider->Frame();
+	
+	BRect frameClientsDesc = fClientsDesc->Frame();
+	fClientsDesc->MoveTo(frameClientsDesc.left, frameClientsDivider.bottom + inset);
+	frameClientsDesc = fClientsDesc->Frame();
+	
+	BRect frameClientsButton = fClientsButton->Frame();
+	fClientsButton->MoveTo(frame.right - inset - frameClientsButton.Width(), frameClientsDesc.bottom + inset);
+	frameClientsButton = fClientsButton->Frame();
 };
 
 #endif
