@@ -22,86 +22,121 @@
 
 #include "PClientsOverview.h"
 
+#include "common/Divider.h"
+#include "common/MultiLineStringView.h"
+
 #ifdef ZETA
 #	include <locale/Locale.h>
 #else
 #	define _T(str) (str)
 #endif
 
-PClientsOverview::PClientsOverview(BRect bounds)
-	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
-{
-#ifdef __HAIKU__
-	BRect frame(0, 0, 1, 1);
+//#pragma mark ClientInfo
+
+class ClientInfo {
+	public:
+					ClientInfo(BCheckBox *check, BButton *button)
+						: fCheckBox(check),
+						fButton(button) {
+					};
+		
+		BCheckBox	*CheckBox(void) {
+						return fCheckBox;
+					};
+		BButton		*Button(void) {
+						return fButton;
+					};
+	
+	private:
+		BCheckBox	*fCheckBox;
+		BButton		*fButton;
+};
+
+//#pragma mark Constants
+
+const int32 kMsgEditClient = 'Mecl';
+
+const char *kAutoStartDesc = "Clients set to autostart will start when the Server starts. This is useful for clients you will always use, such as notifications or chat windows.";
+
+//#pragma mark Constructor
+
+PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
+	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	fHandler(handler) {
+	
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
-#else
-	BRect frame;
+	BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+	frame = Frame();
+	frame.InsetBy(inset * 2, inset * 2);
 #endif
 
-	BStringView* autostartLabel = new BStringView(frame, NULL, _T("Autostart"));
-#ifdef __HAIKU__
-	autostartLabel->SetAlignment(B_ALIGN_LEFT);
-	autostartLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	autostartLabel->SetFont(be_bold_font);
+	fAutoStartLabel = new BStringView(frame, "AutoStartLabel", _T("Autostart"));
+	fAutoStartLabel->SetAlignment(B_ALIGN_LEFT);
+	fAutoStartLabel->SetFont(&headingFont);
 
-	BRect textRect(0, 0, 200, B_SIZE_UNLIMITED);
-	BTextView* descLabel = new BTextView(frame, NULL, textRect,
-		B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
-	descLabel->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	rgb_color textColor = ui_color(B_PANEL_TEXT_COLOR);
-	descLabel->SetFontAndColor(be_plain_font, B_FONT_ALL, &textColor);
-	descLabel->SetText(_T("Clients set to autostart will start when the Server starts. "
-		"This is useful for clients you will always use, such as notifications "
-		"or chat windows."));
-	descLabel->MakeEditable(false);
-	descLabel->MakeSelectable(false);
-	descLabel->SetWordWrap(true);
-	descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fAutoStartDivider = new Divider(frame, "AutoStartDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fAutoStartDivider->ResizeToPreferred();
 
-	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
-#endif
+	fAutoStartDesc = new MultiLineStringView(frame, "AutoStartDesc", _T(kAutoStartDesc));
+	fAutoStartDesc->ResizeToPreferred();
 
 #ifdef __HAIKU__
 	int32 row = 5;
 	BGridLayoutBuilder layout(0.0f, 1.0f);
-	layout.Add(autostartLabel, 0, 0, 2)
-	      .Add(divider1, 0, 1, 2)
-	      .Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
-	      .Add(descLabel, 0, 3, 2)
-	      .Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 4, 2)
+	layout.Add(fAutoStartLabel, 0, 0, 2),
+		.Add(fAutoStartDivider, 0, 1, 2),
+		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
+		.Add(fAutoStartDesc, 0, 3, 2)
+		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 4, 2)
 	;
 #endif
 
 	BMessage clients, msg;
 	im_get_client_list(&clients);
 	for (int32 i = 0; clients.FindMessage("client", i, &msg) == B_OK; i++) {
-		const char* path;
-		const char* file;
+		const char *path = NULL;
+		const char *file = NULL;
 
 		// Get client path and file
-		msg.FindString("path", &path);
-		msg.FindString("file", &file);
+		if (msg.FindString("path", &path) != B_OK) continue;
+		if (msg.FindString("file", &file) != B_OK) continue;
 
-		// Autostart checkbox
-		BCheckBox* checkbox = new BCheckBox(frame, path, file, NULL);
+		BCheckBox *checkbox = new BCheckBox(frame, path, file, NULL);
 		checkbox->SetValue(B_CONTROL_ON);
+		checkbox->ResizeToPreferred();
 
 		// Edit button
 		BMessage* editMsg = new BMessage(kMsgEditClient);
 		editMsg->AddString("path", path);
 		editMsg->AddString("file", file);
-		BButton* button = new BButton(frame, "edit", _T("Edit..."), editMsg);
-		//fEditButtons->Append(button);
+
+		BString nameEdit = "edit_";
+		nameEdit << file;
+		BButton* button = new BButton(frame, nameEdit.String(), _T("Edit..."), editMsg);
+		button->ResizeToPreferred();
+
+		fClientInfo.push_back(new ClientInfo(checkbox, button));
+
 #ifdef __HAIKU__
 		layout.Add(checkbox, 0, row);
 		layout.Add(button, 1, row);
 		layout.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, ++row, 2);
-#endif		
+#else
+		AddChild(checkbox);
+		AddChild(button);
+#endif
+
+		
 	}
 
 #ifdef __HAIKU__
+	fAutoStartLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fAutoStartDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fAutoStartDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
@@ -110,6 +145,78 @@ PClientsOverview::PClientsOverview(BRect bounds)
 		.SetInsets(inset, inset, inset, inset)
 	);
 #else
-	AddChild(autostartLabel);
+	AddChild(fAutoStartLabel);
+	AddChild(fAutoStartDivider);
+	AddChild(fAutoStartDesc);
+	
+	LayoutGUI();
 #endif
 }
+
+//#pragma mark BView Hooks
+
+void PClientsOverview::AttachedToWindow(void) {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+};
+
+void PClientsOverview::MessageReceived(BMessage *msg) {
+	switch (msg->what) {
+		default: {
+			BView::MessageReceived(msg);
+		} break;
+	};
+};
+
+//#pragma mark Private
+
+#ifndef __HAIKU__
+
+void PClientsOverview::LayoutGUI(void) {
+	font_height fh;
+	BFont headingFont(be_bold_font);
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
+	BRect frame = Bounds();
+	frame.InsetBy(inset * 2, inset * 2);
+	frame.OffsetBy(inset, inset);
+	
+	// Autostart
+	fAutoStartLabel->ResizeToPreferred();
+	BRect frameAutoStartLabel = fAutoStartLabel->Frame();
+	
+	BRect frameAutoStartDivider = fAutoStartDivider->Frame();
+	fAutoStartDivider->MoveTo(frameAutoStartDivider.left, frameAutoStartLabel.bottom + inset);
+	frameAutoStartDivider = fAutoStartDivider->Frame();
+	
+	BRect frameAutoStartDesc = fAutoStartDesc->Frame();
+	fAutoStartDesc->MoveTo(frameAutoStartDesc.left, frameAutoStartDivider.bottom + inset);
+	frameAutoStartDesc = fAutoStartDesc->Frame();
+	
+	BRect previous = frameAutoStartDesc;
+	
+	for (clientinfo_t::iterator cIt = fClientInfo.begin(); cIt != fClientInfo.end(); cIt++ ){
+		ClientInfo *info = (*cIt);
+		BCheckBox *checkbox = info->CheckBox();
+		BButton *button = info->Button();
+		
+		BRect frameCheckBox = checkbox->Frame();
+		BRect frameButton = button->Frame();
+		
+		checkbox->MoveTo(frameCheckBox.left, previous.bottom + inset);
+		button->MoveTo(frame.right - inset - frameButton.Width(), previous.bottom + inset);
+		
+		previous = button->Frame();
+	};
+};
+
+#endif

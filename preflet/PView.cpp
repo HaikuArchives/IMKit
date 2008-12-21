@@ -132,7 +132,7 @@ PView::PView(BRect bounds)
 	// Clients item
 	fClientsItem = new IconTextItem("clients", _T("Clients"));
 	fListView->AddUnder(fClientsItem, settingsItem);
-	fViews["clients"] = new PClientsOverview(fMainView->Bounds());
+	fViews["clients"] = new PClientsOverview(this, fMainView->Bounds());
 	fMainView->AddChild(fViews["clients"]);
 	fViews["clients"]->Hide();
 
