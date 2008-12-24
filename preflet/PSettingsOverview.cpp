@@ -57,10 +57,9 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsDesc(NULL),
 	fClientsButton(NULL)
 {
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
 	BRect frame(0, 0, 1, 1);
 #ifndef __HAIKU__
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
-
 	frame = Frame();
 	frame.InsetBy(inset * 2, inset * 2);
 #endif
@@ -170,9 +169,10 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 #endif
 }
 
+//#pragma mark BView Hooks
 
 void
-PSettingsOverview::AttachedToWindow()
+PSettingsOverview::AttachedToWindow(void)
 {
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
