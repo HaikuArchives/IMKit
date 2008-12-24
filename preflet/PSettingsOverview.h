@@ -19,7 +19,7 @@ class PSettingsOverview : public BView {
 							PSettingsOverview(MultipleViewHandler *handler, BRect bounds);
 
 		// BView Hooks
-		virtual void		AttachedToWindow();
+		virtual void		AttachedToWindow(void);
 		virtual void		MessageReceived(BMessage *msg);
 
 	private:

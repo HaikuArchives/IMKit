@@ -5,11 +5,26 @@
 #ifndef PSERVER_OVERVIEW_H
 #define PSERVER_OVERVIEW_H
 
+#include <interface/StringView.h>
 #include <interface/View.h>
+
+class Divider;
 
 class PServerOverview : public BView {
 	public:
 								PServerOverview(BRect bounds);
+	
+		// BView Hooks
+		virtual void			AttachedToWindow(void);
+		virtual void			MessageReceived(BMessage *msg);
+		
+	private:
+#ifndef __HAIKU__
+		void					LayoutGUI(void);
+#endif
+
+		BStringView				*fServerLabel;
+		Divider					*fServerDivider;
 };
 
 #endif // PSERVER_OVERVIEW_H
