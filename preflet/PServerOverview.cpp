@@ -45,8 +45,6 @@ PServerOverview::PServerOverview(BRect bounds)
 	fServerLabel->SetAlignment(B_ALIGN_LEFT);
 	fServerLabel->SetFont(&headingFont);
 
-
-
 	fServerDivider = new Divider(frame, "ServerDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fServerDivider->ResizeToPreferred();
 

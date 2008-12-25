@@ -7,9 +7,26 @@
 
 #include <interface/View.h>
 
+class BStringView;
+
+class Divider;
+
 class PProtocolsOverview : public BView {
 	public:
-			PProtocolsOverview(BRect bounds);
+							PProtocolsOverview(BRect bounds);
+	
+		// BView Hooks
+		virtual void		AttachedToWindow(void);
+		virtual void		MessageReceived(BMessage *msg);
+	
+	private:
+#ifndef __HAIKU__
+		void				LayoutGUI(void);
+#endif
+
+		BStringView			*fProtocolsLabel;
+		Divider				*fProtocolsDivider;
+
 };
 
 #endif // PPROTOCOLS_OVERVIEW_H

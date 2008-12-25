@@ -71,6 +71,16 @@ PWindow::PWindow()
 	AddChild(fView);
 #endif
 
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	fView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fView->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	fView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fView->SetHighColor(0, 0, 0, 0);
+#endif
+
 	CenterWindowOnScreen();
 }
 

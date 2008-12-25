@@ -28,37 +28,43 @@
 #	define _T(str) (str)
 #endif
 
+//#pragma mark Constants
+
 const int32 kProtocolListChanged = 'Mplc';
-const int32 kAddAccount  = 'Mada';
+const int32 kAddAccount = 'Mada';
 const int32 kEditAccount = 'Meda';
-const int32 kDelAccount  = 'Mdea';
+const int32 kDelAccount = 'Mdea';
+
+//#pragma mark Constructor
 
 PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	: BView(bounds, protoPath->Leaf(), B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fProtoPath(protoPath)
 {
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
 	BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+	frame = Frame();
+	frame.InsetBy(inset * 2, inset * 2);
+#endif
 
 	// Create list view
-	BOutlineListView* listView = new BOutlineListView(frame, "proto_list", B_MULTIPLE_SELECTION_LIST,
-		B_FOLLOW_ALL_SIDES);
-	BMessage* selMsg = new BMessage(kProtocolListChanged);
-	selMsg->AddString("protocol", protoPath->Path());
-	listView->SetSelectionMessage(selMsg);
+	fProtocolListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
+	BMessage selection(kProtocolListChanged);
+	selection.AddString("protocol", protoPath->Path());
+	fProtocolListView->SetSelectionMessage(&selection);
 
 	// Create scroll bars
-	BScrollView* scrollView = new BScrollView("proto_scroll", listView, B_FOLLOW_ALL, 0, false,
-		true, B_FANCY_BORDER);
+	BScrollView* scrollView = new BScrollView("ProtocolListScroll", fProtocolListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
 
 	// Buttons
-	fAddButton = new BButton(frame, "add", _T("Add account..."), new BMessage(kAddAccount));
-	fEditButton = new BButton(frame, "edit", _T("Edit account..."), new BMessage(kEditAccount));
+	fAddButton = new BButton(frame, "Add", _T("Add account..."), new BMessage(kAddAccount));
+	fEditButton = new BButton(frame, "Edit", _T("Edit account..."), new BMessage(kEditAccount));
 	fEditButton->SetEnabled(false);
-	fDelButton = new BButton(frame, "del", _T("Remove..."), new BMessage(kDelAccount));
+	fDelButton = new BButton(frame, "Del", _T("Remove..."), new BMessage(kDelAccount));
 	fDelButton->SetEnabled(false);
 
 #ifdef __HAIKU__
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 	AddChild(BGroupLayoutBuilder(B_HORIZONTAL, inset)
 		.Add(scrollView)
@@ -72,29 +78,46 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	);
 #else
 	AddChild(scrollView);
+	
+	LayoutGUI();
 #endif
 }
 
+//#pragma mark BView Hooks
 
-void
-PAccountsView::AttachedToWindow()
-{
+void PAccountsView::AttachedToWindow(void) {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+
 	fAddButton->SetTarget(this);
 	fEditButton->SetTarget(this);
 	fDelButton->SetTarget(this);
 }
 
-
-void
-PAccountsView::MessageReceived(BMessage* msg)
-{
+void PAccountsView::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
 		case kAddAccount: {
 			PAccountDialog* dialog = new PAccountDialog(_T("Add account"), fProtoPath);
 			if (dialog->Go() == 1) {
-printf("%s\n", dialog->AccountName());
+				printf("%s\n", dialog->AccountName());
 			}
 
 		} break;
 	}
 }
+
+//#pragma mark Private
+
+#ifndef __HAIKU__
+
+void PAccountsView::LayoutGUI(void) {
+};
+
+#endif

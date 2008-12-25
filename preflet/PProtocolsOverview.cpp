@@ -4,6 +4,7 @@
  *
  * Authors:
  *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Michael Davidson <slaad@bong.com.au>
  */
 
 #include <interface/StringView.h>
@@ -17,6 +18,7 @@
 #endif
 
 #include "PProtocolsOverview.h"
+#include "common/Divider.h"
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -27,32 +29,87 @@
 PProtocolsOverview::PProtocolsOverview(BRect bounds)
 	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
 {
-	BRect frame(0, 0, 1, 1);
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
+	BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+	frame = Frame();
+	frame.InsetBy(inset * 2, inset * 2);
+#endif
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
 
-	BStringView* protocolsLabel = new BStringView(frame, NULL, _T("Protocols"));
+	fProtocolsLabel = new BStringView(frame, "ProtocolsLabel", _T("Protocols"));
+	fProtocolsLabel->SetAlignment(B_ALIGN_LEFT);
+	fProtocolsLabel->SetFont(&headingFont);
+
+	fProtocolsDivider = new Divider(frame, "ProtocolsDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fProtocolsDivider->ResizeToPreferred();
+
 #ifdef __HAIKU__
-	protocolsLabel->SetAlignment(B_ALIGN_LEFT);
-	protocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	protocolsLabel->SetFont(be_bold_font);
-
-	BBox* divider1 = new BBox(frame, B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
-	divider1->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fProtocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fProtocolsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
 		.Add(BGridLayoutBuilder(0.0f, 1.0f)
-			.Add(protocolsLabel, 0, 0, 2)
-			.Add(divider1, 0, 1, 2)
+			.Add(fProtocolsLabel, 0, 0, 2)
+			.Add(fProtocolsDivider, 0, 1, 2)
 		)
 
 		.AddGlue()
 		.SetInsets(inset, inset, inset, inset)
 	);
 #else
-	AddChild(protocolsLabel);
+	AddChild(fProtocolsLabel);
+	AddChild(fProtocolsDivider);
+	
+	LayoutGUI();
 #endif
 }
+
+//#pragma mark BView Hooks
+
+void PProtocolsOverview::AttachedToWindow(void) {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+};
+
+void PProtocolsOverview::MessageReceived(BMessage *msg) {
+	switch (msg->what) {
+		default: {
+			BView::MessageReceived(msg);
+		} break;
+	};
+};
+
+//#pragma mark Private
+
+void PProtocolsOverview::LayoutGUI(void) {
+	font_height fh;
+	BFont headingFont(be_bold_font);
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+	
+	BRect frame = Bounds();
+	frame.InsetBy(inset * 2, inset * 2);
+	frame.OffsetBy(inset, inset);
+
+	// Protocols related controls
+	fProtocolsLabel->ResizeToPreferred();
+	BRect frameProtocolsLabel = fProtocolsLabel->Frame();
+
+	BRect frameProtocolsDivider = fProtocolsDivider->Frame();
+	fProtocolsDivider->MoveTo(frameProtocolsDivider.left, frameProtocolsLabel.bottom + inset);
+	frameProtocolsDivider = fProtocolsDivider->Frame();
+
+};

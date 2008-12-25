@@ -245,7 +245,6 @@ void PSettingsOverview::LayoutGUI(void) {
 	BRect frameProtocolsLabel = fProtocolsLabel->Frame();
 	fProtocolsLabel->MoveTo(frameProtocolsLabel.left, frameServerButton.bottom + inset);
 	frameProtocolsLabel = fProtocolsLabel->Frame();
-	frameProtocolsLabel.PrintToStream();
 	
 	BRect frameProtocolsDivider = fProtocolsDivider->Frame();
 	fProtocolsDivider->MoveTo(frameProtocolsDivider.left, frameProtocolsLabel.bottom + inset);

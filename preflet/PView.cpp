@@ -98,6 +98,16 @@ PView::PView(BRect bounds)
 #endif
 	fMainView = new BView(frame, "box", B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	fMainView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fMainView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fMainView->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	fMainView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fMainView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fMainView->SetHighColor(0, 0, 0, 0);
+#endif
+
 	BRect frameSave(frame);
 	BRect frameRevert(frame);
 

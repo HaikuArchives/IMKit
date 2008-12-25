@@ -7,23 +7,31 @@
 
 #include <interface/View.h>
 
+class BButton;
+class BOultineListView;
 class BPath;
 class BWindow;
-class BButton;
+
 
 class PAccountsView : public BView
 {
 	public:
-				PAccountsView(BRect bounds, BPath* protoPath);
+							PAccountsView(BRect bounds, BPath* protoPath);
 
-		virtual void	AttachedToWindow();
-		virtual void	MessageReceived(BMessage* msg);
+		// BView Hooks
+		virtual void		AttachedToWindow(void);
+		virtual void		MessageReceived(BMessage *msg);
 
 	private:
-		BPath*		fProtoPath;
-		BButton*	fAddButton;
-		BButton*	fEditButton;
-		BButton*	fDelButton;
+#ifndef __HAIKU__
+		void				LayoutGUI(void);
+#endif
+		
+		BPath				*fProtoPath;
+		BOutlineListView	*fProtocolListView;
+		BButton				*fAddButton;
+		BButton				*fEditButton;
+		BButton				*fDelButton;
 };
 
 #endif // PACCOUNTS_VIEW_H
