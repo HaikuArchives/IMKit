@@ -29,6 +29,7 @@
 #include <libim/Helpers.h>
 
 #include "PUtils.h"
+#include "common/Divider.h"
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -56,13 +57,18 @@ CenterWindowOnScreen(BWindow* window)
 }
 
 
-float
-BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
-{
+float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view) {
+	printf("BuildGUI(%4.4s, %4.4s, %s, [%p])\n", &templ.what, &settings.what, viewName, view);
+printf("Template:\n");
+templ.PrintToStream();
+printf("Settings:\n");
+settings.PrintToStream();
+
 	BMessage curr;
+	float inset = ceilf(be_plain_font->Size() * 0.7);
+
 #ifdef __HAIKU__
 	// Setup layout
-	float inset = ceilf(be_plain_font->Size() * 0.7);
 	view->SetLayout(new BGroupLayout(B_VERTICAL));
 	BGroupLayoutBuilder layout(B_VERTICAL, inset);
 #else
@@ -70,23 +76,41 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 	float xOffset = 0;
 
 	font_height fontHeight;
-	be_bold_font->GetHeight(&fontHeight);
+	be_plain_font->GetHeight(&fontHeight);
 
 	const float kControlWidth = view->Bounds().Width() - (kEdgeOffset * 2);
 	const float kFontHeight = fontHeight.descent + fontHeight.leading + fontHeight.ascent;
 #endif
 
-#ifdef __HAIKU__
-	BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), NULL, viewName);
-	descLabel->SetAlignment(B_ALIGN_LEFT);
-	descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
 
-	BBox* divider = new BBox(BRect(0, 0, 1, 1), B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
+	BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), viewName, viewName);
+	descLabel->SetFont(&headingFont);
+	descLabel->SetAlignment(B_ALIGN_LEFT);
+
+	Divider *divider = new Divider(view->Frame(), "DescDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	divider->ResizeToPreferred();
+
+#ifdef __HAIKU__
+	descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	divider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
 	layout.Add(descLabel);
 	layout.Add(divider);
+#else
+	descLabel->ResizeToPreferred();	
+	
+	view->AddChild(descLabel);
+	view->AddChild(divider);
+	
+	BRect frameDescLabel = descLabel->Frame();
+	BRect frameDivider = divider->Frame();
+	
+	divider->MoveTo(frameDivider.left, frameDescLabel.bottom + inset);
+	frameDivider = divider->Frame();
+	
+	yOffset = frameDivider.bottom + inset;
 #endif
 
 	for (int32 i = 0; templ.FindMessage("setting", i, &curr) == B_OK; i++) {
@@ -256,15 +280,17 @@ BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view)
 #ifdef __HAIKU__
 		layout.Add(control);
 #else
+printf("Adding child: [%p]\n", control);
 		view->AddChild(control);
-#endif
 
-#ifndef __HAIKU__
 		float h, w = 0;
 		control->GetPreferredSize(&w, &h);
 		control->MoveTo(kEdgeOffset + xOffset, yOffset);
+printf("\tMoved to (%.2f, %.2f)\n", kEdgeOffset + xOffset, yOffset);
+
 		yOffset += kControlOffset + h;
 		xOffset = 0;
+		
 #endif
 	}
 

@@ -447,10 +447,29 @@ PView::LoadClients()
 		fAddOns[clientPath.Path()] = p;
 
 		// Create settings view
-		BView* view = new BView(BRect(0, 0, 1, 1), file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+		BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+		frame = fMainView->Bounds();
+		frame.InsetBy(kEdgeOffset, kEdgeOffset);
+		frame.top += fFontHeight;
+		frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
+#endif
+		
+		BView* view = new BView(frame, file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 		BuildGUI(client_template, client_settings, file, view);
 		fViews[clientPath.Path()] = view;
 		fMainView->AddChild(view);
+		
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		view->SetHighColor(0, 0, 0, 0);
+#endif
+		
 		view->Hide();
 	}
 }

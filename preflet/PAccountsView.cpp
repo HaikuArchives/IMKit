@@ -50,9 +50,9 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 
 	// Create list view
 	fProtocolListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
-	BMessage selection(kProtocolListChanged);
-	selection.AddString("protocol", protoPath->Path());
-	fProtocolListView->SetSelectionMessage(&selection);
+	BMessage *selection = new BMessage(kProtocolListChanged);
+	selection->AddString("protocol", protoPath->Path());
+	fProtocolListView->SetSelectionMessage(selection);
 
 	// Create scroll bars
 	BScrollView* scrollView = new BScrollView("ProtocolListScroll", fProtocolListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
