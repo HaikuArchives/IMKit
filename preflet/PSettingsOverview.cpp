@@ -20,8 +20,8 @@
 #include "PSettingsOverview.h"
 #include "MultipleViewHandler.h"
 
-#include "common/Divider.h"
-#include "common/MultiLineStringView.h"
+#include <common/Divider.h>
+#include <common/MultiLineStringView.h>
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -74,7 +74,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fServerDivider = new Divider(frame, "ServerDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fServerDivider->ResizeToPreferred();
 
-	fServerDesc = new MultiLineStringView(frame, "ServersDesc", _T(kServerDesc));
+	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), Bounds().Width());
 	fServerDesc->ResizeToPreferred();
 
 	fServerButton = new BButton(frame, "ServerEdit", _T("Edit..."), new BMessage(kMsgEditServer));
@@ -88,7 +88,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fProtocolsDivider = new Divider(frame, "ProtocolDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fProtocolsDivider->ResizeToPreferred();
 
-	fProtocolsDesc = new MultiLineStringView(frame, "ProtocolsDesc", _T(kProtocolsDesc));
+	fProtocolsDesc = new MultiLineStringView("ProtocolsDesc", _T(kProtocolsDesc), Bounds().Width());
 	fProtocolsDesc->ResizeToPreferred();
 
 	fProtocolsButton = new BButton(frame, "ProtocolEdit", _T("Edit..."), new BMessage(kMsgEditProtocols));
@@ -102,7 +102,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsDivider = new Divider(frame, "ClientsDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fClientsDivider->ResizeToPreferred();
 	
-	fClientsDesc = new MultiLineStringView(frame, "ClientsDesc", _T(kClientsDesc));
+	fClientsDesc = new MultiLineStringView("ClientsDesc", _T(kClientsDesc), Bounds().Width());
 	fClientsDesc->ResizeToPreferred();
 
 	fClientsButton = new BButton(frame, "ClientsEdit", _T("Edit..."), new BMessage(kMsgEditClients));
@@ -116,7 +116,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fProtocolsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fProtocolsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fClientsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	fClientDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	fClientsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fClientsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 
 	// Build the layout
@@ -141,7 +141,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 12, 2)
 
 			.Add(fClientsLabel, 0, 13, 2)
-			.Add(fClientDivider, 0, 14, 2)
+			.Add(fClientsDivider, 0, 14, 2)
 			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 15, 2)
 			.Add(fClientsDesc, 0, 16, 2)
 			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 17)

@@ -93,6 +93,7 @@ void PProtocolsOverview::MessageReceived(BMessage *msg) {
 
 //#pragma mark Private
 
+#ifndef __HAIKU__
 void PProtocolsOverview::LayoutGUI(void) {
 	font_height fh;
 	BFont headingFont(be_bold_font);
@@ -111,5 +112,5 @@ void PProtocolsOverview::LayoutGUI(void) {
 	BRect frameProtocolsDivider = fProtocolsDivider->Frame();
 	fProtocolsDivider->MoveTo(frameProtocolsDivider.left, frameProtocolsLabel.bottom + inset);
 	frameProtocolsDivider = fProtocolsDivider->Frame();
-
 };
+#endif

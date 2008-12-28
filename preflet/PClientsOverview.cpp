@@ -80,14 +80,14 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 	fAutoStartDivider = new Divider(frame, "AutoStartDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fAutoStartDivider->ResizeToPreferred();
 
-	fAutoStartDesc = new MultiLineStringView(frame, "AutoStartDesc", _T(kAutoStartDesc));
+	fAutoStartDesc = new MultiLineStringView("AutoStartDesc", _T(kAutoStartDesc), Bounds().Width());
 	fAutoStartDesc->ResizeToPreferred();
 
 #ifdef __HAIKU__
 	int32 row = 5;
 	BGridLayoutBuilder layout(0.0f, 1.0f);
-	layout.Add(fAutoStartLabel, 0, 0, 2),
-		.Add(fAutoStartDivider, 0, 1, 2),
+	layout.Add(fAutoStartLabel, 0, 0, 2)
+		.Add(fAutoStartDivider, 0, 1, 2)
 		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
 		.Add(fAutoStartDesc, 0, 3, 2)
 		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 4, 2)

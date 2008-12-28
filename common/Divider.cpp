@@ -1,3 +1,6 @@
+
+#include <app/Message.h>
+
 #include "Divider.h"
 
 //#pragma mark Constants
