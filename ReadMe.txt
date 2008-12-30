@@ -1,31 +1,19 @@
-Compiling the code
+IM Kit - ReadMe
+===============
 
-First of all, a few notes: 
+IM Kit is a kit for Haiku and Zeta (BeOS R5 should be supported to, but we don't
+have developers and testers available) that connects to instant messaging networks
+such as Jabber, GoogleTalk, MSN, ICQ, AIM and Yahoo and creates a connection between
+your contacts and People files.
 
-  * Consult the BuildNotes.txt in src/protocols/GoogleTalk, OSCAR, MSN, and Yahoo.
+== Building the code ==
 
-  * Consult the BuildNotes.txt in src/sample_clients/im_emoclient/
+IM Kit uses a Jam-based build system.
+All you need to do is:
 
-  * Running "make" will create a dir src/build where binaries are placed. Just so
-    you know where to look for it.
+$ ./configure
+$ jam -q
 
-  * When running "make symlinks" the Tracker add-ons will be symlink'ed 
-    in ~/config/add-ons/Tracker where they belong, libim.so will be symlink'ed in
-    ~/config/lib and im_server in ~/config/servers.
+And then, to install:
 
-  * When running "make install" the Tracker add-ons will be copied 
-    to ~/config/add-ons/Tracker where they belong, libim.so will be copied to
-    ~/config/lib and im_server to ~/config/servers. The clients and tools etc
-    will be copied to /boot/apps/im_kit.
-
-
-Now, on to the making:
-
-  To compile do this 
-     0. Make sure you've read the protocol readmes and followed the instructions!
-     1. Open a Terminal 
-     2. Change to the imkit/src folder 
-     3. Run "make"
-     4. Run "make install" or "make symlinks"
-
-Simple enough.
+$ jam -q install
