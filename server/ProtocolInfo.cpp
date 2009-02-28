@@ -107,6 +107,8 @@ bool ProtocolInfo::HasCapability(uint32 capability) {
 
 bool ProtocolInfo::HasExited(void) {
 	thread_info ignored;
+	status_t res = get_thread_info(fThreadID, &ignored);
+	
 	return ((fThreadID == B_ERROR) || (get_thread_info(fThreadID, &ignored) == B_BAD_THREAD_ID));
 };
 
@@ -132,12 +134,14 @@ status_t ProtocolInfo::Start(const char *loader) {
 		fSettingsPath.Path(),		// Path to settings
 		NULL
 	};
-	
+
 	fThreadID = load_image(4, arguments, (const char **)environ);
-	
+
 	if (fThreadID > B_ERROR) {
 		resume_thread(fThreadID);
 		result = B_OK;
+	} else {
+		fThreadID = B_ERROR;
 	};
 	
 	return result;
@@ -157,8 +161,8 @@ void ProtocolInfo::Stop(void) {
 status_t ProtocolInfo::Process(BMessage *msg) {
 	BMessage envelope(IM::Private::PROTOCOL_PROCESS);
 	envelope.AddMessage("message", msg);
-	
-	fMessenger->SendMessage(&envelope);
+
+	if (fMessenger) fMessenger->SendMessage(&envelope);
 
 	return B_OK;								
 };
@@ -167,7 +171,7 @@ status_t ProtocolInfo::UpdateSettings(BMessage *msg) {
 	BMessage envelope(IM::Private::PROTOCOL_UPDATESETTINGS);
 	envelope.AddMessage("message", msg);
 	
-	fMessenger->SendMessage(&envelope);
+	if (fMessenger) fMessenger->SendMessage(&envelope);
 
 	return B_OK;
 };

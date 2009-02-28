@@ -219,6 +219,7 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 			if (match->IsSatisfiedBy(info) == true) {
 				BMessage copy(*message);
 				if (appendSignature == true) copy.AddString("protocol", info->Signature());
+
 				info->Process(&copy);
 				
 				result = B_OK;
