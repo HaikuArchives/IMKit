@@ -77,7 +77,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), Bounds().Width());
 	fServerDesc->ResizeToPreferred();
 
-	fServerButton = new BButton(frame, "ServerEdit", _T("Edit..."), new BMessage(kMsgEditServer));
+	fServerButton = new BButton(frame, "ServerEdit", _T("Edit" B_UTF8_ELLIPSIS), new BMessage(kMsgEditServer));
 	fServerButton->ResizeToPreferred();
 
 	// Protocol Details
@@ -91,7 +91,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fProtocolsDesc = new MultiLineStringView("ProtocolsDesc", _T(kProtocolsDesc), Bounds().Width());
 	fProtocolsDesc->ResizeToPreferred();
 
-	fProtocolsButton = new BButton(frame, "ProtocolEdit", _T("Edit..."), new BMessage(kMsgEditProtocols));
+	fProtocolsButton = new BButton(frame, "ProtocolEdit", _T("Edit" B_UTF8_ELLIPSIS), new BMessage(kMsgEditProtocols));
 	fProtocolsButton->ResizeToPreferred();
 
 	// Client Details
@@ -105,7 +105,7 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsDesc = new MultiLineStringView("ClientsDesc", _T(kClientsDesc), Bounds().Width());
 	fClientsDesc->ResizeToPreferred();
 
-	fClientsButton = new BButton(frame, "ClientsEdit", _T("Edit..."), new BMessage(kMsgEditClients));
+	fClientsButton = new BButton(frame, "ClientsEdit", _T("Edit" B_UTF8_ELLIPSIS), new BMessage(kMsgEditClients));
 	fClientsButton->ResizeToPreferred();
 
 #ifdef __HAIKU__

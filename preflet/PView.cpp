@@ -45,6 +45,7 @@
 #include "PClientsOverview.h"
 #include "PAccountsView.h"
 #include "PUtils.h"
+#include "SettingsController.h"
 
 //#pragma mark Constants
 
@@ -238,7 +239,6 @@ PView::MessageReceived(BMessage* msg)
 
 		case kSave: {
 			BMessage cur;
-			BMessage tmplate;
 			BMessage settings;
 			BMessage reply;
 
@@ -251,81 +251,58 @@ PView::MessageReceived(BMessage* msg)
 			IconTextItem* item = (IconTextItem *)fListView->ItemAt(current);
 			addons_pair p = fAddOns[item->Name()];
 
-			tmplate = p.second;			
-			BView *panel = FindView(item->Name());
+			BMessage tmplate = p.second;
+			BView *view = FindView(item->Name());
+			SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
-			for (int i = 0; tmplate.FindMessage("setting", i, &cur) == B_OK; i++) {
-				const char *name = cur.FindString("name");
-				int32 type = -1;
+			status_t res = controller->Save(view, &tmplate, &settings);
 
-				cur.FindInt32("type", &type);
+			if (res == B_OK) {
+				BMessage updMessage(IM::SETTINGS_UPDATED);
+	
+				if (tmplate.FindString("protocol")) {
+					res = im_save_protocol_settings(tmplate.FindString("protocol"), &settings);
+					updMessage.AddString("protocol", tmplate.FindString("protocol"));
+				} else if (tmplate.FindString("client")) {
+					res = im_save_client_settings( tmplate.FindString("client"), &settings);
+					updMessage.AddString("client", tmplate.FindString("client"));
+				} else {
+					LOG("Preflet", liHigh, "Failed to determine type of settings");
+				};	
+	
+				if (res != B_OK) {
+					LOG("Preflet", liHigh, "Error when saving settings");
+				} else {
+					fManager->SendMessage(&updMessage);
+				};
+			};
+		} break;
 
-				if (dynamic_cast<BTextControl*>(panel->FindView(name))) {
-					// Free text
-					BTextControl* ctrl = (BTextControl*)panel->FindView(name);
+		case kRevert: {
+			BMessage cur;
+			BMessage settings;
+			BMessage reply;
 
-					switch (type) {
-						case B_STRING_TYPE:
-							settings.AddString(name, ctrl->Text());
-							break;
-						case B_INT32_TYPE:
-							settings.AddInt32(name, atoi(ctrl->Text()));
-							break;
-						default:
-							return;
-					}
-				} else if (dynamic_cast<BMenuField*>(panel->FindView(name))) {
-					// Provided option
-					BMenuField* ctrl = (BMenuField*)panel->FindView(name);
-					BMenuItem* item = ctrl->Menu()->FindMarked();
-
-					if (!item)
-						return;
-
-					switch (type) {
-						case B_STRING_TYPE:
-							settings.AddString(name, item->Label());
-							break;
-						case  B_INT32_TYPE:
-							settings.AddInt32(name, atoi(item->Label()));
-							break;
-						default:
-							return;
-					}
-				} else if (dynamic_cast<BCheckBox*>(panel->FindView(name))) {
-					// Boolean setting
-					BCheckBox* box = (BCheckBox*)panel->FindView(name);
-
-					if (box->Value() == B_CONTROL_ON)
-						settings.AddBool(name, true);
-					else
-						settings.AddBool(name, false);
-				} else if (dynamic_cast<BTextView*>(panel->FindView(name))) {
-					BTextView* view = (BTextView *)panel->FindView(name);
-					settings.AddString(name, view->Text());
-				}
+			int current = fListView->CurrentSelection();
+			if (current < 0) {
+				printf("Error, no selection when trying to update\n");
+				return;
 			}
 
-			status_t res = B_ERROR;
-			BMessage updMessage(IM::SETTINGS_UPDATED);
+			IconTextItem* item = (IconTextItem *)fListView->ItemAt(current);
+			addons_pair p = fAddOns[item->Name()];
 
-			if (tmplate.FindString("protocol")) {
-				res = im_save_protocol_settings(tmplate.FindString("protocol"), &settings);
-				updMessage.AddString("protocol", tmplate.FindString("protocol"));
-			} else if (tmplate.FindString("client")) {
-				res = im_save_client_settings( tmplate.FindString("client"), &settings);
-				updMessage.AddString("client", tmplate.FindString("client"));
-			} else
-				LOG("Preflet", liHigh, "Failed to determine type of settings");
+			BMessage tmplate = p.second;
+			BView *view = FindView(item->Name());
+			SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
-			if (res != B_OK)
-				LOG("Preflet", liHigh, "Error when saving settings");
-			else
-				fManager->SendMessage(&updMessage);
-		}
+//			status_t res =
+			controller->Revert(view, &tmplate);
+		} break;
 
-		default:
+		default: {
 			BView::MessageReceived(msg);
+		} break;
 	}
 }
 
@@ -383,13 +360,17 @@ PView::LoadProtocols()
 		fListView->AddUnder(item, fProtocolsItem);
 
 		// Create protocol settings view
-		BView* view = new PAccountsView(frame, &protoPath);
+		BView *view = new PAccountsView(frame, &protoPath);
+		BMessage tmplate;
+		BMessage settings;
+		
+		im_load_protocol_settings(protoPath.Leaf(), &settings);
+		im_load_protocol_template(protoPath.Path(), &tmplate);
 
-		// Add settings for the current protocol
-//		BMessage accounts, account;
-//		im_load_protocol_accounts(protoPath.Path(), &accounts);
-//		for (int32 i = 0; accounts.FindMessage("account", i, &account) == B_OK; i++) {
-//		}
+		tmplate.AddString("protocol", protoPath.Leaf());
+		tmplate.PrintToStream();
+		pair<BMessage, BMessage> p(settings, tmplate);
+		fAddOns[protoPath.Path()] = p;
 
 		// Add protocol settings view
 		view->Hide();

@@ -442,6 +442,95 @@ im_save_client_template( const char * client, const BMessage * msg )
 	return im_save_template( path.Path(), msg );
 }
 
+status_t im_protocol_add_account(const char *protocol, const char *account, const BMessage *settings) {
+	BPath path;
+	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+
+	if (result == B_OK) {
+		path.Append("im_kit/add-ons/protocols");
+		path.Append(protocol);
+		path.Append(account);
+		
+		result = im_save_settings(path.Path(), settings);
+	};
+
+	return result;
+};
+
+status_t im_protocol_delete_account(const char *protocol, const char *account) {
+	BPath path;
+	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+
+	if (result == B_OK) {
+		path.Append("im_kit/add-ons/protocols");
+		path.Append(protocol);
+		path.Append(account);
+		
+		BEntry entry(path.Path());
+		result = entry.Remove();
+	};
+
+	return result;
+};
+
+bool im_protocol_has_account(const char *protocol, const char *account) {
+	bool result = false;
+	BPath path;
+	
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL) == B_OK) {
+		path.Append("im_kit/add-ons/protocols");
+		path.Append(protocol);
+		
+		BDirectory protocolDir(protocol);
+		if (protocolDir.InitCheck() == true) {
+			result = protocolDir.Contains(account, B_FILE_NODE);
+		};
+		
+		protocolDir.Unset();
+	};
+	
+	return result;
+};
+
+status_t im_protocol_get_account(const char *protocol, const char *account, BMessage *settings) {
+	BPath path;
+	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+
+	if (result == B_OK) {
+		path.Append("im_kit/add-ons/protocols");
+		path.Append(protocol);
+		path.Append(account);
+		
+		result = im_load_settings(path.Path(), settings);
+	}
+	
+	return result;
+};
+
+status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts) {
+	BPath path;
+	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+
+	if (result == B_OK) {
+		path.Append("im_kit/add-ons/protocols");
+		path.Append(protocol);
+		
+		BDirectory protocols(path.Path());
+		result = protocols.InitCheck();
+		
+		if (result == B_OK) {
+			protocols.Rewind();
+			
+			entry_ref account;
+			while (protocols.GetNextRef(&account) == B_OK) {
+				accounts->AddString("account", account.name);
+			};
+		};
+	};	
+
+	return result;
+};
+
 // CLIENT / PROTOCOL LIST
 
 static void

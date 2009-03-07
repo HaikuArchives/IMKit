@@ -29,6 +29,8 @@ Preference InstantMessaging :
 	PAccountsView.cpp
 	PAccountDialog.cpp
 	PUtils.cpp
+	SettingsController.cpp
+	ViewFactory.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) translation textencoding
 	  libim.so <IMKit>libcommon.a
 	: preflet.rdef

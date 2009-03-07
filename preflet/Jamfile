@@ -22,6 +22,8 @@ Executable InstantMessaging :
 	PAccountsView.cpp
 	PAccountDialog.cpp
 	PUtils.cpp
+	SettingsController.cpp
+	ViewFactory.cpp
 	: be stdc++.r4 translation textencoding libim.so libcommon.a
 	: preflet.rdef
 ;

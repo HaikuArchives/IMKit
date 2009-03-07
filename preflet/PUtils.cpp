@@ -28,8 +28,9 @@
 
 #include <libim/Helpers.h>
 
-#include "PUtils.h"
 #include "common/Divider.h"
+#include "PUtils.h"
+#include "ViewFactory.h"
 
 #ifdef ZETA
 #	include <locale/Locale.h>
@@ -43,9 +44,7 @@ const float kDividerWidth = 100;
 
 BubbleHelper gHelper;
 
-void
-CenterWindowOnScreen(BWindow* window)
-{
+void CenterWindowOnScreen(BWindow* window) {
 	BRect screenFrame = BScreen().Frame();
 	BPoint pt;
 
@@ -58,12 +57,6 @@ CenterWindowOnScreen(BWindow* window)
 
 
 float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view) {
-	printf("BuildGUI(%4.4s, %4.4s, %s, [%p])\n", &templ.what, &settings.what, viewName, view);
-printf("Template:\n");
-templ.PrintToStream();
-printf("Settings:\n");
-settings.PrintToStream();
-
 	BMessage curr;
 	float inset = ceilf(be_plain_font->Size() * 0.7);
 
@@ -128,6 +121,7 @@ settings.PrintToStream();
 		BMenu* menu = NULL;
 		BRect frame(0, 0, 1, 1);
 
+
 		if (name != NULL && strcmp(name,"app_sig") == 0) {
 			// skip app-sig setting
 			continue;
@@ -142,25 +136,29 @@ settings.PrintToStream();
 			case B_STRING_TYPE: {
 				if (curr.FindString("valid_value")) {
 					// It's a "select one of these" setting
-
 					freeText = false;
 
 					menu = new BPopUpMenu(name);		
-					for (int j = 0; curr.FindString("valid_value", j); j++)
+					for (int j = 0; curr.FindString("valid_value", j); j++) {
 						menu->AddItem(new BMenuItem(curr.FindString("valid_value", j), NULL));
+					};
 
 					value = settings.FindString(name);
-					if (value)
+					if (value) {
 						menu->FindItem(value)->SetMarked(true);
+					};
 				} else {
 					// It's a free-text setting
-					if (curr.FindBool("multi_line", &multiLine) != B_OK)
+					if (curr.FindBool("multi_line", &multiLine) != B_OK) {
 						multiLine = false;
+					};
 					value = settings.FindString(name);
-					if (!value)
+					if (!value) {
 						value = curr.FindString("default");
-					if (curr.FindBool("is_secret",&secret) != B_OK)
+					};
+					if (curr.FindBool("is_secret",&secret) != B_OK) {
 						secret = false;
+					};
 				}
 			} break;
 			case B_INT32_TYPE: {
@@ -174,8 +172,9 @@ settings.PrintToStream();
 					int32 def = 0;
 					status_t hasValue = settings.FindInt32(name, 0, &def);
 
-					if (hasValue != B_OK)
+					if (hasValue != B_OK) {
 						hasValue = curr.FindInt32("default", 0, &def);
+					};
 
 					int32 v = 0;
 					for (int j = 0; curr.FindInt32("valid_value",j,&v) == B_OK; j++) {
@@ -183,10 +182,11 @@ settings.PrintToStream();
 
 						BMenuItem* item = new BMenuItem(temp, NULL);
 
-						if (hasValue != B_OK && j == 0)
+						if (hasValue != B_OK && j == 0) {
 							item->SetMarked(true);
-						else if (hasValue == B_OK && def == v)
+						} else if ((hasValue == B_OK) && (def == v)) {
 							item->SetMarked(true);
+						};
 
 						menu->AddItem(item);
 					}
@@ -200,8 +200,9 @@ settings.PrintToStream();
 						sprintf(temp,"%ld", v);
 						value = temp;
 					}
-					if (curr.FindBool("is_secret",&secret) != B_OK)
+					if (curr.FindBool("is_secret",&secret) != B_OK) {
 						secret = false;
+					};
 				}
 			} break;
 			case B_BOOL_TYPE: {
@@ -217,15 +218,17 @@ settings.PrintToStream();
 				frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
 				control = new BCheckBox(frame, name, _T(desc), NULL);
-				if (active)
+				if (active) {
 					((BCheckBox*)control)->SetValue(B_CONTROL_ON);
+				};
 			} break;
 			default:
 				continue;
 		}
 
-		if (!value)
+		if (!value) {
 			value = "";
+		};
 
 		if (!control) {
 			if (freeText) {
@@ -274,25 +277,23 @@ settings.PrintToStream();
 			}
 		}
 
-		if (curr.FindString("help"))
+		if (curr.FindString("help")) {
 			gHelper.SetHelp(control, strdup(curr.FindString("help")));
+		};
 
 #ifdef __HAIKU__
 		layout.Add(control);
 #else
-printf("Adding child: [%p]\n", control);
 		view->AddChild(control);
 
 		float h, w = 0;
 		control->GetPreferredSize(&w, &h);
 		control->MoveTo(kEdgeOffset + xOffset, yOffset);
-printf("\tMoved to (%.2f, %.2f)\n", kEdgeOffset + xOffset, yOffset);
 
 		yOffset += kControlOffset + h;
 		xOffset = 0;
-		
 #endif
-	}
+	};
 
 #ifdef __HAIKU__
 	layout.AddGlue();
@@ -306,3 +307,64 @@ printf("\tMoved to (%.2f, %.2f)\n", kEdgeOffset + xOffset, yOffset);
 	return yOffset;
 #endif
 }
+
+status_t SaveSettings(BView *panel, BMessage tmplate, BMessage *settings) {
+	BMessage cur;
+		
+	for (int i = 0; tmplate.FindMessage("setting", i, &cur) == B_OK; i++) {
+		const char *name = cur.FindString("name");
+		int32 type = -1;
+		
+		cur.FindInt32("type", &type);
+		
+		if (dynamic_cast<BTextControl*>(panel->FindView(name))) { 
+//			Free text
+			BTextControl * ctrl = (BTextControl*)panel->FindView(name);
+		
+			switch (type) {
+				case B_STRING_TYPE: {
+					settings->AddString(name, ctrl->Text() );
+				} break;
+				case B_INT32_TYPE: {
+					settings->AddInt32(name, atoi(ctrl->Text()) );
+				} break;
+				default: {
+					return B_ERROR;
+				};
+			};
+		} else if (dynamic_cast<BMenuField*>(panel->FindView(name))) {
+//			Provided option
+			BMenuField * ctrl = (BMenuField*)panel->FindView(name);
+			BMenuItem * item = ctrl->Menu()->FindMarked();
+			
+			if (!item) return B_ERROR;
+			
+			switch (type) {
+				case B_STRING_TYPE: {
+					settings->AddString(name, item->Label() );
+				} break;
+				case  B_INT32_TYPE: {
+					settings->AddInt32(name, atoi(item->Label()) );
+				} break;
+				default: {
+					return B_ERROR;
+				};
+			}
+		} else
+		if (dynamic_cast<BCheckBox*>(panel->FindView(name))) {
+// 			Boolean setting
+			BCheckBox * box = (BCheckBox*)panel->FindView(name);
+			
+			if ( box->Value() == B_CONTROL_ON ) {
+				settings->AddBool(name,true);
+			} else {
+				settings->AddBool(name,false);
+			}
+		} else if (dynamic_cast<BTextView *>(panel->FindView(name))) {
+			BTextView *view = (BTextView *)panel->FindView(name);
+			settings->AddString(name, view->Text());
+		};
+	};
+	
+	return B_OK;
+};

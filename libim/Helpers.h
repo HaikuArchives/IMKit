@@ -49,6 +49,12 @@ extern status_t im_save_protocol_template( const char * protocol, const BMessage
 extern status_t im_save_client_settings( const char * client, const BMessage * settings );
 extern status_t im_save_client_template( const char * client, const BMessage * tmplate );
 
+extern status_t im_protocol_add_account(const char *protocol, const char *account, const BMessage *settings);
+extern status_t im_protocol_delete_account(const char *protocol, const char *account);
+extern bool im_protocol_has_account(const char *protocol, const char *account);
+extern status_t im_protocol_get_account(const char *protocol, const char *account, BMessage *settings);
+extern status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts);
+
 /*
 	Returns a message containing string(s) named "protocol" with the name of the protocols
 */

@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include "SettingsController.h"
+
 class Divider;
 class MultipleViewHandler;
 class MultiLineStringView;
@@ -18,7 +20,7 @@ class ClientInfo;
 
 typedef vector<ClientInfo *> clientinfo_t;
 
-class PClientsOverview : public BView {
+class PClientsOverview : public BView, public SettingsController  {
 	public:
 							PClientsOverview(MultipleViewHandler *handler, BRect bounds);
 	

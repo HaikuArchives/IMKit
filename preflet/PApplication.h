@@ -9,17 +9,16 @@
 
 class PWindow;
 
-class PApplication : public BApplication
-{
+class PApplication : public BApplication {
 	public:
-				PApplication();
+							PApplication();
 
-		virtual bool	QuitRequested();
-
-		virtual void	ReadyToRun();
+		// BApplication Hooks
+		virtual bool		QuitRequested();
+		virtual void		ReadyToRun();
 
 	private:
-		PWindow*	fWindow;
+		PWindow				*fWindow;
 };
 
 #endif // PAPPLICATION_H
