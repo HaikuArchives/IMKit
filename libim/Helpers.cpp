@@ -442,16 +442,43 @@ im_save_client_template( const char * client, const BMessage * msg )
 	return im_save_template( path.Path(), msg );
 }
 
-status_t im_protocol_add_account(const char *protocol, const char *account, const BMessage *settings) {
+status_t create_protocol_settings_directory(const char *protocol) {
 	BPath path;
 	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
 
 	if (result == B_OK) {
 		path.Append("im_kit/add-ons/protocols");
-		path.Append(protocol);
-		path.Append(account);
+
+		BDirectory dir(path.Path());
+		result = dir.InitCheck();
+
+		if (result == B_OK) {
+			if (dir.Contains(protocol, B_DIRECTORY_NODE) == false) {
+				result = dir.CreateDirectory(protocol, NULL);
+			};
+			
+			dir.Unset();
+		};
+	}
+	
+	return result;
+};
+
+status_t im_protocol_add_account(const char *protocol, const char *account, const BMessage *settings) {
+	BPath path;
+
+	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+
+	if (result == B_OK) {
+		result = create_protocol_settings_directory(protocol);
 		
-		result = im_save_settings(path.Path(), settings);
+		if (result == B_OK) {
+			path.Append("im_kit/add-ons/protocols");
+			path.Append(protocol);
+			path.Append(account);
+		
+			result = im_save_settings(path.Path(), settings);
+		};
 	};
 
 	return result;
@@ -512,18 +539,23 @@ status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts) 
 	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
 
 	if (result == B_OK) {
-		path.Append("im_kit/add-ons/protocols");
-		path.Append(protocol);
-		
-		BDirectory protocols(path.Path());
-		result = protocols.InitCheck();
+		result = create_protocol_settings_directory(protocol);
 		
 		if (result == B_OK) {
-			protocols.Rewind();
+			path.Append("im_kit/add-ons/protocols");
+			path.Append(protocol);
 			
-			entry_ref account;
-			while (protocols.GetNextRef(&account) == B_OK) {
-				accounts->AddString("account", account.name);
+			BDirectory protocols(path.Path());
+			result = protocols.InitCheck();
+			
+			if (result == B_OK) {
+				protocols.Rewind();
+				
+				entry_ref account;
+				while (protocols.GetNextRef(&account) == B_OK) {
+					accounts->AddString("account", account.name);
+					accounts->AddRef("settings_path", &account);
+				};
 			};
 		};
 	};	
