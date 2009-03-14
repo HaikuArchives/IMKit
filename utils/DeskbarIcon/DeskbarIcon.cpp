@@ -27,6 +27,9 @@
 
 const char *kTrackerQueryVolume = "_trk/qryvol1";
 const char *kTrackerQueryPredicate = "_trk/qrystr";
+const int8 kStatusOnline = 0;
+const int8 kStatusAway = 1;
+const int8 kStatusOffline = 2;
 
 //#pragma mark Extern C
 
@@ -121,7 +124,7 @@ void IM_DeskbarIcon::_init() {
 
 	// Initial icon is the Offline icon
 	fCurrIcon = fModeIcon = fOfflineIcon;
-	fStatus = 2;
+	fStatus = kStatusOffline;
 
 	fFlashCount = 0;
 	fBlink = 0;
@@ -189,7 +192,7 @@ void IM_DeskbarIcon::getProtocolStates() {
 		const char *status = NULL;
 		const char *account = NULL;
 		
-		if (protStatus.FindString("protocol",i, &protocol) == B_OK) != B_OK) protocol = "";
+		if (protStatus.FindString("protocol",i, &protocol) != B_OK) protocol = "";
 		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) userfriendly = "";
 		if (protStatus.FindString("status", i, &status) != B_OK) status = "";
 		if (protStatus.FindString("account_name", i, &account) != B_OK) account = "";
@@ -199,19 +202,17 @@ void IM_DeskbarIcon::getProtocolStates() {
 		
 		fTipText << "\n  " << userfriendly << ": " << _T(status) << "";
 		
-		if ((fStatus > 0) && (strcmp(status, ONLINE_TEXT) == 0)) fStatus = 0;
-		if ((fStatus > 1) && (strcmp(status, AWAY_TEXT) == 0)) fStatus = 1;
+		if ((fStatus > kStatusOnline) && (strcmp(status, ONLINE_TEXT) == 0)) fStatus = kStatusOnline;
+		if ((fStatus > kStatusAway) && (strcmp(status, AWAY_TEXT) == 0)) fStatus = kStatusAway;
 	}
 
 	LOG("deskbar", liDebug, "Initial status: %i	", fStatus);
 	
 	switch (fStatus) {
-//		Online
-		case 0: {
+		case kStatusOnline: {
 			fCurrIcon = fModeIcon = fOnlineIcon;
 		} break;
-//		Away
-		case 1: {
+		case kStatusAway: {
 			fCurrIcon = fModeIcon = fAwayIcon;
 		} break;
 		default: {
@@ -368,15 +369,15 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 								
 					LOG("deskbar", liMedium, "Status set to %s", status);
 					if (strcmp(status, ONLINE_TEXT) == 0) {
-						fStatus = 0;
+						fStatus = kStatusOnline;
 						fModeIcon = fOnlineIcon;
 					};
 					if (strcmp(status, AWAY_TEXT) == 0) {
-						fStatus = 1;
+						fStatus = kStatusAway;
 						fModeIcon = fAwayIcon;
 					};
 					if (strcmp(status, OFFLINE_TEXT) == 0) {
-						fStatus = 2;
+						fStatus = kStatusOffline;
 						fModeIcon = fOfflineIcon;
 					};
 					
@@ -523,21 +524,6 @@ void IM_DeskbarIcon::MouseMoved(BPoint /*point*/, uint32 transit, const BMessage
 				
 				getProtocolStates(); // updates tip text
 				
-/*				BMessage protStatus;
-				man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus);
-				
-				fTipText = _T("Online Status:");
-				for (int i = 0; protStatus.FindString("protocol",i); i++ ) {
-					const char *protocol = protStatus.FindString("protocol",i);
-					const char *status = protStatus.FindString("status", i);
-	
-					fStatuses[protocol] = status;
-	
-					fTipText << "\n  " << protocol << ": " << _T(status) << "";
-					
-					LOG("deskbar", liDebug, "Protocol status: %s is %s", protocol, status );
-				}
-*/				
 				fDirtyStatus = false;
 			}
 		}
@@ -562,7 +548,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 		
 		if ( !BMessenger(IM_SERVER_SIG).IsValid() )
 		{ // im_server not running!
-			fStatus = 2;
+			fStatus = kStatusOffline;
 			fModeIcon = fOfflineIcon;
 			
 			LOG("deskbar", liDebug, "Build menu: im_server not running");
