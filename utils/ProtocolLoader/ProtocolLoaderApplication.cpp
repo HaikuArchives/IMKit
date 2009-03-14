@@ -9,18 +9,19 @@
 
 //#pragma mark Constructors
 
-ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Protocol *protocol,
-	const char* path, BMessage settings)
-	
+ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Protocol *protocol, const char* path, BMessage settings, const char *accountName)	
 	: BApplication(IM_PROTOCOL_LOADER_SIG),
 	fInstanceID(instanceID),
 	fProtocol(protocol),
 	fProtoName(path),
 	fSettings(settings),
+	fAccountName(accountName),
 	fManager(NULL) {
 
 	if (protocol != NULL) {
-		rename_thread(find_thread(NULL), fProtocol->GetFriendlySignature());
+		BString name = fProtocol->GetFriendlySignature();
+		name << " (" << fAccountName << ")";
+		rename_thread(find_thread(NULL), name.String());
 	};
 };
 
@@ -40,6 +41,7 @@ void ProtocolLoaderApplication::ReadyToRun(void) {
 	BMessage reg(IM::Private::PROTOCOL_STARTED);
 	reg.AddString("instance_id", fInstanceID);
 	reg.AddString("signature", fProtocol->GetSignature());
+	
 	reg.AddString("friendly_signature", fProtocol->GetFriendlySignature());
 	reg.AddInt32("capabilities", fProtocol->Capabilities());
 	reg.AddInt32("encoding", fProtocol->GetEncoding());

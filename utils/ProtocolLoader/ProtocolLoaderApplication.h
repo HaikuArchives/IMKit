@@ -13,8 +13,7 @@ using namespace IM;
 
 class ProtocolLoaderApplication : public BApplication {
 	public:
-								ProtocolLoaderApplication(const char *instanceID,
-									Protocol *protocol, const char* path, BMessage settings);
+								ProtocolLoaderApplication(const char *instanceID, Protocol *protocol, const char* path, BMessage settings, const char *accountName);
 								~ProtocolLoaderApplication(void);
 	
 		// BApplication Hooks
@@ -25,8 +24,9 @@ class ProtocolLoaderApplication : public BApplication {
 	private:
 		BString					fInstanceID;
 		Protocol				*fProtocol;
-		BString                                 fProtoName;
+		BString					fProtoName;
 		BMessage				fSettings;
+		BString					fAccountName;
 		
 		Manager					*fManager;
 };

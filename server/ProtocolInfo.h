@@ -12,7 +12,7 @@ namespace IM {
 
 	class ProtocolInfo {
 		public:
-							ProtocolInfo(BPath path, BPath settings);
+							ProtocolInfo(BPath path, BPath settings, const char *account);
 							~ProtocolInfo(void);
 						
 			// Accessor Methods
@@ -20,6 +20,7 @@ namespace IM {
 			BPath			SettingsPath(void);
 			const char		*InstanceID(void);
 			thread_id		ThreadID(void);
+			const char		*AccountName(void);
 
 			const char		*Signature(void);
 			void			Signature(const char *signature);
@@ -53,6 +54,7 @@ namespace IM {
 			BString			fInstanceID;
 			BPath			fPath;
 			BPath			fSettingsPath;
+			BString			fAccountName;
 
 			BString			fSignature;
 			BString			fFriendlySignature;

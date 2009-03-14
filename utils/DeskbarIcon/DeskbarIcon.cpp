@@ -23,35 +23,32 @@
 #define _T(str) (str)
 #endif
 
+//#pragma mark Constants
+
 const char *kTrackerQueryVolume = "_trk/qryvol1";
 const char *kTrackerQueryPredicate = "_trk/qrystr";
 
+//#pragma mark Extern C
+
 extern "C" {
-
-BView *
-instantiate_deskbar_item()
-{
-	LOG("deskbar", liHigh, "IM: Instantiating Deskbar item");
-	return new IM_DeskbarIcon();
-}
-
+	BView *instantiate_deskbar_item() {
+		LOG("deskbar", liHigh, "IM: Instantiating Deskbar item");
+		return new IM_DeskbarIcon();
+	}
 }
 
 //#pragma mark -
 
-BArchivable *
-IM_DeskbarIcon::Instantiate( BMessage * archive )
-{
-	if ( !validate_instantiation(archive,"IM_DeskbarIcon") )
-	{
+BArchivable *IM_DeskbarIcon::Instantiate(BMessage * archive) {
+	if (!validate_instantiation(archive,"IM_DeskbarIcon")) {
 		LOG("deskbar", liHigh, "IM_DeskbarIcon::Instantiate(): Invalid archive");
 		return NULL;
-	}
+	};
 	
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::Instantiate() ok");
 	
 	return new IM_DeskbarIcon(archive);
-}
+};
 
 
 IM_DeskbarIcon::IM_DeskbarIcon()
@@ -59,14 +56,14 @@ IM_DeskbarIcon::IM_DeskbarIcon()
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::IM_DeskbarIcon()");
 
 	_init();
-}
+};
 
 IM_DeskbarIcon::IM_DeskbarIcon(BMessage * archive)
 	: BView(archive) {
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::IM_DeskbarIcon(BMessage*)");
 
 	_init();
-}
+};
 
 IM_DeskbarIcon::~IM_DeskbarIcon() {
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::~IM_DeskbarIcon()");
@@ -76,43 +73,51 @@ IM_DeskbarIcon::~IM_DeskbarIcon() {
 	delete fOnlineIcon;
 	delete fOfflineIcon;
 	delete fGenericIcon;
-	if ( fMsgRunner )
-		delete fMsgRunner;
-}
 
-void
-IM_DeskbarIcon::_init() {
+	if (fMsgRunner) {
+		delete fMsgRunner;
+	};
+};
+
+void IM_DeskbarIcon::_init() {
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::_init()");
 
 	image_info info;
-	if (our_image(info) != B_OK)
+	if (our_image(info) != B_OK) {
 		return;
+	};
 
 	BFile file(info.name, B_READ_ONLY);
-	if (file.InitCheck() < B_OK)
+	if (file.InitCheck() < B_OK) {
 		return;
+	};
 
 	BResources resources(&file);
 #ifdef __HAIKU__
-	if (resources.InitCheck() < B_OK)
+	if (resources.InitCheck() < B_OK) {
 		return;
+	};
 #endif
 
 	fAwayIcon = GetIconFromResources(&resources, kDeskbarAwayIcon, B_MINI_ICON);
-	if (fAwayIcon == NULL)
+	if (fAwayIcon == NULL) {
 		LOG("deskbar", liHigh, "Error loading fAwayIcon");
+	};
 
 	fOnlineIcon = GetIconFromResources(&resources, kDeskbarOnlineIcon, B_MINI_ICON);
-	if (fOnlineIcon == NULL)
+	if (fOnlineIcon == NULL) {
 		LOG("deskbar", liHigh, "Error loading fOnlineIcon");
+	};
 
 	fOfflineIcon = GetIconFromResources(&resources, kDeskbarOfflineIcon, B_MINI_ICON);
-	if (fOfflineIcon == NULL)
+	if (fOfflineIcon == NULL) {
 		LOG("deskbar", liHigh, "Error loading fOfflineIcon");
+	};
 
 	fGenericIcon = GetIconFromResources(&resources, kDeskbarGenericIcon, B_MINI_ICON);
-	if (fGenericIcon == NULL)
+	if (fGenericIcon == NULL) {
 		LOG("deskbar", liHigh, "Error loading fGenericIcon");
+	};
 
 	// Initial icon is the Offline icon
 	fCurrIcon = fModeIcon = fOfflineIcon;
@@ -159,29 +164,36 @@ IM_DeskbarIcon::_init() {
 	 * install location, but this is quite ugly.
 	 */
 	BPath path( "/boot/apps/Internet/IMKit/Language/Dictionaries/im_server" );
-	if( path.InitCheck() == B_OK )
-		be_locale.LoadLanguageFile( path.Path() );
+	if (path.InitCheck() == B_OK) {
+		be_locale.LoadLanguageFile(path.Path());
+	};
 #endif
-}
+};
 
-void
-IM_DeskbarIcon::getProtocolStates()
-{
+void IM_DeskbarIcon::getProtocolStates() {
 	BMessage protStatus;
-	fStatuses.clear();
 	IM::Manager man;
-	if ( man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK )
-	{
+	
+	if (man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK) {
 		LOG("deskbar", liHigh, "Error getting statuses");
-	}
+	};
+
+	fStatuses.clear();
 
 	fTipText = "Online Status:";
 	
-	for ( int i=0; protStatus.FindString("protocol",i); i++ ) {
-		const char *protocol = protStatus.FindString("protocol",i);
-		const char *userfriendly = protStatus.FindString("userfriendly",i);
-		const char *status = protStatus.FindString("status", i);
+	BString instanceID;
+	for (int32 i = 0; protStatus.FindString("instance_id", i, &instanceID) == B_OK; i++) {
+		const char *protocol = NULL;
+		const char *userfriendly = NULL;
+		const char *status = NULL;
+		const char *account = NULL;
 		
+		if (protStatus.FindString("protocol",i, &protocol) == B_OK) != B_OK) protocol = "";
+		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) userfriendly = "";
+		if (protStatus.FindString("status", i, &status) != B_OK) status = "";
+		if (protStatus.FindString("account_name", i, &account) != B_OK) account = "";
+
 		fStatuses[protocol] = status;
 		fFriendlyNames[protocol] = userfriendly;
 		
@@ -206,27 +218,21 @@ IM_DeskbarIcon::getProtocolStates()
 			fCurrIcon = fModeIcon =  fOfflineIcon;
 		};
 	};
-}
+};
 
-void
-IM_DeskbarIcon::Draw( BRect /*rect*/ )
-{
+void IM_DeskbarIcon::Draw(BRect /*rect*/) {
 	SetHighColor( Parent()->ViewColor() );
 	FillRect( Bounds() );
 	
-	if ( fCurrIcon )
-	{
-		DrawBitmap( fCurrIcon, BPoint(0,0) );
-	} else
-	{
+	if (fCurrIcon != NULL) {
+		DrawBitmap(fCurrIcon, BPoint(0,0));
+	} else {
 		SetHighColor(255,0,0);
 		FillRect( Bounds() );
-	}
-}
+	};
+};
 
-status_t
-IM_DeskbarIcon::Archive( BMessage * msg, bool deep ) const
-{
+status_t IM_DeskbarIcon::Archive(BMessage * msg, bool deep) const {
 	LOG("deskbar", liHigh, "IM_DeskbarIcon::Archive()");
 	
 	status_t res = BView::Archive(msg,deep);
@@ -237,88 +243,80 @@ IM_DeskbarIcon::Archive( BMessage * msg, bool deep ) const
 	msg->AddString("class", "IM_DeskbarIcon");
 	
 	return res;
-}
+};
 
-void
-IM_DeskbarIcon::MessageReceived( BMessage * msg )
-{
-	switch ( msg->what )
-	{
-		case IM::SETTINGS_UPDATED:
-		{ // settings have been updated, reload from im_server
+void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
+	switch (msg->what) {
+		case IM::SETTINGS_UPDATED: {
+			// settings have been updated, reload from im_server
 			reloadSettings();
-		}	break;
+		} break;
 		
-		case 'blnk':
-		{ // blink icon
-			BBitmap * oldIcon = fCurrIcon;
+		case 'blnk': {
+			// blink icon
+			BBitmap *oldIcon = fCurrIcon;
 			
-			if ( (fFlashCount > 0) && ((fBlink++ % 2) || !fShouldBlink))
-			{
+			if ((fFlashCount > 0) && ((fBlink++ % 2) || !fShouldBlink)) {
 				fCurrIcon = fGenericIcon;
-			} else
-			{
+			} else {
 				fCurrIcon = fModeIcon;
-			}
+			};
 			
-			if ( oldIcon != fCurrIcon )
+			if (oldIcon != fCurrIcon) {
 				Invalidate();
-		}	break;
+			};
+		} break;
 		
-		case IM::FLASH_DESKBAR:
-		{
+		case IM::FLASH_DESKBAR: {
 			BMessenger msgr;
-			if ( msg->FindMessenger("messenger", &msgr) == B_OK )
-			{
-				fMsgrs.push_back( msgr );
-			}
+			if (msg->FindMessenger("messenger", &msgr) == B_OK) {
+				fMsgrs.push_back(msgr);
+			};
 			
 			fFlashCount++;
 			fBlink = 0;
-			if ( !fMsgRunner )
-			{
+			
+			if (fMsgRunner == NULL)	{
 				BMessage msg('blnk');
-				fMsgRunner = new BMessageRunner( BMessenger(this), &msg, 200*1000 );
-			}
+				fMsgRunner = new BMessageRunner(BMessenger(this), &msg, 200 * 1000);
+			};
+			
 			LOG("deskbar", liDebug, "IM: fFlashCount: %ld", fFlashCount);
-		}	break;
-		case IM::STOP_FLASHING:
-		{	
+		} break;
+		case IM::STOP_FLASHING: {	
 			BMessenger msgr;
-			if ( msg->FindMessenger("messenger", &msgr) == B_OK )
-			{
-				fMsgrs.remove( msgr );
-			}
+			if (msg->FindMessenger("messenger", &msgr) == B_OK) {
+				fMsgrs.remove(msgr);
+			};
 			
 			fFlashCount--;
 			LOG("deskbar", liDebug, "IM: fFlashCount: %ld", fFlashCount);
 			
-			if ( fFlashCount == 0 )
-			{
-				if ( fMsgRunner ) delete fMsgRunner;
+			if (fFlashCount == 0) {
+				if (fMsgRunner != NULL) delete fMsgRunner;
 				fMsgRunner = NULL;
 				fCurrIcon = fModeIcon;
 				Invalidate();
-			}
+			};
 			
-			if ( fFlashCount < 0 )
-			{
+			if (fFlashCount < 0) {
 				fFlashCount = 0;
 				LOG("deskbar", liMedium, "IM: fFlashCount below zero, fixing");
-			}
-		}	break;
+			};
+		} break;
 		
-		case SET_STATUS:
-		{
-//			BMenuItem *item = NULL;
-
-			const char *protocol = msg->FindString("protocol");
-			const char *status = msg->FindString("status");
+		case SET_STATUS: {
+			const char *status = NULL;
+			const char *protocol = NULL;
 			
-			if ( !status ) {
+			if (msg->FindString("status", &status) != B_OK) {
 				LOG("deskbar", liDebug, "No 'status' in SET_STATUS message", msg);
 				return;
-			}
+			};
+
+			if (msg->FindString("protocol", &protocol) != B_OK) {
+				protocol = NULL;
+			};
 			
 			if (strcmp(AWAY_TEXT, status) == 0) {
 				AwayMessageWindow *w = new AwayMessageWindow(protocol);
@@ -329,7 +327,9 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 			BMessage newmsg(IM::MESSAGE);
 			newmsg.AddInt32("im_what", IM::SET_STATUS);
 			
-			if ( protocol != NULL ) newmsg.AddString("protocol", protocol);
+			if (protocol != NULL) {
+				newmsg.AddString("protocol", protocol);
+			};
 			
 			newmsg.AddString("status", status);
 			
@@ -338,7 +338,7 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 			
 			IM::Manager man;
 			man.SendMessage(&newmsg);
-		}	break;
+		} break;
 		
 		case CLOSE_IM_SERVER: {
 			LOG("deskbar", liHigh, "Got Quit message");
@@ -350,10 +350,9 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 			be_roster->Launch(IM_SERVER_SIG);
 		} break;
 		
-		case OPEN_SETTINGS:
-		{
+		case OPEN_SETTINGS: {
 			be_roster->Launch("application/x-vnd.beclan-IMKitPrefs");
-		}	break;
+		} break;
 		
 		case IM::MESSAGE: {
 			int32 im_what;
@@ -371,7 +370,7 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 					if (strcmp(status, ONLINE_TEXT) == 0) {
 						fStatus = 0;
 						fModeIcon = fOnlineIcon;
-					}
+					};
 					if (strcmp(status, AWAY_TEXT) == 0) {
 						fStatus = 1;
 						fModeIcon = fAwayIcon;
@@ -390,8 +389,6 @@ IM_DeskbarIcon::MessageReceived( BMessage * msg )
 		case B_NODE_MONITOR: {
 			int32 opcode;
 			if (msg->FindInt32("opcode", &opcode) == B_OK) {
-				msg->PrintToStream();
-
 				switch (opcode) {
 					case B_ENTRY_CREATED: {
 						AddQueryRef(msg);
@@ -613,7 +610,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			getProtocolStates();
 			
 			LOG("deskbar", liDebug, "separate protocols");
-			
+
 			for (it = fStatuses.begin(); it != fStatuses.end(); it++) {
 				string name = (*it).first;
 				BMenu *protocol = new BMenu(fFriendlyNames[name].c_str());

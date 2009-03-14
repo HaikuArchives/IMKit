@@ -11,9 +11,10 @@ extern char **environ;
 
 //#pragma mark Constructor
 
-ProtocolInfo::ProtocolInfo(BPath path, BPath settings)
+ProtocolInfo::ProtocolInfo(BPath path, BPath settings, const char *account)
 	: fPath(path),
 	fSettingsPath(settings),
+	fAccountName(account),
 	fSignature(""),
 	fFriendlySignature(""),
 	fCapabilities(0),
@@ -21,11 +22,11 @@ ProtocolInfo::ProtocolInfo(BPath path, BPath settings)
 	fThreadID(B_ERROR),
 	fMessenger(NULL),
 	fAllowRestart(false) {
-
 	
 	fInstanceID = fPath.Path();
 	fInstanceID << "->";
 	fInstanceID << fSettingsPath.Path();
+	fInstanceID << " (" << fAccountName << ")";
 };
 
 ProtocolInfo::~ProtocolInfo(void) {
@@ -48,6 +49,10 @@ const char *ProtocolInfo::InstanceID(void) {
 
 thread_id ProtocolInfo::ThreadID(void) {
 	return fThreadID;
+};
+
+const char *ProtocolInfo::AccountName(void) {
+	return fAccountName.String();
 };
 
 const char *ProtocolInfo::Signature(void) {
@@ -132,10 +137,11 @@ status_t ProtocolInfo::Start(const char *loader) {
 		fInstanceID.String(),		// Instance ID
 		fPath.Path(),				// Path to Protocol Addon
 		fSettingsPath.Path(),		// Path to settings
+		fAccountName.String(),
 		NULL
 	};
 
-	fThreadID = load_image(4, arguments, (const char **)environ);
+	fThreadID = load_image(5, arguments, (const char **)environ);
 
 	if (fThreadID > B_ERROR) {
 		resume_thread(fThreadID);

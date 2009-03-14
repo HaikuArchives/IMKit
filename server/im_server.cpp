@@ -2527,6 +2527,9 @@ void Server::reply_GET_OWN_STATUSES(BMessage *msg) {
 
 		reply.AddString("protocol", info->Signature());
 		reply.AddString("status", fStatus[info->Signature()].c_str());
+		reply.AddString("account_name", info->AccountName());
+		reply.AddString("instance_id", info->InstanceID());
+		reply.AddString("userfriendly", info->FriendlySignature());
 	};
 
 	sendReply(msg,&reply);

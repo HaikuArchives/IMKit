@@ -2,6 +2,7 @@
 #include "ProtocolInfo.h"
 #include "ProtocolSpecification.h"
 
+#include "common/GenericStore.h"
 #include "Private/Constants.h"
 
 #include <app/Roster.h>
@@ -19,54 +20,11 @@
 
 using namespace IM;
 
-class IM::ProtocolStore {
-	public:
-		ProtocolStore(void) {
-		};
-		
-		~ProtocolStore(void) {
-			Clear();
-		};
-		
-	
-		void Add(BString key, ProtocolInfo *info) {
-			fStore[key] = info;
-		};
-		
-		bool Contains(BString key) {
-			return (fStore.find(key) != fStore.end());
-		};
-		
-		ProtocolInfo *Find(BString key) {
-			ProtocolInfo *info = NULL;
-			map<BString, ProtocolInfo *>::iterator it = fStore.find(key);
+//#pragma mark Constants
 
-			if (it != fStore.end()) {
-				info = it->second;
-			};
-			
-			return info;
-		};
-				
-		void Clear(void) {
-			map<BString, ProtocolInfo *>::iterator it;
-			
-			for (it = Start(); it != End(); it++) {
-				delete it->second;
-			};
-			
-			fStore.clear();
-		};
-		
-		map<BString, ProtocolInfo *>::iterator Start() {
-			return fStore.begin();
-		};
-		map<BString, ProtocolInfo *>::iterator End() {
-			return fStore.end();
-		};
+const bigtime_t kQueryDelay = 5 * 1000 * 1000;	// 5 Seconds
 
-	private:
-		map<BString, ProtocolInfo *> fStore;
+class IM::ProtocolStore : public IM::GenericStore<BString, ProtocolInfo> {
 };
 
 //#pragma mark Constructor
@@ -87,7 +45,7 @@ ProtocolManager::ProtocolManager(void)
 		vroster.Rewind();
 
 		while (vroster.GetNextVolume(&volume) == B_OK) {
-			if ((volume.InitCheck() != B_OK) || (!volume.KnowsQuery()))
+			if ((volume.InitCheck() != B_OK) || (volume.KnowsQuery() == false))
 				continue;
 
 			volume.GetName(volName);
@@ -98,8 +56,16 @@ ProtocolManager::ProtocolManager(void)
 			query->SetVolume(&volume);
 			query->Fetch();
 
-			if (query->GetNextRef(&ref) == B_OK)
+			if (query->GetNextRef(&ref) == B_OK) {
 				break;
+			}
+			
+			LOG("im_server", liHigh, "Unable to find ProtocolLoader - waiting before retrying\n");
+			snooze(kQueryDelay);
+				
+			if (query->GetNextRef(&ref) == B_OK) {			
+				break;
+			};
 		}
 	}
 	fLoaderPath = BPath(&ref);
@@ -131,15 +97,27 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 	
 			BPath addonPath;
 			entry.GetPath(&addonPath);
-			
 			BPath settingsPath(&settings, addonPath.Leaf());
 			
-			ProtocolInfo *info = new ProtocolInfo(addonPath, settingsPath);
-			fProtocol->Add(info->InstanceID(), info);
+			BMessage accounts;
+			BString account;
+			im_protocol_get_account_list(addonPath.Leaf(), &accounts);
 
-			LOG("im_server", liMedium, "Loading protocol from %s (%s)", fLoaderPath.Path(),
-				settingsPath.Path());
-			info->Start(fLoaderPath.Path());
+			for (int32 i = 0; accounts.FindString("account", i, &account) == B_OK; i++) {
+				entry_ref accountSettings;
+				
+				if (accounts.FindRef("settings_path", i, &accountSettings) != B_OK) {
+					LOG("im_server", liHigh, "%s - %s does not have a settings path", settingsPath.Leaf(), account.String());
+					continue;
+				};
+				
+				BPath accountSettingsPath(&accountSettings);
+				ProtocolInfo *info = new ProtocolInfo(addonPath, accountSettingsPath, account.String());
+				fProtocol->Add(info->InstanceID(), info);
+	
+				LOG("im_server", liMedium, "Loading protocol from %s (%s): %s", fLoaderPath.Path(), settingsPath.Path(), account.String());
+				info->Start(fLoaderPath.Path());
+			};
 		};
 	};
 	

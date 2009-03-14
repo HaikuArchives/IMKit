@@ -54,18 +54,19 @@ void SendNoStartMessage(const char *instanceID, const char *reason) {
 
 int main(int argc, char *argv[]) {
 	// Check that we have a protocol path
-	if (argc < 4) {
-		LOG(kApplicationName, liHigh, "Incorrect usage of ProtocolLoader. Correct usage is: %s {instance identifier} {path to protocol to load} {path to settings file} [{true to allow debug_server to launch}]", argv[0]);
+	if (argc < 5) {
+		LOG(kApplicationName, liHigh, "Incorrect usage of ProtocolLoader. Correct usage is: %s {instance identifier} {path to protocol to load} {path to settings file} {account name} [{true to allow debug_server to launch}]", argv[0]);
 		return B_ERROR;
 	};
 	
 	gInstanceID = argv[1];
 	BPath path(argv[2]);
 	BNode settingsNode(argv[3]);
+	BString accountName(argv[4]);
 	bool allowDebugServer = false;
 	status_t result = settingsNode.InitCheck();
 	
-	if ((argc > 4) && (strcmp(argv[4], "true") == 0)) {
+	if ((argc > 5) && (strcmp(argv[5], "true") == 0)) {
 		allowDebugServer = true;
 	};
 	
@@ -150,7 +151,7 @@ int main(int argc, char *argv[]) {
 		sigaction(SIGSEGV, &killedAction, NULL);
 	};
 
-	ProtocolLoaderApplication app(gInstanceID.String(), protocol, path.Path(), settings);
+	ProtocolLoaderApplication app(gInstanceID.String(), protocol, path.Path(), settings, accountName.String());
 	app.Run();
 	
 	return B_OK;
