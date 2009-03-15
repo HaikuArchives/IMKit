@@ -176,36 +176,41 @@ echo $copyattrbin
 # Check for OpenSSL headers
 echo -n "Checking for OpenSSL headers..."
 if [ -f $common_devdir/headers/openssl/ssl.h -o \
-     -f $user_confdir/include/openssl/ssl.h ]; then
+     -f $user_confdir/include/openssl/ssl.h -o \
+     -f $common_incdir/openssl/ssl.h ]; then
 	echo "found"
 	[ -f $common_devdir/headers/openssl/ssl.h ] && ssl_incdir=$common_devdir/headers
 	[ -f $user_confdir/include/openssl/ssl.h ] && ssl_incdir=$user_confdir/include
+	[ -f $common_incdir/openssl/ssl.h ] && ssl_incdir=$common_incdir
 	have_openssl=1
 else
 	echo "not found"
 	have_openssl=0
 fi
 
-# Check for OpenSSL libraries
-echo -n "Checking for OpenSSL libraries..."
-if [ -f $user_confdir/lib/libssl.so -a \
-     -f $user_confdir/lib/libcrypto.so ]; then
-	echo "found"
-	ssl_libdir=$user_confdir/lib
-	have_openssl=1
-elif [ -f $beos_sysdir/lib/libssl.so -a \
-     -f $beos_sysdir/lib/libcrypto.so ]; then
-	echo "found"
-	ssl_libdir=$beos_sysdir/lib
-	have_openssl=1
-elif [ -f $common_libdir/libssl.so -a \
-     -f $common_libdir/libcrypto.so ]; then
-	echo "found"
-	ssl_libdir=$common_libdir
-	have_openssl=1
-else
-	echo "not found"
-	have_openssl=0
+# Check for OpenSSL libraries only if we have headers too
+if [ $have_openssl -eq 1 ]; then
+	# Check for OpenSSL libraries
+	echo -n "Checking for OpenSSL libraries..."
+	if [ -f $user_confdir/lib/libssl.so -a \
+	     -f $user_confdir/lib/libcrypto.so ]; then
+		echo "found"
+		ssl_libdir=$user_confdir/lib
+		have_openssl=1
+	elif [ -f $beos_sysdir/lib/libssl.so -a \
+	     -f $beos_sysdir/lib/libcrypto.so ]; then
+		echo "found"
+		ssl_libdir=$beos_sysdir/lib
+		have_openssl=1
+	elif [ -f $common_libdir/libssl.so -a \
+	     -f $common_libdir/libcrypto.so ]; then
+		echo "found"
+		ssl_libdir=$common_libdir
+		have_openssl=1
+	else
+		echo "not found"
+		have_openssl=0
+	fi
 fi
 
 # Check for libyahoo2 headers
@@ -219,15 +224,18 @@ else
 	have_libyahoo2=0
 fi
 
-# Check for libyahoo2 libraries
-echo -n "Checking for libyahoo2 libraries..."
-if [ -f $common_libdir/libyahoo2.so ]; then
-	echo "found"
-	yahoo2_libdir=$common_libdir
-	have_libyahoo2=1
-else
-	echo "not found"
-	have_libyahoo2=0
+# Check for libyahoo2 libraries only if we have headers too
+if [ $have_libyahoo2 -eq 1 ]; then
+	# Check for libyahoo2 libraries
+	echo -n "Checking for libyahoo2 libraries..."
+	if [ -f $common_libdir/libyahoo2.so ]; then
+		echo "found"
+		yahoo2_libdir=$common_libdir
+		have_libyahoo2=1
+	else
+		echo "not found"
+		have_libyahoo2=0
+	fi
 fi
 
 # Check for InfoPopper
