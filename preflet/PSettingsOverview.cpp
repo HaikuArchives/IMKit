@@ -57,10 +57,11 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsDesc(NULL),
 	fClientsButton(NULL)
 {
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
+#ifdef __HAIKU__
 	BRect frame(0, 0, 1, 1);
-#ifndef __HAIKU__
-	frame = Frame();
+#else
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+	BRect frame;
 	frame.InsetBy(inset * 2, inset * 2);
 #endif
 	BFont headingFont(be_bold_font);
@@ -74,8 +75,8 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fServerDivider = new Divider(frame, "ServerDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fServerDivider->ResizeToPreferred();
 
-	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), Bounds().Width());
-	fServerDesc->ResizeToPreferred();
+	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), 200);
+	//fServerDesc->ResizeToPreferred();
 
 	fServerButton = new BButton(frame, "ServerEdit", _T("Edit" B_UTF8_ELLIPSIS), new BMessage(kMsgEditServer));
 	fServerButton->ResizeToPreferred();
@@ -109,9 +110,11 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsButton->ResizeToPreferred();
 
 #ifdef __HAIKU__
+	float width, height;
 	fServerLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fServerDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
-	fServerDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fServerDesc->GetPreferredSize(&width, &height);
+	fServerDesc->SetExplicitMaxSize(BSize(200, 100*height));
 	fProtocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fProtocolsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fProtocolsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
@@ -122,34 +125,25 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
 
-	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
-		.Add(BGridLayoutBuilder(0.0f, 1.0f)
+	AddChild(BGroupLayoutBuilder(B_VERTICAL, 0.0f)
+		.Add(BGridLayoutBuilder(0.0f, 0.0f)
 			.Add(fServerLabel, 0, 0, 2)
 			.Add(fServerDivider, 0, 1, 2)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
 			.Add(fServerDesc, 0, 3, 2)
-			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 4)
-			.Add(fServerButton, 1, 4)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 5, 2)
+			.Add(fServerButton, 1, 4, 2)
 
 			.Add(fProtocolsLabel, 0, 6, 2)
 			.Add(fProtocolsDivider, 0, 7, 2)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 8, 2)
 			.Add(fProtocolsDesc, 0, 9, 2)
-			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 10)
 			.Add(fProtocolsButton, 1, 11)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, 12, 2)
 
 			.Add(fClientsLabel, 0, 13, 2)
 			.Add(fClientsDivider, 0, 14, 2)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 15, 2)
 			.Add(fClientsDesc, 0, 16, 2)
-			.Add(BSpaceLayoutItem::CreateHorizontalStrut(2.0f), 0, 17)
 			.Add(fClientsButton, 1, 17)
 		)
 
 		.AddGlue()
-		.SetInsets(inset, inset, inset, inset)
 	);
 #else
 	AddChild(fServerLabel);
@@ -219,7 +213,7 @@ void PSettingsOverview::LayoutGUI(void) {
 	headingFont.GetHeight(&fh);
 	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
-	
+
 	BRect frame = Bounds();
 	frame.InsetBy(inset * 2, inset * 2);
 	frame.OffsetBy(inset, inset);

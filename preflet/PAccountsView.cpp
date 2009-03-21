@@ -4,6 +4,7 @@
  *
  * Authors:
  *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Michael Davidson <slaad@bong.com.au>
  */
 
 #include <stdlib.h>
@@ -55,27 +56,27 @@ class AccountStore : public IM::GenericStore<BString, BMessage> {
 		status_t Save(void) {
 			BMessage list;
 			status_t result = im_protocol_get_account_list(fProtocol.String(), &list);
-			
-			if (result == B_OK) {
-				BString account;
-				for (int32 i = 0; list.FindString("account", i, &account) == B_OK; i++) {
-					if (Contains(account) == false) {
-						result = im_protocol_delete_account(fProtocol.String(), account.String());
-						if (result != B_OK) {
-							break;
-						};
-					};
-				};
-				
-				if (result == B_OK) {
-					for (map<BString, BMessage *>::iterator it = Start(); it != End(); it++) {
-						result = im_protocol_add_account(fProtocol.String(), it->first.String(), it->second);
-						if (result != B_OK) break;
-					};
+
+			if (result != B_OK)
+				return result;
+
+			BString account;
+
+			for (int32 i = 0; list.FindString("account", i, &account) == B_OK; i++) {
+				if (!Contains(account)) {
+					result = im_protocol_delete_account(fProtocol.String(), account.String());
+					if (result != B_OK)
+						return result;
 				};
 			};
-		
-			return B_ERROR;
+
+			for (map<BString, BMessage *>::iterator it = Start(); it != End(); it++) {
+				result = im_protocol_add_account(fProtocol.String(), it->first.String(), it->second);
+				if (result != B_OK)
+					return result;
+			};
+
+			return B_OK;
 		};
 		
 		status_t Load(void) {

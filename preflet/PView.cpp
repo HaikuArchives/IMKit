@@ -3,6 +3,7 @@
  * Distributed under the terms of the MIT License.
  *
  * Authors:
+ *		Michael Davidson <slaad@bong.com.au>
  *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  */
 
@@ -238,6 +239,7 @@ PView::MessageReceived(BMessage* msg)
 		} break;
 
 		case kSave: {
+#if 0
 			BMessage cur;
 			BMessage settings;
 			BMessage reply;
@@ -276,6 +278,9 @@ PView::MessageReceived(BMessage* msg)
 					fManager->SendMessage(&updMessage);
 				};
 			};
+#else
+			SaveSettings();
+#endif
 		} break;
 
 		case kRevert: {
@@ -343,17 +348,6 @@ PView::LoadProtocols()
 		protoPath.SetTo(path);
 		protoPath.Append(file);
 
-#if 0
-		// Load settings
-		BMessage protocol_settings;
-		im_load_protocol_settings(protoPath.Path(), &protocol_settings);
-
-		// Load template
-		BMessage protocol_template;
-		im_load_protocol_template(protoPath.Path(), &protocol_template);
-		protocol_template.AddString("protocol", protoPath.Path());
-#endif
-
 		// Add protocol item
 		BBitmap* icon = ReadNodeIcon(protoPath.Path(), B_MINI_ICON, true);
 		IconTextItem* item = new IconTextItem(protoPath.Path(), file, icon);
@@ -361,16 +355,17 @@ PView::LoadProtocols()
 
 		// Create protocol settings view
 		BView *view = new PAccountsView(frame, &protoPath);
+#if 0
 		BMessage tmplate;
 		BMessage settings;
-		
+
 		im_load_protocol_settings(protoPath.Leaf(), &settings);
 		im_load_protocol_template(protoPath.Path(), &tmplate);
 
 		tmplate.AddString("protocol", protoPath.Leaf());
-		tmplate.PrintToStream();
 		pair<BMessage, BMessage> p(settings, tmplate);
 		fAddOns[protoPath.Path()] = p;
+#endif
 
 		// Add protocol settings view
 		view->Hide();
@@ -452,5 +447,24 @@ PView::LoadClients()
 #endif
 		
 		view->Hide();
+	}
+}
+
+void PView::SaveSettings()
+{
+	// Loop over all the list view items
+	for (int32 i = 0; i < fListView->CountItems(); i++)
+	{
+		IconTextItem *item = dynamic_cast<IconTextItem *>(fListView->ItemAt(i));
+
+		BMessage templateMsg, settingsMsg;
+
+		// Find the right settings controller
+		BView *view = FindView(item->Name());
+		SettingsController *controller = dynamic_cast<SettingsController *>(view);
+
+		// Save settings
+		if (controller != NULL)
+			(void)controller->Save(view, &templateMsg, &settingsMsg);
 	}
 }

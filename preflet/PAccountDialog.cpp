@@ -132,7 +132,6 @@ void PAccountDialog::MessageReceived(BMessage* msg) {
 				BMessage settings;
 				SaveSettings(fProtocolControl, fTemplate, &settings);
 				
-				settings.PrintToStream();
 				fSave.AddMessage("settings", &settings);
 				fSave.AddString("name", fAccountName->Text());
 				fSave.AddString("original_name", fOriginalAccount);

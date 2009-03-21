@@ -17,6 +17,8 @@ log_importance g_verbosity_level = liDebug;
 
 bool _has_checked_for_tty = false;
 
+status_t make_directories(const BPath &start, const char *path);
+
 void
 check_for_tty()
 {
@@ -442,43 +444,52 @@ im_save_client_template( const char * client, const BMessage * msg )
 	return im_save_template( path.Path(), msg );
 }
 
-status_t create_protocol_settings_directory(const char *protocol) {
-	BPath path;
-	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+status_t create_protocol_settings_directory(const char *protocol, BPath *path) {
+	BPath protocolsPath;
 
-	if (result == B_OK) {
-		path.Append("im_kit/add-ons/protocols");
+	if (path != NULL)
+		*path = NULL;
 
-		BDirectory dir(path.Path());
-		result = dir.InitCheck();
+	// Create our settings directories
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &protocolsPath, true, NULL) != B_OK)
+		return B_ERROR;
 
-		if (result == B_OK) {
-			if (dir.Contains(protocol, B_DIRECTORY_NODE) == false) {
-				result = dir.CreateDirectory(protocol, NULL);
-			};
-			
-			dir.Unset();
-		};
+	BDirectory dir(protocolsPath.Path());
+
+	// Create directories
+	if (make_directories(protocolsPath, "im_kit/add-ons/protocols") != B_OK) {
+		dir.Unset();
+		return B_ERROR;
 	}
-	
-	return result;
+
+	// Append settings path
+	protocolsPath.Append("im_kit/add-ons/protocols");
+	dir.SetTo(protocolsPath.Path());
+
+	if (!dir.Contains(protocol, B_DIRECTORY_NODE)) {
+		if (dir.CreateDirectory(protocol, NULL) != B_OK) {
+			dir.Unset();
+			return B_ERROR;
+		};
+	};
+
+	// Append protocol directory
+	protocolsPath.Append(protocol);
+
+	if (path != NULL)
+		path->SetTo(protocolsPath.Path());
+
+	dir.Unset();
+	return B_OK;
 };
 
 status_t im_protocol_add_account(const char *protocol, const char *account, const BMessage *settings) {
 	BPath path;
-
-	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+	status_t result = create_protocol_settings_directory(protocol, &path);
 
 	if (result == B_OK) {
-		result = create_protocol_settings_directory(protocol);
-		
-		if (result == B_OK) {
-			path.Append("im_kit/add-ons/protocols");
-			path.Append(protocol);
-			path.Append(account);
-		
-			result = im_save_settings(path.Path(), settings);
-		};
+		path.Append(account);
+		result = im_save_settings(path.Path(), settings);
 	};
 
 	return result;
@@ -527,8 +538,10 @@ status_t im_protocol_get_account(const char *protocol, const char *account, BMes
 		path.Append("im_kit/add-ons/protocols");
 		path.Append(protocol);
 		path.Append(account);
-		
-		result = im_load_settings(path.Path(), settings);
+
+		// Try to load settings, if it fails we'll return B_ENTRY_NOT_FOUND
+		if (im_load_settings(path.Path(), settings) != B_OK)
+			result = B_ENTRY_NOT_FOUND;
 	}
 	
 	return result;
@@ -536,26 +549,19 @@ status_t im_protocol_get_account(const char *protocol, const char *account, BMes
 
 status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts) {
 	BPath path;
-	status_t result = find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL);
+	status_t result = create_protocol_settings_directory(protocol, &path);
 
 	if (result == B_OK) {
-		result = create_protocol_settings_directory(protocol);
-		
+		BDirectory protocols(path.Path());
+
+		result = protocols.InitCheck();
 		if (result == B_OK) {
-			path.Append("im_kit/add-ons/protocols");
-			path.Append(protocol);
-			
-			BDirectory protocols(path.Path());
-			result = protocols.InitCheck();
-			
-			if (result == B_OK) {
-				protocols.Rewind();
+			protocols.Rewind();
 				
-				entry_ref account;
-				while (protocols.GetNextRef(&account) == B_OK) {
-					accounts->AddString("account", account.name);
-					accounts->AddRef("settings_path", &account);
-				};
+			entry_ref account;
+			while (protocols.GetNextRef(&account) == B_OK) {
+				accounts->AddString("account", account.name);
+				accounts->AddRef("settings_path", &account);
 			};
 		};
 	};	
@@ -660,4 +666,31 @@ connection_id( string conn )
 		return "";
 	
 	return conn.substr(colon+1);
+}
+
+status_t
+make_directories(const BPath &start, const char *path)
+{
+	BDirectory dir(start.Path());
+
+	if (dir.InitCheck() != B_OK)
+		return B_ERROR;
+
+	string str(path);
+	string::size_type lastPos = str.find_first_not_of("/", 0);
+	string::size_type pos = str.find_first_of("/", lastPos);
+
+	while (string::npos != pos || string::npos != lastPos) {
+		str.substr(lastPos, pos - lastPos);
+
+		if (!dir.Contains(str.c_str(), B_DIRECTORY_NODE)) {
+			if (dir.CreateDirectory(str.c_str(), NULL) != B_OK)
+				return B_ERROR;
+		}
+
+		lastPos = str.find_first_not_of("/", pos);
+		pos = str.find_first_of("/", lastPos);
+	}
+
+	return B_OK;
 }

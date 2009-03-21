@@ -57,6 +57,8 @@ class PView : public BView, public MultipleViewHandler {
 		float					fFontHeight;
 
 		IM::Manager				*fManager;
+
+		void SaveSettings();
 };
 
 #endif // PVIEW_H

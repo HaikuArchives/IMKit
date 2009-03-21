@@ -6,8 +6,7 @@
 
 MultiLineStringView::MultiLineStringView(const char *name, const char *text,
 	float width)
-	: BView(BRect(0, 0, width, width), name, B_FOLLOW_LEFT | B_FOLLOW_TOP,
-		B_WILL_DRAW),
+	: BView(BRect(0, 0, width, width), name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
 	fText(text),
 	fWidth(width) {
 	
