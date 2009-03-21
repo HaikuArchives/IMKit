@@ -60,7 +60,7 @@ ProtocolManager::ProtocolManager(void)
 				break;
 			}
 			
-			LOG("im_server", liHigh, "Unable to find ProtocolLoader - waiting before retrying\n");
+			LOG("im_server", liHigh, "Unable to find ProtocolLoader - waiting before retrying");
 			snooze(kQueryDelay);
 				
 			if (query->GetNextRef(&ref) == B_OK) {			
