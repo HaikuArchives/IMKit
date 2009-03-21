@@ -17,9 +17,6 @@ class PWindow : public BWindow
 		virtual bool	QuitRequested();
 
 	private:
-		void		CenterWindowOnScreen();
-
-	private:
 		PView*		fView;
 };
 

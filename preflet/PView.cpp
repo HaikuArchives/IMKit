@@ -162,7 +162,6 @@ PView::PView(BRect bounds)
 	fMainView->AddChild(fViews["server"]);
 	fViews["server"]->Hide();
 
-
 	// Add protocols and clients
 	LoadProtocols();
 	LoadClients();

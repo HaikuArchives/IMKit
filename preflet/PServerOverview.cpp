@@ -62,7 +62,6 @@ PServerOverview::PServerOverview(BRect bounds)
 		)
 
 		.AddGlue()
-		.SetInsets(inset, inset, inset, inset)
 	);
 #else
 	AddChild(fServerLabel);

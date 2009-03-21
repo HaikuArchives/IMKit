@@ -56,7 +56,7 @@ void CenterWindowOnScreen(BWindow* window) {
 }
 
 
-float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view) {
+float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view, bool heading) {
 	BMessage curr;
 	float inset = ceilf(be_plain_font->Size() * 0.7);
 
@@ -75,36 +75,38 @@ float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* v
 	const float kFontHeight = fontHeight.descent + fontHeight.leading + fontHeight.ascent;
 #endif
 
-	BFont headingFont(be_bold_font);
-	headingFont.SetSize(headingFont.Size() * 1.2f);
+	if (heading) {
+		BFont headingFont(be_bold_font);
+		headingFont.SetSize(headingFont.Size() * 1.2f);
 
-	BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), viewName, viewName);
-	descLabel->SetFont(&headingFont);
-	descLabel->SetAlignment(B_ALIGN_LEFT);
+		BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), viewName, viewName);
+		descLabel->SetFont(&headingFont);
+		descLabel->SetAlignment(B_ALIGN_LEFT);
 
-	Divider *divider = new Divider(view->Frame(), "DescDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
-	divider->ResizeToPreferred();
+		Divider *divider = new Divider(view->Frame(), "DescDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+		divider->ResizeToPreferred();
 
 #ifdef __HAIKU__
-	descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	divider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+		descLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+		divider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 
-	layout.Add(descLabel);
-	layout.Add(divider);
+		layout.Add(descLabel);
+		layout.Add(divider);
 #else
-	descLabel->ResizeToPreferred();	
-	
-	view->AddChild(descLabel);
-	view->AddChild(divider);
-	
-	BRect frameDescLabel = descLabel->Frame();
-	BRect frameDivider = divider->Frame();
-	
-	divider->MoveTo(frameDivider.left, frameDescLabel.bottom + inset);
-	frameDivider = divider->Frame();
-	
-	yOffset = frameDivider.bottom + inset;
+		descLabel->ResizeToPreferred();	
+
+		view->AddChild(descLabel);
+		view->AddChild(divider);
+
+		BRect frameDescLabel = descLabel->Frame();
+		BRect frameDivider = divider->Frame();
+
+		divider->MoveTo(frameDivider.left, frameDescLabel.bottom + inset);
+		frameDivider = divider->Frame();
+
+		yOffset = frameDivider.bottom + inset;
 #endif
+	};
 
 	for (int32 i = 0; templ.FindMessage("setting", i, &curr) == B_OK; i++) {
 		char temp[512];

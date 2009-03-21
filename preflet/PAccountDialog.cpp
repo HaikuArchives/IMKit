@@ -23,6 +23,8 @@
 
 #include <libim/Helpers.h>
 
+#include "common/Divider.h"
+
 #include "PAccountDialog.h"
 #include "PUtils.h"
 #include "ViewFactory.h"
@@ -53,7 +55,7 @@ const uint32 kAddAccountOk = 'Mokb';
 //#pragma mark Constructor
 
 PAccountDialog::PAccountDialog(const char *title, const char *protocol, const char *account, BMessage settingsTemplate, BMessage settings, BMessenger *target, BMessage save, BMessage cancel)
-	: BWindow(BRect(0, 0, 320, 400), title, B_TITLED_WINDOW,
+	: BWindow(BRect(0, 0, 360, 400), title, B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE),
 	fOriginalAccount(account),
 	fTemplate(settingsTemplate),
@@ -63,7 +65,8 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	fCancel(cancel) {
 	
 	uint32 childResizeMode = B_FOLLOW_NONE;
-	BRect frame(0, 0, -1, -1);
+	BRect frame(0, 0, 1, 1);
+
 	BView* view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 
@@ -71,16 +74,19 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	childResizeMode = B_FOLLOW_ALL_SIDES;
 #endif
 
+	// Account name
 	fAccountName = ViewFactory::Create<BTextControl>(frame, "account_name", childResizeMode, B_WILL_DRAW | B_FRAME_EVENTS);
-	fAccountName->SetLabel(_T("Account name: "));
+	fAccountName->SetLabel(_T("Account name:"));
 	fAccountName->SetText(fOriginalAccount.String());
+	fAccountName->SetFont(be_bold_font);
 	fAccountName->MakeFocus();
 
-	fBox = ViewFactory::Create<BBox>(frame, "Container", childResizeMode, B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE_JUMP);
-	fBox->SetLabel(fAccountName);
-	
+	// Account name divider
+	fAccountNameDivider = new Divider(frame, "AccountNameDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fAccountNameDivider->ResizeToPreferred();
+
 	fProtocolControl = new BView(frame, "ProtocolControls", B_FOLLOW_ALL_SIDES, B_NAVIGABLE_JUMP | B_WILL_DRAW);
-	BuildGUI(fTemplate, fSettings, protocol, fProtocolControl);
+	BuildGUI(fTemplate, fSettings, protocol, fProtocolControl, false);
 
 	BButton* cancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
 	BButton* okButton = new BButton(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
@@ -88,23 +94,24 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 #ifdef __HAIKU__
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
-	fBox->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	fAccountNameDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fProtocolControl->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 
-	fBox->AddChild(fProtocolControl);
-
-	view->SetLayout(new BGroupLayout(B_HORIZONTAL));
-	view->AddChild(BGroupLayoutBuilder(B_VERTICAL)
-		.AddGroup(B_HORIZONTAL)
-			.Add(fBox)
+	view->SetLayout(new BGroupLayout(B_VERTICAL));
+	view->AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
+		.AddGroup(B_VERTICAL, inset)
+			.Add(fAccountName)
+			.Add(fAccountNameDivider)
+			.Add(fProtocolControl)
 		.End()
-
-		.AddGroup(B_HORIZONTAL)
+		.SetInsets(inset, inset, inset, inset)
+	);
+	view->AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
+		.AddGroup(B_HORIZONTAL, inset)
 			.AddGlue()
 			.Add(cancelButton)
 			.Add(okButton)
 		.End()
-
 		.SetInsets(inset, inset, inset, inset)
 	);
 

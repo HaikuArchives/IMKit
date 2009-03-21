@@ -59,7 +59,6 @@ PProtocolsOverview::PProtocolsOverview(BRect bounds)
 		)
 
 		.AddGlue()
-		.SetInsets(inset, inset, inset, inset)
 	);
 #else
 	AddChild(fProtocolsLabel);

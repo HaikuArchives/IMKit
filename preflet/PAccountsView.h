@@ -5,7 +5,9 @@
 
 #include "SettingsController.h"
 
+class BStringView;
 class AccountStore;
+class Divider;
 
 class PAccountsView : public BView, public SettingsController {
 	public:
@@ -29,6 +31,8 @@ class PAccountsView : public BView, public SettingsController {
 		BPath				fProtoPath;
 		AccountStore		*fSettings;
 		
+		BStringView		*fHeadingLabel;
+		Divider			*fHeadingDivider;
 		BOutlineListView	*fProtocolListView;
 		BButton				*fAddButton;
 		BButton				*fEditButton;

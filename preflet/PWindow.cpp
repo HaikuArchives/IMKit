@@ -16,6 +16,7 @@
 
 #include "PWindow.h"
 #include "PView.h"
+#include "PUtils.h"
 
 #ifdef ZETA
 #	include <app/Roster.h>
@@ -81,7 +82,7 @@ PWindow::PWindow()
 	fView->SetHighColor(0, 0, 0, 0);
 #endif
 
-	CenterWindowOnScreen();
+	CenterWindowOnScreen(this);
 }
 
 
@@ -90,17 +91,4 @@ PWindow::QuitRequested()
 {
 	be_app_messenger.SendMessage(B_QUIT_REQUESTED);
 	return true;
-}
-
-
-void PWindow::CenterWindowOnScreen()
-{
-	BRect screenFrame = BScreen().Frame();
-	BPoint pt;
-
-	pt.x = screenFrame.Width()/2 - Bounds().Width()/2;
-	pt.y = screenFrame.Height()/2 - Bounds().Height()/2;
-
-	if (screenFrame.Contains(pt))
-		MoveTo(pt);
 }

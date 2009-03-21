@@ -14,9 +14,11 @@
 #include <interface/Button.h>
 #include <interface/OutlineListView.h>
 #include <interface/ScrollView.h>
+#include <interface/StringView.h>
 #ifdef __HAIKU__
 #	include <interface/GroupLayout.h>
 #	include <interface/GroupLayoutBuilder.h>
+#	include <interface/GridLayoutBuilder.h>
 #endif
 
 #include <storage/Path.h>
@@ -27,6 +29,7 @@
 
 #include <libim/Helpers.h>
 #include "common/GenericStore.h"
+#include "common/Divider.h"
 
 #ifdef ZETA
 #	include <app/Roster.h>
@@ -118,6 +121,23 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	frame.InsetBy(inset * 2, inset * 2);
 #endif
 
+	// Font for heading
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
+
+	// Heading
+	char *titleBuffer = new char[513];
+	(void)snprintf(titleBuffer, 512, _T("%s protocol"), protoPath->Leaf());
+	titleBuffer[512] = '\0';
+	fHeadingLabel = new BStringView(frame, "ProtocolLabel", titleBuffer);
+	fHeadingLabel->SetAlignment(B_ALIGN_LEFT);
+	fHeadingLabel->SetFont(&headingFont);
+	delete titleBuffer;
+
+	// Heading fHeadingDivider
+	fHeadingDivider = new Divider(frame, "ProtocolsDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fHeadingDivider->ResizeToPreferred();
+
 	// Create list view
 	fProtocolListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
 	BMessage *selection = new BMessage(kProtocolListChanged);
@@ -135,15 +155,29 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	fDelButton->SetEnabled(false);
 
 #ifdef __HAIKU__
-	SetLayout(new BGroupLayout(B_HORIZONTAL));
-	AddChild(BGroupLayoutBuilder(B_HORIZONTAL, inset)
-		.Add(scrollView)
+	fHeadingLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fHeadingDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
+	scrollView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fEditButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fDelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 
-		.AddGroup(B_VERTICAL, 2.0f)
-			.Add(fAddButton)
-			.Add(fEditButton)
-			.Add(fDelButton)
-			.AddGlue()
+	SetLayout(new BGroupLayout(B_HORIZONTAL));
+	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
+		.Add(BGridLayoutBuilder(0.0f, 1.0f)
+			.Add(fHeadingLabel, 0, 0, 2)
+			.Add(fHeadingDivider, 0, 1, 2)
+		)
+
+		.AddGroup(B_HORIZONTAL, 2.0f)
+			.Add(scrollView, 10.0f)
+
+			.AddGroup(B_VERTICAL, 2.0f)
+				.Add(fAddButton)
+				.Add(fEditButton)
+				.Add(fDelButton)
+				.AddGlue()
+			.End()
 		.End()
 	);
 #else
@@ -196,13 +230,74 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			fDelButton->SetEnabled(item != NULL);
 		} break;
 
+		case kEditAccount:	
+		case kAddAccount: {
+			BMessage save(kSaveAccount);
+			BMessage cancel(kCancelAccount);
+			const char *account = NULL;
+			BMessage tmplate;
+			BMessage settings;
+
+			im_load_protocol_template(fProtoPath.Path(), &tmplate);
+
+			BString title;
+			if (msg->what == kAddAccount)
+				title = _T("Add account");
+			else if (msg->what == kEditAccount) {
+				title = _T("Edit account");
+
+				int32 index = fProtocolListView->CurrentSelection(0);
+				if (index < 0) return;
+
+				BStringItem *item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
+				if (item == NULL)
+					return;
+
+				title << ": " << item->Text();
+				title << " (" << fProtoPath.Leaf() << ")";
+				
+				account = item->Text();
+
+				settings = fSettings->Find(account);
+				save.AddPointer("listitem", item);
+			}
+		
+			PAccountDialog *dialog = new PAccountDialog(title.String(), fProtoPath.Leaf(),
+				account, tmplate, settings, new BMessenger(this), save, cancel);
+			dialog->Show();
+		} break;
+
 		case kDelAccount: {
 			int32 index = fProtocolListView->CurrentSelection(0);
-			if (index < 0) return;
+			if (index < 0)
+				return;
 			
 			BStringItem *item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
-			if (item == NULL) return;
-	
+			if (item == NULL)
+				return;
+
+			// Formatted title and text
+			char *titleBuffer = new char[513];
+			char *textBuffer = new char[513];
+			(void)snprintf(titleBuffer, 512, _T("Remove %s account"), item->Text());
+			titleBuffer[512] = '\0';
+			(void)snprintf(textBuffer, 512, _T("Are you sure you want to remove the %s account?\n"
+				"If you confirm this action, you won't be able to restore the account settings."),
+				item->Text());
+			textBuffer[512] = '\0';
+
+			// Ask for confirmation firm
+			BAlert *confirm = new BAlert(titleBuffer, textBuffer, _T("No"), _T("Yes"), NULL,
+				B_WIDTH_AS_USUAL, B_EVEN_SPACING, B_WARNING_ALERT);
+			confirm->SetShortcut(0, B_ESCAPE);
+			confirm->ButtonAt(0)->MakeDefault(true);
+			delete titleBuffer;
+			delete textBuffer;
+
+			// Let's see if the user says yes or no :)
+			if (confirm->Go() == 0)
+				return;
+
 			if (fSettings->Contains(item->Text()) == true) {
 				fSettings->Remove(item->Text());
 			};		
@@ -214,37 +309,6 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			fDelButton->SetEnabled(false);
 		} break;
 
-		case kEditAccount:	
-		case kAddAccount: {
-			BMessage save(kSaveAccount);
-			BMessage cancel(kCancelAccount);
-			const char *account = NULL;
-			BMessage tmplate;
-			BMessage settings;
-
-			im_load_protocol_template(fProtoPath.Path(), &tmplate);
-
-			BString title = _T("Add account");
-			if (msg->what == kEditAccount) {
-				int32 index = fProtocolListView->CurrentSelection(0);
-				if (index < 0) return;
-				
-				BStringItem *item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
-				if (item == NULL) return;
-
-				title << ": " << item->Text();
-				title << " (" << fProtoPath.Leaf() << ")";
-				
-				account = item->Text();
-
-				settings = fSettings->Find(account);
-				save.AddPointer("listitem", item);
-			}
-		
-			PAccountDialog *dialog = new PAccountDialog(title.String(), fProtoPath.Leaf(), account, tmplate, settings, new BMessenger(this), save, cancel);
-			dialog->Show();
-		} break;
-		
 		case kSaveAccount:
 		case kCancelAccount: {
 			PAccountDialog *dialog = NULL;

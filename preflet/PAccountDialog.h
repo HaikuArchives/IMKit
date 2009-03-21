@@ -13,6 +13,8 @@ class BMessenger;
 class BPath;
 class BTextControl;
 
+class Divider;
+
 class PAccountDialog : public BWindow {
 	public:
 						PAccountDialog(const char *title, const char *protocol, const char *account, BMessage settingsTemplate, BMessage settings, BMessenger *target, BMessage save, BMessage cancel);
@@ -32,7 +34,8 @@ class PAccountDialog : public BWindow {
 		BMessage		fSettings;
 	
 		BBox			*fBox;
-		BTextControl	*fAccountName;
+		BTextControl		*fAccountName;
+		Divider			*fAccountNameDivider;
 		BView			*fProtocolControl;
 		
 		BMessenger		*fTarget;

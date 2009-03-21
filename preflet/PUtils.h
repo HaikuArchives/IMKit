@@ -8,7 +8,7 @@
 #include <BeBuild.h>
 
 void CenterWindowOnScreen(BWindow* window);
-float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view);
+float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* view, bool heading = true);
 status_t SaveSettings(BView *panel, BMessage tmplate, BMessage *settings);
 
 #endif // PUTILS_H
