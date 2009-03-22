@@ -203,6 +203,21 @@ void PSettingsOverview::MessageReceived(BMessage *msg) {
 	};
 };
 
+//#pragam mark SettingsController Hooks
+
+status_t PSettingsOverview::Init(SettingsHost *) {
+	return B_OK;
+};
+
+status_t PSettingsOverview::Save(BView *, const BMessage *, BMessage *) {
+	return B_OK;
+};
+
+status_t PSettingsOverview::Revert(BView *, const BMessage *) {
+	return B_OK;
+};
+
+
 //#pragma mark Private
 
 #ifndef __HAIKU__

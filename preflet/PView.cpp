@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008, IM Kit Team.
+ * Copyright 2003-2009, IM Kit Team.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
@@ -61,8 +61,8 @@ const float kControlOffset = 5.0f;
 PView::PView(BRect bounds)
 	: BView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
 	fCurrentView(NULL),
-	fCurrentIndex(0)
-{
+	fCurrentIndex(0) {
+	
 	BRect frame;
 	font_height fontHeight;
 
@@ -131,6 +131,7 @@ PView::PView(BRect bounds)
 	fRevert = new BButton(frameRevert, "revert", _T("Revert"), new BMessage(kRevert));
 	fRevert->SetEnabled(false);
 	fSave = new BButton(frameSave, "save", _T("Save"), new BMessage(kSave));
+	fSave->SetEnabled(false);
 
 	// Settings item
 	IconTextItem* settingsItem = new IconTextItem("settings", _T("Settings"));
@@ -145,6 +146,7 @@ PView::PView(BRect bounds)
 	fClientsItem = new IconTextItem("clients", _T("Clients"));
 	fListView->AddUnder(fClientsItem, settingsItem);
 	fViews["clients"] = new PClientsOverview(this, fMainView->Bounds());
+	dynamic_cast<SettingsController *>(fViews["clients"])->Init(this);
 	fMainView->AddChild(fViews["clients"]);
 	fViews["clients"]->Hide();
 
@@ -196,9 +198,7 @@ PView::PView(BRect bounds)
 
 //#pragma mark BView Hooks
 
-void
-PView::AttachedToWindow()
-{
+void PView::AttachedToWindow(void) {
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -214,9 +214,7 @@ PView::AttachedToWindow()
 	fSave->SetTarget(this);
 }
 
-void
-PView::MessageReceived(BMessage* msg)
-{
+void PView::MessageReceived(BMessage* msg) {
 	switch (msg->what) {
 		case kListChanged: {
 			int32 index = B_ERROR;
@@ -283,6 +281,7 @@ PView::MessageReceived(BMessage* msg)
 		} break;
 
 		case kRevert: {
+#if 0
 			BMessage cur;
 			BMessage settings;
 			BMessage reply;
@@ -302,6 +301,8 @@ PView::MessageReceived(BMessage* msg)
 
 //			status_t res =
 			controller->Revert(view, &tmplate);
+#endif
+			RevertSettings();
 		} break;
 
 		default: {
@@ -324,11 +325,16 @@ void PView::ShowClientsOverview(void) {
 	fListView->Select(fListView->IndexOf(fClientsItem));
 };
 
+//#pragma mark SettingsHost Hooks
+
+void PView::ControllerModified(SettingsController *controler) {
+	fSave->SetEnabled(true);
+	fRevert->SetEnabled(true);
+};
+
 //#pragma mark Private
 
-void
-PView::LoadProtocols()
-{
+void PView::LoadProtocols(void) {
 	BMessage msg;
 	BRect frame(0, 0, 1, 1);
 
@@ -354,6 +360,8 @@ PView::LoadProtocols()
 
 		// Create protocol settings view
 		BView *view = new PAccountsView(frame, &protoPath);
+		SettingsController *controller = dynamic_cast<SettingsController *>(view);
+		controller->Init(this);
 #if 0
 		BMessage tmplate;
 		BMessage settings;
@@ -374,9 +382,7 @@ PView::LoadProtocols()
 }
 
 
-void
-PView::LoadClients()
-{
+void PView::LoadClients(void) {
 	BMessage msg;
 
 	// Adding client items
@@ -406,17 +412,18 @@ PView::LoadClients()
 		if (client_settings.FindString("app_sig")) {
 			be_roster->FindApp(client_settings.FindString("app_sig"), &ref);
 			client_template.AddString("client", file);
-		}
+		};
 
 		// Add client item
 		BBitmap* icon = ReadNodeIcon(BPath(&ref).Path(), kSmallIcon, true);
 		IconTextItem* item = new IconTextItem(clientPath.Path(), file, icon);
 
 		// Add im_server
-		if (strcmp(file, "im_server") == 0)
+		if (strcmp(file, "im_server") == 0) {
 			fListView->AddUnder(item, fServerItem);
-		else
+		} else {
 			fListView->AddUnder(item, fClientsItem);
+		};
 
 		pair<BMessage, BMessage> p(client_settings, client_template);
 		fAddOns[clientPath.Path()] = p;
@@ -449,21 +456,53 @@ PView::LoadClients()
 	}
 }
 
-void PView::SaveSettings()
-{
+void PView::SaveSettings(void) {
 	// Loop over all the list view items
-	for (int32 i = 0; i < fListView->CountItems(); i++)
-	{
+	for (int32 i = 0; i < fListView->CountItems(); i++) {
 		IconTextItem *item = dynamic_cast<IconTextItem *>(fListView->ItemAt(i));
 
-		BMessage templateMsg, settingsMsg;
+		BMessage templateMsg;
+		BMessage settingsMsg;
 
 		// Find the right settings controller
 		BView *view = FindView(item->Name());
+		
+		if (view == NULL) {
+			continue;
+		};
+		
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
 		// Save settings
-		if (controller != NULL)
-			(void)controller->Save(view, &templateMsg, &settingsMsg);
+		controller->Save(view, &templateMsg, &settingsMsg);
 	}
+	
+	fRevert->SetEnabled(false);
+	fSave->SetEnabled(false);
 }
+
+void PView::RevertSettings(void) {
+	// Loop over all the list view items
+	for (int32 i = 0; i < fListView->CountItems(); i++) {
+		IconTextItem *item = dynamic_cast<IconTextItem *>(fListView->ItemAt(i));
+
+		// Find the right settings controller
+		BView *view = FindView(item->Name());
+		
+		if (view == NULL) {
+			continue;
+		};
+		
+		addons_pair p = fAddOns[item->Name()];
+		BMessage templateMsg = p.second;
+		
+		SettingsController *controller = dynamic_cast<SettingsController *>(view);
+
+		// Save settings
+		controller->Revert(view, &templateMsg);
+	}
+	
+	fRevert->SetEnabled(false);
+	fSave->SetEnabled(false);
+};
+

@@ -21,6 +21,7 @@
 #include <libim/Helpers.h>
 
 #include "PClientsOverview.h"
+#include "SettingsHost.h"
 
 #include "common/Divider.h"
 #include "common/MultiLineStringView.h"
@@ -55,7 +56,7 @@ class ClientInfo {
 //#pragma mark Constants
 
 const int32 kMsgEditClient = 'Mecl';
-
+const int32 kMsgCheckChanged = 'Mcc_';
 const char *kAutoStartDesc = "Clients set to autostart will start when the Server starts. This is useful for clients you will always use, such as notifications or chat windows.";
 
 //#pragma mark Constructor
@@ -104,7 +105,7 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 		if (msg.FindString("path", &path) != B_OK) continue;
 		if (msg.FindString("file", &file) != B_OK) continue;
 
-		BCheckBox *checkbox = new BCheckBox(frame, path, file, NULL);
+		BCheckBox *checkbox = new BCheckBox(frame, path, file, new BMessage(kMsgCheckChanged));
 		checkbox->SetValue(B_CONTROL_ON);
 		checkbox->ResizeToPreferred();
 
@@ -165,15 +166,42 @@ void PClientsOverview::AttachedToWindow(void) {
 	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	SetHighColor(0, 0, 0, 0);
 #endif
+
+	for (clientinfo_t::iterator cIt = fClientInfo.begin(); cIt != fClientInfo.end(); cIt++ ){
+		ClientInfo *info = (*cIt);
+		BCheckBox *checkbox = info->CheckBox();
+
+		checkbox->SetTarget(this);		
+	};
 };
 
 void PClientsOverview::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
+		case kMsgCheckChanged: {
+			fHost->ControllerModified(this);
+		} break;
 		default: {
 			BView::MessageReceived(msg);
 		} break;
 	};
 };
+
+//#pragma mark SettingsController Hooks
+
+status_t PClientsOverview::Init(SettingsHost *host) {
+	fHost = host;
+
+	return B_OK;
+};
+
+status_t PClientsOverview::Save(BView *view, const BMessage *tmplate, BMessage *settings) {
+	return SettingsController::Save(view, tmplate, settings);
+};
+
+status_t PClientsOverview::Revert(BView *view, const BMessage *tmplate) {
+	return SettingsController::Revert(view, tmplate);
+};
+
 
 //#pragma mark Private
 

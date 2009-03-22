@@ -7,7 +7,12 @@
 
 #include <stdlib.h>
 
+#include "SettingsController.h"
+
 //#pragma mark Hooks
+
+status_t SettingsController::Init(SettingsHost *host) {
+};
 
 status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessage *settings) {
 	BMessage cur;

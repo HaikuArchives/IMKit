@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008, IM Kit Team.
+ * Copyright 2003-2009, IM Kit Team.
  * Distributed under the terms of the MIT License.
  */
 #ifndef PACCOUNT_DIALOG_H
@@ -24,7 +24,7 @@ class PAccountDialog : public BWindow {
 		virtual bool	QuitRequested(void);
 
 		// Public
-		const char		*AccountName();
+		const char		*AccountName(void);
 
 	private:
 		void			SendNotification(bool saved);
@@ -34,7 +34,7 @@ class PAccountDialog : public BWindow {
 		BMessage		fSettings;
 	
 		BBox			*fBox;
-		BTextControl		*fAccountName;
+		BTextControl	*fAccountName;
 		Divider			*fAccountNameDivider;
 		BView			*fProtocolControl;
 		

@@ -13,15 +13,17 @@
 #include <map>
 
 #include "MultipleViewHandler.h"
+#include "SettingsHost.h"
 
 class BOutlineListView;
 class IconTextItem;
+class SettingsController;
 
 typedef map<BString, BView*> view_map;
 typedef pair<BMessage, BMessage> addons_pair;
 typedef map<BString, addons_pair> addons_map;
 
-class PView : public BView, public MultipleViewHandler {
+class PView : public BView, public MultipleViewHandler, public SettingsHost {
 	public:
 								PView(BRect bounds);
 
@@ -29,14 +31,20 @@ class PView : public BView, public MultipleViewHandler {
 		virtual void			AttachedToWindow(void);
 		virtual void			MessageReceived(BMessage *msg);
 
+		// MultipleViewHandler Hooks
 		virtual void			ShowServerOverview(void);
 		virtual void			ShowProtocolsOverview(void);
 		virtual void			ShowClientsOverview(void);
 
+		// SettingsHost Hooks
+		virtual void			ControllerModified(SettingsController *controller);
 
 	private:
-		void					LoadProtocols();
-		void					LoadClients();
+		void					LoadProtocols(void);
+		void					LoadClients(void);
+
+		void 					SaveSettings(void);
+		void					RevertSettings(void);
 
 	private:
 		BOutlineListView		*fListView;
@@ -57,8 +65,7 @@ class PView : public BView, public MultipleViewHandler {
 		float					fFontHeight;
 
 		IM::Manager				*fManager;
-
-		void SaveSettings();
 };
 
 #endif // PVIEW_H
+	

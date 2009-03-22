@@ -1,11 +1,13 @@
 /*
- * Copyright 2003-2008, IM Kit Team.
+ * Copyright 2003-2009, IM Kit Team.
  * Distributed under the terms of the MIT License.
  */
 #ifndef PSETTINGS_OVERVIEW_H
 #define PSETTINGS_OVERVIEW_H
 
 #include <interface/View.h>
+
+#include "SettingsController.h"
 
 class BButton;
 class BStringView;
@@ -14,13 +16,19 @@ class Divider;
 class MultiLineStringView;
 class MultipleViewHandler;
 
-class PSettingsOverview : public BView {
+class PSettingsOverview : public BView, public SettingsController {
 	public:
 							PSettingsOverview(MultipleViewHandler *handler, BRect bounds);
 
 		// BView Hooks
 		virtual void		AttachedToWindow(void);
 		virtual void		MessageReceived(BMessage *msg);
+
+		// SettingsController Hooks
+		virtual status_t	Init(SettingsHost *host);
+		virtual status_t	Save(BView *view, const BMessage *tmplate, BMessage *settings);
+		virtual status_t	Revert(BView *view, const BMessage *tmplate);		
+		
 
 	private:
 #ifndef __HAIKU__

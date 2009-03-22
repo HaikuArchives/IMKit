@@ -161,8 +161,7 @@ bool PAccountDialog::QuitRequested(void) {
 
 //#pragma mark Public
 
-const char *PAccountDialog::AccountName()
-{
+const char *PAccountDialog::AccountName(void) {
 	return fAccountName->Text();
 };
 
@@ -177,11 +176,13 @@ void PAccountDialog::SendNotification(bool saved) {
 			targetMsg = fCancel;
 			other = fSave;
 		}
-		
-		if (targetMsg.IsEmpty() == false) {
+
+		if (targetMsg.what != 0) {
 			targetMsg.AddPointer("source", this);
 			fTarget->SendMessage(&targetMsg);
 		}
+		
+		targetMsg.PrintToStream();
 		
 		delete fTarget;
 		

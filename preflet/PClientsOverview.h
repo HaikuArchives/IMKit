@@ -15,6 +15,7 @@
 class Divider;
 class MultipleViewHandler;
 class MultiLineStringView;
+class SettngsHost;
 
 class ClientInfo;
 
@@ -28,12 +29,18 @@ class PClientsOverview : public BView, public SettingsController  {
 		virtual void		AttachedToWindow(void);
 		virtual void		MessageReceived(BMessage *msg);
 	
+		// SettingsController Hooks
+		virtual status_t	Init(SettingsHost *host);
+		virtual status_t	Save(BView *view, const BMessage *tmplate, BMessage *settings);
+		virtual status_t	Revert(BView *view, const BMessage *tmplate);
+	
 	private:
 #ifndef __HAIKU__
 		void				LayoutGUI(void);
 #endif
 
 		MultipleViewHandler	*fHandler;
+		SettingsHost		*fHost;
 		
 		BStringView			*fAutoStartLabel;
 		Divider				*fAutoStartDivider;

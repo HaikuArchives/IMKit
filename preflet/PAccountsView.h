@@ -8,6 +8,7 @@
 class BStringView;
 class AccountStore;
 class Divider;
+class SettingsHost;
 
 class PAccountsView : public BView, public SettingsController {
 	public:
@@ -19,6 +20,7 @@ class PAccountsView : public BView, public SettingsController {
 		virtual void		MessageReceived(BMessage *msg);
 
 		// SettingsController Hooks
+		virtual status_t	Init(SettingsHost *host);
 		virtual status_t	Save(BView *view, const BMessage *tmplate, BMessage *settings);
 		virtual status_t	Revert(BView *view, const BMessage *tmplate);
 
@@ -28,11 +30,13 @@ class PAccountsView : public BView, public SettingsController {
 #endif
 		void				LoadSettings(bool reload);
 		
+		SettingsHost		*fHost;
+		
 		BPath				fProtoPath;
 		AccountStore		*fSettings;
 		
-		BStringView		*fHeadingLabel;
-		Divider			*fHeadingDivider;
+		BStringView			*fHeadingLabel;
+		Divider				*fHeadingDivider;
 		BOutlineListView	*fProtocolListView;
 		BButton				*fAddButton;
 		BButton				*fEditButton;

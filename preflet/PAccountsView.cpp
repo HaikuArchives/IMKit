@@ -26,6 +26,7 @@
 
 #include "PAccountsView.h"
 #include "PAccountDialog.h"
+#include "SettingsHost.h"
 
 #include <libim/Helpers.h>
 #include "common/GenericStore.h"
@@ -60,16 +61,18 @@ class AccountStore : public IM::GenericStore<BString, BMessage> {
 			BMessage list;
 			status_t result = im_protocol_get_account_list(fProtocol.String(), &list);
 
-			if (result != B_OK)
+			if (result != B_OK) {
 				return result;
+			};
 
 			BString account;
 
 			for (int32 i = 0; list.FindString("account", i, &account) == B_OK; i++) {
 				if (!Contains(account)) {
 					result = im_protocol_delete_account(fProtocol.String(), account.String());
-					if (result != B_OK)
+					if (result != B_OK) {
 						return result;
+					}
 				};
 			};
 
@@ -83,6 +86,8 @@ class AccountStore : public IM::GenericStore<BString, BMessage> {
 		};
 		
 		status_t Load(void) {
+			Clear();
+		
 			BMessage list;
 			status_t result = im_protocol_get_account_list(fProtocol.String(), &list);
 			
@@ -240,10 +245,9 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 
 			im_load_protocol_template(fProtoPath.Path(), &tmplate);
 
-			BString title;
-			if (msg->what == kAddAccount)
-				title = _T("Add account");
-			else if (msg->what == kEditAccount) {
+			BString title = _T("Add account");
+			
+			if (msg->what == kEditAccount) {
 				title = _T("Edit account");
 
 				int32 index = fProtocolListView->CurrentSelection(0);
@@ -307,6 +311,8 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			
 			fEditButton->SetEnabled(false);
 			fDelButton->SetEnabled(false);
+			
+			fHost->ControllerModified(this);
 		} break;
 
 		case kSaveAccount:
@@ -370,6 +376,8 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 				fProtocolListView->AddItem(new BStringItem(name));
 			};
 			BMessenger(dialog).SendMessage(B_QUIT_REQUESTED);
+			
+			fHost->ControllerModified(this);
 		} break;
 		
 		default: {
@@ -379,6 +387,12 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 };
 
 //#pragma mark SettingsController Hooks
+
+status_t PAccountsView::Init(SettingsHost *host) {
+	fHost = host;
+
+	return B_OK;
+};
 
 status_t PAccountsView::Save(BView *view, const BMessage *tmplate, BMessage *settings) {
 	status_t result = fSettings->Save();
