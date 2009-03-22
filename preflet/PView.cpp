@@ -235,79 +235,17 @@ void PView::MessageReceived(BMessage* msg) {
 			fCurrentIndex = index;
 		} break;
 
-		case kSave: {
-#if 0
-			BMessage cur;
-			BMessage settings;
-			BMessage reply;
-
-			int current = fListView->CurrentSelection();
-			if (current < 0) {
-				printf("Error, no selection when trying to update\n");
-				return;
-			}
-
-			IconTextItem* item = (IconTextItem *)fListView->ItemAt(current);
-			addons_pair p = fAddOns[item->Name()];
-
-			BMessage tmplate = p.second;
-			BView *view = FindView(item->Name());
-			SettingsController *controller = dynamic_cast<SettingsController *>(view);
-
-			status_t res = controller->Save(view, &tmplate, &settings);
-
-			if (res == B_OK) {
-				BMessage updMessage(IM::SETTINGS_UPDATED);
-	
-				if (tmplate.FindString("protocol")) {
-					res = im_save_protocol_settings(tmplate.FindString("protocol"), &settings);
-					updMessage.AddString("protocol", tmplate.FindString("protocol"));
-				} else if (tmplate.FindString("client")) {
-					res = im_save_client_settings( tmplate.FindString("client"), &settings);
-					updMessage.AddString("client", tmplate.FindString("client"));
-				} else {
-					LOG("Preflet", liHigh, "Failed to determine type of settings");
-				};	
-	
-				if (res != B_OK) {
-					LOG("Preflet", liHigh, "Error when saving settings");
-				} else {
-					fManager->SendMessage(&updMessage);
-				};
-			};
-#else
+		case kSave:
 			SaveSettings();
-#endif
-		} break;
+			break;
 
-		case kRevert: {
-#if 0
-			BMessage cur;
-			BMessage settings;
-			BMessage reply;
-
-			int current = fListView->CurrentSelection();
-			if (current < 0) {
-				printf("Error, no selection when trying to update\n");
-				return;
-			}
-
-			IconTextItem* item = (IconTextItem *)fListView->ItemAt(current);
-			addons_pair p = fAddOns[item->Name()];
-
-			BMessage tmplate = p.second;
-			BView *view = FindView(item->Name());
-			SettingsController *controller = dynamic_cast<SettingsController *>(view);
-
-//			status_t res =
-			controller->Revert(view, &tmplate);
-#endif
+		case kRevert:
 			RevertSettings();
-		} break;
+			break;
 
-		default: {
+		default:
 			BView::MessageReceived(msg);
-		} break;
+			break;
 	}
 }
 
@@ -464,19 +402,44 @@ void PView::SaveSettings(void) {
 		BMessage templateMsg;
 		BMessage settingsMsg;
 
+		// Take the template message
+		addons_pair p = fAddOns[item->Name()];
+		templateMsg = p.second;
+
 		// Find the right settings controller
 		BView *view = FindView(item->Name());
-		
+
+		// Skip this item if can't find the view
 		if (view == NULL) {
 			continue;
 		};
-		
+
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
 		// Save settings
-		controller->Save(view, &templateMsg, &settingsMsg);
-	}
-	
+		status_t res = controller->Save(view, &templateMsg, &settingsMsg);
+
+		if (res == B_OK) {
+			BMessage updMessage(IM::SETTINGS_UPDATED);
+
+			if (templateMsg.FindString("protocol")) {
+				res = im_save_protocol_settings(templateMsg.FindString("protocol"), &settingsMsg);
+				updMessage.AddString("protocol", templateMsg.FindString("protocol"));
+			} else if (templateMsg.FindString("client")) {
+				res = im_save_client_settings( templateMsg.FindString("client"), &settingsMsg);
+				updMessage.AddString("client", templateMsg.FindString("client"));
+			} else {
+				LOG("Preflet", liHigh, "Failed to determine type of settings");
+			};	
+
+			if (res != B_OK) {
+				LOG("Preflet", liHigh, "Error when saving settings");
+			} else {
+				fManager->SendMessage(&updMessage);
+			};
+		};
+	};
+
 	fRevert->SetEnabled(false);
 	fSave->SetEnabled(false);
 }
@@ -488,7 +451,8 @@ void PView::RevertSettings(void) {
 
 		// Find the right settings controller
 		BView *view = FindView(item->Name());
-		
+
+		// Skip this item if can't find the view
 		if (view == NULL) {
 			continue;
 		};
@@ -498,10 +462,10 @@ void PView::RevertSettings(void) {
 		
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
-		// Save settings
+		// Revert settings
 		controller->Revert(view, &templateMsg);
-	}
-	
+	};
+
 	fRevert->SetEnabled(false);
 	fSave->SetEnabled(false);
 };
