@@ -19,8 +19,6 @@ log_importance g_verbosity_level = liDebug;
 
 bool _has_checked_for_tty = false;
 
-status_t make_directories(const BPath &start, const char *path);
-
 void
 check_for_tty()
 {
@@ -266,6 +264,27 @@ im_load_template( const char * path, BMessage * msg )
 }
 
 status_t
+im_create_settings_directories()
+{
+	BPath path, newPath;
+
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL) != B_OK)
+		return B_ERROR;
+
+	newPath = path;
+	newPath.Append("im_kit/add-ons/protocols");
+	if (create_directory(newPath.Path(), 0755) != B_OK)
+		return B_ERROR;
+
+	newPath = path;
+	newPath.Append("im_kit/clients");
+	if (create_directory(newPath.Path(), 0755) != B_OK)
+		return B_ERROR;
+
+	return B_OK;
+}
+
+status_t
 im_load_protocol_settings( const char * protocol, BMessage * msg )
 {
 	BPath path;
@@ -456,18 +475,16 @@ status_t create_protocol_settings_directory(const char *protocol, BPath *path) {
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, &protocolsPath, true, NULL) != B_OK)
 		return B_ERROR;
 
-	BDirectory dir(protocolsPath.Path());
+	// Append protocols settings path
+	protocolsPath.Append("im_kit/add-ons/protocols");
 
 	// Create directories
-	if (make_directories(protocolsPath, "im_kit/add-ons/protocols") != B_OK) {
-		dir.Unset();
+	if (create_directory(protocolsPath.Path(), 0755) != B_OK)
 		return B_ERROR;
-	}
 
-	// Append settings path
-	protocolsPath.Append("im_kit/add-ons/protocols");
-	dir.SetTo(protocolsPath.Path());
+	BDirectory dir(protocolsPath.Path());
 
+	// Let's see if we need to create the protocol directory
 	if (!dir.Contains(protocol, B_DIRECTORY_NODE)) {
 		if (dir.CreateDirectory(protocol, NULL) != B_OK) {
 			dir.Unset();
@@ -668,38 +685,4 @@ connection_id( string conn )
 		return "";
 	
 	return conn.substr(colon+1);
-}
-
-status_t
-make_directories(const BPath &start, const char *path)
-{
-	BDirectory dir(start.Path());
-
-	if (dir.InitCheck() != B_OK)
-		return B_ERROR;
-
-	vector<string> tokens;
-	vector<string>::iterator it;
-	string str(path);
-	string::size_type lastPos = str.find_first_not_of("/", 0);
-	string::size_type pos = str.find_first_of("/", lastPos);
-
-	// Tokenizer
-	while (string::npos != pos || string::npos != lastPos) {
-		tokens.push_back(str.substr(lastPos, pos - lastPos));
-		lastPos = str.find_first_not_of("/", pos);
-		pos = str.find_first_of("/", lastPos);
-	};
-
-	str = "";
-	for (it = tokens.begin(); it != tokens.end(); ++it) {
-		str += *it + "/";
-
-		if (!dir.Contains(str.c_str(), B_DIRECTORY_NODE)) {
-			if (dir.CreateDirectory(str.c_str(), NULL) != B_OK)
-				return B_ERROR;
-		};
-	};
-
-	return B_OK;
 }

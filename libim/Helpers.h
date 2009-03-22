@@ -38,6 +38,8 @@ extern void LOG( const char * module, log_importance level, const char * msg, ..
 extern log_importance g_verbosity_level;
 
 // settings management.
+extern status_t im_create_settings_directories();
+
 extern status_t im_load_protocol_settings( const char * protocol, BMessage * settings );
 extern status_t im_load_protocol_template(const char *protocol, BMessage* msg);
 extern status_t im_load_protocol_accounts(const char* protocol, BMessage* msg);
