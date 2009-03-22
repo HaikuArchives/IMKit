@@ -26,4 +26,4 @@ if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
 
-InstallLib $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;
+InstallBin $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;
