@@ -1,5 +1,7 @@
 #include "Helpers.h"
 
+#include <vector>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -676,21 +678,28 @@ make_directories(const BPath &start, const char *path)
 	if (dir.InitCheck() != B_OK)
 		return B_ERROR;
 
+	vector<string> tokens;
+	vector<string>::iterator it;
 	string str(path);
 	string::size_type lastPos = str.find_first_not_of("/", 0);
 	string::size_type pos = str.find_first_of("/", lastPos);
 
+	// Tokenizer
 	while (string::npos != pos || string::npos != lastPos) {
-		str.substr(lastPos, pos - lastPos);
+		tokens.push_back(str.substr(lastPos, pos - lastPos));
+		lastPos = str.find_first_not_of("/", pos);
+		pos = str.find_first_of("/", lastPos);
+	};
+
+	str = "";
+	for (it = tokens.begin(); it != tokens.end(); ++it) {
+		str += *it + "/";
 
 		if (!dir.Contains(str.c_str(), B_DIRECTORY_NODE)) {
 			if (dir.CreateDirectory(str.c_str(), NULL) != B_OK)
 				return B_ERROR;
-		}
-
-		lastPos = str.find_first_not_of("/", pos);
-		pos = str.find_first_of("/", lastPos);
-	}
+		};
+	};
 
 	return B_OK;
 }
