@@ -34,8 +34,14 @@
 #	define B_CLOSE_ON_ESCAPE 0
 #endif
 
+#ifdef __HAIKU__
+#	define PWINDOW_RECT 0, 0, 720, 500
+#else
+#	define PWINDOW_RECT 0, 0, 1, 1
+#endif
+
 PWindow::PWindow()
-	: BWindow(BRect(0, 0, 720, 500), _T("Instant Messaging"), B_TITLED_WINDOW,
+	: BWindow(BRect(PWINDOW_RECT), _T("Instant Messaging"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE)
 {
 #ifdef ZETA
