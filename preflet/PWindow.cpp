@@ -12,6 +12,7 @@
 #include <interface/Screen.h>
 #ifdef __HAIKU__
 #	include <interface/GroupLayout.h>
+#	include <interface/GroupLayoutBuilder.h>
 #endif
 
 #include "PWindow.h"
@@ -35,9 +36,10 @@
 #endif
 
 #ifdef __HAIKU__
+//#	define PWINDOW_RECT 0, 0, 1, 1
 #	define PWINDOW_RECT 0, 0, 720, 500
 #else
-#	define PWINDOW_RECT 0, 0, 1, 1
+#	define PWINDOW_RECT 0, 0, 720, 500
 #endif
 
 PWindow::PWindow()
@@ -65,15 +67,20 @@ PWindow::PWindow()
 	be_locale.LoadLanguageFile(path_string.String());
 #endif
 
+	// Add top view to the layout
+	fView = new PView(Bounds());
+
 #ifdef __HAIKU__
 	// Build layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
-#endif
+	AddChild(BGroupLayoutBuilder(B_VERTICAL)
+		.Add(fView)
+	);
 
-	// Add top view to the layout
-	fView = new PView(Bounds());
-#ifdef __HAIKU__
-	GetLayout()->AddView(fView);
+	BSize minSize = fView->MinSize();
+	BSize maxSize = fView->MaxSize();
+	SetSizeLimits(minSize.width, minSize.height,
+		maxSize.width, maxSize.height);
 #else
 	AddChild(fView);
 #endif
