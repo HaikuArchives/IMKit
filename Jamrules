@@ -72,3 +72,7 @@ include [ FDirName $(IMKIT_TOP) build jam BeOSRules ] ;
 include [ FDirName $(IMKIT_TOP) build jam MainBuildRules ] ;
 include [ FDirName $(IMKIT_TOP) build jam OverriddenJamRules ] ;
 include [ FDirName $(IMKIT_TOP) build jam InstallRules ] ;
+include [ FDirName $(IMKIT_TOP) build jam CommandLineArguments ] ;
+
+NotFile post-install ;
+ProcessCommandLineArguments ;

@@ -1,0 +1,37 @@
+rule ProcessCommandLineArguments
+{
+	IMKIT_ORIGINAL_JAM_TARGETS = $(JAM_TARGETS) ;
+
+	if $(JAM_TARGETS)
+	{
+		switch $(JAM_TARGETS[1])
+		{
+			# Print usage text
+			case help :
+			{
+				Echo "Configure the build by typing:" ;
+				Echo "    ./configure" ;
+				Echo ;
+				Echo "Build with this command:" ;
+				Echo "    jam -q" ;
+				Echo ;
+				Echo "Install with this command:" ;
+				Echo "    jam install" ;
+				Exit ;
+			}
+
+			# Install
+			case install :
+			{
+				Echo "Installing..." ;
+				JAM_TARGETS += post-install ;
+			}
+
+			# Post-install
+			case post-install :
+			{
+				PostInstall ;
+			}
+		}
+	}
+}
