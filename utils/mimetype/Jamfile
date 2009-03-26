@@ -1,5 +1,5 @@
 #
-# Copyright 2008, IM Kit Team.
+# Copyright 2008-2009, IM Kit Team.
 # Distributed under the terms of the MIT License.
 #
 # Authors:
@@ -13,4 +13,4 @@ Executable mimetype_attribute :
 	: be
 ;
 
-InstallBin $(IMKIT_APPS_DIRECTORY)/im_kit : mimetype_attribute ;
+InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : mimetype_attribute ;

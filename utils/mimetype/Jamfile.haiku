@@ -1,5 +1,5 @@
 #
-# Copyright 2008, IM Kit Team.
+# Copyright 2008-2009, IM Kit Team.
 # Distributed under the terms of the MIT License.
 #
 # Authors:
@@ -19,5 +19,5 @@ AddFilesToHaikuImage apps im_kit : mimetype_attribute ;
 
 Package imkit-cvs :
 	mimetype_attribute :
-	boot apps im_kit
+	boot common bin
 ;
