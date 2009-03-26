@@ -320,7 +320,7 @@ status_t SaveSettings(BView *panel, BMessage tmplate, BMessage *settings) {
 		cur.FindInt32("type", &type);
 		
 		if (dynamic_cast<BTextControl*>(panel->FindView(name))) { 
-//			Free text
+			// Free text
 			BTextControl * ctrl = (BTextControl*)panel->FindView(name);
 		
 			switch (type) {
@@ -335,7 +335,7 @@ status_t SaveSettings(BView *panel, BMessage tmplate, BMessage *settings) {
 				};
 			};
 		} else if (dynamic_cast<BMenuField*>(panel->FindView(name))) {
-//			Provided option
+			// Provided option
 			BMenuField * ctrl = (BMenuField*)panel->FindView(name);
 			BMenuItem * item = ctrl->Menu()->FindMarked();
 			
@@ -354,7 +354,7 @@ status_t SaveSettings(BView *panel, BMessage tmplate, BMessage *settings) {
 			}
 		} else
 		if (dynamic_cast<BCheckBox*>(panel->FindView(name))) {
-// 			Boolean setting
+			// Boolean setting
 			BCheckBox * box = (BCheckBox*)panel->FindView(name);
 			
 			if ( box->Value() == B_CONTROL_ON ) {

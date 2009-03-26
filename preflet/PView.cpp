@@ -44,6 +44,7 @@
 #include "PServerOverview.h"
 #include "PProtocolsOverview.h"
 #include "PClientsOverview.h"
+#include "PClientView.h"
 #include "PAccountsView.h"
 #include "PUtils.h"
 #include "SettingsController.h"
@@ -227,12 +228,18 @@ void PView::MessageReceived(BMessage* msg) {
 			if (vIt == fViews.end()) {
 				fListView->Select(fCurrentIndex);
 				return;
-			}
+			};
 
-			if (fCurrentView != NULL) fCurrentView->Hide();
+			if (fCurrentView != NULL)
+				fCurrentView->Hide();
 			fCurrentView = vIt->second;
 			fCurrentView->Show();
 			fCurrentIndex = index;
+
+			// If it's a client we enable the save button
+			addons_map::iterator aIt = fAddOns.find(item->Name());
+			if (aIt != fAddOns.end())
+				fSave->SetEnabled(true);
 		} break;
 
 		case kSave:
@@ -300,17 +307,6 @@ void PView::LoadProtocols(void) {
 		BView *view = new PAccountsView(frame, &protoPath);
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 		controller->Init(this);
-#if 0
-		BMessage tmplate;
-		BMessage settings;
-
-		im_load_protocol_settings(protoPath.Leaf(), &settings);
-		im_load_protocol_template(protoPath.Path(), &tmplate);
-
-		tmplate.AddString("protocol", protoPath.Leaf());
-		pair<BMessage, BMessage> p(settings, tmplate);
-		fAddOns[protoPath.Path()] = p;
-#endif
 
 		// Add protocol settings view
 		view->Hide();
@@ -374,8 +370,8 @@ void PView::LoadClients(void) {
 		frame.top += fFontHeight;
 		frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
 #endif
-		
-		BView* view = new BView(frame, file, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+
+		PClientView *view = new PClientView(frame, clientPath.Path(), file);
 		BuildGUI(client_template, client_settings, file, view);
 		fViews[clientPath.Path()] = view;
 		fMainView->AddChild(view);
@@ -419,7 +415,7 @@ void PView::SaveSettings(void) {
 		// Save settings
 		status_t res = controller->Save(view, &templateMsg, &settingsMsg);
 
-		if (res == B_OK) {
+		if (res == B_OK && fManager->InitCheck() == B_OK) {
 			BMessage updMessage(IM::SETTINGS_UPDATED);
 
 			if (templateMsg.FindString("protocol")) {

@@ -19,6 +19,7 @@ Executable InstantMessaging :
 	PServerOverview.cpp
 	PProtocolsOverview.cpp
 	PClientsOverview.cpp
+	PClientView.cpp
 	PAccountsView.cpp
 	PAccountDialog.cpp
 	PUtils.cpp

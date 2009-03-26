@@ -280,28 +280,6 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			if (item == NULL)
 				return;
 
-			// Formatted title and text
-			char *titleBuffer = new char[513];
-			char *textBuffer = new char[513];
-			(void)snprintf(titleBuffer, 512, _T("Remove %s account"), item->Text());
-			titleBuffer[512] = '\0';
-			(void)snprintf(textBuffer, 512, _T("Are you sure you want to remove the %s account?\n"
-				"If you confirm this action, you won't be able to restore the account settings."),
-				item->Text());
-			textBuffer[512] = '\0';
-
-			// Ask for confirmation firm
-			BAlert *confirm = new BAlert(titleBuffer, textBuffer, _T("No"), _T("Yes"), NULL,
-				B_WIDTH_AS_USUAL, B_EVEN_SPACING, B_WARNING_ALERT);
-			confirm->SetShortcut(0, B_ESCAPE);
-			confirm->ButtonAt(0)->MakeDefault(true);
-			delete titleBuffer;
-			delete textBuffer;
-
-			// Let's see if the user says yes or no :)
-			if (confirm->Go() == 0)
-				return;
-
 			if (fSettings->Contains(item->Text()) == true) {
 				fSettings->Remove(item->Text());
 			};		
@@ -353,7 +331,9 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			if (fSettings->Contains(name) == true) {
 				// If the account name is not the same as the original name (ie. an edit) throw an error
 				if ((isEdit == false) || (nameChanged == true)) {
-					BAlert *alert = new BAlert("Error Saving", _T("An account with this name already exists"), _T("Okay"), NULL, NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+					BAlert *alert = new BAlert("Error Saving",
+						_T("An account with this name already exists"), _T("OK"), NULL, NULL,
+						B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 					alert->Go(NULL);
 					
 					return;

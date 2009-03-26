@@ -75,8 +75,8 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fServerDivider = new Divider(frame, "ServerDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fServerDivider->ResizeToPreferred();
 
-	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), 200);
-	//fServerDesc->ResizeToPreferred();
+	fServerDesc = new MultiLineStringView("ServersDesc", _T(kServerDesc), Bounds().Width());
+	fServerDesc->ResizeToPreferred();
 
 	fServerButton = new BButton(frame, "ServerEdit", _T("Edit" B_UTF8_ELLIPSIS), new BMessage(kMsgEditServer));
 	fServerButton->ResizeToPreferred();

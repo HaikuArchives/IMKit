@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008, IM Kit Team.
+ * Copyright 2003-2009, IM Kit Team.
  * Distributed under the terms of the MIT License.
  */
 #ifndef PVIEW_H
