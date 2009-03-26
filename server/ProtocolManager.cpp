@@ -52,7 +52,7 @@ ProtocolManager::ProtocolManager(void)
 			LOG("im_server", liDebug, "ProtocolManager: Finding ProtocolLoader with a query on %s", volName);
 
 			BQuery* query = new BQuery();
-			query->SetPredicate("((BEOS:APP_SIG==\""IM_PROTOCOL_LOADER_SIG"\")&&(BEOS:TYPE==\"application/x-vnd.Be-elfexecutable\"))");
+			query->SetPredicate("(BEOS:APP_SIG==\""IM_PROTOCOL_LOADER_SIG"\")");
 			query->SetVolume(&volume);
 			query->Fetch();
 
