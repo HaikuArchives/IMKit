@@ -20,3 +20,7 @@ $ jam -q install
 If you want to uninstall:
 
 $ jam -q uninstall
+
+Triggering the post-install script:
+
+$ jam post-install
