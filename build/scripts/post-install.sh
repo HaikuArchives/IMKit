@@ -40,6 +40,7 @@ fi
 
 # Create indexes
 echo "==> Creating indexes..."
+$MKINDEX -t string BEOS:APP_SIG
 $MKINDEX -t string IM:connections
 $MKINDEX -t string IM:status
 
