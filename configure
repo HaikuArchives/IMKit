@@ -269,7 +269,6 @@ IMKIT_BEOS_SYSTEM_DIRECTORY = ${beos_sysdir} ;
 IMKIT_BEOS_PREFERENCES_DIRECTORY = ${prefsdir} ;
 IMKIT_APPS_DIRECTORY = ${appsdir} ;
 
-IMKIT_BUILD_DATE = `date +"%Y-%m-%d"` ;
 IMKIT_BUILD_REVISION = `svnversion .` ;
 
 IMKIT_IS_HAIKU = ${is_haiku} ;
