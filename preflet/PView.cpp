@@ -371,8 +371,8 @@ void PView::LoadClients(void) {
 		frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
 #endif
 
-		PClientView *view = new PClientView(frame, clientPath.Path(), file);
-		BuildGUI(client_template, client_settings, file, view);
+		PClientView *view = new PClientView(frame, clientPath.Path(), file, client_template, client_settings);
+//		BuildGUI(client_template, client_settings, file, view);
 		fViews[clientPath.Path()] = view;
 		fMainView->AddChild(view);
 		

@@ -42,7 +42,7 @@ const float kControlOffset = 5.0;
 const float kEdgeOffset = 5.0;
 const float kDividerWidth = 100;
 
-BubbleHelper gHelper;
+//BubbleHelper gHelper;
 
 void CenterWindowOnScreen(BWindow* window) {
 	BRect screenFrame = BScreen().Frame();
@@ -280,7 +280,7 @@ float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* v
 		}
 
 		if (curr.FindString("help")) {
-			gHelper.SetHelp(control, strdup(curr.FindString("help")));
+//			gHelper.SetHelp(control, strdup(curr.FindString("help")));
 		};
 
 #ifdef __HAIKU__

@@ -13,14 +13,25 @@ class SettingsHost;
 
 class PClientView : public BView, public SettingsController {
 	public:
-					PClientView(BRect frame, const char *name, const char *title);
+							PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings);
 
 		// SettingsController Hooks
 		virtual status_t	Init(SettingsHost *host);
 		virtual status_t	Save(BView *view, const BMessage *tmplate, BMessage *settings);
 		virtual status_t	Revert(BView *view, const BMessage *tmplate);
 
+		// Public
+		bool				ShowHeading(void) const;
+		void				SetShowHeading(bool show);
+
 	private:
+		float				BuildGUI(void);
+	
+		BMessage			fTemplate;
+		BMessage			fSettings;
+
+		bool				fShowHeading;
+	
 		SettingsHost		*fHost;
 };
 
