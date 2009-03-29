@@ -40,6 +40,7 @@
 
 #include "common/BubbleHelper.h"
 #include "common/Divider.h"
+#include "common/NotifyingTextView.h"
 
 //#pragma mark Global
 
@@ -80,7 +81,7 @@ void PClientView::AttachedToWindow(void) {
 		
 		BMenu *menu = dynamic_cast<BMenu *>(child);
 		BTextControl *textcontrol = dynamic_cast<BTextControl *>(child);
-		BTextView *textview = dynamic_cast<BTextView *>(child);
+		NotifyingTextView *textview = dynamic_cast<NotifyingTextView *>(child);
 		BCheckBox *checkbox = dynamic_cast<BCheckBox *>(child);
 		BMenuField *menufield = dynamic_cast<BMenuField *>(child);
 				
@@ -105,6 +106,11 @@ void PClientView::AttachedToWindow(void) {
 		if (checkbox != NULL) {
 			checkbox->SetMessage(new BMessage(kMsgControlChanged));
 			checkbox->SetTarget(parent);
+		};
+		
+		if (textview != NULL) {
+			textview->SetHandler(this);
+			textview->SetNotificationMessage(BMessage(kMsgControlChanged));
 		};
 	};
 };
@@ -356,7 +362,7 @@ float PClientView::BuildGUI(void) {
 					textRect.InsetBy(kEdgeOffset, kEdgeOffset);
 					textRect.OffsetTo(1.0, 1.0);
 
-					BTextView *textView = new BTextView(frame, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+					NotifyingTextView *textView = new NotifyingTextView(frame, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
 					control = new BScrollView("NA", textView, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_NAVIGABLE, false, true);
 					textView->SetText(_T(value));			
