@@ -23,8 +23,8 @@ if $(IMKIT_IS_ZETA) = 1 {
 AddResources libim.so : libim_version.rdef ;
 
 InstallLib $(IMKIT_COMMON_LIB_DIRECTORY) : libim.so ;
-InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Constants.h ;
-InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Contact.h ;
-InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Helpers.h ;
-InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Manager.h ;
-InstallFile $(IMKIT_COMMON_DEVELOP_DIRECTORY)/headers/libim : Protocol.h ;
+InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Constants.h ;
+InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Contact.h ;
+InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Helpers.h ;
+InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Manager.h ;
+InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Protocol.h ;
