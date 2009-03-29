@@ -22,6 +22,7 @@ StaticLibrary <IMKit>libcommon.a :
 	IconTextItem.cpp
 	IconView.cpp
 	MultiLineStringView.cpp
+	NotifyingTextView.cpp
 	Divider.cpp
 	SettingsFile.cpp
 	htmlparse.cpp
