@@ -6,6 +6,7 @@
 #define PCLIENTVIEW_H
 
 #include <interface/View.h>
+#include <support/String.h>
 
 #include "SettingsController.h"
 
@@ -14,6 +15,10 @@ class SettingsHost;
 class PClientView : public BView, public SettingsController {
 	public:
 							PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings);
+
+		// BView Hooks
+		virtual void		AttachedToWindow(void);
+		virtual void		MessageReceived(BMessage *msg);
 
 		// SettingsController Hooks
 		virtual status_t	Init(SettingsHost *host);
@@ -26,7 +31,8 @@ class PClientView : public BView, public SettingsController {
 
 	private:
 		float				BuildGUI(void);
-	
+
+		BString				fTitle;
 		BMessage			fTemplate;
 		BMessage			fSettings;
 

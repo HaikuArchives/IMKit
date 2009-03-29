@@ -230,16 +230,12 @@ void PView::MessageReceived(BMessage* msg) {
 				return;
 			};
 
-			if (fCurrentView != NULL)
+			if (fCurrentView != NULL) {
 				fCurrentView->Hide();
+			};
 			fCurrentView = vIt->second;
 			fCurrentView->Show();
 			fCurrentIndex = index;
-
-			// If it's a client we enable the save button
-			addons_map::iterator aIt = fAddOns.find(item->Name());
-			if (aIt != fAddOns.end())
-				fSave->SetEnabled(true);
 		} break;
 
 		case kSave:
@@ -372,7 +368,8 @@ void PView::LoadClients(void) {
 #endif
 
 		PClientView *view = new PClientView(frame, clientPath.Path(), file, client_template, client_settings);
-//		BuildGUI(client_template, client_settings, file, view);
+		SettingsController *controller = dynamic_cast<SettingsController *>(view);
+		controller->Init(this);
 		fViews[clientPath.Path()] = view;
 		fMainView->AddChild(view);
 		

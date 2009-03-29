@@ -35,6 +35,7 @@
 
 #include "PClientView.h"
 #include "PUtils.h"
+#include "SettingsHost.h"
 #include "ViewFactory.h"
 
 #include "common/BubbleHelper.h"
@@ -46,6 +47,8 @@ BubbleHelper gHelper;
 
 //#pragma mark Constants
 
+const int32 kMsgControlChanged = 'mcch';
+
 const float kControlOffset = 5.0;
 const float kEdgeOffset = 5.0;
 const float kDividerWidth = 100;
@@ -54,13 +57,68 @@ const float kDividerWidth = 100;
 
 PClientView::PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings)
 	: BView(frame, name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	fTitle(title),
 	fTemplate(tmplate),
 	fSettings(settings),
-	fShowHeading(false),
+	fShowHeading(true),
 	fHost(NULL) {
 	
 	BuildGUI();
 };
+
+//#pragma mark BView Hooks
+
+void PClientView::AttachedToWindow(void) {
+	BView *parent = this;
+#ifdef __HAIKU__
+	// On Haiku we need to iterate the Layout's views.
+	parent = ChildAt(0);
+#endif
+
+	for (int32 i = 0; i < parent->CountChildren(); i++) {
+		BView *child = parent->ChildAt(i);
+		
+		BMenu *menu = dynamic_cast<BMenu *>(child);
+		BTextControl *textcontrol = dynamic_cast<BTextControl *>(child);
+		BTextView *textview = dynamic_cast<BTextView *>(child);
+		BCheckBox *checkbox = dynamic_cast<BCheckBox *>(child);
+		BMenuField *menufield = dynamic_cast<BMenuField *>(child);
+				
+		if (menufield != NULL) {
+			menu = menufield->Menu();
+		};
+		if (menu != NULL) {
+			for (int32 j = 0; j < menu->CountItems(); j++) {
+				BMenuItem *item = menu->ItemAt(j);
+				item->SetMessage(new BMessage(kMsgControlChanged));
+				item->SetTarget(parent);
+			};
+		
+			menu->SetTargetForItems(parent);
+		};
+		
+		if (textcontrol != NULL) {
+			textcontrol->SetMessage(new BMessage(kMsgControlChanged));
+			textcontrol->SetTarget(parent);
+		};
+		
+		if (checkbox != NULL) {
+			checkbox->SetMessage(new BMessage(kMsgControlChanged));
+			checkbox->SetTarget(parent);
+		};
+	};
+};
+
+void PClientView::MessageReceived(BMessage *msg) {
+	switch (msg->what) {
+		case kMsgControlChanged: {
+			fHost->ControllerModified(this);
+		} break;
+		default: {
+			BView::MessageReceived(msg);
+		} break;
+	};
+}; 
 
 //#pragma mark SettingsController Hooks
 
@@ -112,7 +170,7 @@ float PClientView::BuildGUI(void) {
 		BFont headingFont(be_bold_font);
 		headingFont.SetSize(headingFont.Size() * 1.2f);
 
-		BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), Name(), Name());
+		BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), fTitle.String(), fTitle.String());
 		descLabel->SetFont(&headingFont);
 		descLabel->SetAlignment(B_ALIGN_LEFT);
 
