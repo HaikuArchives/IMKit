@@ -176,13 +176,11 @@ echo $copyattrbin
 
 # Check for OpenSSL headers
 echo -n "Checking for OpenSSL headers..."
-if [ -f $common_devdir/headers/openssl/ssl.h -o \
-     -f $user_confdir/include/openssl/ssl.h -o \
-     -f $common_incdir/openssl/ssl.h ]; then
+if [ -f $common_incdir/openssl/ssl.h -o \
+     -f $common_devdir/headers/openssl/ssl.h ]; then
 	echo "found"
-	[ -f $common_devdir/headers/openssl/ssl.h ] && ssl_incdir=$common_devdir/headers
-	[ -f $user_confdir/include/openssl/ssl.h ] && ssl_incdir=$user_confdir/include
 	[ -f $common_incdir/openssl/ssl.h ] && ssl_incdir=$common_incdir
+	[ -f $common_devdir/headers/openssl/ssl.h ] && ssl_incdir=$common_devdir/headers
 	have_openssl=1
 else
 	echo "not found"
@@ -193,20 +191,15 @@ fi
 if [ $have_openssl -eq 1 ]; then
 	# Check for OpenSSL libraries
 	echo -n "Checking for OpenSSL libraries..."
-	if [ -f $user_confdir/lib/libssl.so -a \
-	     -f $user_confdir/lib/libcrypto.so ]; then
-		echo "found"
-		ssl_libdir=$user_confdir/lib
-		have_openssl=1
-	elif [ -f $beos_sysdir/lib/libssl.so -a \
-	     -f $beos_sysdir/lib/libcrypto.so ]; then
-		echo "found"
-		ssl_libdir=$beos_sysdir/lib
-		have_openssl=1
-	elif [ -f $common_libdir/libssl.so -a \
+	if [ -f $common_libdir/libssl.so -a \
 	     -f $common_libdir/libcrypto.so ]; then
 		echo "found"
 		ssl_libdir=$common_libdir
+		have_openssl=1
+	elif [ -f $beos_sysdir/lib/libssl.so -a \
+	       -f $beos_sysdir/lib/libcrypto.so ]; then
+		echo "found"
+		ssl_libdir=$beos_sysdir/lib
 		have_openssl=1
 	else
 		echo "not found"
@@ -242,7 +235,7 @@ fi
 # Check for InfoPopper
 echo -n "Checking for InfoPopper..."
 if [ -f $common_libdir/libinfopopper.so -a \
-     -f $common_devdir/headers/libinfopopper/InfoPopper.h ]; then
+     -f $common_incdir/infopopper/InfoPopper.h ]; then
 	echo "found"
 	have_infopopper=1
 else
@@ -261,6 +254,7 @@ IMKIT_LIBYAHOO2_LIBDIR = ${yahoo2_libdir} ;
 
 IMKIT_COMMON_BIN_DIRECTORY = ${common_bindir} ;
 IMKIT_COMMON_LIB_DIRECTORY = ${common_libdir} ;
+IMKIT_COMMON_INC_DIRECTORY = ${common_incdir} ;
 IMKIT_COMMON_SERVERS_DIRECTORY = ${common_serversdir} ;
 IMKIT_COMMON_ADDONS_DIRECTORY = ${common_addonsdir} ;
 IMKIT_COMMON_DEVELOP_DIRECTORY = ${common_devdir} ;
