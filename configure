@@ -241,7 +241,7 @@ fi
 
 # Check for InfoPopper
 echo -n "Checking for InfoPopper..."
-if [ -f $common_libdir/libinfopopper.so -o \
+if [ -f $common_libdir/libinfopopper.so -a \
      -f $common_devdir/headers/libinfopopper/InfoPopper.h ]; then
 	echo "found"
 	have_infopopper=1
