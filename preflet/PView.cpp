@@ -277,12 +277,10 @@ void PView::ControllerModified(SettingsController *controler) {
 
 void PView::LoadProtocols(void) {
 	BMessage msg;
-	BRect frame(0, 0, 1, 1);
-
-	// Adding protocol items
 	BMessage protocols;
 	im_get_protocol_list(&protocols);
 
+	// Adding protocol items
 	for (int32 i = 0; protocols.FindMessage("protocol", i, &msg) == B_OK; i++) {
 		const char* path;
 		const char* file;
@@ -298,6 +296,14 @@ void PView::LoadProtocols(void) {
 		BBitmap* icon = ReadNodeIcon(protoPath.Path(), B_MINI_ICON, true);
 		IconTextItem* item = new IconTextItem(protoPath.Path(), file, icon);
 		fListView->AddUnder(item, fProtocolsItem);
+
+		BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+		frame = fMainView->Bounds();
+//		frame.InsetBy(kEdgeOffset, kEdgeOffset);
+//		frame.top += fFontHeight;
+//		frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
+#endif
 
 		// Create protocol settings view
 		BView *view = new PAccountsView(frame, &protoPath);

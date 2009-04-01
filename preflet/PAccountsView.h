@@ -6,6 +6,7 @@
 #include "SettingsController.h"
 
 class BStringView;
+class BScrollView;
 class AccountStore;
 class Divider;
 class SettingsHost;
@@ -37,7 +38,8 @@ class PAccountsView : public BView, public SettingsController {
 		
 		BStringView			*fHeadingLabel;
 		Divider				*fHeadingDivider;
-		BOutlineListView	*fProtocolListView;
+		BScrollView			*fScrollView;
+		BOutlineListView	*fAccountListView;
 		BButton				*fAddButton;
 		BButton				*fEditButton;
 		BButton				*fDelButton;

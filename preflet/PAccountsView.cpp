@@ -120,15 +120,15 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	fProtoPath(*protoPath)
 {
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
+	// Font for heading
+	BFont headingFont(be_bold_font);
+	headingFont.SetSize(headingFont.Size() * 1.2f);
+
 	BRect frame(0, 0, 1, 1);
 #ifndef __HAIKU__
 	frame = Frame();
 	frame.InsetBy(inset * 2, inset * 2);
 #endif
-
-	// Font for heading
-	BFont headingFont(be_bold_font);
-	headingFont.SetSize(headingFont.Size() * 1.2f);
 
 	// Heading
 	char *titleBuffer = new char[513];
@@ -144,13 +144,13 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	fHeadingDivider->ResizeToPreferred();
 
 	// Create list view
-	fProtocolListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
+	fAccountListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
 	BMessage *selection = new BMessage(kProtocolListChanged);
 	selection->AddString("protocol", protoPath->Path());
-	fProtocolListView->SetSelectionMessage(selection);
+	fAccountListView->SetSelectionMessage(selection);
 
 	// Create scroll bars
-	BScrollView* scrollView = new BScrollView("ProtocolListScroll", fProtocolListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
+	fScrollView = new BScrollView("ProtocolListScroll", fAccountListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
 
 	// Buttons
 	fAddButton = new BButton(frame, "Add", _T("Add account" B_UTF8_ELLIPSIS), new BMessage(kAddAccount));
@@ -162,7 +162,7 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 #ifdef __HAIKU__
 	fHeadingLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fHeadingDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
-	scrollView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fScrollView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fEditButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fDelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
@@ -175,7 +175,7 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 		)
 
 		.AddGroup(B_HORIZONTAL, 2.0f)
-			.Add(scrollView, 10.0f)
+			.Add(fScrollView, 10.0f)
 
 			.AddGroup(B_VERTICAL, 2.0f)
 				.Add(fAddButton)
@@ -186,7 +186,14 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 		.End()
 	);
 #else
-	AddChild(scrollView);
+	AddChild(fHeadingLabel);
+	AddChild(fHeadingDivider);
+
+	AddChild(fScrollView);
+	
+	AddChild(fAddButton);
+	AddChild(fEditButton);
+	AddChild(fDelButton);
 	
 	LayoutGUI();
 #endif
@@ -216,7 +223,7 @@ void PAccountsView::AttachedToWindow(void) {
 	fEditButton->SetTarget(this);
 	fDelButton->SetTarget(this);
 
-	fProtocolListView->SetTarget(this);
+	fAccountListView->SetTarget(this);
 }
 
 void PAccountsView::MessageReceived(BMessage *msg) {
@@ -228,7 +235,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			msg->FindInt32("index", &index);
 			
 			if (index >= 0) {
-				item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
+				item = dynamic_cast<BStringItem *>(fAccountListView->ItemAt(index));
 			}
 			
 			fEditButton->SetEnabled(item != NULL);
@@ -250,10 +257,10 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			if (msg->what == kEditAccount) {
 				title = _T("Edit account");
 
-				int32 index = fProtocolListView->CurrentSelection(0);
+				int32 index = fAccountListView->CurrentSelection(0);
 				if (index < 0) return;
 
-				BStringItem *item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
+				BStringItem *item = dynamic_cast<BStringItem *>(fAccountListView->ItemAt(index));
 				if (item == NULL)
 					return;
 
@@ -272,11 +279,11 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 		} break;
 
 		case kDelAccount: {
-			int32 index = fProtocolListView->CurrentSelection(0);
+			int32 index = fAccountListView->CurrentSelection(0);
 			if (index < 0)
 				return;
 			
-			BStringItem *item = dynamic_cast<BStringItem *>(fProtocolListView->ItemAt(index));
+			BStringItem *item = dynamic_cast<BStringItem *>(fAccountListView->ItemAt(index));
 			if (item == NULL)
 				return;
 
@@ -284,7 +291,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 				fSettings->Remove(item->Text());
 			};		
 			
-			fProtocolListView->RemoveItem(item);
+			fAccountListView->RemoveItem(item);
 			delete item;
 			
 			fEditButton->SetEnabled(false);
@@ -353,7 +360,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 					item->SetText(name);
 				}
 			} else {
-				fProtocolListView->AddItem(new BStringItem(name));
+				fAccountListView->AddItem(new BStringItem(name));
 			};
 			BMessenger(dialog).SendMessage(B_QUIT_REQUESTED);
 			
@@ -393,6 +400,60 @@ status_t PAccountsView::Revert(BView *view, const BMessage *tmplate) {
 #ifndef __HAIKU__
 
 void PAccountsView::LayoutGUI(void) {
+	font_height fh;
+	BFont headingFont(be_bold_font);
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
+	BRect frame = Bounds();
+	frame.InsetBy(inset * 2, inset * 2);
+
+	// Heading
+	fHeadingLabel->ResizeToPreferred();
+	BRect frameHeadingLabel = fHeadingLabel->Frame();
+	
+	BRect frameHeadingDivider = fHeadingDivider->Frame();
+	fHeadingDivider->MoveTo(frameHeadingDivider.left, frameHeadingLabel.bottom + inset);
+	frameHeadingDivider = fHeadingDivider->Frame();
+
+	// Accounts Scroll View
+	BRect frameScrollView = fScrollView->Frame();
+	fScrollView->MoveTo(frameScrollView.left, frameHeadingDivider.bottom + inset);
+	frameScrollView = fScrollView->Frame();
+
+	// Calculate the widest button....
+	fAddButton->ResizeToPreferred();
+	BRect frameAddButton = fAddButton->Frame();
+	fEditButton->ResizeToPreferred();
+	BRect frameEditButton = fEditButton->Frame();
+	fDelButton->ResizeToPreferred();
+	BRect frameDelButton = fDelButton->Frame();
+
+	// Width of widest...
+	float buttonWidth = max_c(frameAddButton.Width(), max_c(frameEditButton.Width(), frameDelButton.Width()));
+	
+	// Add Button
+	fAddButton->MoveTo(frame.right - inset - buttonWidth, frameScrollView.top);
+	fAddButton->ResizeTo(buttonWidth, frameAddButton.Height());
+	frameAddButton = fAddButton->Frame();
+
+	// Edit Button
+	fEditButton->MoveTo(frame.right - inset - buttonWidth, frameAddButton.bottom + inset);
+	fEditButton->ResizeTo(buttonWidth, frameEditButton.Height());
+	frameEditButton = fEditButton->Frame();
+	
+	// Delete Button
+	fDelButton->MoveTo(frame.right - inset - buttonWidth, frameEditButton.bottom + inset);
+	fDelButton->ResizeTo(buttonWidth, frameDelButton.Height());
+	frameDelButton = fDelButton->Frame();
+	
+	// Adjust the size of the ScrollView now that we know the location of the buttons
+	// XXX: I can't figure out what the height should *actually* be....
+	fScrollView->ResizeTo(frame.right - inset - buttonWidth - inset - B_V_SCROLL_BAR_WIDTH, frame.bottom - inset * 5 - B_H_SCROLL_BAR_HEIGHT);
+	frameScrollView = fScrollView->Frame();
+
+	fAccountListView->ResizeTo(frameScrollView.Width() - B_V_SCROLL_BAR_WIDTH, frameScrollView.Height() - B_H_SCROLL_BAR_HEIGHT);
 };
 
 #endif
@@ -403,12 +464,12 @@ void PAccountsView::LoadSettings(bool reload) {
 	};
 
 	BListItem *item = NULL;
-	while ((item = fProtocolListView->RemoveItem(0L)) != NULL) {
+	while ((item = fAccountListView->RemoveItem(0L)) != NULL) {
 		delete item;
 	};
 
 	for (map<BString, BMessage *>::iterator it = fSettings->Start(); it != fSettings->End(); it++) {
 		BStringItem *item = new BStringItem(it->first.String());
-		fProtocolListView->AddItem(item);
+		fAccountListView->AddItem(item);
 	};
 };
