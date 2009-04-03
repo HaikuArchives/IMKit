@@ -64,12 +64,24 @@ PClientView::PClientView(BRect frame, const char *name, const char *title, BMess
 	fShowHeading(true),
 	fHost(NULL) {
 	
-	BuildGUI();
+	fShowHeading = (title != NULL);
 };
 
 //#pragma mark BView Hooks
 
 void PClientView::AttachedToWindow(void) {
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	SetHighColor(0, 0, 0, 0);
+#endif
+
+	fRequiredHeight = BuildGUI();
+
 	BView *parent = this;
 #ifdef __HAIKU__
 	// On Haiku we need to iterate the Layout's views.
@@ -118,13 +130,25 @@ void PClientView::AttachedToWindow(void) {
 void PClientView::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
 		case kMsgControlChanged: {
-			fHost->ControllerModified(this);
+			if (fHost != NULL) {
+				fHost->ControllerModified(this);
+			};
 		} break;
 		default: {
 			BView::MessageReceived(msg);
 		} break;
 	};
 }; 
+
+void PClientView::Draw(BRect) {
+	SetPenSize(2.0f);
+	StrokeRect(Bounds());
+}
+
+void PClientView::GetPreferredSize(float *width, float *height) {
+	*width = Frame().Width();
+	*height = fRequiredHeight;
+};
 
 //#pragma mark SettingsController Hooks
 
@@ -133,11 +157,11 @@ status_t PClientView::Init(SettingsHost *host) {
 	return B_OK;
 };
 
-status_t PClientView::Save(BView *view, const BMessage *tmplate, BMessage *settings) {
-	return SaveSettings(view, *tmplate, settings);
+status_t PClientView::Save(const BMessage *tmplate, BMessage *settings) {
+	return SaveSettings(this, *tmplate, settings);
 };
 
-status_t PClientView::Revert(BView *view, const BMessage *tmplate) {
+status_t PClientView::Revert(const BMessage *tmplate) {
 	return B_OK;
 };
 
@@ -145,10 +169,6 @@ status_t PClientView::Revert(BView *view, const BMessage *tmplate) {
 
 bool PClientView::ShowHeading(void) const {
 	return fShowHeading;
-};
-
-void PClientView::SetShowHeading(bool show) {
-	fShowHeading = show;
 };
 
 //#pragma mark Private

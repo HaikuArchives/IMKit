@@ -42,10 +42,11 @@
 #	define PWINDOW_RECT 0, 0, 720, 500
 #endif
 
-PWindow::PWindow()
+//#pragma mark Constructors
+
+PWindow::PWindow(void)
 	: BWindow(BRect(PWINDOW_RECT), _T("Instant Messaging"), B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE)
-{
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE) {
 #ifdef ZETA
 	app_info ai;
 	be_app->GetAppInfo(&ai);
@@ -98,10 +99,9 @@ PWindow::PWindow()
 	CenterWindowOnScreen(this);
 }
 
+//#pragma mark BWindow Hooks
 
-bool
-PWindow::QuitRequested()
-{
+bool PWindow::QuitRequested(void) {
 	be_app_messenger.SendMessage(B_QUIT_REQUESTED);
 	return true;
 }

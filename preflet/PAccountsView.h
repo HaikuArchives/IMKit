@@ -22,8 +22,8 @@ class PAccountsView : public BView, public SettingsController {
 
 		// SettingsController Hooks
 		virtual status_t	Init(SettingsHost *host);
-		virtual status_t	Save(BView *view, const BMessage *tmplate, BMessage *settings);
-		virtual status_t	Revert(BView *view, const BMessage *tmplate);
+		virtual status_t	Save(const BMessage *tmplate, BMessage *settings);
+		virtual status_t	Revert(const BMessage *tmplate);
 
 	private:
 #ifndef __HAIKU__

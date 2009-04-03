@@ -9,15 +9,15 @@
 
 class PView;
 
-class PWindow : public BWindow
-{
+class PWindow : public BWindow {
 	public:
-				PWindow();
+							PWindow(void);
 
-		virtual bool	QuitRequested();
+		// BWindow Hooks
+		virtual bool		QuitRequested(void);
 
 	private:
-		PView*		fView;
+		PView				*fView;
 };
 
 #endif // PWINDOW_H

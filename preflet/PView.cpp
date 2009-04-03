@@ -416,7 +416,7 @@ void PView::SaveSettings(void) {
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
 		// Save settings
-		status_t res = controller->Save(view, &templateMsg, &settingsMsg);
+		status_t res = controller->Save(&templateMsg, &settingsMsg);
 
 		if (res == B_OK && fManager->InitCheck() == B_OK) {
 			BMessage updMessage(IM::SETTINGS_UPDATED);
@@ -462,7 +462,7 @@ void PView::RevertSettings(void) {
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 
 		// Revert settings
-		controller->Revert(view, &templateMsg);
+		controller->Revert(&templateMsg);
 	};
 
 	fRevert->SetEnabled(false);

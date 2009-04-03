@@ -12,9 +12,11 @@
 //#pragma mark Hooks
 
 status_t SettingsController::Init(SettingsHost *host) {
+	return B_OK;
 };
 
-status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessage *settings) {
+status_t SettingsController::Save(const BMessage *tmplate, BMessage *settings) {
+	BView *view = dynamic_cast<BView *>(this);
 	BMessage cur;
 
 	for (int i = 0; tmplate->FindMessage("setting", i, &cur) == B_OK; i++) {
@@ -23,9 +25,9 @@ status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessag
 	
 		cur.FindInt32("type", &type);
 	
-		if (dynamic_cast<BTextControl*>(panel->FindView(name))) {
+		if (dynamic_cast<BTextControl*>(view->FindView(name))) {
 			// Free text
-			BTextControl *ctrl = (BTextControl*)panel->FindView(name);
+			BTextControl *ctrl = (BTextControl*)view->FindView(name);
 	
 			switch (type) {
 				case B_STRING_TYPE: {
@@ -38,9 +40,9 @@ status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessag
 					return B_ERROR;
 				};
 			}
-		} else if (dynamic_cast<BMenuField *>(panel->FindView(name))) {
+		} else if (dynamic_cast<BMenuField *>(view->FindView(name))) {
 			// Provided option
-			BMenuField *ctrl = (BMenuField *)panel->FindView(name);
+			BMenuField *ctrl = (BMenuField *)view->FindView(name);
 			BMenuItem *item = ctrl->Menu()->FindMarked();
 	
 			if (!item) {
@@ -58,17 +60,17 @@ status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessag
 					return B_ERROR;
 				};
 			}
-		} else if (dynamic_cast<BCheckBox *>(panel->FindView(name))) {
+		} else if (dynamic_cast<BCheckBox *>(view->FindView(name))) {
 			// Boolean setting
-			BCheckBox *box = (BCheckBox *)panel->FindView(name);
+			BCheckBox *box = (BCheckBox *)view->FindView(name);
 	
 			if (box->Value() == B_CONTROL_ON) {
 				settings->AddBool(name, true);
 			} else {
 				settings->AddBool(name, false);
 			};
-		} else if (dynamic_cast<BTextView *>(panel->FindView(name))) {
-			BTextView *view = (BTextView *)panel->FindView(name);
+		} else if (dynamic_cast<BTextView *>(view->FindView(name))) {
+			BTextView *view = (BTextView *)view->FindView(name);
 			settings->AddString(name, view->Text());
 		};
 	};
@@ -76,6 +78,6 @@ status_t SettingsController::Save(BView *panel, const BMessage *tmplate, BMessag
 	return B_OK;
 };
 
-status_t SettingsController::Revert(BView *panel, const BMessage *tmplate) {
+status_t SettingsController::Revert(const BMessage *tmplate) {
 	return B_ERROR;
 };

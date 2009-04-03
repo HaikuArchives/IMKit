@@ -9,38 +9,44 @@
 #include <interface/Window.h>
 
 class BBox;
+class BButton;
 class BMessenger;
 class BPath;
 class BTextControl;
 
 class Divider;
+class PClientView;
 
 class PAccountDialog : public BWindow {
 	public:
-						PAccountDialog(const char *title, const char *protocol, const char *account, BMessage settingsTemplate, BMessage settings, BMessenger *target, BMessage save, BMessage cancel);
+							PAccountDialog(const char *title, const char *protocol, const char *account, BMessage settingsTemplate, BMessage settings, BMessenger *target, BMessage save, BMessage cancel);
 
 		// BWindow Hooks
-		virtual void	MessageReceived(BMessage* msg);
-		virtual bool	QuitRequested(void);
+		virtual void		MessageReceived(BMessage* msg);
+		virtual bool		QuitRequested(void);
 
 		// Public
-		const char		*AccountName(void);
+		const char			*AccountName(void);
 
 	private:
-		void			SendNotification(bool saved);
+#ifndef __HAIKU__
+		void				LayoutGUI(void);
+#endif
+		void				SendNotification(bool saved);
 		
-		BString			fOriginalAccount;
-		BMessage		fTemplate;
-		BMessage		fSettings;
+		BString				fOriginalAccount;
+		BMessage			fTemplate;
+		BMessage			fSettings;
 	
-		BBox			*fBox;
-		BTextControl	*fAccountName;
-		Divider			*fAccountNameDivider;
-		BView			*fProtocolControl;
-		
-		BMessenger		*fTarget;
-		BMessage		fSave;
-		BMessage		fCancel;
+		BTextControl		*fAccountName;
+		Divider				*fAccountNameDivider;
+		PClientView			*fProtocolControl;
+		BButton				*fCancelButton;
+		BButton				*fOKButton;
+
+		BMessenger			*fTarget;
+		BMessage			fSave;
+		BMessage			fCancel;
 };
 
 #endif // PACCOUNT_DIALOG_H

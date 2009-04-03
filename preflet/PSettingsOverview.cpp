@@ -209,11 +209,11 @@ status_t PSettingsOverview::Init(SettingsHost *) {
 	return B_OK;
 };
 
-status_t PSettingsOverview::Save(BView *, const BMessage *, BMessage *) {
+status_t PSettingsOverview::Save(const BMessage *, BMessage *) {
 	return B_OK;
 };
 
-status_t PSettingsOverview::Revert(BView *, const BMessage *) {
+status_t PSettingsOverview::Revert(const BMessage *) {
 	return B_OK;
 };
 

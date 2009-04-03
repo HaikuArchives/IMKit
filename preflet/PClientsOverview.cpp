@@ -194,12 +194,12 @@ status_t PClientsOverview::Init(SettingsHost *host) {
 	return B_OK;
 };
 
-status_t PClientsOverview::Save(BView *view, const BMessage *tmplate, BMessage *settings) {
-	return SettingsController::Save(view, tmplate, settings);
+status_t PClientsOverview::Save(const BMessage *tmplate, BMessage *settings) {
+	return SettingsController::Save(tmplate, settings);
 };
 
-status_t PClientsOverview::Revert(BView *view, const BMessage *tmplate) {
-	return SettingsController::Revert(view, tmplate);
+status_t PClientsOverview::Revert(const BMessage *tmplate) {
+	return SettingsController::Revert(tmplate);
 };
 
 

@@ -381,14 +381,14 @@ status_t PAccountsView::Init(SettingsHost *host) {
 	return B_OK;
 };
 
-status_t PAccountsView::Save(BView *view, const BMessage *tmplate, BMessage *settings) {
+status_t PAccountsView::Save(const BMessage *tmplate, BMessage *settings) {
 	status_t result = fSettings->Save();
 	LoadSettings(false);
 	
 	return result;
 };
 
-status_t PAccountsView::Revert(BView *view, const BMessage *tmplate) {
+status_t PAccountsView::Revert(const BMessage *tmplate) {
 	LoadSettings(true);
 	
 	return B_OK;

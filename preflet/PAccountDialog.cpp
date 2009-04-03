@@ -26,6 +26,7 @@
 #include "common/Divider.h"
 
 #include "PAccountDialog.h"
+#include "PClientView.h"
 #include "PUtils.h"
 #include "ViewFactory.h"
 
@@ -66,9 +67,20 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	
 	uint32 childResizeMode = B_FOLLOW_NONE;
 	BRect frame(0, 0, 1, 1);
+#ifndef __HAIKU__
+	frame = Bounds();
+#endif
 
-	BView* view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	BView *view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+#if B_BEOS_VERSION > B_BEOS_VERSION_5
 	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
+#else
+	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	view->SetHighColor(0, 0, 0, 0);
+#endif
 
 #ifndef __HAIKU__
 	childResizeMode = B_FOLLOW_ALL_SIDES;
@@ -85,11 +97,10 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	fAccountNameDivider = new Divider(frame, "AccountNameDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fAccountNameDivider->ResizeToPreferred();
 
-	fProtocolControl = new BView(frame, "ProtocolControls", B_FOLLOW_ALL_SIDES, B_NAVIGABLE_JUMP | B_WILL_DRAW);
-	BuildGUI(fTemplate, fSettings, protocol, fProtocolControl, false);
+	fProtocolControl = new PClientView(frame, "ProtocolControls", NULL, fTemplate, fSettings);
 
-	BButton* cancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
-	BButton* okButton = new BButton(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
+	fCancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
+	fOKButton = new BButton(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
 
 #ifdef __HAIKU__
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
@@ -109,8 +120,8 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	view->AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
 		.AddGroup(B_HORIZONTAL, inset)
 			.AddGlue()
-			.Add(cancelButton)
-			.Add(okButton)
+			.Add(fCancelButton)
+			.Add(fOKButton)
 		.End()
 		.SetInsets(inset, inset, inset, inset)
 	);
@@ -119,9 +130,15 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 	GetLayout()->AddView(view);
 #else
 	view->AddChild(fAccountName);
-	view->AddChild(cancelButton);
-	view->AddChild(okButton);
+	view->AddChild(fAccountNameDivider);
+	
+	view->AddChild(fProtocolControl);
+	
+	view->AddChild(fCancelButton);
+	view->AddChild(fOKButton);
 	AddChild(view);
+	
+	LayoutGUI();
 #endif
 
 	CenterWindowOnScreen(this);
@@ -166,6 +183,50 @@ const char *PAccountDialog::AccountName(void) {
 };
 
 //#pragma mark Private
+
+#ifndef __HAIKU__
+
+void PAccountDialog::LayoutGUI(void) {
+	font_height fh;
+	BFont headingFont(be_bold_font);
+	headingFont.GetHeight(&fh);
+	float headingFontHeight = fh.ascent + fh.descent + fh.leading;
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
+	BRect frame = Bounds();
+
+	// Account Name
+	fAccountName->ResizeToPreferred();
+	fAccountName->MoveTo(frame.left + inset, frame.top + inset);
+	BRect frameAccountName = fAccountName->Frame();
+	
+	// Account Name Divider
+	BRect frameAccountNameDivider = fAccountNameDivider->Frame();
+	fAccountNameDivider->MoveTo(frameAccountNameDivider.left + inset, frameAccountName.bottom + inset);
+	fAccountNameDivider->ResizeTo(frameAccountNameDivider.Width() - (inset * 2), frameAccountNameDivider.Height());
+	frameAccountNameDivider = fAccountNameDivider->Frame();
+	
+	// OK Button
+	fOKButton->ResizeToPreferred();
+	BRect frameOKButton = fOKButton->Frame();
+	fOKButton->MoveTo(frame.right - frameOKButton.Width(), frame.bottom - frameOKButton.Height());
+	frameOKButton = fOKButton->Frame();
+	
+	// Cancel Button
+	fCancelButton->ResizeToPreferred();
+	BRect frameCancelButton = fCancelButton->Frame();
+	fCancelButton->MoveTo(frameOKButton.left - inset - frameCancelButton.Width(), frame.bottom - frameCancelButton.Height());
+	frameCancelButton = fCancelButton->Frame();
+
+	// Protocol View
+	fProtocolControl->ResizeToPreferred();
+	BRect frameProtocolControl = fProtocolControl->Frame();
+	fProtocolControl->MoveTo(frame.left, frameAccountNameDivider.bottom + inset);
+//	fProtocolControl->ResizeTo(frame.right, frameOKButton.bottom - inset - (frameAccountNameDivider.bottom + inset));
+	frameProtocolControl = fProtocolControl->Frame();
+}
+
+#endif
 
 void PAccountDialog::SendNotification(bool saved) {		
 	if (fTarget != NULL) {
