@@ -46,6 +46,8 @@ void NotifyingTextView::InsertText(const char *text, int32 length, int32 offset,
 		
 		fMessenger->SendMessage(&msg);
 	};
+	
+	BTextView::InsertText(text, length, offset, runs);
 };
 
 void NotifyingTextView::DeleteText(int32 start, int32 finish) {
@@ -55,5 +57,7 @@ void NotifyingTextView::DeleteText(int32 start, int32 finish) {
 		
 		fMessenger->SendMessage(&msg);
 	};
+	
+	BTextView::DeleteText(start, finish);
 };
 
