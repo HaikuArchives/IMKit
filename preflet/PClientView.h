@@ -19,7 +19,6 @@ class PClientView : public BView, public SettingsController {
 		// BView Hooks
 		virtual void		AttachedToWindow(void);
 		virtual void		MessageReceived(BMessage *msg);
-		virtual void		Draw(BRect frame);
 		virtual void		GetPreferredSize(float *width, float *height);
 
 		// SettingsController Hooks

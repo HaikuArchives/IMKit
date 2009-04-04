@@ -140,11 +140,6 @@ void PClientView::MessageReceived(BMessage *msg) {
 	};
 }; 
 
-void PClientView::Draw(BRect) {
-	SetPenSize(2.0f);
-	StrokeRect(Bounds());
-}
-
 void PClientView::GetPreferredSize(float *width, float *height) {
 	*width = Frame().Width();
 	*height = fRequiredHeight;
@@ -384,7 +379,7 @@ float PClientView::BuildGUI(void) {
 
 					NotifyingTextView *textView = new NotifyingTextView(frame, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
-					control = new BScrollView("NA", textView, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_NAVIGABLE, false, true);
+					control = new BScrollView("NA", textView, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, B_WILL_DRAW | B_NAVIGABLE, false, true);
 					textView->SetText(_T(value));			
 				}
 			} else {
@@ -420,8 +415,8 @@ float PClientView::BuildGUI(void) {
 
 	return 0.0f;
 #else
-	if (yOffset < Bounds().Height())
-		yOffset = Bounds().Height();
+//	if (yOffset < Bounds().Height())
+//		yOffset = Bounds().Height();
 
 	return yOffset;
 #endif
