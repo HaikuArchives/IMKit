@@ -25,6 +25,9 @@ class PAccountsView : public BView, public SettingsController {
 		virtual status_t	Save(const BMessage *tmplate, BMessage *settings);
 		virtual status_t	Revert(const BMessage *tmplate);
 
+		// Public
+		BMessage			SettingsTemplate(void);
+
 	private:
 #ifndef __HAIKU__
 		void				LayoutGUI(void);

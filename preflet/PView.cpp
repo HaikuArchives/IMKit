@@ -48,6 +48,7 @@
 #include "PAccountsView.h"
 #include "PUtils.h"
 #include "SettingsController.h"
+#include "SettingsInfo.h"
 
 //#pragma mark Constants
 
@@ -195,7 +196,15 @@ PView::PView(BRect bounds)
 	AddChild(fRevert);
 	AddChild(fSave);
 #endif
-}
+};
+
+PView::~PView(void) {
+	for (addons_map::iterator aIt = fAddOns.begin(); aIt != fAddOns.end(); aIt++) {
+		delete aIt->second;
+	};
+	
+	fAddOns.clear();
+};
 
 //#pragma mark BView Hooks
 
@@ -300,13 +309,11 @@ void PView::LoadProtocols(void) {
 		BRect frame(0, 0, 1, 1);
 #ifndef __HAIKU__
 		frame = fMainView->Bounds();
-//		frame.InsetBy(kEdgeOffset, kEdgeOffset);
-//		frame.top += fFontHeight;
-//		frame.right -= B_V_SCROLL_BAR_WIDTH + 2;
 #endif
 
 		// Create protocol settings view
-		BView *view = new PAccountsView(frame, &protoPath);
+		PAccountsView *view = new PAccountsView(frame, &protoPath);
+		BMessage tmplate = view->SettingsTemplate();
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 		controller->Init(this);
 
@@ -314,6 +321,14 @@ void PView::LoadProtocols(void) {
 		view->Hide();
 		fMainView->AddChild(view);
 		fViews[protoPath.Path()] = view;
+
+		// Store the template
+		SettingsInfo *info = new SettingsInfo(Protocol, protoPath, protoPath.Leaf());
+		info->Controller(controller);
+		info->View(view);
+		info->Template(tmplate);
+
+		fAddOns[protoPath.Path()] = info;
 	}
 }
 
@@ -361,9 +376,6 @@ void PView::LoadClients(void) {
 			fListView->AddUnder(item, fClientsItem);
 		};
 
-		pair<BMessage, BMessage> p(client_settings, client_template);
-		fAddOns[clientPath.Path()] = p;
-
 		// Create settings view
 		BRect frame(0, 0, 1, 1);
 #ifndef __HAIKU__
@@ -378,6 +390,14 @@ void PView::LoadClients(void) {
 		controller->Init(this);
 		fViews[clientPath.Path()] = view;
 		fMainView->AddChild(view);
+		
+		SettingsInfo *info = new SettingsInfo(Client, clientPath, clientPath.Leaf());
+		info->Controller(controller);
+		info->View(view);
+		info->Settings(client_settings);
+		info->Template(client_template);
+		fAddOns[clientPath.Path()] = info;
+
 		
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -397,13 +417,12 @@ void PView::SaveSettings(void) {
 	// Loop over all the list view items
 	for (int32 i = 0; i < fListView->CountItems(); i++) {
 		IconTextItem *item = dynamic_cast<IconTextItem *>(fListView->ItemAt(i));
-
-		BMessage templateMsg;
 		BMessage settingsMsg;
 
-		// Take the template message
-		addons_pair p = fAddOns[item->Name()];
-		templateMsg = p.second;
+		// Get the Template Message
+		SettingsInfo *info = fAddOns[item->Name()];
+		if (info == NULL) continue;
+		BMessage templateMsg = info->Template();
 
 		// Find the right settings controller
 		BView *view = FindView(item->Name());
@@ -420,19 +439,30 @@ void PView::SaveSettings(void) {
 
 		if (res == B_OK && fManager->InitCheck() == B_OK) {
 			BMessage updMessage(IM::SETTINGS_UPDATED);
+			const char *context = NULL;
+			
+			templateMsg.PrintToStream();
 
-			if (templateMsg.FindString("protocol")) {
-				res = im_save_protocol_settings(templateMsg.FindString("protocol"), &settingsMsg);
-				updMessage.AddString("protocol", templateMsg.FindString("protocol"));
-			} else if (templateMsg.FindString("client")) {
-				res = im_save_client_settings( templateMsg.FindString("client"), &settingsMsg);
-				updMessage.AddString("client", templateMsg.FindString("client"));
-			} else {
-				LOG("Preflet", liHigh, "Failed to determine type of settings");
-			};	
+			switch (info->Type()) {
+				case Protocol: {
+					context = info->Name();
+					res = im_save_protocol_settings(context, &settingsMsg);
+					updMessage.AddString("protocol", context);
+				} break;
+				
+				case Client: {
+					context = info->Name();
+					res = im_save_client_settings(context, &settingsMsg);
+					updMessage.AddString("client", context);
+				} break;
+					
+				default: {
+					LOG("Preflet", liHigh, "Failed to determine type of settings");
+				} break;
+			};
 
-			if (res != B_OK) {
-				LOG("Preflet", liHigh, "Error when saving settings");
+			if ((res != B_OK) || (context == NULL)) {
+				LOG("Preflet", liHigh, "An error occured when saving settings or the setting type could not be determined");
 			} else {
 				fManager->SendMessage(&updMessage);
 			};
@@ -456,8 +486,9 @@ void PView::RevertSettings(void) {
 			continue;
 		};
 		
-		addons_pair p = fAddOns[item->Name()];
-		BMessage templateMsg = p.second;
+		SettingsInfo *info = fAddOns[item->Name()];
+		if (info == NULL) continue;
+		BMessage templateMsg = info->Template();
 		
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 

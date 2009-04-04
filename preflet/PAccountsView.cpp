@@ -115,7 +115,7 @@ class AccountStore : public IM::GenericStore<BString, BMessage> {
 
 //#pragma mark Constructor
 
-PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
+PAccountsView::PAccountsView(BRect bounds, BPath *protoPath)
 	: BView(bounds, protoPath->Path(), B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fProtoPath(*protoPath)
 {
@@ -148,6 +148,7 @@ PAccountsView::PAccountsView(BRect bounds, BPath* protoPath)
 	BMessage *selection = new BMessage(kProtocolListChanged);
 	selection->AddString("protocol", protoPath->Path());
 	fAccountListView->SetSelectionMessage(selection);
+	fAccountListView->SetInvocationMessage(new BMessage(kEditAccount));
 
 	// Create scroll bars
 	fScrollView = new BScrollView("ProtocolListScroll", fAccountListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
@@ -247,10 +248,8 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			BMessage save(kSaveAccount);
 			BMessage cancel(kCancelAccount);
 			const char *account = NULL;
-			BMessage tmplate;
+			BMessage tmplate = SettingsTemplate();
 			BMessage settings;
-
-			im_load_protocol_template(fProtoPath.Path(), &tmplate);
 
 			BString title = _T("Add account");
 			
@@ -261,8 +260,9 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 				if (index < 0) return;
 
 				BStringItem *item = dynamic_cast<BStringItem *>(fAccountListView->ItemAt(index));
-				if (item == NULL)
+				if (item == NULL) {
 					return;
+				};
 
 				title << ": " << item->Text();
 				title << " (" << fProtoPath.Leaf() << ")";
@@ -273,8 +273,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 				save.AddPointer("listitem", item);
 			}
 		
-			PAccountDialog *dialog = new PAccountDialog(title.String(), fProtoPath.Leaf(),
-				account, tmplate, settings, new BMessenger(this), save, cancel);
+			PAccountDialog *dialog = new PAccountDialog(title.String(), fProtoPath.Leaf(), account, tmplate, settings, new BMessenger(this), save, cancel);
 			dialog->Show();
 		} break;
 
@@ -331,7 +330,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			BStringItem *item = NULL;
 			msg->FindPointer("listitem", reinterpret_cast<void **>(&item));
 
-			bool isEdit = (originalName != NULL);
+			bool isEdit = ((originalName != NULL) && (strlen(originalName) > 0));
 			bool nameChanged = (strcmp(originalName, name) != 0);
 
 			// Check if this account name is already used
@@ -355,8 +354,8 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 			
 			fSettings->Add(name, new BMessage(newSettings));
 
-			if ((isEdit == true) && (nameChanged == true) && (item != NULL)) {
-				if (item != NULL) {
+			if (isEdit == true) {
+				if ((nameChanged == true) && (item != NULL)) {
 					item->SetText(name);
 				}
 			} else {
@@ -394,6 +393,15 @@ status_t PAccountsView::Revert(const BMessage *tmplate) {
 	return B_OK;
 };
 
+
+//#pragma mark Public
+
+BMessage PAccountsView::SettingsTemplate(void) {
+	BMessage tmplate;
+	im_load_protocol_template(fProtoPath.Path(), &tmplate);
+	
+	return tmplate;
+};
 
 //#pragma mark Private
 

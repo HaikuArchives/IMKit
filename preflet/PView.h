@@ -18,14 +18,15 @@
 class BOutlineListView;
 class IconTextItem;
 class SettingsController;
+class SettingsInfo;
 
 typedef map<BString, BView*> view_map;
-typedef pair<BMessage, BMessage> addons_pair;
-typedef map<BString, addons_pair> addons_map;
+typedef map<BString, SettingsInfo *> addons_map;
 
 class PView : public BView, public MultipleViewHandler, public SettingsHost {
 	public:
 								PView(BRect bounds);
+								~PView(void);
 
 		// BView Hooks
 		virtual void			AttachedToWindow(void);
