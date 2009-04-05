@@ -2369,30 +2369,31 @@ void
 Server::StartAutostartApps()
 {
 	BMessage clients;
-	
-	im_get_client_list( &clients );
-	
-	for ( int i=0; clients.FindString("client", i); i++ )
+	BMessage clientMsg;
+
+	im_get_client_list(&clients);
+
+	while (clients.FindMessage("client", &clientMsg) == B_OK)
 	{
-		const char * client = clients.FindString("client", i);
-		
-		if ( strcmp("im_server", client) == 0 )
+		const char *client = clientMsg.FindString("file");
+
+		if (strcmp("im_server", client) == 0)
 			continue;
-		
+
 		BMessage settings;
-		
-		if ( im_load_client_settings(client, &settings) == B_OK )
+
+		if (im_load_client_settings(client, &settings) == B_OK)
 		{
 			bool auto_start = false;
-			const char * app_sig = NULL;
-			
+			const char *app_sig = NULL;
+
 			settings.FindBool("auto_start", &auto_start);
 			app_sig = settings.FindString("app_sig");
-			
-			if ( auto_start && app_sig)
+
+			if (auto_start && app_sig)
 			{
-				LOG(kAppName, liLow, "Starting app [%s]", app_sig );
-				be_roster->Launch( app_sig );
+				LOG(kAppName, liLow, "Starting app [%s]", app_sig);
+				be_roster->Launch(app_sig);
 			}
 		}
 	}
