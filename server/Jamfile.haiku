@@ -21,7 +21,6 @@ if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
 Server im_server :
 	im_server.cpp
 	im_server_main.cpp
-	QueryLooper.cpp
 	ContactHandle.cpp
 	ProtocolManager.cpp
 	ProtocolInfo.cpp

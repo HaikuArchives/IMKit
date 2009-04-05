@@ -14,7 +14,6 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
 Executable im_server :
 	im_server.cpp
 	im_server_main.cpp
-	QueryLooper.cpp
 	ContactHandle.cpp
 	ProtocolManager.cpp
 	ProtocolInfo.cpp
