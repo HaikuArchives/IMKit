@@ -518,6 +518,7 @@ int32 OSCARConnection::Receiver(void *con) {
 		return B_ERROR;
 	};
 	
+	struct timeval timeout;
 	struct fd_set read;
 	struct fd_set error;
 	int16 bytes = 0;
@@ -539,7 +540,9 @@ int32 OSCARConnection::Receiver(void *con) {
 			FD_SET(socket, &read);
 			FD_SET(socket, &error);
 			
-			if (select(socket + 1, &read, NULL, &error, NULL) > 0) {
+			timeout.tv_sec = 1;
+			
+			if (select(socket + 1, &read, NULL, &error, &timeout) > 0) {
 				if (FD_ISSET(socket, &error)) {
 					LOG(kConnName, liLow, "%s:%i: Got socket error", kHost, kPort);
 					snooze(kSleep);
@@ -551,13 +554,18 @@ int32 OSCARConnection::Receiver(void *con) {
 						processed += bytes;
 					} else {
 						if (bytes == 0) {
-							snooze(kSleep);
-							continue;
-						} else {
-							if (connection->fSockMsgr->IsValid() == false)
-							{ // shutting down
+							if (connection->fSockMsgr->IsValid() == false) {
+								// Messenger is no longer valid abort
 								return B_OK;
-							}
+							} else {
+								snooze(kSleep);
+								continue;
+							};
+						} else {
+							if (connection->fSockMsgr->IsValid() == false) {
+								// Shutting down
+								return B_OK;
+							};
 							
 							LOG(kConnName, liLow, "%s:%i: Socket got less than 0",
 								kHost, kPort);
@@ -572,6 +580,10 @@ int32 OSCARConnection::Receiver(void *con) {
 							return B_ERROR;
 						};
 					};					
+				};
+			} else {
+				if (connection->fSockMsgr->IsValid() == false) {
+					return B_OK;
 				};
 			};
 		};
@@ -606,15 +618,21 @@ int32 OSCARConnection::Receiver(void *con) {
 			FD_SET(socket, &read);
 			FD_SET(socket, &error);
 			
-			if (select(socket + 1, &read, NULL, &error, NULL) > 0) {
+			timeout.tv_sec = 1;
+			
+			if (select(socket + 1, &read, NULL, &error, &timeout) > 0) {
 				if (FD_ISSET(socket, &read)) {
 					if ((bytes = recv(socket, (void *)(flapContents + processed),
 						flapLen - processed, 0)) > 0) {
 						processed += bytes;
 					} else {
 						if (bytes == 0) {
-							snooze(kSleep);
-							continue;
+							if (connection->fSockMsgr->IsValid() == false) {
+								return B_OK;
+							} else {
+								snooze(kSleep);
+								continue;
+							};
 						} else {
 							free(flapContents);
 							if (connection->fSockMsgr->IsValid() == false) return B_OK;
@@ -632,6 +650,10 @@ int32 OSCARConnection::Receiver(void *con) {
 							return B_ERROR;
 						};
 					};
+				};
+			} else {
+				if (connection->fSockMsgr->IsValid() == false) {
+					return B_OK;
 				};
 			};
 		};
