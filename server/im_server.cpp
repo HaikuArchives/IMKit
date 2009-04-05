@@ -65,6 +65,8 @@ using namespace IM;
 const char *kProtocolLoaderSig = "application/x-vnd.beclan.im_kit.ProtocolLoader";
 const char *kAppName = "im_server";
 
+const bigtime_t kQueryDelay = 5 * 1000 * 1000;	// 5 Seconds
+
 //#pragma mark Functions
 
 void
@@ -632,12 +634,49 @@ void Server::_UpdateStatusIcons()
 void Server::_InstallDeskbarIcon()
 {
 	entry_ref ref;
+	bool valid = false;
 
 	if (be_roster->FindApp(DESKBAR_ICON_SIG, &ref) == B_OK) {
+		valid = true;
+	} else {
+		// Try with a query and take the first result
+		BVolumeRoster vroster;
+		BVolume volume;
+		char volName[B_FILE_NAME_LENGTH];
+
+		vroster.Rewind();
+
+		while (vroster.GetNextVolume(&volume) == B_OK) {
+			if ((volume.InitCheck() != B_OK) || !volume.KnowsQuery())
+				continue;
+
+			volume.GetName(volName);
+			LOG(kAppName, liDebug, "_InstallDeskbarIcon: Trying with a query on %s", volName);
+
+			BQuery *query = new BQuery();
+			query->SetPredicate("(BEOS:APP_SIG==\""DESKBAR_ICON_SIG"\")");
+			query->SetVolume(&volume);
+			query->Fetch();
+
+			if (query->GetNextRef(&ref) == B_OK) {
+				valid = true;
+				break;
+			};
+
+			LOG(kAppName, liHigh, "Unable to find Deskbar icon - waiting before retrying");
+			snooze(kQueryDelay);
+
+			if (query->GetNextRef(&ref) == B_OK) {
+				valid = true;
+				break;
+			};
+		}
+	};
+
+	if (valid) {
 		BDeskbar deskbar;
 		deskbar.AddItem(&ref);
-	} else
-		LOG(kAppName, liDebug, "_InstallDeskbarIcon: Couldn't find " DESKBAR_ICON_SIG);
+	};
 }
 
 
