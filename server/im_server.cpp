@@ -2373,7 +2373,7 @@ Server::StartAutostartApps()
 
 	im_get_client_list(&clients);
 
-	while (clients.FindMessage("client", &clientMsg) == B_OK)
+	for (int32 i = 0; clients.FindMessage("client", i, &clientMsg) == B_OK; i++)
 	{
 		const char *client = clientMsg.FindString("file");
 
