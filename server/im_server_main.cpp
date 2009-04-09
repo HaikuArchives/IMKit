@@ -24,6 +24,21 @@ void handle_ctrl_c( int /*sig*/ )
 	}
 }
 
+template <typename T>
+void type_delete1(T value) { };
+
+template <typename T>
+void type_delete1(T *value) {
+	delete value;
+};
+
+class Boo {
+	public:
+		~Boo() {
+			printf("~Boo()\n");
+		};
+};
+
 int main( int numarg, const char ** argv )
 {
 	// add ctrl-c handler

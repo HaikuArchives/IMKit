@@ -24,7 +24,7 @@ using namespace IM;
 
 const bigtime_t kQueryDelay = 5 * 1000 * 1000;	// 5 Seconds
 
-class IM::ProtocolStore : public IM::GenericStore<BString, ProtocolInfo> {
+class IM::ProtocolStore : public IM::GenericMapStore<BString, ProtocolInfo *> {
 };
 
 //#pragma mark Constructor
@@ -124,12 +124,58 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 	return result;
 };
 
+status_t ProtocolManager::ReloadProtocolFromDirectory(BDirectory protocols, BDirectory settings) {
+	status_t result = B_ERROR;
+	BAutolock lock(fLock);
+	
+	if (lock.IsLocked() == true) {
+		BPath path((const BDirectory *)&protocols, NULL, false);
+		LOG("im_server", liMedium, "ProtocolManager::LoadFromDirectory called - %s", path.Path());
+	
+		BEntry entry;
+		protocols.Rewind();
+				
+		while (protocols.GetNextEntry((BEntry*)&entry, true) == B_NO_ERROR) {
+			// continue until no more files
+			if (entry.InitCheck() != B_NO_ERROR) continue;
+	
+			BPath addonPath;
+			entry.GetPath(&addonPath);
+			BPath settingsPath(&settings, addonPath.Leaf());
+			
+			BMessage accounts;
+			BString account;
+			im_protocol_get_account_list(addonPath.Leaf(), &accounts);
+
+			for (int32 i = 0; accounts.FindString("account", i, &account) == B_OK; i++) {
+				entry_ref accountSettings;
+				
+				if (accounts.FindRef("settings_path", i, &accountSettings) != B_OK) {
+					LOG("im_server", liHigh, "%s - %s does not have a settings path", settingsPath.Leaf(), account.String());
+					continue;
+				};
+				
+				BPath accountSettingsPath(&accountSettings);
+				// See if this Protocol is loaded, if not, load, otherwise compare and see if we
+				// Should reload the settings
+				ProtocolInfo *info = new ProtocolInfo(addonPath, accountSettingsPath, account.String());
+				fProtocol->Add(info->InstanceID(), info);
+	
+				LOG("im_server", liMedium, "Loading protocol from %s (%s): %s", fLoaderPath.Path(), settingsPath.Path(), account.String());
+				info->Start(fLoaderPath.Path());
+			};
+		};
+	};
+	
+	return result;
+};
+
 status_t ProtocolManager::RestartProtocols(ProtocolSpecification *match, bool canDelete = true) {
 	status_t result = B_ERROR;
 	BAutolock lock(fLock);
 		
 	if (lock.IsLocked() == true) {
-		map<BString, ProtocolInfo *>::iterator it;
+		GenericMapStore<BString, ProtocolInfo *>::Iterator it;
 		
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++){
 			ProtocolInfo *info = it->second;
@@ -152,7 +198,8 @@ status_t ProtocolManager::Unload(void) {
 	BAutolock lock(fLock);
 	
 	if (lock.IsLocked() == true) {	
-		map<BString, ProtocolInfo *>::iterator it;
+		GenericMapStore<BString, ProtocolInfo *>::Iterator it;
+		
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++) {
 			ProtocolInfo *info = it->second;
 			
@@ -189,7 +236,7 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 	BAutolock lock(fLock);
 	
 	if (lock.IsLocked() == true) {
-		map<BString, ProtocolInfo *>::iterator it;
+		GenericMapStore<BString, ProtocolInfo *>::Iterator it;
 		
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++){
 			ProtocolInfo *info = it->second;
@@ -210,13 +257,14 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 	return result;
 };
 
+//#pragma mark SpecificationFinder<ProtocolInfo *>
 
-ProtocolInfo *ProtocolManager::FindFirstProtocol(ProtocolSpecification *match, bool canDelete = true) {
+ProtocolInfo *ProtocolManager::FindFirst(ProtocolSpecification *match, bool canDelete = true) {
 	ProtocolInfo *info = NULL;
 	BAutolock lock(fLock);
 	
 	if (lock.IsLocked() == true) {
-		map<BString, ProtocolInfo *>::iterator it;
+		GenericMapStore<BString, ProtocolInfo *>::Iterator it;
 		
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++) {
 			ProtocolInfo *cur = it->second;
@@ -233,18 +281,18 @@ ProtocolInfo *ProtocolManager::FindFirstProtocol(ProtocolSpecification *match, b
 	return info;
 };
 
-list<ProtocolInfo *> ProtocolManager::FindProtocols(ProtocolSpecification *match, bool canDelete = true) {
-	list<ProtocolInfo *> protocols;
+GenericListStore<ProtocolInfo *> ProtocolManager::FindAll(ProtocolSpecification *match, bool canDelete = true) {
+	GenericListStore<ProtocolInfo *> protocols(false);
 	BAutolock lock(fLock);
 	
 	if (lock.IsLocked() == true) {
-		map<BString, ProtocolInfo *>::iterator it;
+		GenericMapStore<BString, ProtocolInfo *>::Iterator it;
 		
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++) {
 			ProtocolInfo *info = it->second;
 			
 			if (match->IsSatisfiedBy(info) == true) {
-				protocols.push_back(info);
+				protocols.Add(info);
 			};
 		};
 	};

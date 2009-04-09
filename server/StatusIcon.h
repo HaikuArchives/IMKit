@@ -33,4 +33,4 @@ namespace IM {
 	};
 };
 		
-#endif
+#endif // STATUSICON_H

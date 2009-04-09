@@ -21,7 +21,9 @@ if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
 Server im_server :
 	im_server.cpp
 	im_server_main.cpp
+	ContactCachedConnections.cpp
 	ContactHandle.cpp
+	ContactManager.cpp
 	ProtocolManager.cpp
 	ProtocolInfo.cpp
 	StatusIcon.cpp

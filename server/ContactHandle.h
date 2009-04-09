@@ -15,4 +15,4 @@ class ContactHandle {
 			entry_ref			entry;
 };
 
-#endif
+#endif // CONTACTHANDLE_H

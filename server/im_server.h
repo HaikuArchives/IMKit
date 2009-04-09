@@ -18,14 +18,17 @@
 #include <libim/Protocol.h>
 
 #include "ContactHandle.h"
+#include "ContactListener.h"
 
 namespace IM {
 
-class ProtocolInfo;
-class ProtocolManager;
-class StatusIcon;
+	class ContactManager;
+	class ContactStore;
+	class ProtocolInfo;
+	class ProtocolManager;
+	class StatusIcon;
 
-class Server : public BApplication {
+class Server : public BApplication, public ContactListener {
 	public:
 								Server(void);
 		virtual					~Server(void);
@@ -39,15 +42,16 @@ class Server : public BApplication {
 		virtual void			MessageReceived(BMessage *msg);
 		virtual void			ReadyToRun(void);
 		
+		// ContactListener Hooks
+		virtual void			ContactAdded(Contact *contact);
+		virtual void			ContactModified(Contact *contact, ConnectionStore *oldConnections, ConnectionStore *newConnections);
+		virtual void			ContactRemoved(Contact *contact, ConnectionStore *oldConnections);
+		
 	private:
 		void					_Init(void);
 		void					_UpdateStatusIcons(void);
 		void					_InstallDeskbarIcon(void);
-		void					StartQuery(void);
-		void					HandleContactUpdate(BMessage *);
 		
-		Contact					FindContact(const char * proto_id);
-		list<Contact>			FindAllContacts(const char * proto_id);
 		Contact					CreateContact(const char * proto_id, const char *namebase);
 		
 		void					RegisterSoundEvents(void);
@@ -98,18 +102,9 @@ class Server : public BApplication {
 		const char				*TotalStatus(void);
 		status_t				ProtocolOffline(const char *signature);
 		static void				ChildExited(int signal, void *data, struct vreg *regs);
-		
-		/**
-			Contact monitoring functions
-		*/
-		void					ContactMonitor_Added(ContactHandle);
-		void					ContactMonitor_Modified(ContactHandle);
-		void					ContactMonitor_Moved(ContactHandle from, ContactHandle to);
-		void					ContactMonitor_Removed(ContactHandle);
-		
+				
 		// Variables
 		
-		list<BQuery*>			fQueries;
 		list<BMessenger>		fMessengers;
 		bool					fIsQuitting;
 		
@@ -118,14 +113,7 @@ class Server : public BApplication {
 		 * application.
 		 */
 		ProtocolInfo			*fCurProtocol;
-		
-		/**
-			entry_ref, list of connections.
-			Used to store connections for contacts, so we can notify the protocols
-			of any changes.
-		*/
-		list< pair<ContactHandle, list<string>* > > fContacts;
-		
+			
 		/*	Used to store both <protocol>:<id> and <protocol> status.
 			In other words, both own status per protocol and contact
 			status per connection */
@@ -138,6 +126,7 @@ class Server : public BApplication {
 		BMessenger				fDeskbarMsgr;
 		
 		ProtocolManager			*fProtocol;
+		ContactManager			*fContact;
 };
 
 };
