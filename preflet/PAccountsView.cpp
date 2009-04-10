@@ -50,10 +50,10 @@ const uint32 kCancelAccount = 'Mcac';
 
 //#pragma mark AccountStore
 
-class AccountStore : public IM::GenericStore<BString, BMessage> {
+class AccountStore : public IM::GenericMapStore<BString, BMessage *> {
 	public:
 		AccountStore(const char *protocol)
-			: IM::GenericStore<BString, BMessage>(),
+			: IM::GenericMapStore<BString, BMessage *>(),
 			fProtocol(protocol) {
 		};
 		
@@ -76,7 +76,7 @@ class AccountStore : public IM::GenericStore<BString, BMessage> {
 				};
 			};
 
-			for (map<BString, BMessage *>::iterator it = Start(); it != End(); it++) {
+			for (Iterator it = Start(); it != End(); it++) {
 				result = im_protocol_add_account(fProtocol.String(), it->first.String(), it->second);
 				if (result != B_OK)
 					return result;
@@ -269,7 +269,7 @@ void PAccountsView::MessageReceived(BMessage *msg) {
 				
 				account = item->Text();
 
-				settings = fSettings->Find(account);
+				settings = *(fSettings->Find(account));
 				save.AddPointer("listitem", item);
 			}
 		
