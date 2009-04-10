@@ -2,30 +2,21 @@
 
 #include <signal.h>
 #include <stdio.h>
-#include <Messenger.h>
-
-#include <Alert.h>
-#include <Volume.h>
-#include <VolumeRoster.h>
-
 
 #include <libim/Helpers.h>
 
-void handle_ctrl_c( int /*sig*/ )
-{
+void handle_ctrl_c( int /*sig*/ ) {
 	printf("Fatal signal received.\n");
 	static bool has_sent_quit = false;
 	
-	if ( !has_sent_quit )
-	{
+	if (!has_sent_quit) {
 		printf("Quiting im_server.\n");
 		BMessenger(be_app).SendMessage( B_QUIT_REQUESTED );
 		has_sent_quit = true;
-	}
-}
+	};
+};
 
-int main( int numarg, const char ** argv )
-{
+int main(int numarg, const char ** argv) {
 	// add ctrl-c handler
 	struct sigaction my_sig_action;
 	my_sig_action.sa_handler = handle_ctrl_c;
@@ -101,4 +92,4 @@ int main( int numarg, const char ** argv )
 	rename("/boot/home/im_kit.log", "/boot/home/im_kit.log.0");
 	
 	IM::Server server;
-}
+};
