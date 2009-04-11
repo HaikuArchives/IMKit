@@ -20,10 +20,13 @@ class Connection
 		const char * Protocol() { return fProtocol.String(); };
 		const char * ID() { return fID.String(); };
 		const char * String() { return fConn.String(); };
+		const char * Account(void) const { return fAccount.String(); };
+		bool HasAccount(void) const { return (fAccount.Length() == 0); };
 
-		bool operator == (const Connection &) const;		
+		bool operator == (const Connection &) const;
 	private:
 		BString	fConn, fProtocol, fID;
+		BString fAccount;
 };
 
 class Contact

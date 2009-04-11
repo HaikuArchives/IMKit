@@ -11,18 +11,22 @@
 
 using namespace IM;
 
+//#pragma mark Connection
+
 Connection::Connection( const char * str )
 :	fConn(str)
 {
-/*	int32 colon = fConn.FindFirst(":");
-	
-	fConn.CopyInto( fProtocol, 0, colon );
-	
-	fConn.CopyInto( fID, colon+1, fConn.Length()-colon-1 );
-*/
-	fProtocol = connection_protocol(fConn.String()).c_str();
-	fID = connection_id(fConn.String()).c_str();
-}
+	int32 protoColon = fConn.FindFirst(":");
+	int32 accountColon = fConn.FindFirst(":", protoColon + 1);
+
+	fConn.CopyInto(fProtocol, 0, protoColon);
+	if (accountColon != B_ERROR) {
+		fConn.CopyInto(fAccount, protoColon + 1, accountColon - protoColon - 1);
+		fConn.CopyInto(fID, accountColon + 1, fConn.Length() - accountColon);
+	} else {
+		fConn.CopyInto(fID, protoColon + 1, fConn.Length() - protoColon - 1);
+	};
+};
 
 Connection::Connection( const Connection & c )
 :	fConn( c.fConn ),
@@ -30,6 +34,8 @@ Connection::Connection( const Connection & c )
 	fID( c.fID )
 {
 }
+
+//#pragma mark Contact
 
 bool Connection::operator == (const Connection &rhs) const {
 	return (fConn == rhs.fConn);
@@ -84,6 +90,7 @@ Contact::SetTo( const Contact & contact )
 status_t
 Contact::InitCheck()
 {
+
 	BEntry entry(&fEntry);
 	status_t ret = entry.InitCheck();
 	if (ret == B_OK) {
@@ -128,25 +135,21 @@ Contact::Clear()
 	fGroups.MakeEmpty();	
 };
 
-status_t
-Contact::LoadConnections()
-{
+status_t Contact::LoadConnections(void) {
 	Clear();
 	
 	BNode node(&fEntry);
-	
-	if ( node.InitCheck() != B_OK )
+	if (node.InitCheck() != B_OK) {
 		return B_ERROR;
+	};
 	
-	char attr[256];
+	char attr[2048];
 	
-	int32 num_read = node.ReadAttr(
-		"IM:connections", B_STRING_TYPE, 0,
-		attr, 255
-	);
+	int32 num_read = node.ReadAttr("IM:connections", B_STRING_TYPE, 0, attr, sizeof(attr));
 	
-	if ( num_read <= 0 )
+	if (num_read <= 0) {
 		return B_ERROR;
+	};
 	
 	attr[num_read] = 0;
 	
@@ -154,50 +157,48 @@ Contact::LoadConnections()
 	int32 start = 0, curr = 0;
 	char * conn = new char[256];
 	
-	while ( attr[curr] )
-	{
-		if ( attr[curr] != ';' )
-		{
-			conn[curr-start] = attr[curr];
-		} else
-		{ // separator
-			if ( curr != start )
-			{
-				conn[curr-start] = 0;
+	while (attr[curr]) {
+		if (attr[curr] != ';') {
+			conn[curr - start] = attr[curr];
+		} else {
+			// separator
+			if (curr != start) {
+				conn[curr - start] = 0;
 				
 				BString toLower(conn);
 				toLower.ToLower();
 				strcpy(conn, toLower.String());
-				
-				if ( connection_protocol(conn).size() > 0  && connection_id(conn).size() > 0 )
-				{
+
+				Connection connection(conn);
+				if ((strlen(connection.Protocol()) > 0) && (strlen(connection.ID()) > 0)) {
 					fConnections.AddItem(conn);
 					conn = new char[256];
-				}
+				};
 				
-				start = curr+1;
-			}
-		}
+				start = curr + 1;
+			};
+		};
+		
 		curr++;
-	}
+	};
 	
-	if ( start != curr )
-	{
-		conn[curr-start] = 0;
+	if (start != curr) {
+		conn[curr - start] = 0;
 
 		BString toLower(conn);
 		toLower.ToLower();
 		strcpy(conn, toLower.String());
-				
-		if ( connection_protocol(conn).size() > 0  && connection_id(conn).size() > 0 )
+
+		Connection connection(conn);
+		if ((strlen(connection.Protocol()) > 0) && (strlen(connection.ID()) > 0)) {
 			fConnections.AddItem(conn);
-	} else
-	{
+		};
+	} else {
 		delete conn;
 	}
 	
 	return B_OK;
-}
+};
 
 /**
 	Write list of connections to disk
@@ -292,9 +293,7 @@ Contact::ConnectionAt( int index, char * buffer )
 	return B_OK;
 }
 
-status_t
-Contact::FindConnection( const char * _protocol, char * buffer )
-{
+status_t Contact::FindConnection(const char * _protocol, char * buffer) {
 	if ( fConnections.CountItems() == 0 )
 		LoadConnections();
 	
@@ -303,16 +302,15 @@ Contact::FindConnection( const char * _protocol, char * buffer )
 	
 	string protocol(str.String());
 	
-	for ( int i=0; i<fConnections.CountItems(); i++ )
-	{
-		const char * conn = (const char*)fConnections.ItemAt(i);
+	for ( int i=0; i < fConnections.CountItems(); i++ ) {
+		const char *connBuffer = (const char *)fConnections.ItemAt(i);
 		
-		if ( protocol == connection_protocol(conn) )
-		{
-			strcpy(buffer,conn);
+		Connection con(connBuffer);
+		if (protocol == con.Protocol()) {
+			strcpy(buffer, connBuffer);
 			return B_OK;
-		}
-	}
+		};
+	};
 	
 	return B_ERROR;
 }
@@ -508,12 +506,9 @@ const char *Contact::GroupAt(int32 index) {
 	if (fGroups.CountItems() == 0) LoadGroups();
 	const char *result = NULL;
 	if (index <= fConnections.CountItems()) {
-		printf("Index okay!\n");
 		result = (const char *)fGroups.ItemAt(index);
 	};
 
-	printf("Result: %s (%p)\n", result, result);
-	
 	return result;
 };
 
