@@ -31,6 +31,10 @@ Connection::Connection( const Connection & c )
 {
 }
 
+bool Connection::operator == (const Connection &rhs) const {
+	return (fConn == rhs.fConn);
+};
+
 Contact::Contact()
 	: fEntry(-1,-1, "")
 {

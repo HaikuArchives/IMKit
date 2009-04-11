@@ -20,7 +20,8 @@ class Connection
 		const char * Protocol() { return fProtocol.String(); };
 		const char * ID() { return fID.String(); };
 		const char * String() { return fConn.String(); };
-		
+
+		bool operator == (const Connection &) const;		
 	private:
 		BString	fConn, fProtocol, fID;
 };
