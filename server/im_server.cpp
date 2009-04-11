@@ -2598,9 +2598,9 @@ Server::CheckIndexes()
 		if ((volume.KnowsAttr()) && (volume.KnowsQuery()) && (volume.KnowsMime())) {
 			DIR *indexes;
 			struct dirent *ent;
-						
+
 			LOG(kAppName, liDebug, "%s is suitable for indexing", volName);
-			
+
 			indexes = fs_open_index_dir(volume.Device());
 			if (indexes == NULL) {
 				LOG(kAppName, liLow, "Error opening indexes on %s", volName);
@@ -2609,39 +2609,41 @@ Server::CheckIndexes()
 
 			bool isConnIndexed = false;
 			bool isStatusIndexed = false;
-		
+
 			while ( (ent = fs_read_index_dir(indexes)) != NULL ) {
 				if (strcmp(ent->d_name, "IM:connections") == 0) isConnIndexed = true;
 				if (strcmp(ent->d_name, "IM:status") == 0) isStatusIndexed = true;
-			}
-			
+			};
+
 			if (isConnIndexed == false) {
 				int res = fs_create_index(volume.Device(), "IM:connections", B_STRING_TYPE, 0);
 				LOG(kAppName, liMedium, "Added IM:connections to %s: %s (%i)",
 					volName, strerror(res), res);
 				madeIndex = true;
 			};
+
 			if (isStatusIndexed == false) {
 				int res = fs_create_index(volume.Device(), "IM:status", B_STRING_TYPE, 0);
 				LOG(kAppName, liMedium, "Added IM:status to %s: %s (%i)",
 					volName, strerror(res), res);
 				madeIndex = true;
 			};
+
 			fs_close_index_dir(indexes);
 		};
 	};
-	
+
 	if (madeIndex) {
-		BAlert *alert = new BAlert("The IM Kit", "The IM Kit had to add indexes for "
-			" IM:connections or IM:status to one or more of your drives. Please be "
+		BAlert *alert = new BAlert(_T("The IM Kit"), _T("The IM Kit had to add indexes for "
+			"IM:connections or IM:status to one or more of your drives. Please be "
 			"sure to re-index any People files on these drives. You should obtain "
-			"reindex from http://www.bebits.com/app/2033 Failure to do so may cause"
-			" duplicate People files to be created", "Oh. Better quit.", "Run anyway!", NULL,
+			"reindex from http://www.bebits.com/app/2033 Failure to do so may cause "
+			"duplicate People files to be created."), _T("Quit"), _T("OK"), NULL,
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_IDEA_ALERT);
 		alert->SetShortcut(0, B_ESCAPE);
 		int32 choice = alert->Go();
-		
-		if ( choice == 0 )
+
+		if (choice == 0)
 			exit(1);
 	};
 }
