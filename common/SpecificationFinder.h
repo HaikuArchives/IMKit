@@ -1,8 +1,8 @@
 #ifndef COMMON_SPECIFICATION_FINDER_H
 #define COMMON_SPECIFICATION_FINDER_H
 
-#include "GenericStore.h"
-#include "Specification.h"
+#include "common/GenericStore.h"
+#include "common/Specification.h"
 
 namespace IM {
 	template<class T>
