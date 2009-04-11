@@ -67,6 +67,8 @@ class Server : public BApplication, public ContactListener {
 		
 		BMessage				GenerateSettingsTemplate(void);
 		status_t				UpdateOwnSettings(BMessage &);
+		status_t				SetAutoStart(bool autostart);
+		status_t				SetDeskbarIcon();
 		void					InitSettings(void);
 		
 		void					handleDeskbarMessage(BMessage *);

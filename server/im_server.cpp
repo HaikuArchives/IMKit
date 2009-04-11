@@ -2086,92 +2086,140 @@ Server::GenerateSettingsTemplate()
 	Update im_server settings from message
 */
 status_t
-Server::UpdateOwnSettings( BMessage & settings )
+Server::UpdateOwnSettings(BMessage &settings)
 {
 	LOG(kAppName, liDebug, "Server::UpdateOwnSettings");
 
 	bool auto_start = false;
+	bool deskbar_icon = true;
 
 	if (settings.FindBool("auto_start", &auto_start) != B_OK)
 		auto_start = false;
 
-	BPath bootPath;
-	BString cmd;
-
-	// Find boot directory
-	if (find_directory(B_USER_BOOT_DIRECTORY, &bootPath, true, NULL) < B_OK) {
-		LOG(kAppName, liHigh, "Couldn't find or create B_USER_BOOT_DIRECTORY");
-		return B_ERROR;
-	}
-
-	// Append UserBootscript to the path
-	bootPath.Append("UserBootscript");
-
-	if (auto_start) {
-		// im_server path
-		BPath serverPath;
-		if (find_directory(B_COMMON_SERVERS_DIRECTORY, &serverPath) < B_OK) {
-			LOG(kAppName, liHigh, "Couldn't find B_COMMON_SERVERS_DIRECTORY");
-			return B_ERROR;
-		}
-		serverPath.Append("im_server");
-
-		// Open bootscript
-		BFile file(bootPath.Path(), B_READ_WRITE | B_CREATE_FILE | B_OPEN_AT_END);
-		if (file.InitCheck() != B_OK) {
-			// Error creating or opening the file
-			LOG(kAppName, liHigh, "Couldn't open %s", bootPath.Path());
-			goto deskbar_option;
-		}
-
-		// Check if im_server has already been added to the script
-		cmd = "grep -q AAA_im_server_BBB ";
-		cmd += bootPath.Path();
-		if (system(cmd.String()) != 0) {
-			// Add im_server auto-start
-			BString run_cmd = "# Added by IM Kit.      AAA_im_server_BBB\n";
-			run_cmd.Append(serverPath.Path());
-			run_cmd += " & # AAA_im_server_BBB\n";
-			file.Write(run_cmd.String(), run_cmd.Length());
-		}
-	} else {
-		// Check if im_server has already been added to the script
-		cmd = "grep -q AAA_im_server_BBB ";
-		cmd += bootPath.Path();
-		if (system(cmd.String()) == 0) {
-			// Remove from auto-start
-			cmd = "grep -v AAA_im_server_BBB ";
-			cmd += bootPath.Path();
-			cmd += " > /tmp/im_kit_temp";
-			system(cmd.String());
-
-			cmd = "cp /tmp/im_kit_temp ";
-			cmd += bootPath.Path();
-			system(cmd.String());
-			system("rm /tmp/im_kit_temp");
-		}
-	}
-
-deskbar_option:
-	bool deskbar_icon = true;
-	
-	if ( settings.FindBool("deskbar_icon", &deskbar_icon) != B_OK )
+	if (settings.FindBool("deskbar_icon", &deskbar_icon) != B_OK)
 		deskbar_icon = true;
 
-	if (!deskbar_icon)
-		return B_OK;
+	if (SetAutoStart(auto_start) != B_OK)
+		return B_ERROR;
 
+	if (deskbar_icon) {
+		if (SetDeskbarIcon() != B_OK)
+			return B_ERROR;
+	}
+
+	return B_OK;
+}
+
+/**
+	Apply auto_start setting, by configuring UserBootscript.
+*/
+status_t
+Server::SetAutoStart(bool autostart)
+{
+	app_info info;
+	BPath serverPath;
+	status_t err = B_ERROR;
+
+	// Find server path
+	be_roster->GetRunningAppInfo(be_app->Team(), &info);
+	serverPath.SetTo(&info.ref);
+
+	// UserBootscript command
+	BString cmd0 = "# Added by IM Kit.      AAA_im_server_BBB";
+	BString cmd1(serverPath.Path());
+	cmd1.Append(" & # AAA_im_server_BBB");
+
+	// Start server at boot time
+	BPath path;
+
+	if (find_directory(B_USER_BOOT_DIRECTORY, &path, true) != B_OK) {
+		LOG(kAppName, liHigh, "Couldn't find or create B_USER_BOOT_DIRECTORY");
+		return B_ERROR;
+	};
+
+	// Create file if it doesn't exist
+	BDirectory directory(path.Path());
+	path.Append("UserBootscript");
+
+	BFile file;
+	err = directory.CreateFile(path.Path(), &file, true);
+	switch (err) {
+		case B_OK:
+			break;
+		case B_FILE_EXISTS:
+			file.SetTo(path.Path(), B_READ_WRITE);
+			break;
+		default: {
+			LOG(kAppName, liHigh, "Couldn't find or create UserBootscript");
+			return B_ERROR;
+		};
+	};
+
+	// Look if we already have autostart here
+	ssize_t bytesRead = -1;
+	char ch;
+	BString buffer;
+	std::vector<BString> data;
+	bool done = false;
+	do {
+		bytesRead = file.Read(&ch, 1);
+		if (bytesRead < 0)
+			break;
+
+		if (ch == '\n') {
+			if (buffer == cmd0) {
+				buffer = "";
+				continue;
+			} else if (buffer == cmd1) {
+				done = true;
+				break;
+			} else {
+				data.push_back(buffer);
+				buffer = "";
+			};
+		} else
+			buffer << ch;
+	} while (bytesRead > 0);
+
+	if (autostart && !done) {
+		file.Seek(0, SEEK_END);
+		file.Write(cmd0.String(), cmd0.Length());
+		file.Write("\n", 1);
+		file.Write(cmd1.String(), cmd1.Length());
+		file.Write("\n", 1);
+	} else if (!autostart && done) {
+		std::vector<BString>::iterator it;
+
+		// Close the file and recrete it
+		file.Unset();
+		file.SetTo(path.Path(), B_READ_WRITE | B_CREATE_FILE | B_ERASE_FILE);
+
+		// Now write all the lines except the autostart lines
+		for (it = data.begin(); it != data.end(); ++it) {
+			buffer = (*it);
+			file.Write(buffer.String(), buffer.Length());
+			file.Write("\n", 1);
+		};
+	};
+
+	return B_OK;
+}
+
+/**
+	Checks if Deskbar is running and then installs deskbar icon.
+*/
+status_t
+Server::SetDeskbarIcon()
+{
 	bool isDeskbarRunning = true;
 	bool isInstalled = false;
 
-	{
-		// If the Deskbar is not alive, acknowledge this request to wake it up
-		BDeskbar deskbar;
+	// If the Deskbar is not alive, acknowledge this request to wake it up
+	BDeskbar deskbar;
 #ifdef __HAIKU__
-		isDeskbarRunning = deskbar.IsRunning();
+	isDeskbarRunning = deskbar.IsRunning();
 #endif
-		isInstalled = deskbar.HasItem(DESKBAR_ICON_NAME);
-	}
+	isInstalled = deskbar.HasItem(DESKBAR_ICON_NAME);
 
 #ifdef __HAIKU__
 	// Wait up to 10 seconds for Deskbar to become available, in case it's not running yet
@@ -2181,15 +2229,15 @@ deskbar_option:
 		if (deskbar.IsRunning()) {
 			isDeskbarRunning = true;
 			break;
-		}
+		};
 		snooze(1000000);
-	}
+	};
 #endif
 
 	if (!isDeskbarRunning) {
 		LOG(kAppName, liHigh, "Deskbar is not running, giving up...");
 		return B_ERROR;
-	}
+	};
 
 	_InstallDeskbarIcon();
 
