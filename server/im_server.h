@@ -20,6 +20,14 @@
 #include "ContactHandle.h"
 #include "ContactListener.h"
 
+extern const char *kImConnectedSound;
+extern const char *kImDisconnectedSound;
+extern const char *kImStatusOnlineSound;
+extern const char *kImStatusAwaySound;
+extern const char *kImStatusOfflineSound;
+
+extern const char *kAppName;
+
 namespace IM {
 
 	class ContactManager;
@@ -54,8 +62,6 @@ namespace IM {
 			
 			Contact					CreateContact(const char * proto_id, const char *namebase);
 			
-			void					RegisterSoundEvents(void);
-			void					CheckIndexes(void);
 			status_t				LoadProtocols(void);
 			
 			bool					IsMessageOk(BMessage *);
@@ -99,7 +105,7 @@ namespace IM {
 			
 			void					handle_SETTINGS_UPDATED(BMessage *);
 			
-			status_t				selectConnection(BMessage * msg, Contact & contact);
+			status_t				SelectConnection(BMessage * msg, Contact & contact);
 			
 			const char				*TotalStatus(void);
 			status_t				ProtocolOffline(const char *signature);

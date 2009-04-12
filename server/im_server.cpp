@@ -40,8 +40,6 @@
 #include <Mime.h>
 #include <storage/Resources.h>
 
-#include <kernel/fs_index.h>
-
 #include <DeskbarIcon.h>
 
 #ifdef ZETA
@@ -60,15 +58,15 @@ using namespace IM;
 
 #define AUTOSTART_APPSIG_SETTING "autostart_appsig"
 
-#define kImConnectedSound		"IM Connected"
-#define kImDisconnectedSound	"IM Disconnected"
+extern const char *kImConnectedSound = "IM Connected";
+extern const char *kImDisconnectedSound	= "IM Disconnected";
+extern const char *kImStatusOnlineSound = "IM Status: Available";
+extern const char *kImStatusAwaySound = "IM Status: Away";
+extern const char *kImStatusOfflineSound = "IM Status: Offline";
 
-#define kImStatusOnlineSound	"IM Status: Available"
-#define kImStatusAwaySound 		"IM Status: Away"
-#define kImStatusOfflineSound	"IM Status: Offline"
+extern const char *kAppName = "im_server";
 
 const char *kProtocolLoaderSig = "application/x-vnd.beclan.im_kit.ProtocolLoader";
-const char *kAppName = "im_server";
 
 const bigtime_t kQueryDelay = 5 * 1000 * 1000;	// 5 Seconds
 
@@ -135,8 +133,6 @@ Server::Server()
 	}
 	
 	LoadProtocols();
-
-	RegisterSoundEvents();
 
 	_Init();
 	
@@ -2676,93 +2672,12 @@ Server::reply_GET_CONTACTS_FOR_PROTOCOL( BMessage * msg )
 }
 
 void
-Server::RegisterSoundEvents()
-{
-	// protocol status
-	add_system_beep_event(kImConnectedSound, 0);
-	add_system_beep_event(kImDisconnectedSound, 0);
-	
-	// contact status
-	add_system_beep_event(kImStatusOnlineSound, 0);
-	add_system_beep_event(kImStatusAwaySound, 0);
-	add_system_beep_event(kImStatusOfflineSound, 0);
-}
-
-void
-Server::CheckIndexes()
-{
-	BVolumeRoster roster;
-	BVolume volume;
-	int madeIndex = false;
-	roster.Rewind();
-
-	while (roster.GetNextVolume(&volume) == B_NO_ERROR) {
-		char volName[B_OS_NAME_LENGTH];
-		volume.GetName(volName);
-
-		if ((volume.KnowsAttr()) && (volume.KnowsQuery()) && (volume.KnowsMime())) {
-			DIR *indexes;
-			struct dirent *ent;
-
-			LOG(kAppName, liDebug, "%s is suitable for indexing", volName);
-
-			indexes = fs_open_index_dir(volume.Device());
-			if (indexes == NULL) {
-				LOG(kAppName, liLow, "Error opening indexes on %s", volName);
-				continue;
-			};
-
-			bool isConnIndexed = false;
-			bool isStatusIndexed = false;
-
-			while ( (ent = fs_read_index_dir(indexes)) != NULL ) {
-				if (strcmp(ent->d_name, "IM:connections") == 0) isConnIndexed = true;
-				if (strcmp(ent->d_name, "IM:status") == 0) isStatusIndexed = true;
-			};
-
-			if (isConnIndexed == false) {
-				int res = fs_create_index(volume.Device(), "IM:connections", B_STRING_TYPE, 0);
-				LOG(kAppName, liMedium, "Added IM:connections to %s: %s (%i)",
-					volName, strerror(res), res);
-				madeIndex = true;
-			};
-
-			if (isStatusIndexed == false) {
-				int res = fs_create_index(volume.Device(), "IM:status", B_STRING_TYPE, 0);
-				LOG(kAppName, liMedium, "Added IM:status to %s: %s (%i)",
-					volName, strerror(res), res);
-				madeIndex = true;
-			};
-
-			fs_close_index_dir(indexes);
-		};
-	};
-
-	if (madeIndex) {
-		BAlert *alert = new BAlert(_T("The IM Kit"), _T("The IM Kit had to add indexes for "
-			"IM:connections or IM:status to one or more of your drives. Please be "
-			"sure to re-index any People files on these drives. You should obtain "
-			"reindex from http://www.bebits.com/app/2033 Failure to do so may cause "
-			"duplicate People files to be created."), _T("Quit"), _T("OK"), NULL,
-			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_IDEA_ALERT);
-		alert->SetShortcut(0, B_ESCAPE);
-		int32 choice = alert->Go();
-
-		if (choice == 0)
-			exit(1);
-	};
-}
-
-void
 Server::ReadyToRun()
 {
-	CheckIndexes();
-
 	fContact->Init();
 
 	SetAllOffline();
 	StartAutostartApps();
-
 }
 
 void
