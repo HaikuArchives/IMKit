@@ -176,48 +176,53 @@ void IM_DeskbarIcon::_init() {
 void IM_DeskbarIcon::getProtocolStates() {
 	BMessage protStatus;
 	IM::Manager man;
-	
-	if (man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK) {
+
+	if (man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK)
 		LOG("deskbar", liHigh, "Error getting statuses");
-	};
 
 	fStatuses.clear();
 
-	fTipText = "Online Status:";
-	
+	fTipText = _T("Online Status:");
+
 	BString instanceID;
 	for (int32 i = 0; protStatus.FindString("instance_id", i, &instanceID) == B_OK; i++) {
 		const char *protocol = NULL;
 		const char *userfriendly = NULL;
 		const char *status = NULL;
 		const char *account = NULL;
-		
-		if (protStatus.FindString("protocol",i, &protocol) != B_OK) protocol = "";
-		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) userfriendly = "";
-		if (protStatus.FindString("status", i, &status) != B_OK) status = "";
-		if (protStatus.FindString("account_name", i, &account) != B_OK) account = "";
+
+		if (protStatus.FindString("protocol",i, &protocol) != B_OK)
+			protocol = _T("Unknown protocol");
+		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK)
+			userfriendly = _T("Unknown");
+		if (protStatus.FindString("status", i, &status) != B_OK)
+			status = _T("Unknown status");
+		if (protStatus.FindString("account_name", i, &account) != B_OK)
+			account = _T("Unknown account");
 
 		fStatuses[protocol] = status;
 		fFriendlyNames[protocol] = userfriendly;
-		
+
 		fTipText << "\n  " << userfriendly << ": " << _T(status) << "";
-		
-		if ((fStatus > kStatusOnline) && (strcmp(status, ONLINE_TEXT) == 0)) fStatus = kStatusOnline;
-		if ((fStatus > kStatusAway) && (strcmp(status, AWAY_TEXT) == 0)) fStatus = kStatusAway;
-	}
+
+		if ((fStatus > kStatusOnline) && (strcmp(status, ONLINE_TEXT) == 0))
+			fStatus = kStatusOnline;
+		if ((fStatus > kStatusAway) && (strcmp(status, AWAY_TEXT) == 0))
+			fStatus = kStatusAway;
+	};
 
 	LOG("deskbar", liDebug, "Initial status: %i	", fStatus);
-	
+
 	switch (fStatus) {
-		case kStatusOnline: {
+		case kStatusOnline:
 			fCurrIcon = fModeIcon = fOnlineIcon;
-		} break;
-		case kStatusAway: {
+			break;
+		case kStatusAway:
 			fCurrIcon = fModeIcon = fAwayIcon;
-		} break;
-		default: {
+			break;
+		default:
 			fCurrIcon = fModeIcon =  fOfflineIcon;
-		};
+			break;
 	};
 };
 
