@@ -110,11 +110,8 @@ PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
 	fClientsButton->ResizeToPreferred();
 
 #ifdef __HAIKU__
-	float width, height;
 	fServerLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fServerDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
-	fServerDesc->GetPreferredSize(&width, &height);
-	fServerDesc->SetExplicitMaxSize(BSize(200, 100*height));
 	fProtocolsLabel->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fProtocolsDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
 	fProtocolsDesc->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
