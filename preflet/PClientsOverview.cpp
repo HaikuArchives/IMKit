@@ -143,7 +143,6 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
 		.Add(layout)
 		.AddGlue()
-		.SetInsets(inset, inset, inset, inset)
 	);
 #else
 	AddChild(fAutoStartLabel);
