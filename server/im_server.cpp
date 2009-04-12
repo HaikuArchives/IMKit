@@ -1079,8 +1079,8 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 /**
 	Select the 'best' protocol for sending a message to contact
 */
-status_t Server::selectConnection(BMessage * msg, Contact & contact) {
-	LOG(kAppName, liHigh, "selectConnection(%4.4s, %s) entered", &msg->what, ((const entry_ref *)contact)->name);
+status_t Server::SelectConnection(BMessage *msg, Contact &contact) {
+	LOG(kAppName, liHigh, "SelectConnection(%4.4s, %s) entered", &msg->what, ((const entry_ref *)contact)->name);
 
 	char connection[255];
 	const char *protocol = msg->FindString("protocol");
@@ -1206,30 +1206,27 @@ Server::IsMessageOk( BMessage * msg )
 /**
 	Forward message from client-side to protocol-side
 */
-void
-Server::MessageToProtocols( BMessage * msg )
-{
+void Server::MessageToProtocols(BMessage * msg) {
 
-	if ( !IsMessageOk(msg) )
-	{
+	if (IsMessageOk(msg) == false) {
 		LOG(kAppName, liHigh, "Bad message in MessageToProtocols()");
 		return;
-	}
+	};
 	
 	entry_ref entry;
 	
-	if ( msg->FindRef("contact",&entry) == B_OK )
-	{ // contact present, select protocol and ID
+	if (msg->FindRef("contact", &entry) == B_OK) {
+		// contact present, select protocol and ID
 		Contact contact(entry);
 		
-		if ( (contact.InitCheck() != B_OK) || !contact.Exists() )
-		{ // invalid target
+		if ((contact.InitCheck() != B_OK) || !contact.Exists()) {
+			// invalid target
 			_SEND_ERROR("Invalid target, no such contact", msg);
 			return;
-		}
+		};
 		
-		if ( selectConnection(msg, contact) != B_OK )
-		{ // No available connection, can't send message!
+		if (SelectConnection(msg, contact) != B_OK) {
+			// No available connection, can't send message!
 			LOG(kAppName, liHigh, "Can't send message, no possible connection");
 			
 			// send ERROR message here..
@@ -1238,14 +1235,12 @@ Server::MessageToProtocols( BMessage * msg )
 			error.AddString("error", "Can't send message, no available connections. Go online!");
 			error.AddMessage("message", msg);
 				
-			Broadcast( &error );
+			Broadcast(&error);
 			return;
-		}
-		
-		msg->PrintToStream();
-		
-		if ( fStatus[msg->FindString("protocol")] == OFFLINE_TEXT )
-		{ // selected protocol is offline, impossible to send message
+		};
+				
+		if (fStatus[msg->FindString("protocol")] == OFFLINE_TEXT) {
+			// selected protocol is offline, impossible to send message
 			BString error_str;
 			error_str << "Not connected to selected protocol [";
 			error_str << msg->FindString("protocol");
@@ -1253,42 +1248,41 @@ Server::MessageToProtocols( BMessage * msg )
 			
 			_ERROR(error_str.String(), msg);
 			
-			BMessage err( IM::ERROR );
-			err.AddRef("contact", contact );
-			err.AddString("error", error_str.String() );
+			BMessage err(IM::ERROR);
+			err.AddRef("contact", contact);
+			err.AddString("error", error_str.String());
 			
-			Broadcast( &err );
+			Broadcast(&err);
 			
 			return;
-		}
+		};
 		
-		if ( msg->FindString("id") == NULL )
-		{ // add protocol-specific ID from Contact if not present
+		if (msg->FindString("id") == NULL) {
+			// add protocol-specific ID from Contact if not present
 			char connection[255];
 			
-			if ( contact.FindConnection(msg->FindString("protocol"),connection) != B_OK )
-			{
-				_ERROR("Couldn't get connection for protocol",msg);
+			if (contact.FindConnection(msg->FindString("protocol"),connection) != B_OK) {
+				_ERROR("Couldn't get connection for protocol", msg);
 				return;
-			}
+			};
 			
-			const char * id=NULL;
+			const char *id = NULL;
 			
-			for ( int i=0; connection[i]; i++ )
-				if ( connection[i] == ':' )
-				{
+			// TODO: Investigate this - shouldn't we be using IM:Connection for parsing?
+			for (int i = 0; connection[i]; i++) {
+				if (connection[i] == ':') {
 					id = &connection[i+1];
 					break;
-				}
+				};
+			};
 			
-			if ( !id )
-			{
-				_ERROR("Couldn't get ID from connection",msg);
+			if (id == NULL) {
+				_ERROR("Couldn't get ID from connection", msg);
 				return;
-			}
+			};
 			
-			msg->AddString("id", id );
-		}
+			msg->AddString("id", id);
+		};
 	} // done selecting protocol and ID
 	
 	// copy message so we can broadcast it later, with data intact
@@ -1297,31 +1291,29 @@ Server::MessageToProtocols( BMessage * msg )
 	
 	msg->FindString("protocol", &signature);
 	
-	if (signature == NULL)
-	{ // no protocol specified, send to all?
+	if (signature == NULL) {
+		// no protocol specified, send to all?
 		LOG(kAppName, liLow, "No protocol specified");
 		
-		int32 im_what=-1;
+		int32 im_what = B_ERROR;
 		msg->FindInt32("im_what", &im_what);
 		
-		switch ( im_what )
-		{ // send these messages to all loaded protocols
-			case SET_STATUS:
-			{
+		switch (im_what) {
+			// send these messages to all loaded protocols
+			case SET_STATUS: {
 				LOG(kAppName, liLow, "SET_STATUS - Sending to all protocols");
 				
 				if (fProtocol->MessageProtocols(new AllProtocolSpecification(), msg) != B_OK) {
 					_ERROR("One or more protocols did not receive our SET_STATUS");
 				};
-								
-			}	break;
-			default:
+			} break;
+			
+			default: {
 				_ERROR("Invalid message", msg);
-				return;
-		}
-	} else
-	{ // protocol mapped
-	
+			} return;
+		};
+	} else {
+		// protocol mapped
 		const char *protocol = msg->FindString("protocol");
 		ProtocolInfo *info = NULL;
 		
@@ -1343,37 +1335,31 @@ Server::MessageToProtocols( BMessage * msg )
 			int32 count;
 
 #if B_BEOS_VERSION > B_BEOS_VERSION_5			
-			for ( int i=0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++ )
+			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++) {
 #else
-			for ( int i=0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++ )
+			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++) {
 #endif
-			{ // get string names
-				for ( int x=0; x<count; x++ )
-				{ // replace all matching strings
-					const char * data = msg->FindString(name,x);
+				// get string names
+				for (int x = 0; x < count; x++) {
+					// replace all matching strings
+					const char *data = msg->FindString(name, x);
 					
 					int32 src_len = strlen(data);
 					int32 dst_len = strlen(data)*5;
 					int32 state = 0;
 					
-					char * new_data = new char[dst_len];
-					
-					if ( convert_from_utf8(
-						charset,
-						data,		&src_len,
-						new_data,	&dst_len,
-						&state				
-					) == B_OK )
-					{
+					char *new_data = new char[dst_len];
+
+					if (convert_from_utf8(charset, data, &src_len, new_data, &dst_len, &state) == B_OK)	{
 						new_data[dst_len] = 0;
 						
-						msg->ReplaceString(name,x,new_data);
-					}
+						msg->ReplaceString(name, x, new_data);
+					};
 					
 					delete[] new_data;
-				}
-			}
-		} // done converting charset
+				};
+			};
+		}; // done converting charset
 		
 		
 		if (info->Process(msg) != B_OK) {
@@ -1385,7 +1371,7 @@ Server::MessageToProtocols( BMessage * msg )
 	// broadcast client_side_msg, since clients want utf8 text, and that has
 	// been replaced in msg with protocol-specific data
 	Broadcast(&client_side_msg);
-}
+};
 
 
 /**
