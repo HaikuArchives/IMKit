@@ -14,6 +14,7 @@ namespace IM {
 class Connection
 {
 	public:
+		Connection(void);
 		Connection( const char * );
 		Connection( const Connection & );
 		

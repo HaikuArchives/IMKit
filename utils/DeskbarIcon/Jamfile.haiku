@@ -18,9 +18,10 @@ if ! $(TARGET_PLATFORM_HAIKU_COMPATIBLE) {
 }
 
 Application IMDeskbarIcon :
+	AccountInfo.cpp
+	AwayMessageWindow.cpp
 	DeskbarIconApp.cpp
 	DeskbarIcon.cpp
-	AwayMessageWindow.cpp
 	QueryLooper.cpp
 	: be $(icon_libs) $(TARGET_LIBSTDC++) libim.so <IMKit>libcommon.a
 	: DeskbarIcon.rdef DeskbarIcons.rdef

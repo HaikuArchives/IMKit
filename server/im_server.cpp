@@ -7,6 +7,7 @@
 #include "ProtocolManager.h"
 #include "ProtocolSpecification.h"
 #include "StatusIcon.h"
+#include "StringSpecification.h"
 
 #include "common/GenericStore.h"
 #include "common/IMKitUtilities.h"
@@ -37,6 +38,7 @@
 #include <Beep.h>
 #include <PropertyInfo.h>
 #include <Mime.h>
+#include <storage/Resources.h>
 
 #include <kernel/fs_index.h>
 
@@ -253,7 +255,9 @@ Server::ResolveSpecifier(BMessage *msg, int32 index, BMessage *specifier, int32 
 			{
 				const char *name = specifier->FindString("name");
 				
-				fCurProtocol = fProtocol->FindFirst(new SignatureProtocolSpecification(name));
+				fCurProtocol = NULL;
+				fProtocol->FindFirst(new SignatureProtocolSpecification(name), &fCurProtocol);
+
 				msg->PopSpecifier();
 				return this;
 			}
@@ -453,9 +457,8 @@ Server::MessageReceived( BMessage *msg )
 			if (msg->FindMessage("template", &settings) != B_OK) return;
 			if (msg->FindMessenger("messenger", &msgr) != B_OK) return;
 
-			ProtocolInfo *info = fProtocol->FindFirst(new InstanceProtocolSpecification(instanceID));
-
-			if (info == NULL) {
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new InstanceProtocolSpecification(instanceID), &info) == false) {
 				LOG(kAppName, liHigh, "Got a PROTOCOL_STARTED message for an unexpected protocol: %s (%s)", signature, instanceID);
 				return;
 			}
@@ -485,8 +488,8 @@ Server::MessageReceived( BMessage *msg )
 			
 			if (msg->FindString("instance_id", &instanceID) != B_OK) return;
 			
-			ProtocolInfo *info = fProtocol->FindFirst(new InstanceProtocolSpecification(instanceID));
-			if (info == NULL) {
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new InstanceProtocolSpecification(instanceID), &info) == false) {
 				LOG(kAppName, liHigh, "Got a PROTOCOL_STOPPED / PROTOCOL_KILLED / PROTOCOL_COULD_NOT_START message for a protocol we don't know about: %s", instanceID);
 				return;
 			};
@@ -539,8 +542,8 @@ void Server::ContactAdded(Contact *contact) {
 	for (int i = 0; contact->ConnectionAt(i, connection) == B_OK; i++) {
 		Connection conn(connection);
 		
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(conn.Protocol()));
-		if (info != NULL) {
+		ProtocolInfo *info = NULL;
+		if (fProtocol->FindFirst(new SignatureProtocolSpecification(conn.Protocol()), &info) == true) {
 			BMessage add(MESSAGE);
 			add.AddInt32("im_what", REGISTER_CONTACTS);
 			add.AddString("id", conn.ID());
@@ -561,8 +564,8 @@ void Server::ContactModified(Contact *contact, ConnectionStore *oldConnections, 
 		if (newConnections->Contains(con) == false) {
 			conModified = true;
 		
-			ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(con.Protocol()));
-			if (info != NULL) {
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new SignatureProtocolSpecification(con.Protocol()), &info) == true) {
 				BMessage remove(MESSAGE);
 				remove.AddInt32("im_what", UNREGISTER_CONTACTS);
 				remove.AddString("id", con.ID());
@@ -585,8 +588,8 @@ void Server::ContactModified(Contact *contact, ConnectionStore *oldConnections, 
 		if (oldConnections->Contains(con) == false) {
 			conModified = true;
 		
-			ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(con.Protocol()));
-			if (info != NULL) {
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new SignatureProtocolSpecification(con.Protocol()), &info) == true) {
 				// protocol loaded, register connection
 				BMessage remove(MESSAGE);
 				remove.AddInt32("im_what", REGISTER_CONTACTS);
@@ -607,14 +610,22 @@ void Server::ContactRemoved(Contact *contact, ConnectionStore *oldConnections) {
 
 	for (ConnectionStore::Iterator it = oldConnections->Start(); it != oldConnections->End(); it++) {
 		Connection conn = (*it);
+		bool canRemove = false;
 	
 		// Ensure no other Contacts use this Connection
-		GenericListStore<Contact> other = fContact->FindFirst(new ConnectionContactSpecification(conn));
-		if ((other.CountItems() == 0) || ((other.CountItems() == 1) && (*contact == *other.Start()))) {
+		GenericListStore<ContactCachedConnections *> other = fContact->FindAll(new ConnectionContactSpecification(conn));
+		if (other.CountItems() == 0) {
+			canRemove = true;
+		};
+		if ((other.CountItems() == 1) && (contact == *other.Start())) {
+			canRemove = true;
+		};
+
+		if (canRemove == true) {
 			conModified = true;
 
-			ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(conn.Protocol()));
-			if (info != NULL) {
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new SignatureProtocolSpecification(conn.Protocol()), &info) == true) {
 				BMessage remove(MESSAGE);
 				remove.AddInt32("im_what", UNREGISTER_CONTACTS);
 				remove.AddString("id", conn.ID());
@@ -935,9 +946,11 @@ Server::Broadcast( BMessage * msg )
 	const char * protocol;
 	for (int i = 0; msg->FindString("protocol", i, &protocol) == B_OK; i++) {
 		const char *friendly = "<invalid protocol>";
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = NULL;
+		if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == true) {
+			friendly = info->FriendlySignature();
+		};
 
-		if (info != NULL) friendly = info->FriendlySignature();
 		msg->AddString("userfriendly", friendly);
 	}
 	// done adding fancy names
@@ -1046,9 +1059,15 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 	// post request info about this contact
 	BMessage msg(MESSAGE);
 	msg.AddInt32("im_what", GET_CONTACT_INFO);
-	msg.AddString("protocol", connection_protocol(proto_id).c_str());
-	msg.AddString("id", connection_id(proto_id).c_str());
-//	msg.AddRef("contact", result);
+	msg.AddRef("contact", result);
+	
+	// Add connection information
+	Connection connection(proto_id);
+	msg.AddString("protocol", connection.Protocol());
+	msg.AddString("id", connection.ID());
+	if (connection.HasAccount() == true) {
+		msg.AddString("account", connection.Account());
+	};
 	
 	BMessenger(this).SendMessage(&msg);
 	
@@ -1060,73 +1079,71 @@ Server::CreateContact( const char * proto_id, const char *namebase )
 /**
 	Select the 'best' protocol for sending a message to contact
 */
-status_t
-Server::selectConnection( BMessage * msg, Contact & contact )
-{
+status_t Server::selectConnection(BMessage * msg, Contact & contact) {
+	LOG(kAppName, liHigh, "selectConnection(%4.4s, %s) entered", &msg->what, ((const entry_ref *)contact)->name);
+
 	char connection[255];
-	
-	string conn = "";
-	
-	const char * protocol = msg->FindString("protocol");
-	const char * id = msg->FindString("id");
+	const char *protocol = msg->FindString("protocol");
+	const char *id = msg->FindString("id");
 
 	// first of all, check if source of last message is still online
 	// if it is, we use it.
-	
 	if ((fPreferredConnection[contact].length() > 0) &&
 		(fPreferredConnection[contact].length() < 100)) {
 		strncpy(connection, fPreferredConnection[contact].c_str(), sizeof(connection));
 		connection[sizeof(connection)-1] = 0;
-		
-		if ( fStatus[connection].length() > 0 && fStatus[connection] != OFFLINE_TEXT )
-		{
-			if ( fStatus[connection_protocol(connection)] != OFFLINE_TEXT )
-			{
-				LOG(kAppName, liDebug, "Using preferred connection %s", connection );
+			
+		if ((fStatus[connection].length() > 0) && (fStatus[connection] != OFFLINE_TEXT)) {
+			Connection con(connection);
+			if (fStatus[con.Protocol()] != OFFLINE_TEXT) {
+				LOG(kAppName, liDebug, "Using preferred connection %s", connection);
 				
-				if ( !protocol )
-					msg->AddString("protocol", connection_protocol(connection).c_str());
-				if ( !id )
-					msg->AddString("id", connection_id(connection).c_str());
+				if (protocol == NULL) {
+					msg->AddString("protocol", con.Protocol());
+				};
+				if (id == NULL) {
+					msg->AddString("id", con.ID());
+				};
 				
 				return B_OK;
-			}
-		}
+			};
+		};
+		
 		LOG(kAppName, liDebug, "Preferred connection [%s] not online", connection);
-	}
+	};
 	
 	// look for an online protocol
-	if ( protocol && id )
-	{
+	if ((protocol != NULL) && (id != NULL)) {
 		// all set
 		return B_OK;
-	}
+	};
 	
-	for ( int i=0; contact.ConnectionAt(i,connection) == B_OK; i++ )
-	{
+	for (int i = 0; contact.ConnectionAt(i, connection) == B_OK; i++) {
 		string curr = connection;
-		
-		if ( protocol )
-		{
-			if ( connection_protocol(curr) != protocol )
-			{
-				// protocol selected, and this is not it. skip.
+		Connection con(connection);		
+
+		if (protocol != NULL) {	
+			if (con.Protocol() != protocol) {
+				// protocol selected and this is not it. skip.
 				continue;
-			}
-		}
+			};
+		};
 		
-		if ( fStatus[curr].length() > 0 && fStatus[curr] != OFFLINE_TEXT )
-		{
-			if ( fStatus[connection_protocol(conn)] != OFFLINE_TEXT )
-			{ // make sure WE'RE online on this protocol too
-				if ( !protocol )
-					msg->AddString("protocol", connection_protocol(curr).c_str());
-				msg->AddString("id", connection_id(curr).c_str());
-				LOG(kAppName, liDebug, "Using online connection %s", curr.c_str() );
+		if ((fStatus[curr].length() > 0) && (fStatus[curr] != OFFLINE_TEXT)) {
+			LOG(kAppName, liHigh, "This connection is online (%s)", curr.c_str());
+
+			if (fStatus[con.Protocol()] != OFFLINE_TEXT) {
+				// make sure WE'RE online on this protocol too
+				if (protocol == NULL) {
+					msg->AddString("protocol", con.Protocol());
+				};
+				msg->AddString("id", con.ID());
+
+				LOG(kAppName, liDebug, "Using online connection %s", con.String());
 				return B_OK;
-			}
-		}
-	}
+			};
+		};
+	};
 
 	// Obtain a list off Offline capable Protocols	
 	GenericListStore<ProtocolInfo *> protocols = fProtocol->FindAll(new CapabilityProtocolSpecification(Protocol::OFFLINE_MESSAGES));
@@ -1134,17 +1151,20 @@ Server::selectConnection( BMessage * msg, Contact & contact )
 	for (GenericListStore<ProtocolInfo *>::Iterator pIt = protocols.Start(); pIt != protocols.End(); pIt++) {
 		ProtocolInfo *info = (*pIt);
 
-		// check if contact has a connection for this protocol
-		if (contact.FindConnection(info->Signature(), connection) == B_OK ) {
+		// Check if contact has a connection for this protocol
+		if (contact.FindConnection(info->Signature(), connection) == B_OK) {
 
-			// make sure we're online with this protocol
+			// Make sure we're online with this protocol
 			if (fStatus[info->Signature()] != OFFLINE_TEXT) {
-				LOG(kAppName, liDebug, "Using offline connection %s", connection );
-				
-				if ( !protocol )
-					msg->AddString("protocol", connection_protocol(connection).c_str());
-				if ( !id )
-					msg->AddString("id", connection_id(connection).c_str());
+				LOG(kAppName, liDebug, "Using offline connection %s", connection);
+				Connection con(connection);
+
+				if (protocol == NULL) {
+					msg->AddString("protocol", con.Protocol());
+				};
+				if (id == NULL) {
+					msg->AddString("id", con.ID());
+				};
 				
 				return B_OK;
 			};
@@ -1221,6 +1241,8 @@ Server::MessageToProtocols( BMessage * msg )
 			Broadcast( &error );
 			return;
 		}
+		
+		msg->PrintToStream();
 		
 		if ( fStatus[msg->FindString("protocol")] == OFFLINE_TEXT )
 		{ // selected protocol is offline, impossible to send message
@@ -1301,9 +1323,9 @@ Server::MessageToProtocols( BMessage * msg )
 	{ // protocol mapped
 	
 		const char *protocol = msg->FindString("protocol");
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(protocol));
+		ProtocolInfo *info = NULL;
 		
-		if (info == NULL) {
+		if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == false) {
 			// invalid protocol, report and skip
 			_ERROR("Protocol not loaded or not installed", msg);			
 			_SEND_ERROR("Protocol not loaded or not installed", msg);
@@ -1439,8 +1461,7 @@ Server::MessageFromProtocols( BMessage * msg )
 	}
 	
 	// find out which contact this message originates from
-	Contact *contact;
-	
+	ContactCachedConnections *contact = NULL;
 	const char * id = msg->FindString("id");
 	
 	if ( id != NULL )
@@ -1451,21 +1472,22 @@ Server::MessageFromProtocols( BMessage * msg )
 			return;
 		}
 		
-		string proto_id( string(protocol) + string(":") + string(id) );	
-		contact = fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()));
-	
-		if (contact->InitCheck() != B_OK) {
+		string proto_id(string(protocol) + string(":") + string(id));
+		
+		if ((fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()), &contact) == false) || (contact->InitCheck() != B_OK)) {
 			// No matching contact, create a new one!
-			contact->SetTo( CreateContact( proto_id.c_str() , id ) );
+			contact->SetTo(CreateContact( proto_id.c_str() , id ));
 			
 			// register the contact we created
 			BMessage connection(MESSAGE);
 			connection.AddInt32("im_what", REGISTER_CONTACTS);
 			connection.AddString("id", id);
 
-			ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(protocol));
-			if (info) info->Process(&connection);
-		}
+			ProtocolInfo *info = NULL;
+			if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == true) {
+				info->Process(&connection);
+			};
+		};
 		
 		// add all matching contacts to message
 		GenericListStore<ContactCachedConnections *> contacts = fContact->FindAll(new ConnectionContactSpecification(proto_id.c_str()));
@@ -1997,14 +2019,13 @@ Server::GetContactsForProtocol( const char * _protocol, BMessage * msg )
 	list <entry_ref>::iterator iter;
 	for (iter = refs.begin(); iter != refs.end(); iter++) {
 		Contact c(*iter);
-		char conn[256];
+		char connBuffer[256];
 		
-		if (c.FindConnection(orig_protocol.String(), conn) == B_OK) {
-			msg->AddString("id", connection_id(conn).c_str() );
+		if (c.FindConnection(orig_protocol.String(), connBuffer) == B_OK) {
+			Connection conn(connBuffer);
+			msg->AddString("id", conn.ID());
 		};
 	};
-	
-	//LOG(kAppName, liDebug, "GetConnectionsForProcol(%s)", msg, protocol );
 	
 	refs.clear();
 }
@@ -2142,15 +2163,15 @@ Server::SetAutoStart(bool autostart)
 	BFile file;
 	err = directory.CreateFile(path.Path(), &file, true);
 	switch (err) {
-		case B_OK:
-			break;
-		case B_FILE_EXISTS:
+		case B_OK: {
+		} break;
+		case B_FILE_EXISTS: {
 			file.SetTo(path.Path(), B_READ_WRITE);
-			break;
+		} break;
 		default: {
 			LOG(kAppName, liHigh, "Couldn't find or create UserBootscript");
 			return B_ERROR;
-		};
+		} break;
 	};
 
 	// Look if we already have autostart here
@@ -2161,8 +2182,9 @@ Server::SetAutoStart(bool autostart)
 	bool done = false;
 	do {
 		bytesRead = file.Read(&ch, 1);
-		if (bytesRead < 0)
+		if (bytesRead < 0) {
 			break;
+		};
 
 		if (ch == '\n') {
 			if (buffer == cmd0) {
@@ -2175,8 +2197,9 @@ Server::SetAutoStart(bool autostart)
 				data.push_back(buffer);
 				buffer = "";
 			};
-		} else
+		} else {
 			buffer << ch;
+		};
 	} while (bytesRead > 0);
 
 	if (autostart && !done) {
@@ -2362,8 +2385,8 @@ Server::handle_STATUS_SET( BMessage * msg )
 	{ // we're online. register contacts. (should be: only do this if we were offline)
 		LOG(kAppName, liMedium, "Status changed for %s to %s", protocol, status );
 
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(protocol));
-		if (info == NULL) {
+		ProtocolInfo *info = NULL;
+		if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == false) {
 			_ERROR("ERROR: STATUS_SET: Protocol not loaded",msg);
 			return;
 		}
@@ -2445,7 +2468,6 @@ void Server::reply_GET_OWN_STATUSES(BMessage *msg) {
 		)
 	);
 
-
 	for (GenericListStore<ProtocolInfo *>::Iterator pIt = protocols.Start(); pIt != protocols.End(); pIt++) {
 		ProtocolInfo *info = (*pIt);
 
@@ -2498,9 +2520,9 @@ void Server::reply_SERVER_BASED_CONTACT_LIST(BMessage * msg) {
 	for (int i = 0; msg->FindString("id", i, &id) == B_OK; i++) {
 		string proto_id(string(protocol) + string(":") + string(id));
 		
-		Contact *c = fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()));
-		
-		if (c->InitCheck() != B_OK) {
+		ContactCachedConnections *c = NULL;
+
+		if ((fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()), &c) == false) || (c->InitCheck() != B_OK)) {
 			CreateContact(proto_id.c_str(), id);
 		};
 	};
@@ -2548,21 +2570,68 @@ void Server::handle_SETTINGS_UPDATED(BMessage *msg) {
 	const char *sig = NULL;
 	
 	if (msg->FindString("protocol", &sig) == B_OK) {
-		// notify protocol of change in settings
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(sig));
-		if (info == NULL) {
-			_ERROR("Cannot notify protocol of changed settings, not loaded");
-			return;
+		// Case 1: Currently launched protocol - update settings
+		// Case 2: New settings - launch protocol
+		// Case 3: Removed protocol - Shutdown launcher
+		// A renamed should show up as a new and a remove
+	
+		bool accountsChanged = false;
+		BMessage accounts;
+		BString account;
+		im_protocol_get_account_list(sig, &accounts);
+
+		GenericListStore<ProtocolInfo *> protoAccounts = fProtocol->FindAll(new SignatureProtocolSpecification(sig));
+		GenericListStore<BString> curAccounts;	
+		
+		for (int32 i = 0; accounts.FindString("account", i, &account) == B_OK; i++) {
+			curAccounts.Add(account);
+			
+//			ProtocolInfo *info = protoAccounts.FindFirst(new AccountNameProtocolSpecification(account));
+			ProtocolInfo *info = NULL;
+			bool found = protoAccounts.FindFirst(new AccountNameProtocolSpecification(account), &info);
+			
+			LOG(kAppName, liDebug, "%s %s an existing ProtocolLoader", account.String(), found == false ? "doesn't have" : "has");
+
+			if ((found == true) && (info != NULL)) {
+				// Existing account - update settings
+				BMessage settings;
+				im_protocol_get_account(sig, account.String(), &settings);
+				
+				info->UpdateSettings(&settings);
+			} else {
+				// New account - launch protocol
+				entry_ref settingsRef;
+				accounts.FindRef("settings_path", i, &settingsRef);				
+				
+				BPath settingsPath(&settingsRef);
+				BPath protocolPath;
+				
+				if (im_protocol_get_path(sig, &protocolPath) == B_OK) {
+					info = fProtocol->LaunchInstance(protocolPath, settingsPath, account.String());
+					accountsChanged = true;
+					
+					LOG(kAppName, liMedium, "%s launched with as \"%s\"", account.String(), info->InstanceID());
+				};				
+			};
 		};
 		
-		if (im_load_protocol_settings(sig, &settings) != B_OK) {
-			return;
+		// Now loop over the currently launched Accounts and determine which ones need to be shutdown
+		for (GenericListStore<ProtocolInfo *>::Iterator it = protoAccounts.Start(); it != protoAccounts.End(); it++) {
+			ProtocolInfo *info = (*it);
+			
+			GenericListStore<BString> items = curAccounts.FindAll(new EqualStringSpecification(info->AccountName()));
+			if (items.CountItems() == 0) {
+				// Protocol is no longer active - shut it down
+				fProtocol->UnloadInstance(info);
+				
+				accountsChanged = true;
+			};
 		};
 		
-		if (info->UpdateSettings(&settings) != B_OK) {
-			_ERROR("Protocol settings invalid", msg);
+		if (accountsChanged == true) {
+			BMessage changed(LOADED_PROTOCOLS_CHANGED);
+			Broadcast(&changed);
 		};
-		
 	} else {
 		if (msg->FindString("client", &sig) == B_OK) {
 			if (strcmp("im_server", sig) == 0) {
@@ -2718,9 +2787,8 @@ Server::sendReply( BMessage * msg, BMessage * reply )
 	for ( int i=0; reply->FindString("protocol",i,&protocol)==B_OK; i++ )
 	{
 		const char *userfriendly = "<invalid protocol>";
-		ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(protocol));
-		
-		if (info != NULL) {
+		ProtocolInfo *info = NULL;
+		if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == true) {
 			userfriendly = info->FriendlySignature();
 		};
 		
@@ -2752,9 +2820,8 @@ const char *Server::TotalStatus(void) {
 };
 
 status_t Server::ProtocolOffline(const char *signature) {
-	ProtocolInfo *info = fProtocol->FindFirst(new SignatureProtocolSpecification(signature));
-
-	if (info == NULL) {
+	ProtocolInfo *info = NULL;
+	if (fProtocol->FindFirst(new SignatureProtocolSpecification(signature), &info) == false) {
 		LOG(kAppName, liHigh, "Unexpected protocol went offline: %s", signature);
 		return B_ERROR;
 	};

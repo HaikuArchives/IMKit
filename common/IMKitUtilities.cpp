@@ -12,12 +12,16 @@
 #	include <storage/Mime.h>
 #endif
 
-const int32 kSmallIcon = 16;
-const int32 kLargeIcon = 32;
-
 #ifdef B_ZETA_VERSION
 #include <sys_apps/Tracker/Icons.h>
 #endif
+
+//#pragma mark Constants
+
+const int32 kSmallIcon = 16;
+const int32 kLargeIcon = 32;
+
+//#pragma mark Functions
 
 // Loads the icon. Callers responsibility to free BBitmap
 
@@ -81,7 +85,6 @@ BBitmap *GetBitmapFromAttribute(const char *name, const char *attribute,
 
 	BBitmap 	*bitmap = NULL;
 	size_t 		len = 0;
-//	status_t 	error;	
 
 	if ((name == NULL) || (attribute == NULL)) return NULL;
 
@@ -127,8 +130,7 @@ BBitmap *GetBitmapFromAttribute(const char *name, const char *attribute,
 	return bitmap;
 }
 
-BBitmap* GetIconFromResources(BResources* resources, int32 num, icon_size size)
-{
+BBitmap *GetIconFromResources(BResources *resources, int32 num, icon_size size) {
 	if (resources == NULL)
 		return NULL;
 

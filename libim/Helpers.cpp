@@ -588,6 +588,50 @@ status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts) 
 	return result;
 };
 
+status_t im_protocol_get_path(const char *protocol, BPath *path) {
+	status_t result = B_ERROR;
+	
+	BPath commonPath;
+	BPath userPath;
+
+	if (find_directory(B_USER_ADDONS_DIRECTORY, &userPath, true, NULL) == B_OK) {
+		userPath.Append("im_kit/protocols");
+		
+		BDirectory dir(userPath.Path());
+		entry_ref ref;
+
+		while (dir.GetNextRef(&ref) == B_OK) {
+			if (strcmp(ref.name, protocol) == 0) {
+				*path = BPath(&ref);
+				result = B_OK;
+				break;
+			};
+		};
+	};
+
+	if (result != B_OK) {
+		if (find_directory(B_COMMON_ADDONS_DIRECTORY, &commonPath, true, NULL) == B_OK) {
+			commonPath.Append("im_kit/protocols");
+	
+			// On some platforms B_USER_ADDONS_DIRECTORY is the same as B_COMMON_ADDONS_DIRECTORY
+			if (userPath != commonPath) {
+				BDirectory dir(commonPath.Path());
+				entry_ref ref;
+		
+				while (dir.GetNextRef(&ref) == B_OK) {
+					if (strcmp(ref.name, protocol) == 0) {
+						*path = BPath(&ref);
+						result = B_OK;
+						break;
+					};
+				};
+			};
+		};
+	};
+	
+	return result;
+};
+
 // CLIENT / PROTOCOL LIST
 
 static void
@@ -667,22 +711,4 @@ nl2crlf( const char * orig, BString & conv )
 		
 		conv.Append( orig[i], 1 );
 	}
-}
-
-
-string
-connection_protocol( string conn )
-{
-	return conn.substr(0, conn.find(":"));
-}
-
-string
-connection_id( string conn )
-{
-	size_t colon = conn.find(":");
-	
-	if ( colon == string::npos )
-		return "";
-	
-	return conn.substr(colon+1);
 }

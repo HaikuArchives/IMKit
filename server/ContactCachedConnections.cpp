@@ -23,7 +23,9 @@ ContactCachedConnections::ContactCachedConnections(entry_ref ref)
 	ReloadConnections();
 };
 
-//#pragma mark Public		
+//#pragma mark Public
+
+#include <stdio.h>
 
 void ContactCachedConnections::ReloadConnections(void) {
 	char buffer[512];

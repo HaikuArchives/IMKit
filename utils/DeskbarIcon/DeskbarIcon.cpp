@@ -1,21 +1,26 @@
 #include "DeskbarIcon.h"
 
+#include "AccountInfo.h"
+#include "common/BubbleHelper.h"
+#include "common/GenericStore.h"
+#include "common/IMKitUtilities.h"
+
 #include <libim/Constants.h>
 #include <libim/Manager.h>
 #include <libim/Helpers.h>
+
 #include <Message.h>
 #include <stdio.h>
 #include <Roster.h>
-#include <File.h>
 #include <MenuItem.h>
 #include <Application.h>
 #include <Window.h>
 #include <Deskbar.h>
 
-#include <Path.h>
-#include <FindDirectory.h>
-
-#include <common/IMKitUtilities.h>
+#include <storage/FindDirectory.h>
+#include <storage/File.h>
+#include <storage/Path.h>
+#include <storage/Resources.h>
 
 #ifdef ZETA
 #include <locale/Locale.h>
@@ -25,17 +30,45 @@
 
 //#pragma mark Constants
 
+const char *kLogName = "Deskbar";
+
 const char *kTrackerQueryVolume = "_trk/qryvol1";
 const char *kTrackerQueryPredicate = "_trk/qrystr";
 const int8 kStatusOnline = 0;
 const int8 kStatusAway = 1;
 const int8 kStatusOffline = 2;
 
+// Status setting messages
+const int32 kMsgSetStatus = 'set1';
+const int32 kMsgSetStatusOnline = 'set2';
+const int32 kMsgSetStatusAway = 'set3';
+const int32 kMsgSetStatusOffline = 'set4';
+
+// Settings messages
+const int32 kMsgOpenSettings = 'opse';
+const int32 kMsgReloadSettings = 'upse';
+
+// Server run/quit messages
+const int32 kMsgCloseIMServer = 'imqu';
+const int32 kMsgStartIMServer = 'imst';
+
+// Query messages
+const int32 kMsgOpenQuery = 'opqu';
+const int32 kMsgLaunchFile = 'lafi';
+const int32 kMsgOpenQueryDir = 'opqd';
+const int32 kMsgQueryUpdated = 'qlup';
+
+// Misc messages
+const int32 kMsgSettingsWindowClose = 'swcl';
+
+class AccountStore : public IM::GenericMapStore<BString, AccountInfo *> {
+};
+
 //#pragma mark Extern C
 
 extern "C" {
 	BView *instantiate_deskbar_item() {
-		LOG("deskbar", liHigh, "IM: Instantiating Deskbar item");
+		LOG(kLogName, liHigh, "IM: Instantiating Deskbar item");
 		return new IM_DeskbarIcon();
 	}
 }
@@ -44,11 +77,11 @@ extern "C" {
 
 BArchivable *IM_DeskbarIcon::Instantiate(BMessage * archive) {
 	if (!validate_instantiation(archive,"IM_DeskbarIcon")) {
-		LOG("deskbar", liHigh, "IM_DeskbarIcon::Instantiate(): Invalid archive");
+		LOG(kLogName, liHigh, "IM_DeskbarIcon::Instantiate(): Invalid archive");
 		return NULL;
 	};
 	
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::Instantiate() ok");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::Instantiate() ok");
 	
 	return new IM_DeskbarIcon(archive);
 };
@@ -56,20 +89,20 @@ BArchivable *IM_DeskbarIcon::Instantiate(BMessage * archive) {
 
 IM_DeskbarIcon::IM_DeskbarIcon()
 	: BView(BRect(0,0,15,15), DESKBAR_ICON_NAME, B_FOLLOW_NONE, B_WILL_DRAW) {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::IM_DeskbarIcon()");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::IM_DeskbarIcon()");
 
 	_init();
 };
 
 IM_DeskbarIcon::IM_DeskbarIcon(BMessage * archive)
 	: BView(archive) {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::IM_DeskbarIcon(BMessage*)");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::IM_DeskbarIcon(BMessage*)");
 
 	_init();
 };
 
 IM_DeskbarIcon::~IM_DeskbarIcon() {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::~IM_DeskbarIcon()");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::~IM_DeskbarIcon()");
 
 	delete fTip;
 	delete fAwayIcon;
@@ -83,7 +116,9 @@ IM_DeskbarIcon::~IM_DeskbarIcon() {
 };
 
 void IM_DeskbarIcon::_init() {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::_init()");
+	fAccount = new AccountStore();
+
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::_init()");
 
 	image_info info;
 	if (our_image(info) != B_OK) {
@@ -91,6 +126,7 @@ void IM_DeskbarIcon::_init() {
 	};
 
 	BFile file(info.name, B_READ_ONLY);
+	
 	if (file.InitCheck() < B_OK) {
 		return;
 	};
@@ -104,22 +140,22 @@ void IM_DeskbarIcon::_init() {
 
 	fAwayIcon = GetIconFromResources(&resources, kDeskbarAwayIcon, B_MINI_ICON);
 	if (fAwayIcon == NULL) {
-		LOG("deskbar", liHigh, "Error loading fAwayIcon");
+		LOG(kLogName, liHigh, "Error loading fAwayIcon");
 	};
 
 	fOnlineIcon = GetIconFromResources(&resources, kDeskbarOnlineIcon, B_MINI_ICON);
 	if (fOnlineIcon == NULL) {
-		LOG("deskbar", liHigh, "Error loading fOnlineIcon");
+		LOG(kLogName, liHigh, "Error loading fOnlineIcon");
 	};
 
 	fOfflineIcon = GetIconFromResources(&resources, kDeskbarOfflineIcon, B_MINI_ICON);
 	if (fOfflineIcon == NULL) {
-		LOG("deskbar", liHigh, "Error loading fOfflineIcon");
+		LOG(kLogName, liHigh, "Error loading fOfflineIcon");
 	};
 
 	fGenericIcon = GetIconFromResources(&resources, kDeskbarGenericIcon, B_MINI_ICON);
 	if (fGenericIcon == NULL) {
-		LOG("deskbar", liHigh, "Error loading fGenericIcon");
+		LOG(kLogName, liHigh, "Error loading fGenericIcon");
 	};
 
 	// Initial icon is the Offline icon
@@ -173,56 +209,52 @@ void IM_DeskbarIcon::_init() {
 #endif
 };
 
-void IM_DeskbarIcon::getProtocolStates() {
+void IM_DeskbarIcon::getProtocolStates(void) {
 	BMessage protStatus;
 	IM::Manager man;
+	
+	if (man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK) {
+		LOG(kLogName, liHigh, "Error getting statuses");
+	};
 
-	if (man.SendMessage(new BMessage(IM::GET_OWN_STATUSES), &protStatus) != B_OK)
-		LOG("deskbar", liHigh, "Error getting statuses");
-
-	fStatuses.clear();
-
-	fTipText = _T("Online Status:");
-
+	fTipText = "Online Status:";
+	
+	fAccount->Clear();
+	
 	BString instanceID;
+	
+	LOG(kLogName, liDebug, "IM_DeskbarIcon::getProtocolStates: ", &protStatus);
+	
 	for (int32 i = 0; protStatus.FindString("instance_id", i, &instanceID) == B_OK; i++) {
 		const char *protocol = NULL;
 		const char *userfriendly = NULL;
 		const char *status = NULL;
 		const char *account = NULL;
+		
+		if (protStatus.FindString("protocol",i, &protocol) != B_OK) protocol = _T("Unknown protocol");
+		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) _T("Unknown");
+		if (protStatus.FindString("status", i, &status) != B_OK) status = _T("Unknown status");
+		if (protStatus.FindString("account_name", i, &account) != B_OK) account = _T("Unknown account");
 
-		if (protStatus.FindString("protocol",i, &protocol) != B_OK)
-			protocol = _T("Unknown protocol");
-		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK)
-			userfriendly = _T("Unknown");
-		if (protStatus.FindString("status", i, &status) != B_OK)
-			status = _T("Unknown status");
-		if (protStatus.FindString("account_name", i, &account) != B_OK)
-			account = _T("Unknown account");
+		AccountInfo *info = new AccountInfo(instanceID.String(), account, protocol, userfriendly, status);
+		fAccount->Add(info->ID(), info);
+		
+		fTipText << "\n  " << info->DisplayLabel() << ": " << _T(info->StatusLabel()) << "";
 
-		fStatuses[protocol] = status;
-		fFriendlyNames[protocol] = userfriendly;
-
-		fTipText << "\n  " << userfriendly << ": " << _T(status) << "";
-
-		if ((fStatus > kStatusOnline) && (strcmp(status, ONLINE_TEXT) == 0))
-			fStatus = kStatusOnline;
-		if ((fStatus > kStatusAway) && (strcmp(status, AWAY_TEXT) == 0))
-			fStatus = kStatusAway;
-	};
-
-	LOG("deskbar", liDebug, "Initial status: %i	", fStatus);
+		if ((fStatus > kStatusOnline) && (info->Status() == Online)) fStatus = kStatusOnline;
+		if ((fStatus > kStatusAway) && (info->Status() == Away)) fStatus = kStatusAway;
+	}
 
 	switch (fStatus) {
-		case kStatusOnline:
+		case kStatusOnline: {
 			fCurrIcon = fModeIcon = fOnlineIcon;
-			break;
-		case kStatusAway:
+		} break;
+		case kStatusAway: {
 			fCurrIcon = fModeIcon = fAwayIcon;
-			break;
-		default:
+		} break;
+		default: {
 			fCurrIcon = fModeIcon =  fOfflineIcon;
-			break;
+		};
 	};
 };
 
@@ -239,7 +271,7 @@ void IM_DeskbarIcon::Draw(BRect /*rect*/) {
 };
 
 status_t IM_DeskbarIcon::Archive(BMessage * msg, bool deep) const {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::Archive()");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::Archive()");
 	
 	status_t res = BView::Archive(msg,deep);
 	
@@ -287,7 +319,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 				fMsgRunner = new BMessageRunner(BMessenger(this), &msg, 200 * 1000);
 			};
 			
-			LOG("deskbar", liDebug, "IM: fFlashCount: %ld", fFlashCount);
+			LOG(kLogName, liDebug, "IM: fFlashCount: %ld", fFlashCount);
 		} break;
 		case IM::STOP_FLASHING: {	
 			BMessenger msgr;
@@ -296,7 +328,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			};
 			
 			fFlashCount--;
-			LOG("deskbar", liDebug, "IM: fFlashCount: %ld", fFlashCount);
+			LOG(kLogName, liDebug, "IM: fFlashCount: %ld", fFlashCount);
 			
 			if (fFlashCount == 0) {
 				if (fMsgRunner != NULL) delete fMsgRunner;
@@ -307,16 +339,16 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			
 			if (fFlashCount < 0) {
 				fFlashCount = 0;
-				LOG("deskbar", liMedium, "IM: fFlashCount below zero, fixing");
+				LOG(kLogName, liMedium, "IM: fFlashCount below zero, fixing");
 			};
 		} break;
 		
-		case SET_STATUS: {
+		case kMsgSetStatus: {
 			const char *status = NULL;
 			const char *protocol = NULL;
 			
 			if (msg->FindString("status", &status) != B_OK) {
-				LOG("deskbar", liDebug, "No 'status' in SET_STATUS message", msg);
+				LOG(kLogName, liDebug, "No 'status' in kMSgSetStatus message", msg);
 				return;
 			};
 
@@ -346,24 +378,23 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			man.SendMessage(&newmsg);
 		} break;
 		
-		case CLOSE_IM_SERVER: {
-			LOG("deskbar", liHigh, "Got Quit message");
+		case kMsgCloseIMServer: {
 			BMessenger msgr(IM_SERVER_SIG);
 			msgr.SendMessage(B_QUIT_REQUESTED);
 		} break;
 		
-		case START_IM_SERVER: {
+		case kMsgStartIMServer: {
 			be_roster->Launch(IM_SERVER_SIG);
 		} break;
 		
-		case OPEN_SETTINGS: {
+		case kMsgOpenSettings: {
 			be_roster->Launch("application/x-vnd.beclan-IMKitPrefs");
 		} break;
 		
 		case IM::MESSAGE: {
 			int32 im_what;
 			msg->FindInt32("im_what", &im_what);
-			LOG("deskbar", liLow, "Got IM what of %i", im_what);
+			LOG(kLogName, liLow, "Got IM what of %i", im_what);
 			
 			switch (im_what) {
 				case IM::STATUS_SET: {			
@@ -372,7 +403,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 				
 					const char *status = msg->FindString("total_status");
 								
-					LOG("deskbar", liMedium, "Status set to %s", status);
+					LOG(kLogName, liMedium, "Status set to %s", status);
 					if (strcmp(status, ONLINE_TEXT) == 0) {
 						fStatus = kStatusOnline;
 						fModeIcon = fOnlineIcon;
@@ -432,10 +463,10 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			};
 		} break;
 		
-		case QUERY_UPDATED: {
+		case kMsgQueryUpdated: {
 		} break;
 		
-		case LAUNCH_FILE: {
+		case kMsgLaunchFile: {
 			entry_ref fileRef;
 			msg->FindRef("fileRef", &fileRef);
 			
@@ -455,7 +486,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			
 		} break;
 		
-		case OPEN_QUERY: {
+		case kMsgOpenQuery: {
 //			For great justice, take off every query!
 			entry_ref queryRef;
 			msg->FindRef("queryRef", &queryRef);
@@ -466,7 +497,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 			be_roster->Launch("application/x-vnd.Be-TRAK", &open_msg);
 		} break;
 
-		case OPEN_QUERY_DIR: {
+		case kMsgOpenQueryDir: {
 			BPath queryPath;
 			entry_ref ref;
 			
@@ -489,10 +520,9 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 		case B_SOME_APP_LAUNCHED: {
 			const char * sig = NULL;
 			if ( msg->FindString("be:signature", &sig) == B_OK ) {
-//				LOG("deskbar", liDebug, "App started: %s", sig);
 				if ( strcmp(sig, IM_SERVER_SIG) == 0 ) {
 					// register with im_server
-					LOG("deskbar", liDebug, "Registering with im_server");
+					LOG(kLogName, liDebug, "Registering with im_server");
 					BMessage msg(IM::REGISTER_DESKBAR_MESSENGER);
 					msg.AddMessenger( "msgr", BMessenger(this) );
 					
@@ -504,7 +534,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 		case IM::LOADED_PROTOCOLS_CHANGED: {
 			// Rebuild the protocol menu
 			fDirtyStatusMenu = true;
-			LOG("deskbar", liDebug, "Received IM::LOADED_PROTOCOLS_CHANGED");
+			LOG(kLogName, liDebug, "Received IM::LOADED_PROTOCOLS_CHANGED");
 		} break;
 		
 		default: { 
@@ -523,12 +553,12 @@ void IM_DeskbarIcon::MouseMoved(BPoint /*point*/, uint32 transit, const BMessage
 		} else 
 		{
 			IM::Manager man;
-			
-			if ((fDirtyStatus == true) || (fStatuses.size() == 0)) {
-				fStatuses.clear();
-				
+
+//			XXX			
+//			if ((fDirtyStatus == true) || (fStatuses.size() == 0)) {
+//				fStatuses.clear();
+			if ((fDirtyStatus == true) || (fAccount->CountItems() == 0)) {
 				getProtocolStates(); // updates tip text
-				
 				fDirtyStatus = false;
 			}
 		}
@@ -551,13 +581,13 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 		fMenu = new BPopUpMenu("im_db_menu", false, false);
 		fMenu->SetFont(be_plain_font);
 		
-		if ( !BMessenger(IM_SERVER_SIG).IsValid() )
-		{ // im_server not running!
+		if (BMessenger(IM_SERVER_SIG).IsValid() == false) {
+			// im_server not running!
 			fStatus = kStatusOffline;
 			fModeIcon = fOfflineIcon;
 			
-			LOG("deskbar", liDebug, "Build menu: im_server not running");
-			fMenu->AddItem( new BMenuItem(_T("Start im_server"), new BMessage(START_IM_SERVER)) );
+			LOG(kLogName, liDebug, "Build menu: im_server not running");
+			fMenu->AddItem( new BMenuItem(_T("Start im_server"), new BMessage(kMsgStartIMServer)) );
 			
 			fMenu->SetTargetForItems( this );
 
@@ -570,21 +600,18 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			fMenu->SetAsyncAutoDestruct(true); // delete fMenu;
 			
 			return;
-		}
-		
-		LOG("deskbar", liDebug, "Build menu: im_server running");
-		
+		};
+				
 		if ( true || fDirtyStatusMenu || !fStatusMenu) {
-			LOG("deskbar", liDebug, "Rebuilding status menu");
+			LOG(kLogName, liLow, "Rebuilding status menu");
 			fStatusMenu = new BMenu(_T("Set status"));
 			
-			LOG("deskbar", liDebug, "'All protocols'");
-			BMenu *total = new BMenu(_T("All Protocols"));
-			BMessage *msg_online = new BMessage(SET_STATUS); msg_online->AddString("status", ONLINE_TEXT);
+			BMenu *total = new BMenu(_T("All Accounts"));
+			BMessage *msg_online = new BMessage(kMsgSetStatus); msg_online->AddString("status", ONLINE_TEXT);
 			total->AddItem(new BMenuItem(_T(ONLINE_TEXT), msg_online) );	
-			BMessage *msg_away = new BMessage(SET_STATUS); msg_away->AddString("status", AWAY_TEXT);
+			BMessage *msg_away = new BMessage(kMsgSetStatus); msg_away->AddString("status", AWAY_TEXT);
 			total->AddItem(new BMenuItem(_T(AWAY_TEXT), msg_away) );	
-			BMessage *msg_offline = new BMessage(SET_STATUS); msg_offline->AddString("status", OFFLINE_TEXT);
+			BMessage *msg_offline = new BMessage(kMsgSetStatus); msg_offline->AddString("status", OFFLINE_TEXT);
 			total->AddItem(new BMenuItem(_T(OFFLINE_TEXT), msg_offline) );	
 			
 			total->ItemAt(fStatus)->SetMarked(true);
@@ -595,72 +622,78 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			fStatusMenu->AddSeparatorItem();
 			
 			fStatusMenu->SetFont(be_plain_font);
-			
-			map <string, string>::iterator it;
-			
+					
 			getProtocolStates();
-			
-			LOG("deskbar", liDebug, "separate protocols");
+					
+			for (AccountStore::Iterator it = fAccount->Start(); it != fAccount->End(); it++) {
+				AccountInfo *info = it->second;
+								
+				BString name = info->DisplayLabel();
 
-			for (it = fStatuses.begin(); it != fStatuses.end(); it++) {
-				string name = (*it).first;
-				BMenu *protocol = new BMenu(fFriendlyNames[name].c_str());
+				// Message template
+				BMessage accountMsg(kMsgSetStatus);
+				accountMsg.AddString("account", info->ID());
+				accountMsg.AddString("protocol", info->Protocol());
 				
-				BMessage protMsg(SET_STATUS);
-				protMsg.AddString("protocol", name.c_str());
+				BMenu *account = new BMenu(name.String());
+								
+				// Online
+				BMessage *onlineMsg = new BMessage(accountMsg);
+				onlineMsg->AddString("status", ONLINE_TEXT);
+				account->AddItem(new BMenuItem(_T(ONLINE_TEXT), onlineMsg));
+
+				// Away
+				BMessage *awayMsg = new BMessage(accountMsg);
+				awayMsg->AddString("status", AWAY_TEXT);
+				account->AddItem(new BMenuItem(_T(AWAY_TEXT), awayMsg));
 				
-				BMessage *msg1 = new BMessage(protMsg); msg1->AddString("status", ONLINE_TEXT);
-				protocol->AddItem(new BMenuItem(_T(ONLINE_TEXT), msg1));
-				BMessage *msg2 = new BMessage(protMsg); msg2->AddString("status", AWAY_TEXT);
-				protocol->AddItem(new BMenuItem(_T(AWAY_TEXT), msg2));
-				BMessage *msg3 = new BMessage(protMsg); msg3->AddString("status", OFFLINE_TEXT);
-				protocol->AddItem(new BMenuItem(_T(OFFLINE_TEXT), msg3));
+				// Offline
+				BMessage *offlineMsg = new BMessage(accountMsg);
+				offlineMsg->AddString("status", OFFLINE_TEXT);
+				account->AddItem(new BMenuItem(_T(OFFLINE_TEXT), offlineMsg));
 				
-				protocol->SetTargetForItems(this);
-				if ((*it).second == ONLINE_TEXT) {
-					protocol->ItemAt(0)->SetMarked(true);
-				} else if ((*it).second == AWAY_TEXT) {
-					protocol->ItemAt(1)->SetMarked(true);
-				} else {
-					protocol->ItemAt(2)->SetMarked(true);
+				account->SetTargetForItems(this);
+				switch (info->Status()) {
+					case Online: {
+						account->ItemAt(0)->SetMarked(true);
+					} break;
+					case Away: {
+						account->ItemAt(1)->SetMarked(true);
+					} break;
+					case Offline: {
+						account->ItemAt(2)->SetMarked(true);
+					} break;
 				};
 				
-				protocol->SetFont(be_plain_font);
-				
-				LOG("deskbar", liDebug, "+ %s (%s)", name.c_str(), (*it).second.c_str() );
-				
-				fStatusMenu->AddItem(protocol);
+				account->SetFont(be_plain_font);
+				fStatusMenu->AddItem(account);
 			};
-			
+
 			fStatusMenu->SetTargetForItems(this);
 			
 			fDirtyStatusMenu = false;
-			LOG("deskbar", liDebug, "done rebuilding status menu");
 		};
 		
 		fMenu->AddItem(fStatusMenu);
 
+		fMenu->AddSeparatorItem();
+
 //		Queries
 		BuildQueryMenu();
-		fMenu->AddSeparatorItem();
 		fMenu->AddItem(fQueryMenu);
 
 //		settings
-		fMenu->AddSeparatorItem();
-		fMenu->AddItem( new BMenuItem(_T("Settings"), new BMessage(OPEN_SETTINGS)) );
+		fMenu->AddItem( new BMenuItem(_T("Settings"), new BMessage(kMsgOpenSettings)) );
 
 //		About
-		fMenu->AddSeparatorItem();
 		fMenu->AddItem(new BMenuItem(_T("About"), new BMessage(B_ABOUT_REQUESTED)));
 	
 //		Quit
 		fMenu->AddSeparatorItem();
-		fMenu->AddItem(new BMenuItem(_T("Quit"), new BMessage(CLOSE_IM_SERVER)));
+		fMenu->AddItem(new BMenuItem(_T("Quit"), new BMessage(kMsgCloseIMServer)));
 	
 		fMenu->SetTargetForItems( this );
 
-		LOG("deskbar", liDebug, "Done building, show");
-		
 		ConvertToScreen(&p);
 		BRect r(p, p);
 		r.InsetBySelf(-2, -2);
@@ -698,14 +731,14 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 void
 IM_DeskbarIcon::AttachedToWindow()
 {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::AttachedToWindow()");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::AttachedToWindow()");
 
 	// give im_server a chance to start up
 	snooze(500*1000);
 	reloadSettings();
 	
 	// register with im_server
-	LOG("deskbar", liDebug, "Registering with im_server");
+	LOG(kLogName, liDebug, "Registering with im_server");
 	BMessage msg(IM::REGISTER_DESKBAR_MESSENGER);
 	msg.AddMessenger( "msgr", BMessenger(this) );
 	
@@ -714,7 +747,7 @@ IM_DeskbarIcon::AttachedToWindow()
 	// Start listening to app launches and quits
 	if ( be_roster->StartWatching( BMessenger(this) ) != B_OK )
 	{
-		LOG("deskbar", liHigh, "Couldn't start watching app launches");
+		LOG(kLogName, liHigh, "Couldn't start watching app launches");
 	}
 	
 	BVolumeRoster volRoster;
@@ -739,7 +772,7 @@ IM_DeskbarIcon::AttachedToWindow()
 	};
 	
 	fQueryMenu = new BMenu("Queries");
-	fQueryMenu->AddItem(new BMenuItem("Open Query directory", new BMessage(OPEN_QUERY_DIR)));
+	fQueryMenu->AddItem(new BMenuItem("Open Query directory", new BMessage(kMsgOpenQueryDir)));
 	fQueryMenu->AddSeparatorItem();
 	
 	for (int32 i = 0; queryDir.GetNextRef(&queryRef) == B_OK; i++) {
@@ -759,7 +792,7 @@ IM_DeskbarIcon::AttachedToWindow()
 		predicate[length] = '\0';
 
 		if (ExtractVolumes(&node, &volumes) == B_OK) {
-			BMessage *msg = new BMessage(QUERY_UPDATED);
+			BMessage *msg = new BMessage(kMsgQueryUpdated);
 			msg->AddRef("ref", &info.ref);
 			info.query = new QueryLooper(predicate, volumes, info.ref.name, this, msg);
 			
@@ -770,7 +803,7 @@ IM_DeskbarIcon::AttachedToWindow()
 
 		fQueries[queryRef] = info;
 		
-		BMessage *queryMsg = new BMessage(OPEN_QUERY);
+		BMessage *queryMsg = new BMessage(kMsgOpenQuery);
 		queryMsg->AddRef("queryRef", &queryRef);
 		
 		IconMenuItem *item = new IconMenuItem(info.icon, label.String(), "Empty",
@@ -783,7 +816,7 @@ IM_DeskbarIcon::AttachedToWindow()
 }
 
 void IM_DeskbarIcon::DetachedFromWindow() {
-	LOG("deskbar", liHigh, "IM_DeskbarIcon::DetachedFromWindow()");
+	LOG(kLogName, liHigh, "IM_DeskbarIcon::DetachedFromWindow()");
 	
 	querymap::iterator qIt;
 	
@@ -823,7 +856,7 @@ void IM_DeskbarIcon::AboutRequested(void) {
 void
 IM_DeskbarIcon::reloadSettings()
 {
-	LOG("deskbar", liLow, "IM: Requesting settings");
+	LOG(kLogName, liLow, "IM: Requesting settings");
 	
 	BMessage settings;
 	
@@ -835,7 +868,7 @@ IM_DeskbarIcon::reloadSettings()
 		fPeopleApp = "application/x-vnd.Be-TRAK";
 	};
 			
-	LOG("deskbar", liMedium, "IM: Settings applied");
+	LOG(kLogName, liMedium, "IM: Settings applied");
 }
 
 //#pragma mark -
@@ -844,7 +877,7 @@ void IM_DeskbarIcon::BuildQueryMenu(void) {
 	querymap::iterator qIt;
 	fQueryMenu = new BMenu("Queries");
 	
-	fQueryMenu->AddItem(new BMenuItem(_T("Open Query directory"), new BMessage(OPEN_QUERY_DIR)));
+	fQueryMenu->AddItem(new BMenuItem(_T("Open Query directory"), new BMessage(kMsgOpenQueryDir)));
 	fQueryMenu->AddSeparatorItem();
 	
 	for (qIt = fQueries.begin(); qIt != fQueries.end(); qIt++) {
@@ -854,7 +887,7 @@ void IM_DeskbarIcon::BuildQueryMenu(void) {
 			label << " (" << info.query->CountEntries() << ")";
 		};
 
-		BMessage *queryMsg = new BMessage(OPEN_QUERY);
+		BMessage *queryMsg = new BMessage(kMsgOpenQuery);
 		queryMsg->AddRef("queryRef", &info.ref);
 		
 		IconMenuItem *item = new IconMenuItem(info.icon, label.String(), "Empty",
@@ -894,7 +927,7 @@ void IM_DeskbarIcon::AddQueryRef(BMessage *msg) {
 	predicate[length] = '\0';
 
 	if (ExtractVolumes(&node, &volumes) == B_OK) {
-		BMessage *msg = new BMessage(QUERY_UPDATED);
+		BMessage *msg = new BMessage(kMsgQueryUpdated);
 		msg->AddRef("ref", &info.ref);
 		info.query = new QueryLooper(predicate, volumes, info.ref.name, this, msg);
 	} else {

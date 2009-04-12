@@ -37,8 +37,7 @@ namespace IM {
 			virtual void		MessageReceived(BMessage *msg);
 			
 			// SpecificationFinder<Contact *> Hooks
-			ContactCachedConnections
-								*FindFirst(ContactSpecification *spec, bool canDelete = true);
+			bool				FindFirst(ContactSpecification *spec, ContactCachedConnections **firstMatch, bool canDelete = true);
 			GenericListStore<ContactCachedConnections *>
 								FindAll(ContactSpecification *spec, bool canDelete = true);
 

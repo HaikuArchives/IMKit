@@ -5,6 +5,7 @@
 #include <String.h>
 #include <Message.h>
 #include <string>
+#include <Path.h>
 
 class Tracer
 {
@@ -57,6 +58,8 @@ extern bool im_protocol_has_account(const char *protocol, const char *account);
 extern status_t im_protocol_get_account(const char *protocol, const char *account, BMessage *settings);
 extern status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts);
 
+extern status_t im_protocol_get_path(const char *protocol, BPath *path);
+
 /*
 	Returns a message containing string(s) named "protocol" with the name of the protocols
 */
@@ -68,8 +71,5 @@ extern void im_get_client_list( BMessage * list );
 
 extern void crlf2nl( const char * orig, BString & conv );
 extern void nl2crlf( const char * orig, BString & conv );
-
-extern string connection_protocol( string connection );
-extern string connection_id( string connection );
 
 #endif

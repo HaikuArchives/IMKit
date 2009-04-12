@@ -13,6 +13,10 @@ using namespace IM;
 
 //#pragma mark Connection
 
+Connection::Connection(void)
+	: fConn("") {
+};
+
 Connection::Connection( const char * str )
 :	fConn(str)
 {

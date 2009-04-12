@@ -80,6 +80,14 @@ ProtocolManager::~ProtocolManager(void) {
 
 //#pragma mark Public
 
+ProtocolInfo *ProtocolManager::LaunchInstance(BPath protocolPath, BPath settingsPath, const char *name) {
+	ProtocolInfo *info = new ProtocolInfo(protocolPath, settingsPath, name);
+	fProtocol->Add(info->InstanceID(), info);
+	info->Start(fLoaderPath.Path());
+	
+	return info;
+};
+
 status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory settings) {
 	status_t result = B_ERROR;
 	BAutolock lock(fLock);
@@ -112,11 +120,9 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 				};
 				
 				BPath accountSettingsPath(&accountSettings);
-				ProtocolInfo *info = new ProtocolInfo(addonPath, accountSettingsPath, account.String());
-				fProtocol->Add(info->InstanceID(), info);
-	
+				LaunchInstance(addonPath, accountSettingsPath, account.String());
+
 				LOG("im_server", liMedium, "Loading protocol from %s (%s): %s", fLoaderPath.Path(), settingsPath.Path(), account.String());
-				info->Start(fLoaderPath.Path());
 			};
 		};
 	};
@@ -124,51 +130,6 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 	return result;
 };
 
-status_t ProtocolManager::ReloadProtocolFromDirectory(BDirectory protocols, BDirectory settings) {
-	status_t result = B_ERROR;
-	BAutolock lock(fLock);
-	
-	if (lock.IsLocked() == true) {
-		BPath path((const BDirectory *)&protocols, NULL, false);
-		LOG("im_server", liMedium, "ProtocolManager::LoadFromDirectory called - %s", path.Path());
-	
-		BEntry entry;
-		protocols.Rewind();
-				
-		while (protocols.GetNextEntry((BEntry*)&entry, true) == B_NO_ERROR) {
-			// continue until no more files
-			if (entry.InitCheck() != B_NO_ERROR) continue;
-	
-			BPath addonPath;
-			entry.GetPath(&addonPath);
-			BPath settingsPath(&settings, addonPath.Leaf());
-			
-			BMessage accounts;
-			BString account;
-			im_protocol_get_account_list(addonPath.Leaf(), &accounts);
-
-			for (int32 i = 0; accounts.FindString("account", i, &account) == B_OK; i++) {
-				entry_ref accountSettings;
-				
-				if (accounts.FindRef("settings_path", i, &accountSettings) != B_OK) {
-					LOG("im_server", liHigh, "%s - %s does not have a settings path", settingsPath.Leaf(), account.String());
-					continue;
-				};
-				
-				BPath accountSettingsPath(&accountSettings);
-				// See if this Protocol is loaded, if not, load, otherwise compare and see if we
-				// Should reload the settings
-				ProtocolInfo *info = new ProtocolInfo(addonPath, accountSettingsPath, account.String());
-				fProtocol->Add(info->InstanceID(), info);
-	
-				LOG("im_server", liMedium, "Loading protocol from %s (%s): %s", fLoaderPath.Path(), settingsPath.Path(), account.String());
-				info->Start(fLoaderPath.Path());
-			};
-		};
-	};
-	
-	return result;
-};
 
 status_t ProtocolManager::RestartProtocols(ProtocolSpecification *match, bool canDelete = true) {
 	status_t result = B_ERROR;
@@ -193,6 +154,10 @@ status_t ProtocolManager::RestartProtocols(ProtocolSpecification *match, bool ca
 	return result;
 };
 
+status_t ProtocolManager::UnloadInstance(ProtocolInfo *info) {
+	return UnloadInstance(info, true);
+};
+
 status_t ProtocolManager::Unload(void) {
 	status_t result = B_ERROR;
 	BAutolock lock(fLock);
@@ -203,12 +168,7 @@ status_t ProtocolManager::Unload(void) {
 		for (it = fProtocol->Start(); it != fProtocol->End(); it++) {
 			ProtocolInfo *info = it->second;
 			
-			if (info->HasValidMessenger() == true) {
-				info->Messenger()->SendMessage(B_QUIT_REQUESTED);
-			} else {
-				// A half loaded addon - force it to exit
-				kill_thread(info->ThreadID());
-			};
+			UnloadInstance(info, false);
 		};
 
 		// Give all the protocols a chance to shutdown
@@ -259,8 +219,8 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 
 //#pragma mark SpecificationFinder<ProtocolInfo *>
 
-ProtocolInfo *ProtocolManager::FindFirst(ProtocolSpecification *match, bool canDelete = true) {
-	ProtocolInfo *info = NULL;
+bool ProtocolManager::FindFirst(ProtocolSpecification *match, ProtocolInfo **firstMatch, bool canDelete = true) {
+	bool found = false;
 	BAutolock lock(fLock);
 	
 	if (lock.IsLocked() == true) {
@@ -270,7 +230,8 @@ ProtocolInfo *ProtocolManager::FindFirst(ProtocolSpecification *match, bool canD
 			ProtocolInfo *cur = it->second;
 			
 			if (match->IsSatisfiedBy(cur) == true) {
-				info = cur;
+				*firstMatch = cur;
+				found = true;
 				break;
 			};
 		};
@@ -278,7 +239,7 @@ ProtocolInfo *ProtocolManager::FindFirst(ProtocolSpecification *match, bool canD
 	
 	if (canDelete == true) delete match;
 	
-	return info;
+	return found;
 };
 
 GenericListStore<ProtocolInfo *> ProtocolManager::FindAll(ProtocolSpecification *match, bool canDelete = true) {
@@ -303,3 +264,18 @@ GenericListStore<ProtocolInfo *> ProtocolManager::FindAll(ProtocolSpecification 
 };
 
 //#pragma mark Private
+
+status_t ProtocolManager::UnloadInstance(ProtocolInfo *info, bool remove) {
+	if (info->HasValidMessenger() == true) {
+		info->Messenger()->SendMessage(B_QUIT_REQUESTED);
+	} else {
+		// A half loaded addon - force it to exit
+		kill_thread(info->ThreadID());
+	};
+
+	if (remove == true) {	
+		fProtocol->Remove(info->InstanceID());
+	};
+	
+	return B_OK;
+};

@@ -33,7 +33,6 @@ namespace IM {
 		private:
 			entry_ref		fRef;
 	};
-	
 
 	class ConnectionContactSpecification : public ContactSpecification {
 		public:
@@ -47,6 +46,8 @@ namespace IM {
 								
 								ConnectionStore *store = contact->CachedConnections();
 								for (ConnectionStore::Iterator it = store->Start(); it != store->End(); it++) {
+									Connection con = (*it);
+									
 									if ((*it) == fConnection) {
 										match = true;
 										break;

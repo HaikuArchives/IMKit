@@ -32,17 +32,19 @@ class ContactStore : public GenericMapStore<entry_ref, ContactCachedConnections 
 			delete fLock;
 		};
 	
-		virtual ContactCachedConnections *FindFirst(ContactSpecification *specification, bool deleteSpec = true) {
-			ContactCachedConnections *contact = NULL;
+		virtual bool FindFirst(ContactSpecification *specification, ContactCachedConnections **firstMatch, bool deleteSpec = true) {
+			bool found = false;
 			BAutolock lock(fLock);
 			
 			if (lock.IsLocked() == true) {
 				GenericMapStore<entry_ref, ContactCachedConnections *>::Iterator it;
+
 				for (it = Start(); it != End(); it++) {
 					ContactCachedConnections *current = it->second;
 					
 					if (specification->IsSatisfiedBy(current) == true) {
-						contact = current;
+						*firstMatch = current;
+						found = true;
 						break;
 					};
 				};
@@ -52,7 +54,7 @@ class ContactStore : public GenericMapStore<entry_ref, ContactCachedConnections 
 				delete specification;
 			};
 			
-			return contact;
+			return found;
 		};
 
 		virtual GenericListStore<ContactCachedConnections *> FindAll(ContactSpecification *specification, bool deleteSpec = true) {
@@ -194,8 +196,8 @@ void ContactManager::MessageReceived(BMessage *msg) {
 
 //#pragma mark SpecificationFinder<Contact *> Hooks
 
-ContactCachedConnections *ContactManager::FindFirst(ContactSpecification *spec, bool canDelete = true) {
-	return fContact->FindFirst(spec, canDelete);
+bool ContactManager::FindFirst(ContactSpecification *spec, ContactCachedConnections **firstMatch, bool canDelete = true) {
+	return fContact->FindFirst(spec, firstMatch, canDelete);
 };
 
 GenericListStore<ContactCachedConnections *> ContactManager::FindAll(ContactSpecification *spec, bool canDelete = true) {
@@ -261,6 +263,7 @@ void ContactManager::ContactAdded(ContactHandle handle) {
 
 	// Save the Contact
 	ContactCachedConnections *contact = new ContactCachedConnections(handle.entry);
+	contact->ReloadConnections();
 	fContact->Add(handle.entry, contact);
 	
 	// Notify the listener
@@ -268,16 +271,20 @@ void ContactManager::ContactAdded(ContactHandle handle) {
 };
 
 void ContactManager::ContactModified(ContactHandle handle) {
-	ContactCachedConnections *contact = fContact->FindFirst(new EntryRefContactSpecification(handle.entry));
-
-	ConnectionStore *prevCons = contact->CachedConnections();
-	ConnectionStore *newCons = NULL;
-
-	// Notify the listener
-	fContactListener->ContactModified(contact, prevCons, newCons);
+	ContactCachedConnections *contact = NULL;
+	if (fContact->FindFirst(new EntryRefContactSpecification(handle.entry), &contact) == true) {
 	
-	// Now that the listener has been notified update its connections
-	contact->ReloadConnections();
+		ConnectionStore *prevCons = contact->CachedConnections();
+		ConnectionStore *newCons = NULL;
+	
+		// Notify the listener
+		fContactListener->ContactModified(contact, prevCons, newCons);
+		
+		// Now that the listener has been notified update its connections
+		contact->ReloadConnections();
+	} else {
+		LOG(kAppName, liHigh, "ContactManager::ContactModified: %s is an unknown contact", handle.entry.name);
+	};
 };
 
 void ContactManager::ContactMoved(ContactHandle from, ContactHandle to) {
@@ -298,14 +305,18 @@ void ContactManager::ContactRemoved(ContactHandle handle) {
 	nref.node = handle.node;	
 	watch_node(&nref, B_STOP_WATCHING, BMessenger(this));
 
-	ContactCachedConnections *contact = fContact->FindFirst(new EntryRefContactSpecification(handle.entry));
-	ConnectionStore *prevCons = contact->CachedConnections();
-
-	// Notify the listener
-	fContactListener->ContactRemoved(contact, prevCons);
-
-	// Remove the Contact
-	if (fContact->Contains(handle.entry) == true) {
-		fContact->Remove(handle.entry);
+	ContactCachedConnections *contact = NULL;
+	if (fContact->FindFirst(new EntryRefContactSpecification(handle.entry), &contact) == true) {
+		ConnectionStore *prevCons = contact->CachedConnections();
+	
+		// Notify the listener
+		fContactListener->ContactRemoved(contact, prevCons);
+	
+		// Remove the Contact
+		if (fContact->Contains(handle.entry) == true) {
+			fContact->Remove(handle.entry);
+		};
+	} else {
+		LOG(kAppName, liHigh, "ContactManager::ContactRemoved: %s is an unknown contact", handle.entry.name);
 	};
 }

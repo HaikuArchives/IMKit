@@ -112,7 +112,7 @@ bool ProtocolInfo::HasCapability(uint32 capability) {
 
 bool ProtocolInfo::HasExited(void) {
 	thread_info ignored;
-	status_t res = get_thread_info(fThreadID, &ignored);
+	get_thread_info(fThreadID, &ignored);
 	
 	return ((fThreadID == B_ERROR) || (get_thread_info(fThreadID, &ignored) == B_BAD_THREAD_ID));
 };

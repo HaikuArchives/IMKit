@@ -45,6 +45,7 @@ class DeskbarIconApp : public BApplication
 			if (our_image(info) == B_OK
 				&& get_ref_for_path(info.name, &ref) == B_OK) {
 				BDeskbar deskbar;
+				deskbar.RemoveItem("IM_DeskbarIcon");
 				deskbar.AddItem(&ref);
 			}
 		}

@@ -9,7 +9,6 @@
 #include <NodeMonitor.h>
 #include <PopUpMenu.h>
 #include <Query.h>
-#include <Resources.h>
 #include <String.h>
 #include <TextView.h>
 #include <View.h>
@@ -20,9 +19,6 @@
 #include <map>
 #include <string>
 
-#include <common/IconMenuItem.h>
-#include <common/IMKitUtilities.h>
-#include <common/BubbleHelper.h>
 #include "AwayMessageWindow.h"
 #include "QueryLooper.h"
 #include "DeskbarIconResources.h"
@@ -31,6 +27,10 @@
 #include <libim/Contact.h>
 #include <kernel/fs_attr.h>
 #include <kernel/fs_info.h>
+
+class AccountStore;
+class AccountInfo;
+class BubbleHelper;
 
 typedef struct {
 	entry_ref ref;
@@ -64,37 +64,9 @@ class _EXPORT IM_DeskbarIcon : public BView
 		virtual void AboutRequested();
 		
 	private:
-		enum {
-			SET_STATUS		= 'set1',
-			SET_ONLINE		= 'set2',
-			SET_AWAY		= 'set3',
-			SET_OFFLINE		= 'set4',
-
-			
-			OPEN_SETTINGS	= 'opse',
-			RELOAD_SETTINGS = 'upse',
-			
-			CLOSE_IM_SERVER = 'imqu',
-			START_IM_SERVER = 'imst',
-			
-			SETTINGS_WINDOW_CLOSED = 'swcl',
-			
-			OPEN_QUERY		= 'opqu',
-			LAUNCH_FILE		= 'lafi',			
-			OPEN_QUERY_DIR	= 'opqd',
-			QUERY_UPDATED = 'qlup'
-		};
-		enum {
-			isOffline = 0,
-			isAway = 1,
-			isOnline = 2
-		};
-			
 		void				_init();
 		void				reloadSettings();
 		void				getProtocolStates();
-		
-		BResources			fResource;
 		
 		BBitmap				*fCurrIcon;
 		BBitmap				*fModeIcon;
@@ -121,9 +93,9 @@ class _EXPORT IM_DeskbarIcon : public BView
 //		Status menu
 		bool				fDirtyStatusMenu;	// Does the menu need rebuilding?
 		BMenu				*fStatusMenu;
-		map<string, string>	fStatuses;
+		
+		AccountStore		*fAccount;
 		bool				fDirtyStatus;		// Are our statuses out of date?
-		map<string, string>	fFriendlyNames;
 		
 //		Query Menu stuff
 		querymap			fQueries;

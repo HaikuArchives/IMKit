@@ -11,6 +11,10 @@
 #include <list>
 #include <map>
 
+#include "common/SpecificationFinder.h"
+
+#include <stdio.h>
+
 namespace IM {
 
 	// The type_delete function is called as type_delete<type>([reallyDelete,] instance) - for reference types it's a no-op whilst pointer types will free instance
@@ -154,6 +158,45 @@ namespace IM {
 				return fStore.end();
 			};
 	
+			bool FindFirst(Specification<T> *specification, T *item, bool deleteSpec = true) {
+				bool found = false;
+			
+				for (Iterator it = Start(); it != End(); it++) {
+					T current = (*it);
+				
+					if (specification->IsSatisfiedBy(current) == true) {
+						found = true;
+						*item = current;
+						break;
+					};
+				};
+				
+				if (deleteSpec == true) {
+					delete specification;
+				};
+				
+				return found;
+			};
+			
+			GenericListStore<T> FindAll(Specification<T> *specification, bool deleteSpec = true) {
+				GenericListStore<T> results(false);
+				
+				for (Iterator it = Start(); it != End(); it++) {
+					T current = (*it);
+				
+					if (specification->IsSatisfiedBy(current) == true) {
+						results.Add(current);
+						break;
+					};
+				};
+				
+				if (deleteSpec == true) {
+					delete specification;
+				};
+				
+				return results;
+			};
+			
 		private:
 			bool fOwn;
 			list<T> fStore;

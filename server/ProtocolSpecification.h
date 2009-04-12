@@ -8,6 +8,9 @@
 
 namespace IM {
 	typedef Specification<ProtocolInfo *> ProtocolSpecification;
+	typedef AndSpecification<ProtocolInfo *> AndProtocolSpecification;
+	typedef OrSpecification<ProtocolInfo *> OrProtocolSpecification;
+	typedef NotSpecification<ProtocolInfo *> NotProtocolSpecification;
 	
 	class AllProtocolSpecification : public ProtocolSpecification {
 		public:
@@ -44,6 +47,26 @@ namespace IM {
 		
 		private:
 			BString				fInstance;
+	};
+	
+	class AccountNameProtocolSpecification : public ProtocolSpecification {
+		public:
+								AccountNameProtocolSpecification(const char *name)
+									: ProtocolSpecification(),
+									fName(name) {
+								};
+								
+								AccountNameProtocolSpecification(BString name)
+									: ProtocolSpecification(),
+									fName(name) {
+								};
+																
+			virtual bool		IsSatisfiedBy(ProtocolInfo *info) {
+									return (info->AccountName() == fName);
+								};
+								
+		private:
+			BString				fName;
 	};
 	
 	class CapabilityProtocolSpecification : public ProtocolSpecification {
