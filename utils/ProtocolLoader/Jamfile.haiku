@@ -15,6 +15,7 @@ SubDirSysHdrs [ FDirName $(IMKIT_TOP) server ] ;
 
 Application ProtocolLoader :
 	main.cpp
+	ProtocolHandler.cpp
 	ProtocolLoaderApplication.cpp
 	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a
 	: ProtocolLoader.rdef

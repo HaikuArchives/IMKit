@@ -1,3 +1,11 @@
+/*
+ * Copyright 2008-, IM Kit Team.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Michael Davidson <slaad@bong.com.au>
+ *		
+ */
 #ifndef PROTOCOL_LOADER_APPLICATION_H
 #define PROTOCOL_LOADER_APPLICATION_H
 
@@ -7,28 +15,26 @@
 namespace IM {
 	class Manager;
 	class Protocol;
-};
 
-using namespace IM;
-
-class ProtocolLoaderApplication : public BApplication {
-	public:
-								ProtocolLoaderApplication(const char *instanceID, Protocol *protocol, const char* path, BMessage settings, const char *accountName);
-								~ProtocolLoaderApplication(void);
-	
-		// BApplication Hooks
-		void					ReadyToRun(void);
-		bool					QuitRequested(void);
-		void					MessageReceived(BMessage *msg);
-	
-	private:
-		BString					fInstanceID;
-		Protocol				*fProtocol;
-		BString					fProtoName;
-		BMessage				fSettings;
-		BString					fAccountName;
+	class ProtocolLoaderApplication : public BApplication {
+		public:
+									ProtocolLoaderApplication(const char *instanceID, Protocol *protocol, const char* path, BMessage settings, const char *accountName);
+									~ProtocolLoaderApplication(void);
 		
-		Manager					*fManager;
+			// BApplication Hooks
+			void					ReadyToRun(void);
+			bool					QuitRequested(void);
+			void					MessageReceived(BMessage *msg);
+		
+		private:
+			BString					fInstanceID;
+			Protocol				*fProtocol;
+			BString					fProtoName;
+			BMessage				fSettings;
+			BString					fAccountName;
+			
+			Manager					*fManager;
+	};
 };
 
-#endif
+#endif // PROTOCOL_LOADER_APPLICATION_H

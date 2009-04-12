@@ -14,6 +14,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
 
 Executable ProtocolLoader :
 	main.cpp
+	ProtocolHandler.cpp
 	ProtocolLoaderApplication.cpp
 	: be stdc++.r4 libim.so libcommon.a 
 	: ProtocolLoader.rdef

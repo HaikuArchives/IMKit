@@ -7,6 +7,10 @@
 #include <libim/Protocol.h>
 #include <libim/Helpers.h>
 
+#include "ProtocolHandler.h"
+
+using namespace IM;
+
 //#pragma mark Constructors
 
 ProtocolLoaderApplication::ProtocolLoaderApplication(const char *instanceID, Protocol *protocol, const char* path, BMessage settings, const char *accountName)	
@@ -51,7 +55,10 @@ void ProtocolLoaderApplication::ReadyToRun(void) {
 	fManager = new IM::Manager(this);
 	fManager->SendMessage(&reg);
 	
-	fProtocol->Init(BMessenger(IM_SERVER_SIG));
+	ProtocolHandler *handler = new ProtocolHandler(fInstanceID.String());
+	AddHandler(handler);
+	
+	fProtocol->Init(BMessenger(handler, this));
 	
 	BApplication::ReadyToRun();
 };
