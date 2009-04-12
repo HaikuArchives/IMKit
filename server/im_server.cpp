@@ -2102,10 +2102,8 @@ Server::UpdateOwnSettings(BMessage &settings)
 	if (SetAutoStart(auto_start) != B_OK)
 		return B_ERROR;
 
-	if (deskbar_icon) {
-		if (SetDeskbarIcon() != B_OK)
-			return B_ERROR;
-	}
+	if (SetDeskbarIcon(deskbar_icon) != B_OK)
+		return B_ERROR;
 
 	return B_OK;
 }
@@ -2209,13 +2207,13 @@ Server::SetAutoStart(bool autostart)
 	Checks if Deskbar is running and then installs deskbar icon.
 */
 status_t
-Server::SetDeskbarIcon()
+Server::SetDeskbarIcon(bool deskbar_icon)
 {
+	BDeskbar deskbar;
 	bool isDeskbarRunning = true;
 	bool isInstalled = false;
 
 	// If the Deskbar is not alive, acknowledge this request to wake it up
-	BDeskbar deskbar;
 #ifdef __HAIKU__
 	isDeskbarRunning = deskbar.IsRunning();
 #endif
@@ -2225,7 +2223,6 @@ Server::SetDeskbarIcon()
 	// Wait up to 10 seconds for Deskbar to become available, in case it's not running yet
 	int32 tries = 10;
 	while (!isDeskbarRunning && --tries) {
-		BDeskbar deskbar;
 		if (deskbar.IsRunning()) {
 			isDeskbarRunning = true;
 			break;
@@ -2239,6 +2236,11 @@ Server::SetDeskbarIcon()
 		return B_ERROR;
 	};
 
+	// Remove the icon
+	if (!deskbar_icon)
+		return deskbar.RemoveItem(DESKBAR_ICON_NAME);
+
+	// Install the icon
 	_InstallDeskbarIcon();
 
 	return B_OK;
