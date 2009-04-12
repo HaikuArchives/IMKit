@@ -25,7 +25,7 @@ StatusIcon::~StatusIcon(void) {
 //#pragma mark Public - Vector Icons
 	
 void StatusIcon::SetVectorIcon(const void* data, ssize_t size) {
-	fVectorIcon = malloc(size);
+	fVectorIcon = realloc(fVectorIcon, size);
 	memcpy(fVectorIcon, data, size);
 	fVectorIconSize = size;
 }
@@ -41,7 +41,7 @@ ssize_t StatusIcon::VectorIconSize(void) {
 //#pragma mark Public - Mini Icons
 
 void StatusIcon::SetMiniIcon(const void* data, ssize_t size) {
-	fMiniIcon = malloc(size);
+	fMiniIcon = realloc(fMiniIcon, size);
 	memcpy(fMiniIcon, data, size);
 	fMiniIconSize = size;
 }
@@ -57,7 +57,7 @@ ssize_t StatusIcon::MiniIconSize(void) {
 //#pragma mark Public - Large Icons
 	
 void StatusIcon::SetLargeIcon(const void* data, ssize_t size) {
-	fLargeIcon = malloc(size);
+	fLargeIcon = realloc(fLargeIcon, size);
 	memcpy(fLargeIcon, data, size);
 	fLargeIconSize = size;
 }
