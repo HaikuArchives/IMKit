@@ -468,6 +468,7 @@ Server::MessageReceived( BMessage *msg )
 			BMessage add(MESSAGE);
 			add.AddInt32("im_what", REGISTER_CONTACTS);
 
+//			XXX
 			GetContactsForProtocol(signature, &add);
 			info->Process(&add);
 		
@@ -1327,14 +1328,15 @@ void Server::MessageToProtocols(BMessage * msg) {
 			client_side_msg.AddInt32("charset", charset);
 			
 			type_code _type;
-			char * name;
-			int32 count;
+			char *name = NULL;
+			int32 count = -1;
 
 #if B_BEOS_VERSION > B_BEOS_VERSION_5			
-			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++) {
+			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++)
 #else
-			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++) {
+			for (int i=0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++)
 #endif
+			{
 				// get string names
 				for (int x = 0; x < count; x++) {
 					// replace all matching strings
@@ -1373,86 +1375,75 @@ void Server::MessageToProtocols(BMessage * msg) {
 /**
 	Handle a message coming from protocol-side to client-side
 */
-void
-Server::MessageFromProtocols( BMessage * msg )
-{
-	if ( !IsMessageOk(msg) )
-	{
+void Server::MessageFromProtocols(BMessage *msg) {
+	if (IsMessageOk(msg) == false) {
 		LOG(kAppName, liHigh, "Bad message in MessageFromProtocols()");
 		return;
-	}
+	};
 	
 	const char *protocol = NULL;
 	if (msg->FindString("protocol", &protocol) != B_OK) {
 		LOG(kAppName, liHigh, "Got a message with no protocol!");
 		return;
-	}
+	};
 	
 	// convert strings to utf8
 	int32 charset;
-	if ( msg->FindInt32("charset",&charset) == B_OK )
-	{ // charset present, convert all strings
+	if (msg->FindInt32("charset", &charset) == B_OK) {
+		// charset present, convert all strings
 		type_code _type;
-		char * name = NULL;
-		int32 count;
+		char *name = NULL;
+		int32 count = -1;
 		
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
-		for ( int i=0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++ )
+		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++)
 #else
-		for ( int i=0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++ )
+		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++)
 #endif
-		{ // get string names
-			for ( int x=0; x<count; x++ )
-			{ // replace all matching strings
-				const char * data = msg->FindString(name,x);
-				
+		{
+			// get string names
+			for (int x = 0; x < count; x++) {
+				// replace all matching strings
+				const char *data = msg->FindString(name, x);
 				int32 src_len = strlen(data);
 				int32 dst_len = strlen(data)*5;
 				int32 state = 0;
 				
-				char * new_data = (char*)calloc(dst_len+1, 1);
+				char *new_data = (char *)calloc(dst_len + 1, sizeof(char));
 				
-				if ( convert_to_utf8(
-					charset,
-					data,		&src_len,
-					new_data,	&dst_len,
-					&state				
-				) == B_OK )
-				{
+				if (convert_to_utf8(charset, data, &src_len, new_data, &dst_len, &state) == B_OK) {
 					new_data[dst_len] = 0;
 					
-					msg->ReplaceString(name,x,new_data);
-				}
+					msg->ReplaceString(name, x, new_data);
+				};
 				
-				free(new_data);
-			}
-		}
-	}	
+				free(new_data);;
+			};
+		};
+	};
 	// done converting
 
-	int32 im_what;
-	
-	msg->FindInt32("im_what",&im_what);
+	int32 im_what = B_ERROR;
+	msg->FindInt32("im_what", &im_what);
 	
 	entry_ref testc;
 	
-	if ( msg->FindRef("contact",&testc) == B_OK )
-	{
-		_ERROR("contact already present in message supposedly from protocol",msg);
+	if (msg->FindRef("contact", &testc) == B_OK)	{
+		_ERROR("contact already present in message supposedly from protocol", msg);
 		return;
-	}
+	};
 	
 	// find out which contact this message originates from
 	ContactCachedConnections *contact = NULL;
 	const char * id = msg->FindString("id");
 	
-	if ( id != NULL )
-	{ // ID present, find out which Contact it belongs to
-		if ( protocol == NULL )
-		{ // malformed message. report and skip.
+	if (id != NULL) {
+		// ID present, find out which Contact it belongs to
+		if (protocol == NULL) {
+			// malformed message. report and skip.
 			_ERROR("Malformed message in Server::Process", msg);
 			return;
-		}
+		};
 		
 		string proto_id(string(protocol) + string(":") + string(id));
 		
@@ -1477,29 +1468,30 @@ Server::MessageFromProtocols( BMessage * msg )
 		for (GenericListStore<ContactCachedConnections *>::Iterator iter = contacts.Start(); iter != contacts.End(); iter++) {
 			Contact *contact = (*iter);
 		
-			if ( im_what == MESSAGE_RECEIVED )
-			{ // message received from contact, store the connection in fPreferredProtocol
+			if (im_what == MESSAGE_RECEIVED) {
+				// message received from contact, store the connection in fPreferredProtocol
 				char status[256];
 				contact->GetStatus(status, sizeof(status));
 				
-				if ( strcmp(status,BLOCKED_TEXT) == 0 )
-				{ // contact blocked, dropping message!
+				if (strcmp(status, BLOCKED_TEXT) == 0) {
+					// contact blocked, dropping message!
 					LOG(kAppName, liHigh, "Dropping message from blocked contact [%s:%s]", protocol, id);
 				} else {
 					msg->AddRef("contact", *contact);
+
 					// XXX
-					if ( fPreferredConnection[*contact] != proto_id )
-					{ // set preferred connection to this one if it's no already that
+					if ( fPreferredConnection[*contact] != proto_id ) {
+						// set preferred connection to this one if it's no already that
 						fPreferredConnection[*contact] = proto_id;
 						LOG(kAppName, liLow, "Setting preferred connection for contact to %s", proto_id.c_str() );
-					}
-				}
+					};
+				};
 			} else {
-				// always add contact to other messages			
+				// always add contact to other messages
 				msg->AddRef("contact", *contact);
-			}
-		}
-	}
+			};
+		};
+	};
 	
 	if (im_what == SET_BUDDY_ICON) {
 		LOG(kAppName, liHigh, "Got a buddy icon from a protocol!");
@@ -1510,7 +1502,8 @@ Server::MessageFromProtocols( BMessage * msg )
 		if (msg->FindRef("contact", &ref) != B_OK) {
 			LOG(kAppName, liHigh, "No contact in buddy message.");
 			return;
-		}
+		};
+		
 		if (msg->FindData("icondata", B_RAW_TYPE, (const void **)&data, &bytes) !=  B_OK) {
 			LOG(kAppName, liHigh, "No icondata in buddy message.");
 		} else {
@@ -1524,7 +1517,7 @@ Server::MessageFromProtocols( BMessage * msg )
 			buffer.WriteAt(0, data, bytes);
 			BBitmap *icon = BTranslationUtils::GetBitmap(&buffer);
 			
-			if ( !icon ) {
+			if (icon == NULL) {
 				LOG(kAppName, liHigh, "Unable to decode buddy icon.");
 			} else {
 				LOG(kAppName, liDebug, "Setting %s's icon to be %p\n", protocol, icon);
@@ -1532,41 +1525,40 @@ Server::MessageFromProtocols( BMessage * msg )
 				status_t ret = contact.SetBuddyIcon(protocol, icon);
 				LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
 				
-				if ( ret == B_OK && contact.GetBuddyIcon("general") == NULL )
-				{
-					LOG(kAppName, liDebug, "Also setting the general icon, since none was set\n");
+				if ((ret == B_OK) && (contact.GetBuddyIcon("general") == NULL)) {
+					LOG(kAppName, liDebug, "Also setting the general icon, since none was set");
 					ret = contact.SetBuddyIcon("general", icon);
 					LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
-				}
+				};
 				
 				BMessage update(MESSAGE);
 				update.AddInt32("im_what", BUDDY_ICON_UPDATED);
 				update.AddRef("contact", &ref);
 				
 				Broadcast(&update);
-			}
-		}
+			};
+		};
 		
 		return;
-	}
+	};
 	
-	if ( im_what == STATUS_CHANGED && protocol != NULL && id != NULL )
-	{ // update status list on STATUS_CHANGED
+	if ((im_what == STATUS_CHANGED) && (protocol != NULL) && (id != NULL)) {
+		// update status list on STATUS_CHANGED
 		UpdateStatus(msg);
-	}
+	};
 	
-	if ( im_what == STATUS_SET && protocol != NULL )
-	{ // own status set for protocol, register the id's we're interested in etc
+	if ((im_what == STATUS_SET) && (protocol != NULL)) {
+		// own status set for protocol, register the id's we're interested in etc
 		handle_STATUS_SET(msg);
-	}
+	};
 	
-	if ( im_what == CONTACT_AUTHORIZED && protocol != NULL ) {
+	if ((im_what == CONTACT_AUTHORIZED) && (protocol != NULL)) {
 		LOG(kAppName, liLow, "Creating new contact on authorization. ID : %s", id);
 	} else {
 		// send it
 		Broadcast(msg);
-	}
-}
+	};
+};
 
 /**
 	Update the status of contacts in a STATUS_CHANGED message. Set im_server internal
@@ -2379,6 +2371,7 @@ Server::handle_STATUS_SET( BMessage * msg )
 		
 		BMessage connections(MESSAGE);
 		connections.AddInt32("im_what", REGISTER_CONTACTS);
+//		XXX
 		GetContactsForProtocol(info->Signature(), &connections);
 
 		info->Process(&connections);
@@ -2665,7 +2658,8 @@ Server::reply_GET_CONTACTS_FOR_PROTOCOL( BMessage * msg )
 	}
 	
 	BMessage reply(ACTION_PERFORMED);
-	
+
+//	XXX	
 	GetContactsForProtocol( msg->FindString("protocol"), &reply );
 
 	sendReply(msg,&reply);
@@ -2730,6 +2724,7 @@ status_t Server::ProtocolOffline(const char *signature) {
 	system_beep(kImDisconnectedSound);
 	
 	BMessage contacts;
+	// XXX
 	GetContactsForProtocol(signature, &contacts);
 	
 	for (int i = 0; contacts.FindString("id", i); i++) {
