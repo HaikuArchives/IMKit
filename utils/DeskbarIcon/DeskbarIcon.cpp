@@ -22,6 +22,8 @@
 #include <storage/Path.h>
 #include <storage/Resources.h>
 
+#include "preflet/PResources.h"
+
 #ifdef ZETA
 #include <locale/Locale.h>
 #else
@@ -232,7 +234,7 @@ void IM_DeskbarIcon::getProtocolStates(void) {
 		const char *account = NULL;
 		
 		if (protStatus.FindString("protocol",i, &protocol) != B_OK) protocol = _T("Unknown protocol");
-		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) _T("Unknown");
+		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) userfriendly = _T("Unknown");
 		if (protStatus.FindString("status", i, &status) != B_OK) status = _T("Unknown status");
 		if (protStatus.FindString("account_name", i, &account) != B_OK) account = _T("Unknown account");
 
@@ -388,7 +390,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 		} break;
 		
 		case kMsgOpenSettings: {
-			be_roster->Launch("application/x-vnd.beclan-IMKitPrefs");
+			be_roster->Launch(PREFLET_SIGNATURE);
 		} break;
 		
 		case IM::MESSAGE: {
