@@ -142,8 +142,6 @@ Server::Server(void)
 	childExitedAction.sa_flags = 0;
 	childExitedAction.sa_userdata = this;
 	sigaction(SIGCHLD, &childExitedAction, NULL);
-	
-	Run();
 };
 
 /**

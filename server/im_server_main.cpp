@@ -108,7 +108,6 @@ void handle_ctrl_c( int /*sig*/ ) {
 //#pragma mark Main
 
 int main(int numarg, const char ** argv) {
-	CheckIndexes();
 	RegisterSoundEvents();
 
 	// add ctrl-c handler
@@ -184,6 +183,10 @@ int main(int numarg, const char ** argv) {
 	
 	// rotate log file
 	rename("/boot/home/im_kit.log", "/boot/home/im_kit.log.0");
-	
+
 	IM::Server server;
+	CheckIndexes();
+	server.Run();
+
+	return 0;
 };
