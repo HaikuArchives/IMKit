@@ -295,56 +295,58 @@ ContactCachedConnections *ContactManager::CreateContact(Connection connection, c
 	
 	BAutolock lock(fContact->GetLock());
 	if (lock.IsLocked() == false) {
-		LOG(kAppName, liHigh, "ContactManager::CreateContact: Unable to acquire storage lock");
+		LOG(kAppName, liHigh,
+			"ContactManager::CreateContact: Unable to acquire storage lock");
 		return result;
 	};
-	
+
 	if (fContact->FindFirstNoLock(new ConnectionContactSpecification(connection), &result) == true) {
-		LOG(kAppName, liHigh, "CreateContact for a connection that already exists - returning existing item");
+		LOG(kAppName, liHigh,
+			"CreateContact for a connection that already exists - returning existing item");
 		LOG(kAppName, liHigh, "    %s", result->EntryRef().name);
 		return result;
 	};
-	
+
 	BPath path;
-	
+
 	if (find_directory(B_USER_DIRECTORY, &path, true, NULL) != B_OK) {
 		LOG(kAppName, liHigh, "Unable to find B_USER_DIRECTORY");
 		return result;
 	};
-	
+
 	path.Append("people");
-	
+
 	// make sure that the target directory exists before we try to create new files
 	create_directory(path.Path(), 0777);
-	
+
 	BDirectory dir(path.Path());
 	BFile file;
 	BEntry entry;
 	char filename[512];
-	
+
 	// Make sure we have a decent namebase
 	if ((namebase == NULL) || (strlen(namebase) == 0)) {
 		namebase = "Unknown contact";
 	};
-	
+
 	strcpy(filename, namebase);
-	
+
 	// Attempt to create the contact
 	dir.CreateFile(filename, &file, true);
-	
+
 	for (int i = 1; file.InitCheck() != B_OK; i++) {
 		sprintf(filename, "%s %d", namebase, i);
 		
 		dir.CreateFile(filename, &file, true);
 	};
-	
+
 	if (dir.FindEntry(filename,&entry) != B_OK) {
-		LOG(kAppName, liHigh, "Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]", filename);
+		LOG(kAppName, liHigh,
+			"Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]",
+			filename);
 		return result;
 	};
-	
-	LOG(kAppName, liDebug, "  created file [%s]", filename);
-	
+
 	// File created - set the type
 	if (file.WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, kContactMIMEType, strlen(kContactMIMEType)) != strlen(kContactMIMEType)) {
 		// Error writing type
@@ -352,10 +354,8 @@ ContactCachedConnections *ContactManager::CreateContact(Connection connection, c
 		
 		LOG(kAppName, liHigh, "ERROR: Unable to write MIME type for newly created contact");
 		return result;
-	}
-	
-	LOG(kAppName, liDebug, "  wrote type");
-	
+	};
+
 	// File created. set type and add connection
 	result = new ContactCachedConnections(entry);
 	if (result->AddConnection(connection.String()) != B_OK) {
@@ -363,25 +363,20 @@ ContactCachedConnections *ContactManager::CreateContact(Connection connection, c
 		result = NULL;
 		
 		return result;
-	}
-	
-	LOG(kAppName, liDebug, "  wrote connection");
-	
+	};
+
 	if (result->SetStatus(OFFLINE_TEXT) != B_OK) {
 		delete result;
+
 		result = NULL;
-		
 		return result;
 	};
-	
-	LOG(kAppName, liDebug, "  wrote status");
-	LOG(kAppName, liDebug, "  done.");
-	
+
 	// Ensure the cached contacts are up to date
 	result->ReloadConnections();
-	
+
 	fContact->Add(result->EntryRef(), result);
-	
+
 	return result;
 };
 

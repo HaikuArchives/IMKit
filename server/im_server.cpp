@@ -2161,18 +2161,19 @@ void Server::StartAutostartApps(void) {
 */
 void Server::StopAutostartApps(void) {
 	BMessage clients;
-	
+	BMessage clientMsg;
+
 	im_get_client_list(&clients);
-	
-	for (int i = 0; clients.FindString("client", i) == B_OK; i++) {
-		const char *client = clients.FindString("client", i);
-		
+
+	for (int32 i = 0; clients.FindMessage("client", i, &clientMsg) == B_OK; i++) {
+		const char *client = clientMsg.FindString("file");
+
 		if (strcmp("im_server", client) == 0) {
 			continue;
 		};
-		
+
 		BMessage settings;
-		
+
 		if (im_load_client_settings(client, &settings) == B_OK) {
 			bool auto_start = false;
 			const char *app_sig = NULL;
