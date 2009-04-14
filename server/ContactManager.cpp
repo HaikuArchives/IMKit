@@ -19,6 +19,11 @@
 
 //#pragma mark Definitions
 
+//#pragma mark Constants
+
+const char *kContactMIMEType = "application/x-person";
+extern char *kAppName;
+
 using namespace IM;
 
 class QueryStore : public GenericListStore<BQuery *> {
@@ -96,11 +101,6 @@ class ContactStore : public GenericMapStore<entry_ref, ContactCachedConnections 
 	private:
 		BLocker	*fLock;
 };
-
-//#pragma mark Constants
-
-const char *kContactMIMEType = "application/x-person";
-extern char *kAppName;
 
 //#pragma mark Constructor
 
@@ -292,7 +292,7 @@ status_t ContactManager::Init(void) {
 
 ContactCachedConnections *ContactManager::CreateContact(Connection connection, const char *namebase) {
 	ContactCachedConnections *result = NULL;
-	
+
 	BAutolock lock(fContact->GetLock());
 	if (lock.IsLocked() == false) {
 		LOG(kAppName, liHigh,
