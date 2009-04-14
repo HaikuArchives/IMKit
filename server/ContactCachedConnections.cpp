@@ -7,6 +7,8 @@
  *		
  */
  
+#include <storage/Node.h>
+
 #include "ConnectionStore.h"
 #include "ContactCachedConnections.h"
 
