@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP sample_clients tracker_addons merge_contacts ;
+SubDir IMKIT_TOP clients tracker_addons merge_contacts ;
 
 Addon IM_Merge_contacts :
 	merge_contacts.cpp

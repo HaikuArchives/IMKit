@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP sample_clients im_infopopper ;
+SubDir IMKIT_TOP clients im_infopopper ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 

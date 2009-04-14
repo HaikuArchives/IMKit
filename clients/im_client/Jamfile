@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP sample_clients im_client ;
+SubDir IMKIT_TOP clients im_client ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 

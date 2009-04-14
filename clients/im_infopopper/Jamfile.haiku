@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir HAIKU_TOP 3rdparty IMKit sample_clients im_infopopper ;
+SubDir HAIKU_TOP 3rdparty IMKit clients im_infopopper ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(HAIKU_TOP) 3rdparty InfoPopper ] ;

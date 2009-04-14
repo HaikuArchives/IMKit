@@ -6,13 +6,13 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir HAIKU_TOP 3rdparty IMKit sample_clients im_binlog_viewer ;
+SubDir HAIKU_TOP 3rdparty IMKit clients im_binlog_viewer ;
 
 SubDirC++Flags $(IMKIT_DEFINES) ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) sample_clients im_binlog_viewer CLV ] ;
+SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) clients im_binlog_viewer CLV ] ;
 
 Application im_binlog_viewer :
 	# im_binlog_viewer
