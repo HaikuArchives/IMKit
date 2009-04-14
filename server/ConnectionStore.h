@@ -10,7 +10,7 @@
 #ifndef CONNECTIONSTORE_H
 #define CONNECTIONSTORE_H
 
-#include <libim/Contact.h>
+#include <libim/Connection.h>
 
 #include "common/GenericStore.h"
 

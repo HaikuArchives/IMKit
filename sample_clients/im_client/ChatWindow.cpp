@@ -3,6 +3,7 @@
 #include "../../common/IMKitUtilities.h"
 #include "../../common/IconView.h"
 
+#include <libim/Connection.h>
 #include <libim/Contact.h>
 #include <libim/Constants.h>
 #include <libim/Helpers.h>

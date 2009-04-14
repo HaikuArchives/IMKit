@@ -11,25 +11,6 @@
 
 namespace IM {
 
-class Connection
-{
-	public:
-		Connection(void);
-		Connection( const char * );
-		Connection( const Connection & );
-		
-		const char * Protocol() { return fProtocol.String(); };
-		const char * ID() { return fID.String(); };
-		const char * String() { return fConn.String(); };
-		const char * Account(void) const { return fAccount.String(); };
-		bool HasAccount(void) const { return (fAccount.Length() == 0); };
-
-		bool operator == (const Connection &) const;
-	private:
-		BString	fConn, fProtocol, fID;
-		BString fAccount;
-};
-
 class Contact
 {
 	public:
@@ -46,7 +27,7 @@ class Contact
 //		void SetTo( const node_ref &);
 		void SetTo( const Contact &);
 		
-		// returns B_OK if the Contact is connected to a valis People-file
+		// returns B_OK if the Contact is connected to a valid People-file
 		status_t InitCheck();
 		
 		bool Exists();
@@ -80,6 +61,8 @@ class Contact
 		bool operator == ( const BEntry & ) const;
 		bool operator == ( const Contact & ) const;
 		bool operator < ( const Contact & ) const;
+		
+		entry_ref	EntryRef(void) const;
 		
 		// for easy addition to BMessages
 		operator const entry_ref * () const;

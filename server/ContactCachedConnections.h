@@ -9,6 +9,8 @@
  
 #ifndef CONTACTCACHEDCONNECTIONS_H
 #define CONTACTCACHEDCONNECTIONS_H
+
+#include "ContactHandle.h"
  
 #include <storage/Entry.h>
  
@@ -19,15 +21,18 @@ namespace IM {
 
 	class ContactCachedConnections : public Contact {
 		public:
-							ContactCachedConnections(entry_ref ref);
+							ContactCachedConnections(const entry_ref &ref);
+							ContactCachedConnections(const BEntry &entry);
 		
 			// Public
 			void			ReloadConnections(void);
 			ConnectionStore *CachedConnections(void);
-
+			ContactHandle	Handle(void) const;
+			
 			// Operators
 							operator const entry_ref *(void) const;
-			bool			operator == (const entry_ref & entry) const;
+			bool			operator == (const entry_ref &entry) const;
+			bool			operator == (const ContactHandle &handle) const;
 	
 		private:
 			ConnectionStore	*fConnections;

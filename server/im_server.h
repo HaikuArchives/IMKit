@@ -14,6 +14,7 @@
 
 #include <common/IMKitUtilities.h>
 
+#include <libim/Connection.h>
 #include <libim/Contact.h>
 #include <libim/Protocol.h>
 
@@ -59,8 +60,6 @@ namespace IM {
 			void					_Init(void);
 			void					_UpdateStatusIcons(void);
 			void					_InstallDeskbarIcon(void);
-			
-			Contact					CreateContact(const char * proto_id, const char *namebase);
 			
 			status_t				LoadProtocols(void);
 			

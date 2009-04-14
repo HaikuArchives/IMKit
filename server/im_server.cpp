@@ -556,7 +556,7 @@ void Server::ContactModified(Contact *contact, ConnectionStore *oldConnections, 
 	// Find removed items
 	for (ConnectionStore::Iterator oldConIt = oldConnections->Start(); oldConIt != oldConnections->End(); oldConIt++) {
 		Connection con = (*oldConIt);
-	
+
 		// If we can't find the Connection in the new list it must have been removed - notify protocols
 		if (newConnections->Contains(con) == false) {
 			conModified = true;
@@ -576,11 +576,13 @@ void Server::ContactModified(Contact *contact, ConnectionStore *oldConnections, 
 			};
 		};
 	};
+
 	
 	// Find new items
+	// TODO: This seems to cause a crash on quit when this for() is enabled. Not sure of the exact cause -- slaad
 	for (ConnectionStore::Iterator newConIt = newConnections->Start(); newConIt != newConnections->End(); newConIt++) {
 		Connection con = (*newConIt);
-		
+
 		// If we can't find the Connection in the old list it must have been added - notify protocols
 		if (oldConnections->Contains(con) == false) {
 			conModified = true;
@@ -966,114 +968,6 @@ Server::Broadcast( BMessage * msg )
 }
 
 /**
-	Create a new People file with a unique name on the form "Unknown contact X"
-	and add the specified proto_id to it
-	
-	@param proto_id The protocol:id connection of the new contact
-*/
-Contact
-Server::CreateContact( const char * proto_id, const char *namebase )
-{
-	LOG(kAppName, liHigh, "Creating new contact for connection [%s]", proto_id);
-	
-	Contact result;
-	
-	BPath path;
-	
-	if (find_directory(B_USER_DIRECTORY,&path,true,NULL) != B_OK)
-		// should never fail..
-		return result;
-	
-	path.Append("people");
-	
-	// make sure that the target directory exists before we try to create
-	// new files
-	
-	//if ( access( path.Path(), W_OK ) )
-		// only create if needed (if we're not allowed to write, it doesn't exist since we're a single user OS
-		create_directory( path.Path(), 0777);
-	
-	BDirectory dir( path.Path() );
-	BFile file;
-	BEntry entry;
-	char filename[512];
-	
-	// make sure we have a decent namebase
-	if ( !namebase || strlen(namebase) == 0 )
-		namebase = "Unknown contact";
-	
-	strcpy(filename, namebase);
-	
-	// create a new contact, try using the raw SN as the base filename
-	
-	dir.CreateFile(filename,&file,true);
-	
-	for (int i=1; file.InitCheck() != B_OK; i++ )
-	{
-		sprintf(filename,"%s %d",namebase,i);
-		
-		dir.CreateFile(filename,&file,true);
-	}
-	
-	if ( dir.FindEntry(filename,&entry) != B_OK )
-	{
-		LOG(kAppName, liHigh, "Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]",filename);
-		return result;
-	}
-	
-	LOG(kAppName, liDebug, "  created file [%s]", filename);
-	
-	// file created. set type and add connection
-	if ( file.WriteAttr(
-		"BEOS:TYPE", B_MIME_STRING_TYPE, 0,
-		"application/x-person", 21
-	) != 21 ) 
-	{ // error writing type
-		entry.Remove();
-		_ERROR("Error writing type to created contact");
-		return result;
-	}
-	
-	LOG(kAppName, liDebug, "  wrote type");
-	
-	// file created. set type and add connection
-	result.SetTo( entry );
-	
-	if ( result.AddConnection(proto_id) != B_OK )
-	{
-		return Contact();
-	}
-	
-	LOG(kAppName, liDebug, "  wrote connection");
-	
-	if ( result.SetStatus(OFFLINE_TEXT) != B_OK )
-	{
-		return Contact();
-	}
-	
-	LOG(kAppName, liDebug, "  wrote status");
-	
-	// post request info about this contact
-	BMessage msg(MESSAGE);
-	msg.AddInt32("im_what", GET_CONTACT_INFO);
-	msg.AddRef("contact", result);
-	
-	// Add connection information
-	Connection connection(proto_id);
-	msg.AddString("protocol", connection.Protocol());
-	msg.AddString("id", connection.ID());
-	if (connection.HasAccount() == true) {
-		msg.AddString("account", connection.Account());
-	};
-	
-	BMessenger(this).SendMessage(&msg);
-	
-	LOG(kAppName, liDebug, "  done.");
-	
-	return result;
-}
-
-/**
 	Select the 'best' protocol for sending a message to contact
 */
 status_t Server::SelectConnection(BMessage *msg, Contact &contact) {
@@ -1170,7 +1064,7 @@ status_t Server::SelectConnection(BMessage *msg, Contact &contact) {
 	
 	// No matching Protocol
 	return B_ERROR;
-}
+};
 
 
 /**
@@ -1387,6 +1281,18 @@ void Server::MessageFromProtocols(BMessage *msg) {
 		return;
 	};
 
+	const char *instance_id = NULL;
+	if (msg->FindString("instance_id", &instance_id) != B_OK) {
+		LOG(kAppName, liHigh, "Got a protocol message with no instance!");
+		return;
+	};
+	
+	ProtocolInfo *info = NULL;
+	if (fProtocol->FindFirst(new AndProtocolSpecification(new SignatureProtocolSpecification(protocol), new InstanceProtocolSpecification(instance_id)), &info) == false) {
+		LOG(kAppName, liHigh, "Got a protocol message which cannot be matched to an existing account");
+		return;
+	};		
+	
 	// convert strings to utf8
 	int32 charset;
 	if (msg->FindInt32("charset", &charset) == B_OK) {
@@ -1396,10 +1302,11 @@ void Server::MessageFromProtocols(BMessage *msg) {
 		int32 count = -1;
 
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
-		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++) {
+		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, (const char **)&name, &_type, &count) == B_OK; i++)
 #else
-		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++) {
+		for (int i = 0; msg->GetInfo(B_STRING_TYPE, i, &name, &_type, &count) == B_OK; i++)
 #endif
+		{
 			// Get string names
 			for (int x = 0; x < count; x++) {
 				// Replace all matching strings
@@ -1443,14 +1350,10 @@ void Server::MessageFromProtocols(BMessage *msg) {
 			return;
 		};
 
-		string proto_id(string(protocol) + string(":") + string(id));
+		Connection connection(protocol, info->AccountName(), id);
+		if ((fContact->FindFirst(new ConnectionContactSpecification(connection), &contact) == false) || (contact->InitCheck() != B_OK)) {
+			contact = fContact->CreateContact(connection, id);
 
-		if ((!fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()), &contact)) ||
-		    (contact->InitCheck() != B_OK)) {
-			// No matching contact, create a new one!
-			contact->SetTo(CreateContact(proto_id.c_str(), id));
-	
-			// Register the contact we created
 			BMessage connection(MESSAGE);
 			connection.AddInt32("im_what", REGISTER_CONTACTS);
 			connection.AddString("id", id);
@@ -1459,13 +1362,11 @@ void Server::MessageFromProtocols(BMessage *msg) {
 			if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info))
 				info->Process(&connection);
 		};
-
-		// Add all matching contacts to message
-		GenericListStore<ContactCachedConnections *> contacts =
-			fContact->FindAll(new ConnectionContactSpecification(proto_id.c_str()));
-
-		GenericListStore<ContactCachedConnections *>::Iterator iter;
-		for (iter = contacts.Start(); iter != contacts.End(); iter++) {
+		
+		// add all matching contacts to message
+		GenericListStore<ContactCachedConnections *> contacts = fContact->FindAll(new ConnectionContactSpecification(connection));
+		
+		for (GenericListStore<ContactCachedConnections *>::Iterator iter = contacts.Start(); iter != contacts.End(); iter++) {
 			Contact *contact = (*iter);
 
 			if (im_what == MESSAGE_RECEIVED) {
@@ -1480,11 +1381,10 @@ void Server::MessageFromProtocols(BMessage *msg) {
 					msg->AddRef("contact", *contact);
 
 					// XXX
-					if (fPreferredConnection[*contact] != proto_id) {
+					if ( fPreferredConnection[*contact] != connection.String()) {
 						// set preferred connection to this one if it's no already that
-						fPreferredConnection[*contact] = proto_id;
-						LOG(kAppName, liLow, "Setting preferred connection for contact to %s",
-							proto_id.c_str());
+						fPreferredConnection[*contact] = connection.String();
+						LOG(kAppName, liLow, "Setting preferred connection for contact to %s", connection.String() );
 					};
 				};
 			} else {
@@ -1570,30 +1470,50 @@ void Server::MessageFromProtocols(BMessage *msg) {
 void
 Server::UpdateStatus( BMessage * msg )
 {
-	const char * status = msg->FindString("status");
-	const char * protocol = msg->FindString("protocol");
-	const char * id = msg->FindString("id");
-	
-	if ( !status )
-	{
-		_ERROR("Missing 'status' in STATUS_CHANGED message",msg);
+
+	const char *id = NULL;
+	if (msg->FindString("id", &id) != B_OK) {
+		_ERROR("ERROR: No ID on UpdateStatus message", msg);
 		return;
-	}
+	};
+
+	const char *protocol = NULL;
+	if (msg->FindString("protocol", &protocol) != B_OK) {
+		_ERROR("ERROR: Malformed UpdateStatus message", msg);
+		return;
+	};
 	
-	string proto_id( string(protocol) + string(":") + string(id) );
+	const char *instance_id = NULL;
+	if (msg->FindString("instance_id", &instance_id) != B_OK) {
+		LOG(kAppName, liHigh, "Got a protocol message with no instance!");
+		return;
+	};
 	
+	ProtocolInfo *info = NULL;
+	if (fProtocol->FindFirst(new AndProtocolSpecification(new SignatureProtocolSpecification(protocol), new InstanceProtocolSpecification(instance_id)), &info) == false) {
+		LOG(kAppName, liHigh, "Got a protocol message which cannot be matched to an existing account");
+		return;
+	};		
+
+	const char *status = NULL;
+	if (msg->FindString("status", &status) != B_OK) {
+		_ERROR("ERROR: No status in UpdateStatus message", msg);
+		return;
+	};
+	
+	Connection connection(protocol, info->AccountName(), id);	
 	string new_status = status;
 	
-	LOG(kAppName, liMedium, "STATUS_CHANGED [%s] is now %s",proto_id.c_str(),new_status.c_str());
+	LOG(kAppName, liMedium, "STATUS_CHANGED [%s] is now %s", connection.String(), new_status.c_str());
 	
 	// add old status to msg
-	if ( fStatus[proto_id] != "" )
-		msg->AddString( "old_status", fStatus[proto_id].c_str() );
+	if ( fStatus[connection.String()] != "" )
+		msg->AddString( "old_status", fStatus[connection.String()].c_str() );
 	else
 		msg->AddString( "old_status", OFFLINE_TEXT );
 	
 	// update status
-	fStatus[proto_id] = new_status;
+	fStatus[connection.String()] = new_status;
 	
 	// Add old total status to msg, to remove duplicated message to user
 	entry_ref ref;
@@ -1609,7 +1529,7 @@ Server::UpdateStatus( BMessage * msg )
 		// calculate total status for contact
 		// Switch this to query for all contacts on all drives that have this connection
 		// and update status for all of them.
-		GenericListStore<ContactCachedConnections *> contacts = fContact->FindAll(new ConnectionContactSpecification(proto_id.c_str()));
+		GenericListStore<ContactCachedConnections *> contacts = fContact->FindAll(new ConnectionContactSpecification(connection));
 		for (GenericListStore<ContactCachedConnections *>::Iterator iter = contacts.Start(); iter != contacts.End(); iter++ ) {
 			Contact *contact = (*iter);
 			UpdateContactStatusAttribute(*contact);
@@ -2484,22 +2404,32 @@ void Server::reply_GET_LOADED_PROTOCOLS( BMessage * msg ) {
 	?
 */
 void Server::reply_SERVER_BASED_CONTACT_LIST(BMessage * msg) {
-	const char *protocol = msg->FindString("protocol");
 	const char *id = NULL;
-	
-	if (protocol == NULL) {
+
+	const char *protocol = NULL;
+	if (msg->FindString("protocol", &protocol) != B_OK) {
 		_ERROR("ERROR: Malformed SERVER_BASED_CONTACT_LIST message", msg);
 		return;
-	}
+	};
 	
+	const char *instance_id = NULL;
+	if (msg->FindString("instance_id", &instance_id) != B_OK) {
+		LOG(kAppName, liHigh, "Got a protocol message with no instance!");
+		return;
+	};
+	
+	ProtocolInfo *info = NULL;
+	if (fProtocol->FindFirst(new AndProtocolSpecification(new SignatureProtocolSpecification(protocol), new InstanceProtocolSpecification(instance_id)), &info) == false) {
+		LOG(kAppName, liHigh, "Got a protocol message which cannot be matched to an existing account");
+		return;
+	};		
 	// For each ID
 	for (int i = 0; msg->FindString("id", i, &id) == B_OK; i++) {
-		string proto_id(string(protocol) + string(":") + string(id));
-		
+		Connection connection(protocol, info->AccountName(), id);
 		ContactCachedConnections *c = NULL;
 
-		if ((fContact->FindFirst(new ConnectionContactSpecification(proto_id.c_str()), &c) == false) || (c->InitCheck() != B_OK)) {
-			CreateContact(proto_id.c_str(), id);
+		if ((fContact->FindFirst(new ConnectionContactSpecification(connection), &c) == false) || (c->InitCheck() != B_OK)) {
+			fContact->CreateContact(connection, id);
 		};
 	};
 };
@@ -2560,15 +2490,10 @@ void Server::handle_SETTINGS_UPDATED(BMessage *msg) {
 		GenericListStore<BString> curAccounts;	
 		
 		for (int32 i = 0; accounts.FindString("account", i, &account) == B_OK; i++) {
-			curAccounts.Add(account);
-			
-//			ProtocolInfo *info = protoAccounts.FindFirst(new AccountNameProtocolSpecification(account));
+			curAccounts.Add(account);			
 			ProtocolInfo *info = NULL;
-			bool found = protoAccounts.FindFirst(new AccountNameProtocolSpecification(account), &info);
 			
-			LOG(kAppName, liDebug, "%s %s an existing ProtocolLoader", account.String(), found == false ? "doesn't have" : "has");
-
-			if ((found == true) && (info != NULL)) {
+			if ((protoAccounts.FindFirst(new AccountNameProtocolSpecification(account), &info) == true) && (info != NULL)) {
 				// Existing account - update settings
 				BMessage settings;
 				im_protocol_get_account(sig, account.String(), &settings);

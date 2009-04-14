@@ -9,6 +9,7 @@
 SubDir IMKIT_TOP libim ;
 
 SharedLibrary libim.so :
+	Connection.cpp
 	Contact.cpp
 	Manager.cpp
 	Helpers.cpp

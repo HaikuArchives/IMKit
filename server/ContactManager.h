@@ -26,6 +26,7 @@ class ContactStore;
 class QueryStore;
 
 namespace IM {
+	class Connection;
 	class ContactListener;
 
 	class ContactManager : public BLooper, public SpecificationFinder<ContactCachedConnections *> {
@@ -43,7 +44,8 @@ namespace IM {
 
 			// Public
 			status_t			Init(void);		
-			ContactHandle		CreateContact(const char * proto_id, const char *namebase);
+			ContactCachedConnections *
+								CreateContact(Connection connection, const char *namebase);
 	
 		private:
 			void				HandleContactUpdate(BMessage *);

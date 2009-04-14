@@ -2,7 +2,7 @@
 
 #include <libim/Helpers.h>
 #include <libim/Constants.h>
-#include <infopopper/InfoPopper.h>
+#include <libinfopopper/InfoPopper.h>
 
 #include <Message.h>
 

@@ -7,43 +7,12 @@
 #include <Path.h>
 #include <TypeConstants.h>
 
+#include "Connection.h"
 #include "Helpers.h"
 
 using namespace IM;
 
-//#pragma mark Connection
-
-Connection::Connection(void)
-	: fConn("") {
-};
-
-Connection::Connection( const char * str )
-:	fConn(str)
-{
-	int32 protoColon = fConn.FindFirst(":");
-	int32 accountColon = fConn.FindFirst(":", protoColon + 1);
-
-	fConn.CopyInto(fProtocol, 0, protoColon);
-	if (accountColon != B_ERROR) {
-		fConn.CopyInto(fAccount, protoColon + 1, accountColon - protoColon - 1);
-		fConn.CopyInto(fID, accountColon + 1, fConn.Length() - accountColon);
-	} else {
-		fConn.CopyInto(fID, protoColon + 1, fConn.Length() - protoColon - 1);
-	};
-};
-
-Connection::Connection( const Connection & c )
-:	fConn( c.fConn ),
-	fProtocol( c.fProtocol ),
-	fID( c.fID )
-{
-}
-
 //#pragma mark Contact
-
-bool Connection::operator == (const Connection &rhs) const {
-	return (fConn == rhs.fConn);
-};
 
 Contact::Contact()
 	: fEntry(-1,-1, "")
@@ -210,7 +179,7 @@ status_t Contact::LoadConnections(void) {
 status_t
 Contact::SaveConnections()
 {
-	char attr[256];
+	char attr[2048];
 	attr[0] = 0;
 	
 	for ( int i=0; i<fConnections.CountItems(); i++ )
@@ -334,6 +303,10 @@ Contact::operator == ( const BEntry & entry ) const
 	
 	return fEntry == ref;
 }
+
+entry_ref Contact::EntryRef(void) const {
+	return fEntry;
+};
 
 bool
 Contact::operator == ( const Contact & contact ) const

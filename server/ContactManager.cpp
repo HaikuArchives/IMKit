@@ -1,12 +1,15 @@
 #include "ContactManager.h"
 
+#include <storage/Directory.h>
 #include <storage/Entry.h>
+#include <storage/FindDirectory.h>
+#include <storage/NodeMonitor.h>
 #include <storage/Query.h>
 #include <storage/VolumeRoster.h>
-#include <storage/NodeMonitor.h>
 #include <support/Autolock.h>
 #include <support/Locker.h>
 
+#include <libim/Constants.h>
 #include <libim/Contact.h>
 #include <libim/Helpers.h>
 
@@ -31,30 +34,38 @@ class ContactStore : public GenericMapStore<entry_ref, ContactCachedConnections 
 		virtual ~ContactStore(void) {
 			delete fLock;
 		};
-	
-		virtual bool FindFirst(ContactSpecification *specification, ContactCachedConnections **firstMatch, bool deleteSpec = true) {
-			bool found = false;
-			BAutolock lock(fLock);
-			
-			if (lock.IsLocked() == true) {
-				GenericMapStore<entry_ref, ContactCachedConnections *>::Iterator it;
 
-				for (it = Start(); it != End(); it++) {
-					ContactCachedConnections *current = it->second;
-					
-					if (specification->IsSatisfiedBy(current) == true) {
-						*firstMatch = current;
-						found = true;
-						break;
-					};
+		virtual bool FindFirstNoLock(ContactSpecification *specification, ContactCachedConnections **firstMatch, bool deleteSpec = true) {
+			bool result = false;
+			GenericMapStore<entry_ref, ContactCachedConnections *>::Iterator it;
+
+			for (it = Start(); it != End(); it++) {
+				ContactCachedConnections *current = it->second;
+				
+				if (specification->IsSatisfiedBy(current) == true) {
+					*firstMatch = current;
+					result = true;
+					break;
 				};
 			};
-			
+
 			if (deleteSpec == true) {
 				delete specification;
 			};
+
+			return result;
+		};
+		
+		virtual bool FindFirst(ContactSpecification *specification, ContactCachedConnections **firstMatch, bool deleteSpec = true) {
+			BAutolock lock(fLock);
+			bool result = false;
 			
-			return found;
+			if (lock.IsLocked() == true) {
+				result = FindFirstNoLock(specification, firstMatch, deleteSpec);
+			};
+			
+			
+			return result;
 		};
 
 		virtual GenericListStore<ContactCachedConnections *> FindAll(ContactSpecification *specification, bool deleteSpec = true) {
@@ -79,12 +90,16 @@ class ContactStore : public GenericMapStore<entry_ref, ContactCachedConnections 
 			return contacts;
 		};
 	
+		BLocker *GetLock(void) const {
+			return fLock;
+		};
 	private:
 		BLocker	*fLock;
 };
 
-//#pragma mark Constructors
+//#pragma mark Constants
 
+const char *kContactMIMEType = "application/x-person";
 extern char *kAppName;
 
 //#pragma mark Constructor
@@ -94,6 +109,8 @@ ContactManager::ContactManager(ContactListener *listener)
 	fContactListener(listener),
 	fContact(new ContactStore()), 
 	fQuery(new QueryStore()) {
+	
+	Run();
 };
 
 ContactManager::~ContactManager(void) {
@@ -117,14 +134,18 @@ void ContactManager::MessageReceived(BMessage *msg) {
 			
 			switch (opcode) {
 				case B_ENTRY_CREATED: {
-					// .. add to contact list
+					// Add to contact list
 					msg->FindString("name", &name );
 					handle.entry.set_name(name);
 					msg->FindInt64("directory", &handle.entry.directory);
 					msg->FindInt32("device", &handle.entry.device);
 					msg->FindInt64("node", &handle.node);
 					
-					ContactAdded(handle);
+					if (fContact->Contains(handle.entry) == false) {
+						ContactAdded(handle);
+					} else {
+						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already know about - possibly due to live query notification catching up with a call to CreateContact");
+					};
 				} break;
 				
 				default: {
@@ -143,21 +164,25 @@ void ContactManager::MessageReceived(BMessage *msg) {
 			ContactHandle handle;
 			ContactHandle from;
 			ContactHandle to;
-			const char *name;
+			const char *name = NULL;
 	
 			switch (opcode) {
 				case B_ENTRY_CREATED: {
-					// .. add to contact list
+					// Add to contact list
 					msg->FindString("name", &name );
 					handle.entry.set_name(name);
 					msg->FindInt64("directory", &handle.entry.directory);
 					msg->FindInt32("device", &handle.entry.device);
 					msg->FindInt64("node", &handle.node);
-					
-					ContactAdded(handle);
+
+					if (fContact->Contains(handle.entry) == false) {					
+						ContactAdded(handle);
+					} else {
+						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already know about - possibly due to live query notification catching up with a call to CreateContact");
+					};
 				} break;
 				case B_ENTRY_MOVED: {
-					// .. contact moved
+					// Contact moved
 					msg->FindString("name", &name );
 					from.entry.set_name(name);
 					to.entry.set_name(name);
@@ -171,19 +196,30 @@ void ContactManager::MessageReceived(BMessage *msg) {
 					ContactMoved(from, to);
 				} break;
 				case B_ATTR_CHANGED: {
-					// .. add to contact list
+					// Add to contact list
 					msg->FindInt32("device", &handle.entry.device);
 					msg->FindInt64("node", &handle.node);
-					
-					ContactModified(handle);
+						
+					ContactCachedConnections *cached = NULL;
+					if (fContact->FindFirst(new ContactHandleSpecification(handle), &cached) == true) {
+						ContactModified(cached->Handle());
+					} else {
+						LOG(kAppName, liDebug, "Got a B_ATTR_CHANGED request for a Contact we cannot match");
+					};
 				} break;
+				
 				case B_ENTRY_REMOVED: {
-					// .. remove from contact list
+					// Remove from contact list
 					msg->FindInt64("directory", &handle.entry.directory);
 					msg->FindInt32("device", &handle.entry.device);
 					msg->FindInt64("node", &handle.node);
-					
-					ContactRemoved(handle);
+
+					ContactCachedConnections *cached = NULL;
+					if (fContact->FindFirst(new ContactHandleSpecification(handle), &cached) == true) {
+						ContactRemoved(handle);
+					} else {
+						LOG(kAppName, liDebug, "Got a B_ENTRY_REMOVED request for a Contact we cannot match");
+					};
 				} break;
 			}
 		} break;
@@ -215,7 +251,7 @@ status_t ContactManager::Init(void) {
 	
 	vroster.Rewind();
 		
-	// query for all contacts on all drives
+	// Query for all contacts on all drives
 	while (vroster.GetNextVolume(&vol) == B_OK) {
 		if ((vol.InitCheck() != B_OK) || (vol.KnowsQuery() != true)) {
 			continue;
@@ -230,21 +266,125 @@ status_t ContactManager::Init(void) {
 		query->SetVolume(&vol);
 		query->Fetch();
 		
+		printf("Is Live: %s\n", query->IsLive() ? "Yes" : "No");
+		
 		fQuery->Add(query);
 		
 		while (query->GetNextRef(&handle.entry) == B_OK) {
 			node_ref nref;
 			
 			BNode node(&handle.entry);
-			if (node.GetNodeRef( &nref ) == B_OK) {
-				handle.node = nref.node;
-				
+			if (node.GetNodeRef(&nref) == B_OK) {
+				handle.node = nref.node;		
 				ContactAdded(handle);
 			};
 		};
 	};
 
 	return B_OK;
+};
+
+/**
+	Create a new People file with a unique name on the form "Unknown contact X"
+	and add the specified connection to it
+	
+	@param connection The Connection object of the new contact
+	@param namebase The name to save the file as (will be appended with an integer if it already exists)
+*/
+
+ContactCachedConnections *ContactManager::CreateContact(Connection connection, const char *namebase) {
+	ContactCachedConnections *result = NULL;
+	
+	BAutolock lock(fContact->GetLock());
+	if (lock.IsLocked() == false) {
+		LOG(kAppName, liHigh, "ContactManager::CreateContact: Unable to acquire storage lock");
+		return result;
+	};
+	
+	if (fContact->FindFirstNoLock(new ConnectionContactSpecification(connection), &result) == true) {
+		LOG(kAppName, liHigh, "CreateContact for a connection that already exists - returning existing item");
+		LOG(kAppName, liHigh, "    %s", result->EntryRef().name);
+		return result;
+	};
+	
+	BPath path;
+	
+	if (find_directory(B_USER_DIRECTORY, &path, true, NULL) != B_OK) {
+		LOG(kAppName, liHigh, "Unable to find B_USER_DIRECTORY");
+		return result;
+	};
+	
+	path.Append("people");
+	
+	// make sure that the target directory exists before we try to create new files
+	create_directory(path.Path(), 0777);
+	
+	BDirectory dir(path.Path());
+	BFile file;
+	BEntry entry;
+	char filename[512];
+	
+	// Make sure we have a decent namebase
+	if ((namebase == NULL) || (strlen(namebase) == 0)) {
+		namebase = "Unknown contact";
+	};
+	
+	strcpy(filename, namebase);
+	
+	// Attempt to create the contact
+	dir.CreateFile(filename, &file, true);
+	
+	for (int i = 1; file.InitCheck() != B_OK; i++) {
+		sprintf(filename, "%s %d", namebase, i);
+		
+		dir.CreateFile(filename, &file, true);
+	};
+	
+	if (dir.FindEntry(filename,&entry) != B_OK) {
+		LOG(kAppName, liHigh, "Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]", filename);
+		return result;
+	};
+	
+	LOG(kAppName, liDebug, "  created file [%s]", filename);
+	
+	// File created - set the type
+	if (file.WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, kContactMIMEType, strlen(kContactMIMEType)) != strlen(kContactMIMEType)) {
+		// Error writing type
+		entry.Remove();
+		
+		LOG(kAppName, liHigh, "ERROR: Unable to write MIME type for newly created contact");
+		return result;
+	}
+	
+	LOG(kAppName, liDebug, "  wrote type");
+	
+	// File created. set type and add connection
+	result = new ContactCachedConnections(entry);
+	if (result->AddConnection(connection.String()) != B_OK) {
+		delete result;
+		result = NULL;
+		
+		return result;
+	}
+	
+	LOG(kAppName, liDebug, "  wrote connection");
+	
+	if (result->SetStatus(OFFLINE_TEXT) != B_OK) {
+		delete result;
+		result = NULL;
+		
+		return result;
+	};
+	
+	LOG(kAppName, liDebug, "  wrote status");
+	LOG(kAppName, liDebug, "  done.");
+	
+	// Ensure the cached contacts are up to date
+	result->ReloadConnections();
+	
+	fContact->Add(result->EntryRef(), result);
+	
+	return result;
 };
 
 //#pragma mark Private
@@ -272,16 +412,22 @@ void ContactManager::ContactAdded(ContactHandle handle) {
 
 void ContactManager::ContactModified(ContactHandle handle) {
 	ContactCachedConnections *contact = NULL;
-	if (fContact->FindFirst(new EntryRefContactSpecification(handle.entry), &contact) == true) {
-	
-		ConnectionStore *prevCons = contact->CachedConnections();
-		ConnectionStore *newCons = NULL;
-	
-		// Notify the listener
-		fContactListener->ContactModified(contact, prevCons, newCons);
-		
-		// Now that the listener has been notified update its connections
+
+	if (fContact->FindFirst(new ContactHandleSpecification(handle), &contact) == true) {
+		ConnectionStore *temp = contact->CachedConnections();
+		// Copy the previous connections
+		ConnectionStore prevCons;
+		for (ConnectionStore::Iterator it = temp->Start(); it != temp->End(); it++) {
+			Connection con = (*it);
+			prevCons.Add(con);
+		};
+
+		temp = NULL;
 		contact->ReloadConnections();
+		ConnectionStore *newCons = contact->CachedConnections();
+
+		// Notify the listener
+		fContactListener->ContactModified(contact, &prevCons, newCons);
 	} else {
 		LOG(kAppName, liHigh, "ContactManager::ContactModified: %s is an unknown contact", handle.entry.name);
 	};
@@ -296,7 +442,7 @@ void ContactManager::ContactMoved(ContactHandle from, ContactHandle to) {
 //			return;
 //		}
 //	}
-}
+};
 
 void ContactManager::ContactRemoved(ContactHandle handle) {
 	// Stop node monitoring
@@ -306,7 +452,7 @@ void ContactManager::ContactRemoved(ContactHandle handle) {
 	watch_node(&nref, B_STOP_WATCHING, BMessenger(this));
 
 	ContactCachedConnections *contact = NULL;
-	if (fContact->FindFirst(new EntryRefContactSpecification(handle.entry), &contact) == true) {
+	if (fContact->FindFirst(new ContactHandleSpecification(handle), &contact) == true) {
 		ConnectionStore *prevCons = contact->CachedConnections();
 	
 		// Notify the listener
@@ -319,4 +465,4 @@ void ContactManager::ContactRemoved(ContactHandle handle) {
 	} else {
 		LOG(kAppName, liHigh, "ContactManager::ContactRemoved: %s is an unknown contact", handle.entry.name);
 	};
-}
+};
