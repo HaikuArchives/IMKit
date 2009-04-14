@@ -2057,13 +2057,13 @@ status_t Server::SetAutoStart(bool autostart) {
 		};
 	} while (bytesRead > 0);
 
-	if ((autostart == true) && (done == false) {
+	if ((autostart == true) && (done == false)) {
 		file.Seek(0, SEEK_END);
 		file.Write(cmd0.String(), cmd0.Length());
 		file.Write("\n", 1);
 		file.Write(cmd1.String(), cmd1.Length());
 		file.Write("\n", 1);
-	} else if ((autostart == false) && (done == true) {
+	} else if ((autostart == false) && (done == true)) {
 		std::vector<BString>::iterator it;
 
 		// Close the file and recrete it
@@ -2669,4 +2669,3 @@ void Server::ChildExited(int /*sig */, void *data, struct vreg */*regs */) {
 		delete spec;
 	};
 };
-
