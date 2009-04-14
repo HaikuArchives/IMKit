@@ -26,7 +26,7 @@ SubInclude HAIKU_TOP 3rdparty IMKit libs ;
 SubInclude HAIKU_TOP 3rdparty IMKit common ;
 SubInclude HAIKU_TOP 3rdparty IMKit libim ;
 SubInclude HAIKU_TOP 3rdparty IMKit server ;
-SubInclude HAIKU_TOP 3rdparty IMKit Preflet ;
+SubInclude HAIKU_TOP 3rdparty IMKit preflet ;
 SubInclude HAIKU_TOP 3rdparty IMKit sample_clients ;
 SubInclude HAIKU_TOP 3rdparty IMKit protocols ;
 SubInclude HAIKU_TOP 3rdparty IMKit utils ;
