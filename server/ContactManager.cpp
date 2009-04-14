@@ -266,8 +266,6 @@ status_t ContactManager::Init(void) {
 		query->SetVolume(&vol);
 		query->Fetch();
 		
-		printf("Is Live: %s\n", query->IsLive() ? "Yes" : "No");
-		
 		fQuery->Add(query);
 		
 		while (query->GetNextRef(&handle.entry) == B_OK) {
