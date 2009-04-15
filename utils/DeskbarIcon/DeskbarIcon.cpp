@@ -1,6 +1,7 @@
 #include "DeskbarIcon.h"
 
 #include "AccountInfo.h"
+#include "AccountInfoSpecification.h"
 #include "common/BubbleHelper.h"
 #include "common/GenericStore.h"
 #include "common/IMKitUtilities.h"
@@ -63,7 +64,48 @@ const int32 kMsgQueryUpdated = 'qlup';
 // Misc messages
 const int32 kMsgSettingsWindowClose = 'swcl';
 
-class AccountStore : public IM::GenericMapStore<BString, AccountInfo *> {
+class AccountStore : public IM::GenericMapStore<BString, AccountInfo *>, IM::SpecificationFinder<AccountInfo *> {
+	public:
+		virtual bool FindFirst(AccountInfoSpecification *specification, AccountInfo **firstMatch, bool deleteSpec = true) {
+			bool result = false;		
+			IM::GenericMapStore<BString, AccountInfo *>::Iterator it;
+
+			for (it = Start(); it != End(); it++) {
+				AccountInfo *current = it->second;
+				
+				if (specification->IsSatisfiedBy(current) == true) {
+					*firstMatch = current;
+					result = true;
+					break;
+				};
+			};
+
+			if (deleteSpec == true) {
+				delete specification;
+			};
+			
+			return result;
+		};
+
+		virtual IM::GenericListStore<AccountInfo *> FindAll(AccountInfoSpecification *specification, bool deleteSpec = true) {
+			IM::GenericListStore<AccountInfo *> accounts(false);
+
+			IM::GenericMapStore<BString, AccountInfo *>::Iterator it;
+			for (it = Start(); it != End(); it++) {
+				AccountInfo *current = it->second;
+				
+				if (specification->IsSatisfiedBy(current) == true) {
+					accounts.Add(current);
+				};
+			};
+			
+			if (deleteSpec == true) {
+				delete specification;
+			};
+			
+			return accounts;
+		};
+
 };
 
 //#pragma mark Extern C
@@ -347,28 +389,31 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 		
 		case kMsgSetStatus: {
 			const char *status = NULL;
-			const char *protocol = NULL;
-			
+			const char *instance_id = NULL;
+			AccountInfo *info = NULL;
+
 			if (msg->FindString("status", &status) != B_OK) {
 				LOG(kLogName, liDebug, "No 'status' in kMSgSetStatus message", msg);
 				return;
 			};
-
-			if (msg->FindString("protocol", &protocol) != B_OK) {
-				protocol = NULL;
+			
+			if (msg->FindString("instance_id", &instance_id) == B_OK) {
+				if (fAccount->FindFirst(new InstanceAccountInfoSpecification(instance_id), &info) == false) {
+					info = NULL;
+				};
 			};
 			
-			if (strcmp(AWAY_TEXT, status) == 0) {
-				AwayMessageWindow *w = new AwayMessageWindow(protocol);
+			if (strcmp(AWAY_TEXT, status) ==  0) {
+				AwayMessageWindow *w = new AwayMessageWindow(info);
 				w->Show();
 				return;
-			}
+			};
 			
 			BMessage newmsg(IM::MESSAGE);
 			newmsg.AddInt32("im_what", IM::SET_STATUS);
 			
-			if (protocol != NULL) {
-				newmsg.AddString("protocol", protocol);
+			if (info != NULL) {
+				newmsg.AddString("instance_id", info->ID());
 			};
 			
 			newmsg.AddString("status", status);
@@ -609,12 +654,17 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			fStatusMenu = new BMenu(_T("Set status"));
 			
 			BMenu *total = new BMenu(_T("All Accounts"));
-			BMessage *msg_online = new BMessage(kMsgSetStatus); msg_online->AddString("status", ONLINE_TEXT);
-			total->AddItem(new BMenuItem(_T(ONLINE_TEXT), msg_online) );	
-			BMessage *msg_away = new BMessage(kMsgSetStatus); msg_away->AddString("status", AWAY_TEXT);
-			total->AddItem(new BMenuItem(_T(AWAY_TEXT), msg_away) );	
-			BMessage *msg_offline = new BMessage(kMsgSetStatus); msg_offline->AddString("status", OFFLINE_TEXT);
-			total->AddItem(new BMenuItem(_T(OFFLINE_TEXT), msg_offline) );	
+			BMessage *msg_online = new BMessage(kMsgSetStatus);
+			msg_online->AddString("status", ONLINE_TEXT);
+			total->AddItem(new BMenuItem(_T(ONLINE_TEXT), msg_online));
+			
+			BMessage *msg_away = new BMessage(kMsgSetStatus);
+			msg_away->AddString("status", AWAY_TEXT);
+			total->AddItem(new BMenuItem(_T(AWAY_TEXT), msg_away));
+			
+			BMessage *msg_offline = new BMessage(kMsgSetStatus);
+			msg_offline->AddString("status", OFFLINE_TEXT);
+			total->AddItem(new BMenuItem(_T(OFFLINE_TEXT), msg_offline));	
 			
 			total->ItemAt(fStatus)->SetMarked(true);
 			total->SetTargetForItems(this);
@@ -634,8 +684,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 
 				// Message template
 				BMessage accountMsg(kMsgSetStatus);
-				accountMsg.AddString("account", info->ID());
-				accountMsg.AddString("protocol", info->Protocol());
+				accountMsg.AddString("instance_id", info->ID());
 				
 				BMenu *account = new BMenu(name.String());
 								

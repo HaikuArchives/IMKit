@@ -332,6 +332,7 @@ void Server::MessageReceived(BMessage *msg) {
 			
 			const char *data = msg->FindString("data");
 			
+			// TODO: Needs to be updated to use instance_id (ie. Account, not Protocol)
 			if (strcmp(property, STATUS_PROPERTY) == 0) {
 				BMessage reply(B_REPLY);
 				BMessage statusMessage(IM::MESSAGE);
@@ -1144,10 +1145,13 @@ void Server::MessageToProtocols(BMessage * msg) {
 	// copy message so we can broadcast it later, with data intact
 	BMessage client_side_msg(*msg);
 	const char *signature = NULL;
+	const char *instance_id = NULL;
 	
+	msg->FindString("instance_id", &instance_id);
 	msg->FindString("protocol", &signature);
 	
-	if (signature == NULL) {
+	// TODO: Temporary measure: signature check should be replaced by instance_id only
+	if ((signature == NULL) && (instance_id == NULL)) {
 		// no protocol specified, send to all?
 		LOG(kAppName, liLow, "No protocol specified");
 		
@@ -1169,11 +1173,18 @@ void Server::MessageToProtocols(BMessage * msg) {
 			} return;
 		};
 	} else {
-		// protocol mapped
-		const char *protocol = msg->FindString("protocol");
 		ProtocolInfo *info = NULL;
+		bool valid = true;
 		
-		if (fProtocol->FindFirst(new SignatureProtocolSpecification(protocol), &info) == false) {
+		if ((signature != NULL) && (fProtocol->FindFirst(new SignatureProtocolSpecification(signature), &info) == false)) {
+			valid = false;
+		};
+		
+		if ((instance_id != NULL) && (fProtocol->FindFirst(new InstanceProtocolSpecification(instance_id), &info) == false)) {
+			valid = false;
+		};
+			
+		if (valid == false) {
 			// invalid protocol, report and skip
 			_ERROR("Protocol not loaded or not installed", msg);			
 			_SEND_ERROR("Protocol not loaded or not installed", msg);

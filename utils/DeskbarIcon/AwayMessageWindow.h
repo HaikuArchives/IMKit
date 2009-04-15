@@ -1,8 +1,10 @@
 #ifndef AWAYMESSAGEWINDOW_H
 #define AWAYMESSAGEWINDOW_H
 
-#include <Window.h>
+#include <interface/Window.h>
+#include <support/String.h>
 
+class AccountInfo;
 class BButton;
 class BScrollView;
 class BTextView;
@@ -10,7 +12,7 @@ class BView;
 
 class AwayMessageWindow : public BWindow {
 	public:
-								AwayMessageWindow(const char *protocol = NULL);
+								AwayMessageWindow(AccountInfo *info = NULL);
 			virtual				~AwayMessageWindow(void);
 			
 			// BWindow Hooks
@@ -24,7 +26,7 @@ class AwayMessageWindow : public BWindow {
 			float				fFontHeight;
 			BButton				*fOkay;
 			BButton				*fCancel;
-			char				*fProtocol;
+			BString				fAccountInstance;
 };
 
 #endif // AWAYMESSAGEWINDOW_H

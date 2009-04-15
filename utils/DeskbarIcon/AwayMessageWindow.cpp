@@ -1,4 +1,5 @@
 #include "AwayMessageWindow.h"
+#include "AccountInfo.h"
 
 #include <interface/Button.h>
 #include <interface/ScrollView.h>
@@ -24,16 +25,17 @@ const float kPadding = 5.0f;
 
 //#pragma mark Constructor
 
-AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
+AwayMessageWindow::AwayMessageWindow(AccountInfo *info = NULL)
 	: BWindow(BRect(100, 100, 325, 220), _T("IM Kit: Set Away Message"), B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
-	fProtocol(NULL) {
+	fAccountInstance("") {
 
-	if (protocol != NULL) {
-		fProtocol = strdup(protocol);
-		BString t = _T( "IM Kit: Set Away Message" );
-		t << " (";
-		t << fProtocol;
-		t << ")";
+	if (info != NULL) {
+		fAccountInstance = info->ID();
+	
+		BString t = _T("Set away message");
+		t << ": ";
+		t.Append(info->DisplayLabel(), strlen(info->DisplayLabel()));
+
 		SetTitle(t.String());
 	};
 
@@ -105,8 +107,6 @@ AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
 }
 
 AwayMessageWindow::~AwayMessageWindow(void) {
-	free(fProtocol);
-
 /*	if (fScroller) 
 		fScroller->RemoveSelf();
 	delete fScroller;
@@ -143,7 +143,9 @@ void AwayMessageWindow::MessageReceived(BMessage *msg) {
 		case kMsgSetAway: {
 			BMessage status(IM::MESSAGE);
 			status.AddInt32("im_what", IM::SET_STATUS);
-			if (fProtocol) status.AddString("protocol", fProtocol);
+			if (fAccountInstance.Length() > 0) {
+				status.AddString("instance_id", fAccountInstance);
+			};
 			status.AddString("away_msg", fTextView->Text());
 			status.AddString("status", AWAY_TEXT);
 			
