@@ -1,31 +1,23 @@
 #ifndef AWAYMESSAGEWINDOW_H
 #define AWAYMESSAGEWINDOW_H
 
-#include <View.h>
-#include <TextView.h>
 #include <Window.h>
-#include <ScrollView.h>
-#include <Button.h>
 
-#include <stdlib.h>
-
-#include <libim/Manager.h>
-#include <libim/Constants.h>
-
+class BButton;
+class BScrollView;
+class BTextView;
+class BView;
 
 class AwayMessageWindow : public BWindow {
 	public:
 								AwayMessageWindow(const char *protocol = NULL);
-					virtual		~AwayMessageWindow();
+			virtual				~AwayMessageWindow(void);
+			
+			// BWindow Hooks
 			virtual bool		QuitRequested(void);
-			virtual void 		MessageReceived(BMessage *);
+			virtual void 		MessageReceived(BMessage *msg);
 		
-	private:
-		enum {
-			CANCEL_AWAY,
-			SET_AWAY
-		};
-		
+	private:	
 			BView				*fView;
 			BTextView			*fTextView;
 			BScrollView			*fScroller;
@@ -35,4 +27,4 @@ class AwayMessageWindow : public BWindow {
 			char				*fProtocol;
 };
 
-#endif
+#endif // AWAYMESSAGEWINDOW_H

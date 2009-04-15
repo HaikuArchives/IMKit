@@ -1,10 +1,10 @@
 #include "AwayMessageWindow.h"
 
-#include <String.h>
-
-#include <stdio.h>
-#include <string.h>
-#include <libim/Helpers.h>
+#include <interface/Button.h>
+#include <interface/ScrollView.h>
+#include <interface/TextView.h>
+#include <interface/View.h>
+#include <support/String.h>
 
 #ifdef ZETA
 #include <locale/Locale.h>
@@ -12,12 +12,20 @@
 #define _T(str) (str)
 #endif
 
-const float kPadding = 5.0;
+#include <libim/Constants.h>
+#include <libim/Helpers.h>
+#include <libim/Manager.h>
+
+//#pragma mark Constants
+
+const int32 kMsgCancelAway = 'mcaw';
+const int32 kMsgSetAway = 'msaw';
+const float kPadding = 5.0f;
+
+//#pragma mark Constructor
 
 AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
-	: BWindow(BRect(100, 100, 325, 220), _T("IM Kit: Set Away Message"), B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
-	
+	: BWindow(BRect(100, 100, 325, 220), _T("IM Kit: Set Away Message"), B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
 	fProtocol(NULL) {
 
 	if (protocol != NULL) {
@@ -54,8 +62,7 @@ AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
 	BRect textRect = rect.InsetBySelf(2.0, 2.0);
 	textRect.OffsetTo(0, 0);
 	
-	fTextView = new BTextView(rect, "AwayMsg", textRect, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW);
+	fTextView = new BTextView(rect, "AwayMsg", textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 #if B_BEOS_VERSION > B_BEOS_VERSION_5
 	fTextView->SetViewUIColor(B_UI_DOCUMENT_BACKGROUND_COLOR);
 	fTextView->SetLowUIColor(B_UI_DOCUMENT_BACKGROUND_COLOR);
@@ -66,8 +73,7 @@ AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
 	fTextView->SetHighColor(0, 0, 0, 0);
 #endif
 
-	fScroller = new BScrollView("AwayScroller", fTextView, B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW, false, true);
+	fScroller = new BScrollView("AwayScroller", fTextView, B_FOLLOW_ALL_SIDES, B_WILL_DRAW, false, true);
 	fView->AddChild(fScroller);
 	
 	rect = Bounds();
@@ -77,15 +83,13 @@ AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
 	rect.bottom -= kPadding;
 	rect.top = rect.bottom - (fFontHeight + kPadding);
 	
-	fOkay = new BButton(rect, "OkayButton", _T("Set Away"), new BMessage(SET_AWAY),
-		B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
+	fOkay = new BButton(rect, "OkayButton", _T("Set Away"), new BMessage(kMsgSetAway), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
 	fView->AddChild(fOkay);
 	
 	rect.right = rect.left - kPadding;
 	rect.left = rect.right - (be_plain_font->StringWidth(_T("Cancel")) + (kPadding * 2));
 	
-	fCancel = new BButton(rect, "CancelButton", _T("Cancel"), new BMessage(CANCEL_AWAY),
-		B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
+	fCancel = new BButton(rect, "CancelButton", _T("Cancel"), new BMessage(kMsgCancelAway), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
 	fView->AddChild(fCancel);
 
 	BMessage settings;
@@ -93,16 +97,15 @@ AwayMessageWindow::AwayMessageWindow(const char *protocol = NULL)
 
 	BString	awayMsg = "I'm not here";
 		
-	if (settings.FindString("default_away", &awayMsg) == B_OK)
+	if (settings.FindString("default_away", &awayMsg) == B_OK) {
 		fTextView->SetText(awayMsg.String());
+	};
 	
 	fTextView->MakeFocus(true);
 }
 
-AwayMessageWindow::~AwayMessageWindow(void) 
-{
-	if ( fProtocol )
-		free(fProtocol);
+AwayMessageWindow::~AwayMessageWindow(void) {
+	free(fProtocol);
 
 /*	if (fScroller) 
 		fScroller->RemoveSelf();
@@ -125,19 +128,19 @@ AwayMessageWindow::~AwayMessageWindow(void)
 */
 };
 
+//#pragma mark BWindow Hooks
+
 bool AwayMessageWindow::QuitRequested(void) {
-	//return BWindow::QuitRequested();
 	return true;
 };
 
 void AwayMessageWindow::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
-		case CANCEL_AWAY: {
-			//Quit();
+		case kMsgCancelAway: {
 			BMessenger(this).SendMessage(B_QUIT_REQUESTED);
 		} break;
 		
-		case SET_AWAY: {
+		case kMsgSetAway: {
 			BMessage status(IM::MESSAGE);
 			status.AddInt32("im_what", IM::SET_STATUS);
 			if (fProtocol) status.AddString("protocol", fProtocol);
@@ -148,7 +151,6 @@ void AwayMessageWindow::MessageReceived(BMessage *msg) {
 			
 			man.OneShotMessage(&status);
 			
-			//Quit();
 			BMessenger(this).SendMessage(B_QUIT_REQUESTED);
 		} break;
 	
