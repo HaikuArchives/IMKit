@@ -9,13 +9,15 @@
 SubDir HAIKU_TOP 3rdparty IMKit protocols OSCAR ;
 
 SubDirC++Flags $(IMKIT_DEFINES) ;
-
-local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+SubDirC++Flags -DUSE_SSL ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+SubDirSysHdrs $(HAIKU_OPENSSL_HEADERS) ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+
+Includes [ FGristFiles $(sources) ] : $(HAIKU_OPENSSL_HEADERS_DEPENDENCY) ;
+SetupFeatureObjectsDir ssl ;
 
 Addon aim :
 	AIM.cpp
@@ -28,7 +30,7 @@ Addon aim :
 	OSCARReqConn.cpp
 	Buddy.cpp
 	Group.cpp
-	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a $(HAIKU_OPENSSL_LIBS)
 ;
 AddResources aim : AIM.rdef ;
 AddResources aim : AIMProtocolTemplate.rdef ;
@@ -47,16 +49,13 @@ Addon icq :
 	OSCARReqConn.cpp
 	Buddy.cpp
 	Group.cpp
-	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a crypto
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) textencoding libim.so <IMKit>libcommon.a $(HAIKU_OPENSSL_LIBS)
 ;
 AddResources icq : ICQ.rdef ;
 AddResources icq : ICQProtocolTemplate.rdef ;
 
 Depends icq : <IMKit>libcommon.a ;
 Depends icq : libim.so ;
-
-LINKFLAGS on aim += -L$(sslDir)/lib ;
-LINKFLAGS on icq += -L$(sslDir)/lib ;
 
 AddFilesToHaikuImage common add-ons im_kit protocols : aim ;
 AddFilesToHaikuImage common add-ons im_kit protocols : icq ;

@@ -15,7 +15,7 @@
 #include <UTF8.h>
 #include <Entry.h>
 
-#include "htmlparse.h"
+#include "common/htmlparse.h"
 #include "OSCARManager.h"
 
 //#pragma mark Extern C

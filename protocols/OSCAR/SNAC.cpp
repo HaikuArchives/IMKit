@@ -1,6 +1,6 @@
 #include "SNAC.h"
 
-#include "BufferReader.h"
+#include "common/BufferReader.h"
 
 SNAC::SNAC(void) {
 	fFamily = 0;

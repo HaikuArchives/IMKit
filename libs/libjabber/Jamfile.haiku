@@ -32,7 +32,12 @@ local sources =
 	JabberSocketPlug.cpp
 	SHA1.cpp
 ;
-if $(USE_SSL) = 1 {
+if $(HAIKU_OPENSSL_ENABLED) = 1 {
+	SubDirC++Flags -DUSE_SSL ;
+	SubDirSysHdrs $(HAIKU_OPENSSL_HEADERS) ;
+	Includes [ FGristFiles $(sources) ] : $(HAIKU_OPENSSL_HEADERS_DEPENDENCY) ;
+	SetupFeatureObjectsDir ssl ;
+
 	sources += JabberSSLPlug.cpp ;
 }
 

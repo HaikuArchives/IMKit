@@ -3,7 +3,7 @@
 #include "FLAP.h"
 #include "SNAC.h"
 #include "TLV.h"
-#include "BufferReader.h"
+#include "common/BufferReader.h"
 #include "OSCARConnection.h"
 
 #include <UTF8.h>

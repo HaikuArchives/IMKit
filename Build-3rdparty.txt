@@ -23,6 +23,10 @@ If you want to build InfoPopper on the Haiku image, check it out:
 $ cd $HAIKUDIR/3rdparty
 $ svn checkout http://svn.osdrawer.net/infopopper/trunk InfoPopper
 
+Create a link on your IMKit dir mentioned above to the InfoPopper headers dir:
+
+ln -sf ../InfoPopper/libinfopopper infopopper
+
 Append those lines to your $HAIKUDIR/build/jam/UserBuildConfig:
 
 IMKIT_HAVE_INFOPOPPER = 1 ;

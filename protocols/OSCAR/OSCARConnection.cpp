@@ -1,6 +1,6 @@
 #include "OSCARConnection.h"
 
-#include "BufferReader.h"
+#include "common/BufferReader.h"
 #include "FLAP.h"
 #include "SNAC.h"
 #include "TLV.h"

@@ -9,20 +9,22 @@
 SubDir HAIKU_TOP 3rdparty IMKit protocols GoogleTalk ;
 
 SubDirC++Flags $(IMKIT_DEFINES) ;
-
-local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+SubDirC++Flags -DUSE_SSL ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
-SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+SubDirSysHdrs $(HAIKU_OPENSSL_HEADERS) ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
 
 SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libexpat ] ;
 SubDirHdrs [ FDirName $(HAIKU_TOP) 3rdparty IMKit libs libjabber ] ;
 
+Includes [ FGristFiles $(sources) ] : $(HAIKU_OPENSSL_HEADERS_DEPENDENCY) ;
+SetupFeatureObjectsDir ssl ;
+
 Addon gtalk :
 	GoogleTalk.cpp
-	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libexpat.a <IMKit>libjabber.a ssl crypto
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libexpat.a <IMKit>libjabber.a $(HAIKU_OPENSSL_LIBS)
 ;
 AddResources gtalk : GoogleTalk.rdef ;
 AddResources gtalk : ProtocolTemplate.rdef ;
@@ -30,8 +32,6 @@ AddResources gtalk : ProtocolTemplate.rdef ;
 Depends gtalk : <IMKit>libexpat.a ;
 Depends gtalk : <IMKit>libjabber.a ;
 Depends gtalk : libim.so ;
-
-LINKFLAGS on gtalk += -L$(sslDir)/lib ;
 
 AddFilesToHaikuImage common add-ons im_kit protocols : gtalk ;
 

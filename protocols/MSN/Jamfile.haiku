@@ -9,11 +9,13 @@
 SubDir HAIKU_TOP 3rdparty IMKit protocols MSN ;
 
 SubDirC++Flags $(IMKIT_DEFINES) ;
-
-local sslDir = [ FDirName $(HAIKU_OUTPUT_DIR) cross-ssl config ] ;
+SubDirC++Flags -DUSE_SSL ;
 
 SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirSysHdrs [ FDirName $(sslDir) include ] ;
+SubDirSysHdrs $(HAIKU_OPENSSL_HEADERS) ;
+
+Includes [ FGristFiles $(sources) ] : $(HAIKU_OPENSSL_HEADERS_DEPENDENCY) ;
+SetupFeatureObjectsDir ssl ;
 
 Addon msn :
 	MSN.cpp
@@ -27,15 +29,13 @@ Addon msn :
 	P2PHeader.cpp
 	Buddy.cpp
 	SSO.cpp 
-	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a ssl crypto
+	: be $(TARGET_LIBSTDC++) $(TARGET_NETWORK_LIBS) libim.so <IMKit>libcommon.a $(HAIKU_OPENSSL_LIBS)
 ;
 AddResources msn : MSN.rdef ;
 AddResources msn : ProtocolTemplate.rdef ;
 
 Depends msn : <IMKit>libcommon.a ;
 Depends msn : libim.so ;
-
-LINKFLAGS on msn += -L$(sslDir)/lib ;
 
 AddFilesToHaikuImage common add-ons im_kit protocols : msn ;
 
