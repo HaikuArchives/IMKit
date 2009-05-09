@@ -8,6 +8,7 @@
 #include <interface/View.h>
 
 #include "SettingsController.h"
+#include "ViewFactory.h"
 
 class BButton;
 class BStringView;
@@ -16,9 +17,9 @@ class Divider;
 class MultiLineStringView;
 class MultipleViewHandler;
 
-class PSettingsOverview : public BView, public SettingsController {
+class PSettingsOverview : public AbstractView, public SettingsController {
 	public:
-							PSettingsOverview(MultipleViewHandler *handler, BRect bounds);
+					PSettingsOverview(MultipleViewHandler *handler, BRect bounds);
 
 		// BView Hooks
 		virtual void		AttachedToWindow(void);

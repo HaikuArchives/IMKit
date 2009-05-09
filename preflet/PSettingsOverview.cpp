@@ -42,7 +42,7 @@ const int32 kMsgEditClients = 'Mcli';
 //#pragma mark Constructor
 
 PSettingsOverview::PSettingsOverview(MultipleViewHandler *handler, BRect bounds)
-	: BView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	: AbstractView(bounds, "settings", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fHandler(handler),
 	fServerLabel(NULL),
 	fServerDivider(NULL),

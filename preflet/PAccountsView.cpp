@@ -116,7 +116,7 @@ class AccountStore : public IM::GenericMapStore<BString, BMessage *> {
 //#pragma mark Constructor
 
 PAccountsView::PAccountsView(BRect bounds, BPath *protoPath)
-	: BView(bounds, protoPath->Path(), B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	: AbstractView(bounds, protoPath->Path(), B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fProtoPath(*protoPath)
 {
 	float inset = ceilf(be_plain_font->Size() * 0.7f);

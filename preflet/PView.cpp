@@ -61,7 +61,7 @@ const float kControlOffset = 5.0f;
 //#pragma mark Constructors
 
 PView::PView(BRect bounds)
-	: BView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
+	: AbstractView(bounds, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
 	fCurrentView(NULL),
 	fCurrentIndex(0) {
 	
@@ -92,25 +92,13 @@ PView::PView(BRect bounds)
 		0, false, true, B_FANCY_BORDER);
 
 	// Add main view
-#ifdef __HAIKU__
-	frame = BRect(0, 0, 1, 1);
-#else
+#ifndef __HAIKU__
 	frame.left = fListView->Bounds().right + (kEdgeOffset * 3) + B_V_SCROLL_BAR_WIDTH;
 	frame.top = kEdgeOffset;
 	frame.right = Bounds().right - kEdgeOffset;
 	frame.bottom = Bounds().bottom - ((fFontHeight * 2) + kEdgeOffset);
 #endif
-	fMainView = new BView(frame, "box", B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
-
-#if B_BEOS_VERSION > B_BEOS_VERSION_5
-	fMainView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fMainView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fMainView->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
-#else
-	fMainView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fMainView->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fMainView->SetHighColor(0, 0, 0, 0);
-#endif
+	fMainView = new PCardView(frame);
 
 	BRect frameSave(frame);
 	BRect frameRevert(frame);
@@ -139,7 +127,7 @@ PView::PView(BRect bounds)
 	IconTextItem* settingsItem = new IconTextItem("settings", _T("Settings"));
 	fListView->AddItem(settingsItem);
 	fViews["settings"] = new PSettingsOverview(this, fMainView->Bounds());
-	fMainView->AddChild(fViews["settings"]);
+	fMainView->Add(fViews["settings"]);
 	fCurrentView = fViews["settings"];
 	fCurrentIndex = fListView->IndexOf(settingsItem);
 	fListView->Select(fCurrentIndex);
@@ -149,22 +137,19 @@ PView::PView(BRect bounds)
 	fListView->AddUnder(fClientsItem, settingsItem);
 	fViews["clients"] = new PClientsOverview(this, fMainView->Bounds());
 	dynamic_cast<SettingsController *>(fViews["clients"])->Init(this);
-	fMainView->AddChild(fViews["clients"]);
-	fViews["clients"]->Hide();
+	fMainView->Add(fViews["clients"]);
 
 	// Protocols item
 	fProtocolsItem = new IconTextItem("protocols", _T("Protocols"));
 	fListView->AddUnder(fProtocolsItem, settingsItem);
 	fViews["protocols"] = new PProtocolsOverview(fMainView->Bounds());
-	fMainView->AddChild(fViews["protocols"]);
-	fViews["protocols"]->Hide();
-	
+	fMainView->Add(fViews["protocols"]);
+
 	// Server item
 	fServerItem = new IconTextItem("server", _T("Server"));
 	fListView->AddUnder(fServerItem, settingsItem);
 	fViews["server"] = new PServerOverview(fMainView->Bounds());
-	fMainView->AddChild(fViews["server"]);
-	fViews["server"]->Hide();
+	fMainView->Add(fViews["server"]);
 
 	// Add protocols and clients
 	LoadProtocols();
@@ -239,11 +224,8 @@ void PView::MessageReceived(BMessage* msg) {
 				return;
 			};
 
-			if (fCurrentView != NULL) {
-				fCurrentView->Hide();
-			};
 			fCurrentView = vIt->second;
-			fCurrentView->Show();
+			fMainView->Select(fCurrentView);
 			fCurrentIndex = index;
 		} break;
 
@@ -318,8 +300,7 @@ void PView::LoadProtocols(void) {
 		controller->Init(this);
 
 		// Add protocol settings view
-		view->Hide();
-		fMainView->AddChild(view);
+		fMainView->Add(view);
 		fViews[protoPath.Path()] = view;
 
 		// Store the template
@@ -389,7 +370,7 @@ void PView::LoadClients(void) {
 		SettingsController *controller = dynamic_cast<SettingsController *>(view);
 		controller->Init(this);
 		fViews[clientPath.Path()] = view;
-		fMainView->AddChild(view);
+		fMainView->Add(view);
 		
 		SettingsInfo *info = new SettingsInfo(Client, clientPath, clientPath.Leaf());
 		info->Controller(controller);
@@ -397,19 +378,6 @@ void PView::LoadClients(void) {
 		info->Settings(client_settings);
 		info->Template(client_template);
 		fAddOns[clientPath.Path()] = info;
-
-		
-#if B_BEOS_VERSION > B_BEOS_VERSION_5
-		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
-#else
-		view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		view->SetHighColor(0, 0, 0, 0);
-#endif
-		
-		view->Hide();
 	}
 }
 

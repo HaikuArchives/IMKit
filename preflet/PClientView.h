@@ -9,12 +9,13 @@
 #include <support/String.h>
 
 #include "SettingsController.h"
+#include "ViewFactory.h"
 
 class SettingsHost;
 
-class PClientView : public BView, public SettingsController {
+class PClientView : public AbstractView, public SettingsController {
 	public:
-							PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings);
+					PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings);
 
 		// BView Hooks
 		virtual void		AttachedToWindow(void);

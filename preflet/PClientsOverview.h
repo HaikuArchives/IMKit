@@ -5,12 +5,12 @@
 #ifndef PCLIENTS_OVERVIEW_H
 #define PCLIENTS_OVERVIEW_H
 
-#include <interface/View.h>
 #include <support/String.h>
 
 #include <vector>
 
 #include "SettingsController.h"
+#include "ViewFactory.h"
 
 class Divider;
 class MultipleViewHandler;
@@ -21,9 +21,9 @@ class ClientInfo;
 
 typedef vector<ClientInfo *> clientinfo_t;
 
-class PClientsOverview : public BView, public SettingsController  {
+class PClientsOverview : public AbstractView, public SettingsController  {
 	public:
-							PClientsOverview(MultipleViewHandler *handler, BRect bounds);
+					PClientsOverview(MultipleViewHandler *handler, BRect bounds);
 	
 		// BView Hooks
 		virtual void		AttachedToWindow(void);

@@ -62,7 +62,7 @@ const char *kAutoStartDesc = "Clients set to autostart will start when the Serve
 //#pragma mark Constructor
 
 PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
-	: BView(bounds, "clients", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	: AbstractView(bounds, "clients", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fHandler(handler) {
 	
 	BFont headingFont(be_bold_font);

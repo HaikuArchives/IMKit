@@ -4,6 +4,7 @@
 #include <interface/View.h>
 
 #include "SettingsController.h"
+#include "ViewFactory.h"
 
 class BStringView;
 class BScrollView;
@@ -11,10 +12,10 @@ class AccountStore;
 class Divider;
 class SettingsHost;
 
-class PAccountsView : public BView, public SettingsController {
+class PAccountsView : public AbstractView, public SettingsController {
 	public:
-							PAccountsView(BRect bounds, BPath* protoPath);
-							~PAccountsView(void);
+					PAccountsView(BRect bounds, BPath* protoPath);
+					~PAccountsView(void);
 
 		// BView Hooks
 		virtual void 		AttachedToWindow(void);

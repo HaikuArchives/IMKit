@@ -15,6 +15,7 @@ Executable InstantMessaging :
 	PApplication.cpp
 	PWindow.cpp
 	PView.cpp
+	PCardView.cpp
 	PSettingsOverview.cpp
 	PServerOverview.cpp
 	PProtocolsOverview.cpp

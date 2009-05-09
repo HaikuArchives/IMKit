@@ -5,15 +5,15 @@
 #ifndef PPROTOCOLS_OVERVIEW_H
 #define PPROTOCOLS_OVERVIEW_H
 
-#include <interface/View.h>
+#include "ViewFactory.h"
 
 class BStringView;
 
 class Divider;
 
-class PProtocolsOverview : public BView {
+class PProtocolsOverview : public AbstractView {
 	public:
-							PProtocolsOverview(BRect bounds);
+					PProtocolsOverview(BRect bounds);
 	
 		// BView Hooks
 		virtual void		AttachedToWindow(void);

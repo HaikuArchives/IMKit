@@ -28,7 +28,7 @@
 //#pragma mark Constructor
 
 PServerOverview::PServerOverview(BRect bounds)
-	: BView(bounds, "ServerOverview", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS) {
+	: AbstractView(bounds, "ServerOverview", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS) {
 
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 	BRect frame(0, 0, 1, 1);

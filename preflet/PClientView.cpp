@@ -36,7 +36,6 @@
 #include "PClientView.h"
 #include "PUtils.h"
 #include "SettingsHost.h"
-#include "ViewFactory.h"
 
 #include "common/BubbleHelper.h"
 #include "common/Divider.h"
@@ -57,7 +56,7 @@ const float kDividerWidth = 100;
 //#pragma mark Constuctor
 
 PClientView::PClientView(BRect frame, const char *name, const char *title, BMessage tmplate, BMessage settings)
-	: BView(frame, name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
+	: AbstractView(frame, name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS),
 	fTitle(title),
 	fTemplate(tmplate),
 	fSettings(settings),
@@ -373,11 +372,14 @@ float PClientView::BuildGUI(void) {
 					xOffset = kEdgeOffset + kDividerWidth;
 #endif
 
+					NotifyingTextView *textView =
+						ViewFactory::Create<NotifyingTextView>(frame, name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+#ifndef __HAIKU__
 					BRect textRect = frame;
 					textRect.InsetBy(kEdgeOffset, kEdgeOffset);
 					textRect.OffsetTo(1.0, 1.0);
-
-					NotifyingTextView *textView = new NotifyingTextView(frame, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+					textView->SetTextRect(textRect);
+#endif
 
 					control = new BScrollView("NA", textView, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, B_WILL_DRAW | B_NAVIGABLE, false, true);
 					textView->SetText(_T(value));			
@@ -391,9 +393,8 @@ float PClientView::BuildGUI(void) {
 			}
 		}
 
-		if (curr.FindString("help")) {
+		if (curr.FindString("help"))
 			gHelper.SetHelp(control, strdup(curr.FindString("help")));
-		};
 
 #ifdef __HAIKU__
 		layout.Add(control);
@@ -415,9 +416,6 @@ float PClientView::BuildGUI(void) {
 
 	return 0.0f;
 #else
-//	if (yOffset < Bounds().Height())
-//		yOffset = Bounds().Height();
-
 	return yOffset;
 #endif
 };

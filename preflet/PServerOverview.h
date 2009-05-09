@@ -6,14 +6,15 @@
 #define PSERVER_OVERVIEW_H
 
 #include <interface/StringView.h>
-#include <interface/View.h>
+
+#include "ViewFactory.h"
 
 class Divider;
 
-class PServerOverview : public BView {
+class PServerOverview : public AbstractView {
 	public:
-								PServerOverview(BRect bounds);
-	
+						PServerOverview(BRect bounds);
+
 		// BView Hooks
 		virtual void			AttachedToWindow(void);
 		virtual void			MessageReceived(BMessage *msg);

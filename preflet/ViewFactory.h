@@ -4,22 +4,27 @@
  *
  * Authors:
  *		Michael Davidson <slaad@bong.com.au>
+ *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  */
  
 #ifndef VIEWFACTORY_H
 #define VIEWFACTORY_H
 
-#include <interface/Rect.h>
+#include <interface/View.h>
 
 class BBox;
-class BView;
 
 class ViewFactory {
 	public:
-
-		// Public Methods
 		template <class T>
 		static T		*Create(BRect rect, const char *name, uint32 resize, uint32 flags);
+};
+
+class AbstractView : public BView {
+	public:
+				AbstractView(BRect frame, const char *name, uint32 resizeMask, uint32 flags);
+
+		virtual void	AttachedToWindow(void);
 };
 
 #endif // VIEWFACTORY_H

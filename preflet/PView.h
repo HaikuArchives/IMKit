@@ -5,7 +5,6 @@
 #ifndef PVIEW_H
 #define PVIEW_H
 
-#include <interface/View.h>
 #include <interface/Button.h>
 
 #include <libim/Manager.h>
@@ -14,6 +13,8 @@
 
 #include "MultipleViewHandler.h"
 #include "SettingsHost.h"
+#include "ViewFactory.h"
+#include "PCardView.h"
 
 class BOutlineListView;
 class IconTextItem;
@@ -23,10 +24,10 @@ class SettingsInfo;
 typedef map<BString, BView*> view_map;
 typedef map<BString, SettingsInfo *> addons_map;
 
-class PView : public BView, public MultipleViewHandler, public SettingsHost {
+class PView : public AbstractView, public MultipleViewHandler, public SettingsHost {
 	public:
-								PView(BRect bounds);
-								~PView(void);
+						PView(BRect bounds);
+						~PView(void);
 
 		// BView Hooks
 		virtual void			AttachedToWindow(void);
@@ -53,19 +54,19 @@ class PView : public BView, public MultipleViewHandler, public SettingsHost {
 		IconTextItem			*fProtocolsItem;
 		IconTextItem			*fClientsItem;
 
-		BView					*fMainView;
-		BButton					*fRevert;
-		BButton					*fSave;
+		PCardView			*fMainView;
+		BButton				*fRevert;
+		BButton				*fSave;
 
-		view_map				fViews;
-		addons_map				fAddOns;
+		view_map			fViews;
+		addons_map			fAddOns;
 
-		BView*					fCurrentView;
-		int32					fCurrentIndex;
+		BView*				fCurrentView;
+		int32				fCurrentIndex;
 
-		float					fFontHeight;
+		float				fFontHeight;
 
-		IM::Manager				*fManager;
+		IM::Manager			*fManager;
 };
 
 #endif // PVIEW_H

@@ -27,11 +27,8 @@
 #	define _T(str) (str)
 #endif
 
-#ifndef B_AUTO_UPDATE_SIZE_LIMITS
+#ifndef __HAIKU__
 #	define B_AUTO_UPDATE_SIZE_LIMITS 0
-#endif
-
-#ifndef B_CLOSE_ON_ESCAPE
 #	define B_CLOSE_ON_ESCAPE 0
 #endif
 

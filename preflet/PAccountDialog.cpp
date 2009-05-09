@@ -36,16 +36,13 @@
 #	define _T(str) (str)
 #endif
 
-#ifndef B_AUTO_UPDATE_SIZE_LIMITS
+#ifdef __HAIKU__
+//#	define WINDOW_RECT BRect(0, 0, 1, 1)
+#	define WINDOW_RECT BRect(0, 0, 360, 400)
+#else
 #	define B_AUTO_UPDATE_SIZE_LIMITS 0
-#endif
-
-#ifndef B_SUPPORTS_LAYOUT
-#	define B_SUPPORTS_LAYOUT 0
-#endif
-
-#ifndef B_CLOSE_ON_ESCAPE
 #	define B_CLOSE_ON_ESCAPE 0
+#	define WINDOW_RECT BRect(0, 0, 360, 400)
 #endif
 
 //#pragma mark Constants
@@ -55,39 +52,31 @@ const uint32 kAddAccountOk = 'Mokb';
 
 //#pragma mark Constructor
 
-PAccountDialog::PAccountDialog(const char *title, const char *protocol, const char *account, BMessage settingsTemplate, BMessage settings, BMessenger *target, BMessage save, BMessage cancel)
-	: BWindow(BRect(0, 0, 360, 400), title, B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE),
+PAccountDialog::PAccountDialog(const char *title, const char *protocol,
+                               const char *account, BMessage settingsTemplate,
+                               BMessage settings, BMessenger *target,
+                               BMessage save, BMessage cancel)
+	: BWindow(WINDOW_RECT, title, B_TITLED_WINDOW,
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS |
+                B_AUTO_UPDATE_SIZE_LIMITS | B_CLOSE_ON_ESCAPE),
 	fOriginalAccount(account),
 	fTemplate(settingsTemplate),
 	fSettings(settings),
 	fTarget(target),
 	fSave(save),
-	fCancel(cancel) {
-	
-	uint32 childResizeMode = B_FOLLOW_NONE;
+	fCancel(cancel)
+{
 	BRect frame(0, 0, 1, 1);
 #ifndef __HAIKU__
 	frame = Bounds();
 #endif
 
-	BView *view = new BView(frame, "top", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
-#if B_BEOS_VERSION > B_BEOS_VERSION_5
-	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	view->SetHighColor(ui_color(B_PANEL_TEXT_COLOR));
-#else
-	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	view->SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	view->SetHighColor(0, 0, 0, 0);
-#endif
-
-#ifndef __HAIKU__
-	childResizeMode = B_FOLLOW_ALL_SIDES;
-#endif
+	BView *view = ViewFactory::Create<BView>(frame, "top", B_FOLLOW_ALL_SIDES,
+		B_WILL_DRAW | B_FRAME_EVENTS);
 
 	// Account name
-	fAccountName = ViewFactory::Create<BTextControl>(frame, "account_name", childResizeMode, B_WILL_DRAW | B_FRAME_EVENTS);
+	fAccountName = ViewFactory::Create<BTextControl>(frame, "account_name", B_FOLLOW_ALL_SIDES,
+		B_WILL_DRAW | B_FRAME_EVENTS);
 	fAccountName->SetLabel(_T("Account name:"));
 	fAccountName->SetText(fOriginalAccount.String());
 	fAccountName->SetFont(be_bold_font);
@@ -99,14 +88,19 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol, const ch
 
 	fProtocolControl = new PClientView(frame, "ProtocolControls", NULL, fTemplate, fSettings);
 
+#ifdef __HAIKU__
 	fCancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
 	fOKButton = new BButton(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
+#else
+	fCancelButton = new BButton("cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
+	fOKButton = new BButton("ok", _T("OK"), new BMessage(kAddAccountOk));
+#endif
 
 #ifdef __HAIKU__
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
 	fAccountNameDivider->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, 1));
-	fProtocolControl->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	//fProtocolControl->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 
 	view->SetLayout(new BGroupLayout(B_VERTICAL));
 	view->AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
