@@ -78,11 +78,19 @@ void CheckIndexes(void) {
 	};
 
 	if (madeIndex) {
-		BAlert *alert = new BAlert(_T("The IM Kit"), _T("The IM Kit had to add indexes for "
+#ifdef __HAIKU__
+		const char *msg = _T("The IM Kit had to add indexes for "
+			"IM:connections or IM:status to one or more of your drives. Please be "
+			"sure to re-index any People files on these drives, failure to do so "
+			"may cause duplicate People files to be created.");
+#else
+		const char *msg = _T("The IM Kit had to add indexes for "
 			"IM:connections or IM:status to one or more of your drives. Please be "
 			"sure to re-index any People files on these drives. You should obtain "
 			"reindex from http://www.bebits.com/app/2033 Failure to do so may cause "
-			"duplicate People files to be created."), _T("Quit"), _T("OK"), NULL,
+			"duplicate People files to be created.");
+#endif
+		BAlert *alert = new BAlert(_T("The IM Kit"), msg, _T("Quit"), _T("OK"), NULL,
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_IDEA_ALERT);
 		alert->SetShortcut(0, B_ESCAPE);
 		int32 choice = alert->Go();
