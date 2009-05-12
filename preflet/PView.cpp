@@ -88,8 +88,13 @@ PView::PView(BRect bounds)
 		B_FOLLOW_ALL_SIDES);
 	fListView->SetSelectionMessage(new BMessage(kListChanged));
 	fListView->MakeFocus();
+#ifdef __HAIKU__
+	BScrollView* listScroller = new BScrollView("listview_scroll", fListView, 0,
+		0, false, true, B_FANCY_BORDER);
+#else
 	BScrollView* listScroller = new BScrollView("listview_scroll", fListView, B_FOLLOW_ALL,
 		0, false, true, B_FANCY_BORDER);
+#endif
 
 	// Add main view
 #ifndef __HAIKU__
@@ -131,6 +136,7 @@ PView::PView(BRect bounds)
 	fCurrentView = fViews["settings"];
 	fCurrentIndex = fListView->IndexOf(settingsItem);
 	fListView->Select(fCurrentIndex);
+	fMainView->Select(fCurrentView);
 
 	// Clients item
 	fClientsItem = new IconTextItem("clients", _T("Clients"));
@@ -163,8 +169,8 @@ PView::PView(BRect bounds)
 	SetLayout(new BGroupLayout(B_VERTICAL));
 
 	AddChild(BGroupLayoutBuilder(B_HORIZONTAL, inset)
-		.Add(listScroller, 0.3f)
-		.Add(fMainView, 0.7f)
+		.Add(listScroller, 0.1f)
+		.Add(fMainView, 0.9f)
 		.SetInsets(inset, inset, inset, inset)
 	);
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)

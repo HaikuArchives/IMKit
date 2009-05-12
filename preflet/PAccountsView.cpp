@@ -144,14 +144,21 @@ PAccountsView::PAccountsView(BRect bounds, BPath *protoPath)
 	fHeadingDivider->ResizeToPreferred();
 
 	// Create list view
-	fAccountListView = new BOutlineListView(frame, "ProtocolList", B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
+	fAccountListView = new BOutlineListView(frame, "ProtocolList",
+		B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
 	BMessage *selection = new BMessage(kProtocolListChanged);
 	selection->AddString("protocol", protoPath->Path());
 	fAccountListView->SetSelectionMessage(selection);
 	fAccountListView->SetInvocationMessage(new BMessage(kEditAccount));
 
 	// Create scroll bars
-	fScrollView = new BScrollView("ProtocolListScroll", fAccountListView, B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
+#ifdef __HAIKU__
+	fScrollView = new BScrollView("ProtocolListScroll", fAccountListView, 0,
+		0, false, true, B_FANCY_BORDER);
+#else
+	fScrollView = new BScrollView("ProtocolListScroll", fAccountListView,
+		B_FOLLOW_ALL, 0, false, true, B_FANCY_BORDER);
+#endif
 
 	// Buttons
 	fAddButton = new BButton(frame, "Add", _T("Add account" B_UTF8_ELLIPSIS), new BMessage(kAddAccount));

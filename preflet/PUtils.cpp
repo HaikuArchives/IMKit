@@ -267,7 +267,13 @@ float BuildGUI(BMessage templ, BMessage settings, const char* viewName, BView* v
 
 					BTextView *textView = new BTextView(frame, name, textRect, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 
-					control = new BScrollView("NA", textView, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_NAVIGABLE, false, true);
+#ifdef __HAIKU__
+					control = new BScrollView("NA", textView, 0,
+						B_WILL_DRAW | B_NAVIGABLE, false, true);
+#else
+					control = new BScrollView("NA", textView,
+						B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_NAVIGABLE, false, true);
+#endif
 					textView->SetText(_T(value));			
 				}
 			} else {

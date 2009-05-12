@@ -373,7 +373,8 @@ float PClientView::BuildGUI(void) {
 #endif
 
 					NotifyingTextView *textView =
-						ViewFactory::Create<NotifyingTextView>(frame, name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+						ViewFactory::Create<NotifyingTextView>(frame, name,
+							B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
 #ifndef __HAIKU__
 					BRect textRect = frame;
 					textRect.InsetBy(kEdgeOffset, kEdgeOffset);
@@ -381,7 +382,12 @@ float PClientView::BuildGUI(void) {
 					textView->SetTextRect(textRect);
 #endif
 
-					control = new BScrollView("NA", textView, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, B_WILL_DRAW | B_NAVIGABLE, false, true);
+#ifdef __HAIKU__
+					control = new BScrollView("NA", textView, 0, false, true);
+#else
+					control = new BScrollView("NA", textView,
+						B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, B_WILL_DRAW | B_NAVIGABLE, false, true);
+#endif
 					textView->SetText(_T(value));			
 				}
 			} else {
