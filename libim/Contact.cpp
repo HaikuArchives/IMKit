@@ -395,6 +395,29 @@ status_t Contact::ReadAttribute(const char *name, char **buffer, int32 *size) {
 	return ret;
 };
 
+status_t Contact::WriteAttribute(const char *name, const char *buffer, int32 size) {
+	BNode node(&fEntry);
+
+	if (node.InitCheck() != B_OK)
+		return B_ERROR;
+
+	// Read attribute, if available
+	char data[size];
+	ssize_t bytesRead = node.ReadAttr(name, B_STRING_TYPE, 0, data, size);
+	if (bytesRead < 0)
+		bytesRead = 0;
+	data[bytesRead] = '\0';
+
+	// Write attribute, if it's available and non-empty
+	if (strlen(data) > 0) {
+		status_t err = node.WriteAttr(name, B_STRING_TYPE, 0, buffer, size);
+		node.Unset();
+		return err;
+	};
+
+	return B_ERROR;
+};
+
 status_t
 Contact::GetName( char * buffer, int size )
 {
@@ -402,15 +425,39 @@ Contact::GetName( char * buffer, int size )
 }
 
 status_t
+Contact::SetName(const char *name)
+{
+	if (name == NULL)
+		return B_BAD_VALUE;
+	return WriteAttribute("META:name", name, strlen(name));
+}
+
+status_t
 Contact::GetNickname( char * buffer, int size )
 {
-	return ReadAttribute("META:nickname",buffer,size);
+	return ReadAttribute("META:nickname", buffer, size);
+}
+
+status_t
+Contact::SetNickname(const char *nick)
+{
+	if (nick == NULL)
+		return B_BAD_VALUE;
+	return WriteAttribute("META:nickname", nick, strlen(nick));
 }
 
 status_t
 Contact::GetEmail( char * buffer, int size )
 {
-	return ReadAttribute("META:name",buffer,size);
+	return ReadAttribute("META:email", buffer, size);
+}
+
+status_t
+Contact::SetEmail(const char *email)
+{
+	if (email == NULL)
+		return B_BAD_VALUE;
+	return WriteAttribute("META:email", email, strlen(email));
 }
 
 status_t

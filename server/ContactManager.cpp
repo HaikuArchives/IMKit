@@ -340,7 +340,7 @@ ContactCachedConnections *ContactManager::CreateContact(Connection connection, c
 		dir.CreateFile(filename, &file, true);
 	};
 
-	if (dir.FindEntry(filename,&entry) != B_OK) {
+	if (dir.FindEntry(filename, &entry) != B_OK) {
 		LOG(kAppName, liHigh,
 			"Error: While creating a new contact, dir.FindEntry() failed. filename was [%s]",
 			filename);

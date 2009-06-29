@@ -371,13 +371,13 @@ status_t
 im_load_client_settings( const char * client, BMessage * msg )
 {
 	BPath path;
-	
-	if (find_directory(B_USER_SETTINGS_DIRECTORY,&path,true,NULL) != B_OK)
+
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path, true, NULL) != B_OK)
 		return B_ERROR;
-		
+
 	path.Append("im_kit/clients");
 	path.Append( client );
-		
+
 	return im_load_settings( path.Path(), msg );
 }
 

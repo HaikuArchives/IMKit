@@ -1,5 +1,5 @@
 #
-# Copyright 2008, IM Kit Team.
+# Copyright 2008-2009, IM Kit Team.
 # Distributed under the terms of the MIT License.
 #
 # Authors:
@@ -17,3 +17,4 @@ SubInclude HAIKU_TOP 3rdparty IMKit clients im_binlogger ;
 SubInclude HAIKU_TOP 3rdparty IMKit clients im_binlog_viewer ;
 SubInclude HAIKU_TOP 3rdparty IMKit clients im_client ;
 SubInclude HAIKU_TOP 3rdparty IMKit clients im_setstatus ;
+SubInclude HAIKU_TOP 3rdparty IMKit clients im_contact_list ;

@@ -82,6 +82,7 @@ user_confdir=`finddir B_USER_CONFIG_DIRECTORY`
 beos_sysdir=`finddir B_BEOS_SYSTEM_DIRECTORY`
 beos_prefsdir=`finddir B_BEOS_PREFERENCES_DIRECTORY`
 prefsdir=`finddir B_PREFERENCES_DIRECTORY`
+user_prefsdir=`finddir B_USER_CONFIG_DIRECTORY`/be/Preferences
 appsdir=`finddir B_APPS_DIRECTORY`
 
 # Check whether jam exists
@@ -260,7 +261,9 @@ IMKIT_COMMON_ADDONS_DIRECTORY = ${common_addonsdir} ;
 IMKIT_COMMON_DEVELOP_DIRECTORY = ${common_devdir} ;
 IMKIT_USER_CONFIG_DIRECTORY = ${user_confdir} ;
 IMKIT_BEOS_SYSTEM_DIRECTORY = ${beos_sysdir} ;
-IMKIT_BEOS_PREFERENCES_DIRECTORY = ${prefsdir} ;
+IMKIT_BEOS_PREFERENCES_DIRECTORY = ${beos_prefsdir} ;
+IMKIT_PREFERENCES_DIRECTORY = ${prefsdir} ;
+IMKIT_USER_PREFERENCES_DIRECTORY = ${user_prefsdir} ;
 IMKIT_APPS_DIRECTORY = ${appsdir} ;
 
 IMKIT_BUILD_REVISION = `svnversion .` ;

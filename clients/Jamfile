@@ -1,5 +1,5 @@
 #
-# Copyright 2008, IM Kit Team.
+# Copyright 2008-2009, IM Kit Team.
 # Distributed under the terms of the MIT License.
 #
 # Authors:
@@ -20,3 +20,4 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 SubInclude IMKIT_TOP clients im_client ;
 SubInclude IMKIT_TOP clients im_setstatus ;
+SubInclude IMKIT_TOP clients im_contact_list ;

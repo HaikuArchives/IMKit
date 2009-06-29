@@ -12,8 +12,15 @@
 
 //#pragma mark Constructor
 
-NotifyingTextView::NotifyingTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags)
-	: BTextView(frame, name, textRect, resizingMode, flags),
+#ifdef __HAIKU__
+NotifyingTextView::NotifyingTextView(const char *name, uint32 flags)
+	: BTextView(name, flags),
+	fMessenger(NULL) {
+};
+#endif
+
+NotifyingTextView::NotifyingTextView(BRect frame, const char *name, uint32 resizeMask, uint32 flags)
+	: BTextView(frame, name, BRect(0, 0, 1, 1), resizeMask, flags),
 	fMessenger(NULL) {
 };
 

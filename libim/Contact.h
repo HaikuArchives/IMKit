@@ -43,12 +43,15 @@ class Contact
 		status_t FindConnection( const char * protocol, char * );
 		
 		// Various data
-		status_t	SetStatus( const char * );
-		status_t	GetName( char * buf, int size );
-		status_t	GetNickname( char * buf, int size );
-		status_t	GetEmail( char * buf, int size );
-		status_t	GetStatus( char * bug, int size );
-		
+		status_t	GetStatus(char *bug, int size);
+		status_t	SetStatus(const char *);
+		status_t	GetName(char *buf, int size);
+		status_t	SetName(const char *);
+		status_t	GetNickname(char *buf, int size);
+		status_t	SetNickname(const char *);
+		status_t	GetEmail(char *buf, int size);
+		status_t	SetEmail(const char *);
+
 		int32		CountGroups(void);
 		const char	*GroupAt(int32 index);
 		
@@ -73,6 +76,7 @@ class Contact
 		status_t	SaveConnections();
 		status_t	ReadAttribute(const char * attr, char * buffer, int bufsize);
 		status_t	ReadAttribute(const char *attr, char **buffer, int32 *size);
+		status_t	WriteAttribute(const char *name, const char *buffer, int32 size);
 		status_t	LoadGroups(void);
 		
 		void		Clear();

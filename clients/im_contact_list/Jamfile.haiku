@@ -1,0 +1,29 @@
+#
+# Copyright 2008-2009, IM Kit Team.
+# Distributed under the terms of the MIT License.
+#
+# Authors:
+#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+
+SubDir HAIKU_TOP 3rdparty IMKit clients im_contact_list ;
+
+SubDirC++Flags $(IMKIT_DEFINES) ;
+
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+
+Application im_contact_list :
+	main.cpp
+	: be $(TARGET_LIBSTDC++) libim.so <IMKit>libcommon.a
+	: im_contact_list.rdef
+;
+
+Depends im_contact_list : <IMKit>libcommon.a ;
+Depends im_contact_list : libim.so ;
+
+AddFilesToHaikuImage common bin : im_contact_list ;
+
+Package imkit-cvs :
+	im_contact_list :
+	boot common bin
+;

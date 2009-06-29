@@ -1370,6 +1370,32 @@ void Server::MessageFromProtocols(BMessage *msg) {
 		};
 	};
 
+LOG(kAppName, liDebug, "\n\n=========>\n");
+msg->PrintToStream();
+	if (im_what == CONTACT_INFO) {
+		// Get contact information
+		const char *first_name = msg->FindString("first name");
+		const char *last_name = msg->FindString("last name");
+		const char *email = msg->FindString("email");
+		const char *nick = msg->FindString("nick");
+
+		// Compose contact's full name
+		BString full_name;
+		if (first_name)
+			full_name.Append(first_name);
+		if (first_name && last_name)
+			full_name.Append(" ");
+		if (last_name)
+			full_name.Append(last_name);
+
+		// Update contact information (the attributes will be set only when not already set)
+		ContactHandle handle = contact->Handle();
+		Contact clientContact(handle.entry);
+		clientContact.SetName(full_name.String());
+		clientContact.SetNickname(nick);
+		clientContact.SetEmail(email);
+	};
+
 	if (im_what == SET_BUDDY_ICON) {
 		LOG(kAppName, liHigh, "Got a buddy icon from a protocol!");
 		const uchar *data;

@@ -15,8 +15,10 @@ class BMessenger;
 
 class NotifyingTextView : public BTextView {
 	public:
-	
-							NotifyingTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags);
+#ifdef __HAIKU__
+							NotifyingTextView(const char *name, uint32 flags);
+#endif
+							NotifyingTextView(BRect frame, const char *name, uint32 resizeMask, uint32 flags);
 							~NotifyingTextView(void);
 		
 		void				SetHandler(BHandler *handler);
