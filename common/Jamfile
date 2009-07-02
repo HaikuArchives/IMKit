@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP common ;
+SubDir TOP common ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) common ] ;
+SubDirSysHdrs [ FDirName $(TOP) common ] ;
 
 StaticLibrary libcommon.a :
 	Base64.cpp

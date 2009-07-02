@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients logger ;
+SubDir TOP clients logger ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
 Application im_logger :
 	logger.cpp

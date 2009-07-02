@@ -6,13 +6,13 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP protocols Jabber ;
+SubDir TOP protocols Jabber ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) server ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs libexpat ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs libjabber ] ;
+SubDirSysHdrs [ FDirName $(TOP) server ] ;
 
 AddOn jabber :
 	Jabber.cpp
@@ -40,5 +40,5 @@ if $(IMKIT_IS_ZETA) = 1 {
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : jabber ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon jabber : [ FDirName $(IMKIT_TOP) icons imkit protocols Jabber.svg ] ;
+	SVGIcon jabber : [ FDirName $(TOP) icons imkit protocols Jabber.svg ] ;
 }

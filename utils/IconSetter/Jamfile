@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils IconSetter ;
+SubDir TOP utils IconSetter ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 Application IconSetter :
 	main.cpp

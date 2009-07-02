@@ -6,11 +6,11 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients im_binlog_viewer ;
+SubDir TOP clients im_binlog_viewer ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
-SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) clients im_binlog_viewer CLV ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) clients im_binlog_viewer CLV ] ;
 
 Application im_binlog_viewer :
 	# im_binlog_viewer
@@ -34,5 +34,5 @@ if $(IMKIT_IS_ZETA) = 1 {
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlog_viewer ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon im_binlog_viewer : [ FDirName $(IMKIT_TOP) icons imkit clients im_binlog_viewer.svg ] ;
+	SVGIcon im_binlog_viewer : [ FDirName $(TOP) icons imkit clients im_binlog_viewer.svg ] ;
 }

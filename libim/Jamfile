@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP libim ;
+SubDir TOP libim ;
 
 SharedLibrary libim.so :
 	Connection.cpp

@@ -6,8 +6,8 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP libs ;
+SubDir TOP libs ;
 
 # Include all the components.
-SubInclude IMKIT_TOP libs libexpat ;
-SubInclude IMKIT_TOP libs libjabber ;
+SubInclude TOP libs libexpat ;
+SubInclude TOP libs libjabber ;

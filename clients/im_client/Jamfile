@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients im_client ;
+SubDir TOP clients im_client ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 Application im_client :
 	main.cpp
@@ -38,5 +38,5 @@ InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;
 InstallSymlink $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client : $(IMKIT_COMMON_BIN_DIRECTORY)/im_client ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon im_client : [ FDirName $(IMKIT_TOP) icons imkit im_client.svg ] ;
+	SVGIcon im_client : [ FDirName $(TOP) icons imkit im_client.svg ] ;
 }

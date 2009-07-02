@@ -6,13 +6,13 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP protocols GoogleTalk ;
+SubDir TOP protocols GoogleTalk ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs libexpat ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs libjabber ] ;
+SubDirSysHdrs [ FDirName $(TOP) protocols Jabber ] ;
 SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 AddOn gtalk :
@@ -43,5 +43,5 @@ LINKFLAGS on gtalk += -L$(IMKIT_OPENSSL_LIBDIR) ;
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : gtalk ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon gtalk : [ FDirName $(IMKIT_TOP) icons imkit protocols GoogleTalk.svg ] ;
+	SVGIcon gtalk : [ FDirName $(TOP) icons imkit protocols GoogleTalk.svg ] ;
 }

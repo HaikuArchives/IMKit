@@ -6,18 +6,18 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP ;
+SubDir TOP ;
 
 # Include all the components
-SubInclude IMKIT_TOP libs ;
-SubInclude IMKIT_TOP common ;
-SubInclude IMKIT_TOP libim ;
-SubInclude IMKIT_TOP server ;
-SubInclude IMKIT_TOP preflet ;
-SubInclude IMKIT_TOP clients ;
-SubInclude IMKIT_TOP protocols ;
-SubInclude IMKIT_TOP utils ;
-SubInclude IMKIT_TOP extendo_people ;
+SubInclude TOP libs ;
+SubInclude TOP common ;
+SubInclude TOP libim ;
+SubInclude TOP server ;
+SubInclude TOP preflet ;
+SubInclude TOP clients ;
+SubInclude TOP protocols ;
+SubInclude TOP utils ;
+SubInclude TOP extendo_people ;
 
 Distro distro ;
 FullDistro fulldistro ;

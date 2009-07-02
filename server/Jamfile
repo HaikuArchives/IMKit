@@ -6,10 +6,10 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP server ;
+SubDir TOP server ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) utils DeskbarIcon ] ;
 
 Application im_server :
 	im_server.cpp
@@ -31,10 +31,10 @@ if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on im_server += -lzeta -ltracker ;
 }
 
-LINKFLAGS on im_server += -L$(IMKIT_TOP)/libim -lim ;
+LINKFLAGS on im_server += -L$(TOP)/libim -lim ;
 
 InstallBin $(IMKIT_COMMON_SERVERS_DIRECTORY) : im_server ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon im_server : [ FDirName $(IMKIT_TOP) icons imkit im_server.svg ] ;
+	SVGIcon im_server : [ FDirName $(TOP) icons imkit im_server.svg ] ;
 }

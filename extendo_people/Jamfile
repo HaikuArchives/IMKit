@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP extendo_people ;
+SubDir TOP extendo_people ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
 Application People :
 	main.cpp

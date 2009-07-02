@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils gimicq-import ;
+SubDir TOP utils gimicq-import ;
 
 # FIXME: Install* rules remove files on jam -q uninstall
 #InstallBin $(IMKIT_APPS_DIRECTORY)/im_kit/gimicq-import : GimICQ2IM.py ;

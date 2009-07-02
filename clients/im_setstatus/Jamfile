@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients im_setstatus ;
+SubDir TOP clients im_setstatus ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
 Application im_setstatus :
 	im_setstatus.cpp

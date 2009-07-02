@@ -7,10 +7,10 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils ProtocolLoader ;
+SubDir TOP utils ProtocolLoader ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) server ] ;
 
 Application ProtocolLoader :
 	main.cpp

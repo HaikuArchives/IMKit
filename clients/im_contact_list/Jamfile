@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients im_contact_list ;
+SubDir TOP clients im_contact_list ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
 Application im_contact_list :
 	main.cpp
@@ -27,5 +27,5 @@ if $(IMKIT_IS_ZETA) = 1 {
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_contact_list ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon im_contact_list : [ FDirName $(IMKIT_TOP) icons imkit im_contact_list.svg ] ;
+	SVGIcon im_contact_list : [ FDirName $(TOP) icons imkit im_contact_list.svg ] ;
 }

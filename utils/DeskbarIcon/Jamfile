@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils DeskbarIcon ;
+SubDir TOP utils DeskbarIcon ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 # SVN revision
 local svnRevisionFile = [ FGristFiles svn_revision ] ;

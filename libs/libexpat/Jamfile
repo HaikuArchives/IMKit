@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP libs libexpat ;
+SubDir TOP libs libexpat ;
 
 StaticLibrary libexpat.a :
 	xmlparse.c

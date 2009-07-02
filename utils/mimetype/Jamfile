@@ -6,7 +6,7 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils mimetype ;
+SubDir TOP utils mimetype ;
 
 Application mimetype_attribute :
 	mimetype_attribute.cpp

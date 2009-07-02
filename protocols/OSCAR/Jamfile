@@ -6,12 +6,12 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP protocols OSCAR ;
+SubDir TOP protocols OSCAR ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
-SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) common ] ;
 
 AddOn aim :
 	AIM.cpp
@@ -72,6 +72,6 @@ InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : aim ;
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : icq ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon aim : [ FDirName $(IMKIT_TOP) icons imkit protocols AIM.svg ] ;
-	SVGIcon icq : [ FDirName $(IMKIT_TOP) icons imkit protocols ICQ.svg ] ;
+	SVGIcon aim : [ FDirName $(TOP) icons imkit protocols AIM.svg ] ;
+	SVGIcon icq : [ FDirName $(TOP) icons imkit protocols ICQ.svg ] ;
 }

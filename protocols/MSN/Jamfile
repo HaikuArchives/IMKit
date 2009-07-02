@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP protocols MSN ;
+SubDir TOP protocols MSN ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 AddOn msn :
@@ -49,5 +49,5 @@ LINKFLAGS on msn += -L$(IMKIT_OPENSSL_LIBDIR) ;
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : msn ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon msn : [ FDirName $(IMKIT_TOP) icons imkit protocols MSN.svg ] ;
+	SVGIcon msn : [ FDirName $(TOP) icons imkit protocols MSN.svg ] ;
 }

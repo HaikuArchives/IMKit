@@ -6,12 +6,12 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP protocols Yahoo ;
+SubDir TOP protocols Yahoo ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_LIBYAHOO2_INCDIR) ] ;
 
-SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) common ] ;
 
 AddOn yahoo :
 	Yahoo.cpp
@@ -42,5 +42,5 @@ LINKFLAGS on yahoo += -L$(IMKIT_LIBYAHOO2_LIBDIR) ;
 InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : yahoo ;
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon yahoo : [ FDirName $(IMKIT_TOP) icons imkit protocols Yahoo.svg ] ;
+	SVGIcon yahoo : [ FDirName $(TOP) icons imkit protocols Yahoo.svg ] ;
 }

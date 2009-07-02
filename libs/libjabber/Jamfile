@@ -6,14 +6,14 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP libs libjabber ;
+SubDir TOP libs libjabber ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(TOP) libs ] ;
 if $(IMKIT_HAVE_OPENSSL) = 1 {
 	SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 }
 
-SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) libs libexpat ] ;
 
 SubDirC++Flags -DSTDOUT=1 ;
 

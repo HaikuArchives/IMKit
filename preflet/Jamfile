@@ -6,9 +6,9 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP preflet ;
+SubDir TOP preflet ;
 
-SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 Application InstantMessaging :
 	main.cpp
@@ -39,7 +39,7 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 if $(IMKIT_IS_ZETA) = 1 {
-	SVGIcon InstantMessaging : [ FDirName $(IMKIT_TOP) icons imkit InstantMessaging.svg ] ;
+	SVGIcon InstantMessaging : [ FDirName $(TOP) icons imkit InstantMessaging.svg ] ;
 }
 
 InstallBin $(IMKIT_PREFERENCES_DIRECTORY) : InstantMessaging ;

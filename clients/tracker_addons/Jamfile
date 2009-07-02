@@ -6,6 +6,6 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP clients tracker_addons ;
+SubDir TOP clients tracker_addons ;
 
-SubInclude IMKIT_TOP clients tracker_addons merge_contacts ;
+SubInclude TOP clients tracker_addons merge_contacts ;

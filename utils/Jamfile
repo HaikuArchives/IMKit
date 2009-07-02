@@ -6,11 +6,11 @@
 #		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 
-SubDir IMKIT_TOP utils ;
+SubDir TOP utils ;
 
 # Include all the components
-SubInclude IMKIT_TOP utils DeskbarIcon ;
-SubInclude IMKIT_TOP utils gimicq-import ;
-SubInclude IMKIT_TOP utils mimetype ;
-SubInclude IMKIT_TOP utils IconSetter ;
-SubInclude IMKIT_TOP utils ProtocolLoader ;
+SubInclude TOP utils DeskbarIcon ;
+SubInclude TOP utils gimicq-import ;
+SubInclude TOP utils mimetype ;
+SubInclude TOP utils IconSetter ;
+SubInclude TOP utils ProtocolLoader ;
