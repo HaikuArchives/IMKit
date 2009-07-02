@@ -13,7 +13,7 @@ SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
 
-Addon aim :
+AddOn aim :
 	AIM.cpp
 	FLAP.cpp
 	TLV.cpp
@@ -31,7 +31,7 @@ Addon aim :
 Depends aim : libcommon.a ;
 Depends aim : libim.so ;
 
-Addon icq :
+AddOn icq :
 	ICQ.cpp
 	FLAP.cpp
 	TLV.cpp

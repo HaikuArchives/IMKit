@@ -8,14 +8,14 @@
 
 SubDir IMKIT_TOP protocols GoogleTalk ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
-SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libexpat ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs libjabber ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) protocols Jabber ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
-Addon gtalk :
+AddOn gtalk :
 	GoogleTalk.cpp
 	: be stdc++.r4 libim.so libexpat.a libjabber.a ssl crypto
 	: GoogleTalk.rdef ProtocolTemplate.rdef

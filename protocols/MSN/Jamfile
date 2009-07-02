@@ -11,7 +11,7 @@ SubDir IMKIT_TOP protocols MSN ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 
-Addon msn :
+AddOn msn :
 	# MSN
 	MSN.cpp
 	MSNConnection.cpp

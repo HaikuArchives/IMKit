@@ -8,14 +8,20 @@
 
 SubDir IMKIT_TOP utils DeskbarIcon ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable IMDeskbarIcon :
+# SVN revision
+local svnRevisionFile = [ FGristFiles svn_revision ] ;
+MakeLocate $(svnRevisionFile) : $(LOCATE_TARGET) ;
+CreateSVNRevisionFile $(svnRevisionFile) ;
+
+Application IMDeskbarIcon :
 	AccountInfo.cpp
 	AwayMessageWindow.cpp
 	DeskbarIconApp.cpp
 	DeskbarIcon.cpp
 	QueryLooper.cpp
+	svn_revision.cpp
 	: be stdc++.r4 libim.so libcommon.a
 	: DeskbarIcon.rdef DeskbarIcons.rdef
 ;

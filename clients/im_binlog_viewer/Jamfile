@@ -12,7 +12,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) clients im_binlog_viewer CLV ] ;
 
-Executable im_binlog_viewer :
+Application im_binlog_viewer :
 	# im_binlog_viewer
 	LogViewApp.cpp
 	LogWin.cpp

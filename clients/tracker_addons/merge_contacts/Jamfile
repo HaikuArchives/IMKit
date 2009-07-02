@@ -8,7 +8,7 @@
 
 SubDir IMKIT_TOP clients tracker_addons merge_contacts ;
 
-Addon IM_Merge_contacts :
+AddOn IM_Merge_contacts :
 	merge_contacts.cpp
 	: be
 	: merge_contacts.rdef

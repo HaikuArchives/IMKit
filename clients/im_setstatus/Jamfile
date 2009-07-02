@@ -10,7 +10,7 @@ SubDir IMKIT_TOP clients im_setstatus ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable im_setstatus :
+Application im_setstatus :
 	im_setstatus.cpp
 	: be libim.so
 ;

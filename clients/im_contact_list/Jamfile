@@ -10,8 +10,9 @@ SubDir IMKIT_TOP clients im_contact_list ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable im_contact_list :
+Application im_contact_list :
 	main.cpp
+	ContactListApp.cpp
 	: be stdc++.r4 libim.so libcommon.a
 	: im_contact_list.rdef
 ;

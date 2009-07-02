@@ -8,10 +8,10 @@
 
 SubDir IMKIT_TOP server ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) utils DeskbarIcon ] ;
 
-Executable im_server :
+Application im_server :
 	im_server.cpp
 	im_server_main.cpp
 	ContactCachedConnections.cpp

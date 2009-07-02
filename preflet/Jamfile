@@ -8,9 +8,9 @@
 
 SubDir IMKIT_TOP preflet ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable InstantMessaging :
+Application InstantMessaging :
 	main.cpp
 	PApplication.cpp
 	PWindow.cpp

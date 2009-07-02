@@ -1,202 +1,176 @@
-# Overridden Jam rules
+# OverriddenJamRules
+#
+# Jam rules that need to be overridden for good reasons.
 
-# Override to change permissions.
-rule InstallLib
+# Overridden to allow for spaces in file names and to support resources.
+# Also set the on target LINKFLAGS variable to prevent later changes to
+# the global variable from having an effect on the setting for the target.
+rule Link
 {
-	InstallInto $(<) : $(>) ;
-	MODE on $(>:G=$(INSTALLGRIST)) = $(EXEMODE) ;
+	local dbg = [ on $(1) return $(DEBUG) ] ;
+	if $(STRIP_APPS) && $(STRIP_APPS) != 0 && (!$(dbg) || $(dbg) = 0) {
+		# strip app if requested so and if not in debug mode!
+		Strip $(1) ;
+	}
+	# Note: RESFILES must be set before invocation.
+	MODE on $(1) = $(EXEMODE) ;
+	on $(1) XRes $(1) : $(RESFILES) ;
+	Chmod $(1) ;
+	MimeSet $(1) ;
+	LINKFLAGS on $(1) = [ on $(1) return $(LINKFLAGS) ] ;
 }
 
-# Overridden to use copyattr instead of cp and
-# to allow spaces in file names.
-actions Install
+actions Link bind NEEDLIBS
 {
-	$(COPYATTR) -d "$(>)" "$(<)"
+	$(LINK) $(LINKFLAGS) -o "$(1)" $(UNDEFS) "$(2)" "$(NEEDLIBS)" $(LINKLIBS)
 }
 
-# Overridden to allow spaces in file names.
+
+# Overridden to allow for spaces in file names.
 actions Chmod1
 {
 	$(CHMOD) "$(MODE)" "$(1)"
 }
 
-# Overridden to allow spaces in file names.
+# Overridden to allow for spaces in file names.
 actions piecemeal together existing Clean
 {
 	$(RM) "$(>)"
 }
 
-#-------------------------------------------------------------------------------
-# Link rule/action are overwritten as they don't handle linking files who's name 
-# contain spaces very well. Also adds resources and version to executable.
-#-------------------------------------------------------------------------------
-rule Link
-{
-	MakeLocate $(<) : $(LOCATE_TARGET) ;
+# Changes to rules for sake of discrimination between system and non-system
+# headers.
 
- 	NEEDLIBS on $(1) = [ on $(1) return $(NEEDLIBS) ] ;
- 	LINKLIBS on $(1) = [ on $(1) return $(LINKLIBS) ] ;
-
-	MODE on $(<) = $(EXEMODE) ;
-	on $(1) XRes $(1) : $(RESFILES) ;
-	if ! [ on $(1) return $(DONT_USE_BEOS_RULES) ] {
-		SetType $(<) ;
-		MimeSet $(<) ;
-		SetVersion $(<) ;
+if $(OSPLAT) = X86 {
+	if $(HAVE_GCC4) = 1 {
+		HDRS_INCLUDES_SEPARATOR = -iquote- ;
+	} else {
+		HDRS_INCLUDES_SEPARATOR = -I- ;
 	}
-	Chmod $(<) ;
+} else {
+	HDRS_INCLUDES_SEPARATOR = -i- ;
 }
 
-actions Link bind NEEDLIBS
+rule Cc
 {
-	$(LINK) $(LINKFLAGS) -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) ;
-}
+	Depends $(<) : $(>) ;
 
-# Force recreation of the archive to avoid build errors caused by
-# stale dependencies after renaming or deleting object files.
-actions together Archive
-{
-	$(RM) $(<)
-	$(AR) $(<) $(>)
-}
+	# If the compiler's -o flag doesn't work, relocate the .o
 
-rule Library
-{
-	local lib = $(1) ;
-	local sources = [ FGristFiles $(2) ] ;
-	local objects = $(sources:S=$(SUFOBJ)) ;
-
-	LibraryFromObjects $(lib) : $(objects) ;
-	Objects $(sources) ;
-}
-
-rule LibraryFromObjects
-{
-	local _i _l _s ;
-
-	# Add grist to file names
-	# bonefish: No, don't. The Library rule does that anyway, and when we
-	# have an object from another dir, we certainly don't want that.
-
-	_s = $(>) ;
-	_l = $(<:S=$(SUFLIB)) ;
-
-	on $(_l) {
-		# library depends on its member objects
-	
-		if $(KEEPOBJS)
-		{
-			LocalDepends obj : $(_s) ;
-		}
-	
-		LocalDepends lib : $(_l) ;
-	
-		# Set LOCATE for the library and its contents.  The bound
-		# value shows up as $(NEEDLIBS) on the Link actions.
-		# For compatibility, we only do this if the library doesn't
-		# already have a path.
-	
-		if ! $(_l:D)
-		{
-			# locate the library only, if it hasn't been located yet
-			local dir = $(LOCATE[1]) ;
-			if ! $(dir) {
-				dir = [ on $(_l) return $(LOCATE[1]) ] ;
-					# Note: The "on ..." is necessary, since our environment
-					# isn't changed by MakeLocateDebug.
-			}
-			MakeLocate $(_l)($(_s:BS)) : $(dir) ;
-		}
-	
-		if $(NOARSCAN) 
-		{ 
-			# If we can't scan the library to timestamp its contents,
-			# we have to just make the library depend directly on the
-			# on-disk object files.  
-	
-			Depends $(_l) : $(_s) ;
-		}
-		else
-		{
-			# If we can scan the library, we make the library depend
-			# on its members and each member depend on the on-disk
-			# object file.
-	
-			Depends $(_l) : $(_l)($(_s:BS)) ;
-	
-			for _i in $(_s)
-			{
-			Depends $(_l)($(_i:BS)) : $(_i) ;
-			}
-		}
-	
-		LocalClean clean : $(_l) ;
-	
-		# bonefish: Not needed on the supported platforms. Maybe later...
-		# if $(CRELIB) { CreLib $(_l) : $(_s[1]) ; }
-	
-		Archive $(_l) : $(_s) ;
-	
-		if $(RANLIB) { Ranlib $(_l) ; }
-	
-		# If we can't scan the library, we have to leave the .o's around.
-	
-		if ! ( $(KEEPOBJS) || $(NOARSCAN) || $(NOARUPDATE) ) {
-			RmTemps $(_l) : $(_s) ;
-		}
-	}
-}
-
-rule Main
-{
-	local target = $(1) ;
-	local sources = [ FGristFiles $(2) ] ;
-	local objects = $(sources:S=$(SUFOBJ)) ;
-
-	MainFromObjects $(target) : $(objects) ;
-	Objects $(sources) ;
-}
-
-rule MainFromObjects
-{
-	local _s _t ;
-
-	# Add grist to file names
-	# Add suffix to exe
-
-	_s = [ FGristFiles $(>) ] ;
-	_t = [ FAppendSuffix $(<) : $(SUFEXE) ] ;
-
-	# so 'jam foo' works when it's really foo.exe
-
-	if $(_t) != $(<)
+	if $(RELOCATE)
 	{
-	    Depends $(<) : $(_t) ;
-	    NotFile $(<) ;
+	    CcMv $(<) : $(>) ;
 	}
 
-	# make compiled sources a dependency of target
+	# Just to clarify here: this sets the per-target CCFLAGS to
+	# be the current value of (global) CCFLAGS and SUBDIRCCFLAGS.
+	# CCHDRS and CCDEFS must be reformatted each time for some
+	# compiles (VMS, NT) that malign multiple -D or -I flags.
 
-	LocalDepends exe : $(_t) ;
-	Depends $(_t) : $(_s) ;
+	CCFLAGS on $(<) += $(CCFLAGS) $(SUBDIRCCFLAGS) $(OPTIM) ;
 
-	LocalClean clean : $(_t) ;
+	CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ]
+		$(HDRS_INCLUDES_SEPARATOR) [ on $(<) FSysIncludes $(SYSHDRS) ] ;
+	CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
 
-	Link $(_t) : $(_s) ;
+rule C++
+{
+	Depends $(<) : $(>) ;
+
+	if $(RELOCATE)
+	{
+	    CcMv $(<) : $(>) ;
+	}
+
+	C++FLAGS on $(<) += $(C++FLAGS) $(SUBDIRC++FLAGS) $(OPTIM) ;
+
+	CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ]
+		$(HDRS_INCLUDES_SEPARATOR) [ on $(<) FSysIncludes $(SYSHDRS) ] ;
+	CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+
+rule Object
+{
+	# locate object and search for source, if wanted
+
+	Clean clean : $(<) ;
+
+	MakeLocate $(<) : $(LOCATE_TARGET) ;
+	SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+	# Save HDRS for -I$(HDRS) on compile.
+	# We shouldn't need -I$(SEARCH_SOURCE) as cc can find headers
+	# in the .c file's directory, but generated .c files (from
+	# yacc, lex, etc) are located in $(LOCATE_TARGET), possibly
+	# different from $(SEARCH_SOURCE).
+
+	HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ;
+	SYSHDRS on $(<) = $(SUBDIRSYSHDRS) $(SYSHDRS) ;
+
+	# handle #includes for source: Jam scans for headers with
+	# the regexp pattern $(HDRSCAN) and then invokes $(HDRRULE)
+	# with the scanned file as the target and the found headers
+	# as the sources.  HDRSEARCH is the value of SEARCH used for
+	# the found header files.  Finally, if jam must deal with 
+	# header files of the same name in different directories,
+	# they can be distinguished with HDRGRIST.
+
+	# $(SEARCH_SOURCE:E) is where cc first looks for #include 
+	# "foo.h" files.  If the source file is in a distant directory, 
+	# look there.  Else, look in "" (the current directory).
+
+	HDRRULE on $(>) = HdrRule ;
+	HDRSCAN on $(>) = $(HDRPATTERN) ;
+	HDRSEARCH on $(>) = 
+		$(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) $(SYSHDRS) $(STDHDRS) ;
+
+	HDRGRIST on $(>) = $(HDRGRIST) ;
+
+	# propagate target specific-defines
+
+	DEFINES on $(<) += $(DEFINES) ;
+
+	# if source is not .c, generate .c with specific rule
+
+	switch $(>:S)
+	{
+	    case .asm : As $(<) : $(>) ;
+	    case .c :	Cc $(<) : $(>) ;
+	    case .C :	C++ $(<) : $(>) ;
+	    case .cc :	C++ $(<) : $(>) ;
+	    case .cpp : C++ $(<) : $(>) ;
+	    case .f :	Fortran $(<) : $(>) ;
+	    case .l :	Cc $(<) : $(<:S=.c) ;
+			LexC++ $(<:S=.c) : $(>) ;
+	    case .s :	As $(<) : $(>) ;
+	    case .y :	Cc $(<) : $(<:S=.c) ;
+			Bison $(<:S=.c) : $(>) ;
+	    case * :	UserObject $(<) : $(>) ;
+	}
+}
+
+rule ObjectHdrs
+{
+	local s ;
+	for s in [ FGristFiles $(<:S=$(SUFOBJ)) ] {
+		HDRS on $(s) += $(>) ;
+		CCHDRS on $(s) = [ on $(s) FIncludes $(HDRS) ]
+			$(HDRS_INCLUDES_SEPARATOR) [ on $(s) FSysIncludes $(SYSHDRS) ] ;
+	}
 }
 
 # Override Jam 2.5rc3 MakeLocate and MkDir to deal more intelligently
 # with grist set on the supplied directory name.
 rule MakeLocate
 {
-	local dir = $(2[1]) ;
-
-	if $(dir)
+	if $(2[1])
 	{
+		local dir = $(2[1]) ;
 		if ! $(dir:G) {
 			dir = $(dir:G=dir) ;
 		}
-	    LOCATE on $(1) += $(dir:G=) ;	# don't relocate once located
+	    LOCATE on $(1) = $(dir:G=) ;
 	    Depends $(1) : $(dir) ;
 	    MkDir $(dir) ;
 	}
@@ -204,23 +178,17 @@ rule MakeLocate
 
 rule MkDir
 {
+	# If dir exists, don't update it
+	# Do this even for $(DOT).
+
 	local dir = $(<) ;
 	if ! $(dir:G) {
 		dir = $(dir:G=dir) ;
 	}
 
-	# make this and all super directories
-	while true {
-		# If dir exists, don't update it
-		# Do this even for $(DOT).
-		NoUpdate $(dir) ;
+	NoUpdate $(dir) ;
 
-		# Bail out when reaching the CWD (".") or a directory we've already
-		# made.
-		if $(dir:G=) = $(DOT) || $($(dir:G=)-mkdir) {
-			return ;
-		}
-
+	if $(dir:G=) != $(DOT) && ! $($(dir:G=)-mkdir) {
 		local s ;
 
 		# Cheesy gate to prevent multiple invocations on same dir
@@ -229,7 +197,7 @@ rule MkDir
 
 		$(dir:G=)-mkdir = true ;
 		MkDir1 $(dir) ;
-		LocalDepends dirs : $(dir) ;
+		Depends dirs : $(dir) ;
 
 		# Recursively make parent directories.
 		# $(dir:P) = $(dir)'s parent, & we recurse until root
@@ -238,43 +206,13 @@ rule MkDir
 	
 		if $(s:G=) && $(s) != $(dir) {
 			Depends $(dir) : $(s) ;
-			dir = $(s) ;
+			MkDir $(s) ;
 		} else if $(s) {
 			NotFile $(s) ;
-			break ;
 		}
 	}
 }
 
-rule ObjectCcFlags
-{
-	# supports inheriting the global variable value
-
-	local file ;
-	for file in [ FGristFiles $(1:S=$(SUFOBJ)) ] {
-		CCFLAGS on $(file) = [ on $(file) return $(CCFLAGS) ] $(2) ;
-	}
-}
-
-rule ObjectC++Flags
-{
-	# supports inheriting the global variable value
-
-	local file ;
-	for file in [ FGristFiles $(1:S=$(SUFOBJ)) ] {
-		C++FLAGS on $(file) = [ on $(file) return $(C++FLAGS) ] $(2) ;
-	}
-}
-
-rule ObjectDefines
-{
-	# supports inheriting the global variable value and multiple files
-
-	if $(2) {
-		local file ;
-		for file in [ FGristFiles $(1:S=$(SUFOBJ)) ] {
-			DEFINES on $(file) = [ on $(file) return $(DEFINES) ] $(2) ;
-			CCDEFS on $(file) = [ on $(file) FDefines $(DEFINES) ] ;
-		}
-	}
-}
+# Add SUBDIRSYSHDRS to the variables that shall be reset automatically by the
+# SubDir rule.
+SUBDIRRESET += SYSHDRS ;

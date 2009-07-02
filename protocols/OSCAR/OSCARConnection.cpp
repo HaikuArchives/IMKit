@@ -7,7 +7,7 @@
 
 #include <UTF8.h>
 
-#ifdef BONE_BUILD
+#if defined(BONE_BUILD) || defined(__HAIKU__)
 	#include <sys/select.h>
 	#ifdef __HAIKU__
 		#define SHUTDOWN_BOTH SHUT_RDWR
@@ -61,7 +61,7 @@ OSCARConnection::OSCARConnection(const char *server, uint16 port, OSCARManager *
 	fKeepAliveRunner = new BMessageRunner(BMessenger(NULL, (BLooper *)this),
 		new BMessage(AMAN_KEEP_ALIVE), 30000000, -1);
 	
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 	fSocketLock = new BLocker();
 #endif
 	
@@ -77,7 +77,7 @@ OSCARConnection::~OSCARConnection(void) {
 	StopReceiver();
 	ClearQueue();
 	
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 	delete fSocketLock;
 #endif
 };
@@ -323,7 +323,7 @@ status_t OSCARConnection::LowLevelSend(Flap *flap) {
 	int sent_data = -1;
 
 	if (fSock > 0) {
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 		BAutolock autolock(fSocketLock);
 		if (autolock.IsLocked() == false) return B_ERROR;
 #endif
@@ -418,7 +418,7 @@ int32 OSCARConnection::ConnectTo(const char *hostname, uint16 port) {
 	their_addr.sin_addr = *((struct in_addr *)he->h_addr);
 	memset(&(their_addr.sin_zero), 0, 8);
 
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 	BAutolock autolock(fSocketLock);
 	if (autolock.IsLocked() == false) return B_ERROR;
 #endif
@@ -452,7 +452,7 @@ void OSCARConnection::StartReceiver(void) {
 
 void OSCARConnection::StopReceiver(void) {
 	if (fSock > B_ERROR) {
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 		closesocket(fSock);
 #else
 		shutdown(fSock, SHUTDOWN_BOTH);
@@ -531,7 +531,7 @@ int32 OSCARConnection::Receiver(void *con) {
 		processed = 0;
 						
 		while (processed < kFLAPHeaderLen) {
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 			BAutolock autolock(connection->fSocketLock);
 #endif
 			FD_ZERO(&read);
@@ -609,7 +609,7 @@ int32 OSCARConnection::Receiver(void *con) {
 		bytes = 0;
 		
 		while (processed < flapLen) {
-#ifndef BONE_BUILD
+#if !defined(BONE_BUILD) && !defined(__HAIKU__)
 			BAutolock autolock(connection->fSocketLock);
 #endif
 			FD_ZERO(&read);

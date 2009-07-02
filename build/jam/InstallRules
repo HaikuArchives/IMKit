@@ -1,9 +1,3 @@
-rule PostInstall
-{
-	Echo "Running post-install script..." ;
-	Shell $(IMKIT_TOP)/build/scripts/post-install.sh ;
-}
-
 rule InstallSymlink
 {
 	# InstallSymlink linkname : source ;

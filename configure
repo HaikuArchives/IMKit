@@ -266,8 +266,6 @@ IMKIT_PREFERENCES_DIRECTORY = ${prefsdir} ;
 IMKIT_USER_PREFERENCES_DIRECTORY = ${user_prefsdir} ;
 IMKIT_APPS_DIRECTORY = ${appsdir} ;
 
-IMKIT_BUILD_REVISION = `svnversion .` ;
-
 IMKIT_IS_HAIKU = ${is_haiku} ;
 IMKIT_IS_BEOS = ${is_beos} ;
 IMKIT_IS_ZETA = ${is_zeta} ;

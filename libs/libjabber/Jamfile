@@ -8,9 +8,9 @@
 
 SubDir IMKIT_TOP libs libjabber ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) libs ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) libs ] ;
 if $(IMKIT_HAVE_OPENSSL) = 1 {
-	SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+	SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
 }
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) libs libexpat ] ;

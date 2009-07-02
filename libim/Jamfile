@@ -15,13 +15,12 @@ SharedLibrary libim.so :
 	Helpers.cpp
 	Protocol.cpp
 	: be stdc++.r4
+	: libim_version.rdef
 ;
 
 if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on libim.so += -lzeta ;
 }
-
-AddResources libim.so : libim_version.rdef ;
 
 InstallLib $(IMKIT_COMMON_LIB_DIRECTORY) : libim.so ;
 InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Constants.h ;

@@ -12,7 +12,7 @@ SubDir IMKIT_TOP utils ProtocolLoader ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 SubDirHdrs [ FDirName $(IMKIT_TOP) server ] ;
 
-Executable ProtocolLoader :
+Application ProtocolLoader :
 	main.cpp
 	ProtocolHandler.cpp
 	ProtocolLoaderApplication.cpp

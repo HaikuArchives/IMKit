@@ -13,7 +13,7 @@ SubDirHdrs [ FDirName $(IMKIT_LIBYAHOO2_INCDIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) common ] ;
 
-Addon yahoo :
+AddOn yahoo :
 	Yahoo.cpp
 	YahooCallbacks.cpp
 	YahooConnection.cpp

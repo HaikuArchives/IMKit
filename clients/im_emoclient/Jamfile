@@ -15,7 +15,7 @@ SubDirHdrs [ FDirName $(IMKIT_TOP) clients im_emoclient include ] ;
 
 SEARCH_SOURCE += [ FDirName $(IMKIT_TOP) clients im_emoclient BitmapMenu ] ;
 
-Executable im_emoclient :
+Application im_emoclient :
 	# im_emoclient
 	main.cpp
 	ChatApp.cpp

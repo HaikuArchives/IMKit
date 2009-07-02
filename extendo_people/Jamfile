@@ -10,7 +10,7 @@ SubDir IMKIT_TOP extendo_people ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable People :
+Application People :
 	main.cpp
 	PeopleWindow.cpp
 	: be

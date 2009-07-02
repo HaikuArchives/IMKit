@@ -24,6 +24,7 @@
 #include <storage/Resources.h>
 
 #include "preflet/PResources.h"
+#include "svn_revision.h"
 
 #ifdef ZETA
 #include <locale/Locale.h>
@@ -883,7 +884,7 @@ void IM_DeskbarIcon::DetachedFromWindow() {
 
 void IM_DeskbarIcon::AboutRequested(void) {
 	BString text = "";
-	text << _T("SVN Version: ") << BUILD_REVISION << "\n"
+	text << _T("SVN Version: ") << kSVNRevision << "\n"
 		<< _T("Built on: " ) << BUILD_DATE << "\n\n"
 		<< _T("The IM Kit is a collaborative effort released under the OsDrawer.net banner.")
 		<< _T(" Collaborators include (in alphabetical order):" ) << "\n"

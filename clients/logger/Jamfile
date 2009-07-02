@@ -10,7 +10,7 @@ SubDir IMKIT_TOP clients logger ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable im_logger :
+Application im_logger :
 	logger.cpp
 	: be libim.so
 	: im_logger.rdef

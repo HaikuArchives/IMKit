@@ -12,6 +12,12 @@
 #  include <netdb.h>
 #endif 
 
+#ifdef __HAIKU__
+#	include <arpa/inet.h>
+#	include <sys/socket.h>
+#	include <netdb.h>
+#endif
+
 #include "JabberHandler.h"
 
 #define LOG(X) printf X;

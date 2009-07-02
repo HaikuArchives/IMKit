@@ -8,7 +8,7 @@
 
 SubDir IMKIT_TOP utils mimetype ;
 
-Executable mimetype_attribute :
+Application mimetype_attribute :
 	mimetype_attribute.cpp
 	: be
 ;

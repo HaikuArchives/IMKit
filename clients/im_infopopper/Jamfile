@@ -10,7 +10,7 @@ SubDir IMKIT_TOP clients im_infopopper ;
 
 SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable im_infopopper :
+Application im_infopopper :
 	main.cpp
 	IMInfoApp.cpp
 	: be stdc++.r4 libim.so libcommon.a infopopper

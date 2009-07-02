@@ -8,9 +8,9 @@
 
 SubDir IMKIT_TOP utils IconSetter ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
-Executable IconSetter :
+Application IconSetter :
 	main.cpp
 	: be translation libim.so
 ;

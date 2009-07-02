@@ -8,6 +8,8 @@
 
 SubDir IMKIT_TOP common ;
 
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) common ] ;
+
 StaticLibrary libcommon.a :
 	Base64.cpp
 	BufferWriter.cpp
