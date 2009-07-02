@@ -8,7 +8,7 @@
 
 SubDir IMKIT_TOP clients im_infopopper ;
 
-SubDirHdrs [ FDirName $(IMKIT_TOP) ] ;
+SubDirSysHdrs [ FDirName $(IMKIT_TOP) ] ;
 
 Application im_infopopper :
 	main.cpp

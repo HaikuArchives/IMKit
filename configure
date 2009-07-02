@@ -14,6 +14,7 @@ checkmem=0
 is_haiku=0
 is_zeta=0
 is_beos=0
+platform=""
 ssl_incdir=""
 ssl_libdir=""
 yahoo2_incdir=""
@@ -104,10 +105,12 @@ case "$system" in
 		case "$release" in
 			5.*)
 				is_beos=1
+				platform="beos"
 				defines="BEOS=1 NETSERVER_BUILD=1"
 			;;
 			6.*)
 				is_zeta=1
+				platform="zeta"
 				defines="ZETA=1 BONE_BUILD=1"
 			;;
 			*)
@@ -118,7 +121,8 @@ case "$system" in
 	;;
 	Haiku)
 		is_haiku=1
-		defines="HAIKU_TARGET_PLATFORM_HAIKU=1 HAIKU=1 BONE_BUILD=1"
+		platform="haiku"
+		defines="HAIKU_TARGET_PLATFORM_HAIKU=1 HAIKU=1"
 		echo "$system $release"
 	;;
 	*)
@@ -272,6 +276,8 @@ IMKIT_IS_ZETA = ${is_zeta} ;
 IMKIT_HAVE_INFOPOPPER = ${have_infopopper} ;
 IMKIT_HAVE_OPENSSL = ${have_openssl} ;
 IMKIT_HAVE_LIBYAHOO2 = ${have_libyahoo2} ;
+
+PLATFORM = ${platform} ;
 
 RC = ${rcbin} ;
 XRES = ${xresbin} ;

@@ -2,9 +2,6 @@
 #
 # Setup global variables.
 
-# TODO: Handle different platforms!
-PLATFORM = haiku ;
-
 # C and C++ flags
 if $(OSPLAT) = PPC {
 	# filter out -nosyspath
