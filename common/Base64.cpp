@@ -101,7 +101,7 @@ int32 Base64Decode(const char *in, int32 length, uchar **result) {
 			}
 
 			value = value << ((3-j)*6);
-			printf("%0x", value);
+			printf("%0lx", value);
 
 			concat |= value;
 		}

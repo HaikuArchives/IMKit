@@ -52,6 +52,7 @@ int32 P2PHeader::Fields(void) {
 };
 
 int32 P2PHeader::FieldAt(int32 index, char *contents) {
+	return -1;
 };
 
 void P2PHeader::Method(char *method) {

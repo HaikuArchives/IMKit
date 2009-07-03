@@ -406,9 +406,7 @@ status_t MSNConnection::HandleCHL( Command * command ) {
 	int *md5hash = (int *)buf;
 	char hash1a[17];
 	char hash2a[17];
-	long long hash1 = 0;
-	long long hash2 = 0;
-	
+
 	sprintf((char *)buf + 16, "%s%s", challenge, kClientCode);
 	MD5(buf + 16, strlen((char *)buf + 16), buf);
 	for (i = 0; i < 16; i++) {
@@ -423,7 +421,7 @@ status_t MSNConnection::HandleCHL( Command * command ) {
 	sprintf(chlString,"%s%s00000000", challenge, kClientID);
 	chlString[i] = 0;
 	
-	for (i = 0; i < strlen(chlString) / 4; i += 2) {
+	for (i = 0; i < (int)strlen(chlString) / 4; i += 2) {
 		temp = chlStringArray[i];
 		
 		temp = (0x0E79A9C1 * temp) % 0x7FFFFFFF;
@@ -825,7 +823,7 @@ status_t MSNConnection::HandleILN(Command *command) {
 	command->Debug();
 	
 	// For now just forward the ILN command to NLN
-	HandleNLN(command);
+	return HandleNLN(command);
 };
 
 //#pragma mark Private
@@ -1074,7 +1072,7 @@ int32 MSNConnection::Receiver(void *con) {
 						};
 						
 						if (FD_ISSET(socket, &read)) {
-							bytes = recv(socket, buffer, min_c(payloadLen - processed, sizeof(buffer)), 0);
+							bytes = recv(socket, buffer, min_c(payloadLen - processed, (int32)sizeof(buffer)), 0);
 							if (bytes > 0) {
 								commandBuff.Append(buffer, bytes);
 								processed += bytes;

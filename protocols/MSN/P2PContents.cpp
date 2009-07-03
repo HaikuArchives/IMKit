@@ -30,6 +30,7 @@ int32 P2PContents::Fields(void) {
 };
 
 int32 P2PContents::FieldAt(int32 index, char *contents) {
+	return -1;
 };
 
 void P2PContents::AppendContent(char *content, int32 length = -1) {

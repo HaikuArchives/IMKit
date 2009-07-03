@@ -95,7 +95,7 @@ void MultiLineStringView::CalculateWrapping(const char *text) {
 	length = strlen(text);
 	
 	// Get a list of positions where we can break
-	while ((wordLen = strcspn(text + offset, spacers)) < (length - offset)) {
+	while ((wordLen = strcspn(text + offset, spacers)) < (size_t)(length - offset)) {
 		breakPos.push_back(wordLen + offset);
 		offset += wordLen + 1;
 	};

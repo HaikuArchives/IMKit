@@ -307,7 +307,7 @@ status_t ICQProtocol::Error(const char *error) {
 	msg.AddString("protocol", fManager->Protocol());
 	msg.AddString("error", error);
 	
-	fMsgr.SendMessage(&msg);
+	return fMsgr.SendMessage(&msg);
 };
 
 status_t ICQProtocol::Progress(const char *id, const char *message, float progress) {

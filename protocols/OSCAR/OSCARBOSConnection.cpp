@@ -54,7 +54,7 @@ status_t OSCARBOSConnection::HandleServiceControl(SNAC *snac, BufferReader *read
 	status_t ret = B_OK;
 	
 	uint16 subtype = snac->SubType();
-	uint32 request = snac->RequestID();
+	//uint32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 
@@ -294,7 +294,7 @@ status_t OSCARBOSConnection::HandleAuthorisation(SNAC *snac, BufferReader *reade
 	status_t ret = kUnhandled;
 	
 	uint16 subtype = snac->SubType();
-	uint32 request = snac->RequestID();
+	//uint32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 

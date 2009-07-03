@@ -562,7 +562,7 @@ ChatWindow::MessageReceived( BMessage * msg )
 			
 			if (next < -1) return;			
 			if (next < 0) next = chatWindows.size() - 1;
-			if (next > (chatWindows.size() - 1)) next = 0;
+			if (next > (int32)(chatWindows.size() - 1)) next = 0;
 			
 			BWindow *window = chatWindows[next];
 			if (window) window->Activate(true);
@@ -570,8 +570,6 @@ ChatWindow::MessageReceived( BMessage * msg )
 		
 		case IM::CONTACT_INFO: {
 			msg->PrintToStream();
-			bool mobile = false;
-//			if (msg->Find
 		} break;
 	
 		case IM::SETTINGS_UPDATED: {

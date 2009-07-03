@@ -78,6 +78,9 @@ void BTitledColumn::DrawString(const char* string, BView* parent, BRect rect)
 		case B_ALIGN_RIGHT:
 			parent->MovePenTo(rect.right - kTEXT_MARGIN - font.StringWidth(string), y);
 			break;
+		case B_ALIGN_HORIZONTAL_UNSET:
+		case B_ALIGN_USE_FULL_WIDTH:
+			break;
 	}
 	parent->DrawString(string);
 }
@@ -196,7 +199,6 @@ void BStringColumn::DrawField(BField* _field, BRect rect, BView* parent)
 //	}
 //	DrawString(field->ClippedString(), parent, rect);
 
-	float			width = rect.Width() - (2 * kTEXT_MARGIN);
 	BStringField*	field = static_cast<BStringField*>(_field);
 	BFont font;
 	parent->GetFont(&font);
@@ -234,7 +236,7 @@ void BStringColumn::DrawField(BField* _field, BRect rect, BView* parent)
 		draw.PrintToStream();
 	};
 	
-	printf("%i / %i\n", upTo, at);
+	printf("%ld / %ld\n", upTo, at);
 	if (count > 0) {
 		float newHeight = count * height;
 		BRow *parent = field->parent;
@@ -700,6 +702,10 @@ void BBitmapColumn::DrawField(BField* field, BRect rect, BView* parent)
 
 			case B_ALIGN_RIGHT:
 				x = rect.right - kTEXT_MARGIN - r.Width();
+				break;
+
+			case B_ALIGN_HORIZONTAL_UNSET:
+			case B_ALIGN_USE_FULL_WIDTH:
 				break;
 		}
 		parent->SetDrawingMode(B_OP_ALPHA);

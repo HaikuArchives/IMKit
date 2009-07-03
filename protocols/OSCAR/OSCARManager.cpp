@@ -233,7 +233,7 @@ status_t OSCARManager::HandleServiceControl(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 	
 	int16 subtype = snac->SubType();
-	int32 request = snac->RequestID();
+	//int32 request = snac->RequestID();
 
 	reader->OffsetTo(snac->DataOffset());
 	
@@ -323,7 +323,7 @@ status_t OSCARManager::HandleICBM(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 	
 	uint16 subtype = snac->SubType();
-	uint32 request = snac->RequestID();
+	//uint32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 	
@@ -333,11 +333,11 @@ status_t OSCARManager::HandleICBM(SNAC *snac, BufferReader *reader) {
 		} break;
 		
 		case MESSAGE_FROM_SERVER: {
-			int64 messageId = reader->ReadInt64();
+			//int64 messageId = reader->ReadInt64();
 			uint16 channel = reader->ReadInt16();
 			int8 nickLen = reader->ReadInt8();
 			char *nick = reader->ReadString(nickLen);
-			uint16 warning = reader->ReadInt16();
+			//uint16 warning = reader->ReadInt16();
 			uint16 tlvCount = reader->ReadInt16();
 			bool autoReply = false;
 			int16 userStatus = 0x0000;
@@ -374,13 +374,13 @@ status_t OSCARManager::HandleICBM(SNAC *snac, BufferReader *reader) {
 						if (tlv.Type() == 0x0002) {
 							while (tlvReader->Offset() < tlvReader->Length()) {
 								int8 id = tlvReader->ReadInt8();
-								int8 version = tlvReader->ReadInt8();
+								//int8 version = tlvReader->ReadInt8();
 								int16 length = tlvReader->ReadInt16();
 													
 								// If it's not the text fragment, just skip it
 								if (id == 0x01) {
 									uint16 charSet = tlvReader->ReadInt16();
-									uint16 charSubset = tlvReader->ReadInt16();
+									//uint16 charSubset = tlvReader->ReadInt16();
 									uint16 messageLen = length - (sizeof(int16) * 2);
 									message = tlvReader->ReadString(messageLen);
 									
@@ -421,7 +421,7 @@ status_t OSCARManager::HandleICBM(SNAC *snac, BufferReader *reader) {
 						BufferReader *tlvReader = tlv.Reader(B_SWAP_LENDIAN_TO_HOST);
 						
 						if (tlv.Type() == 0x0005) {	// Message data
-							uint32 uin = tlvReader->ReadInt32();
+							//uint32 uin = tlvReader->ReadInt32();
 							uint8 type = tlvReader->ReadInt8();
 							uint8 flags = tlvReader->ReadInt8();
 							uint16 length = tlvReader->ReadInt16();
@@ -480,8 +480,8 @@ status_t OSCARManager::HandleICBM(SNAC *snac, BufferReader *reader) {
 		} break;
 		
 		case TYPING_NOTIFICATION: {
-			uint64 id = reader->ReadInt64();
-			uint16 channel = reader->ReadInt16();
+			//uint64 id = reader->ReadInt64();
+			//uint16 channel = reader->ReadInt16();
 			uint8 nickLen = reader->ReadInt8();
 			char *nick = reader->ReadString(nickLen);
 			uint16 type = reader->ReadInt16();
@@ -513,7 +513,7 @@ status_t OSCARManager::HandleBuddyList(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 	
 	int16 subtype = snac->SubType();
-	int32 request = snac->RequestID();
+	//int32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 
@@ -539,7 +539,7 @@ status_t OSCARManager::HandleBuddyList(SNAC *snac, BufferReader *reader) {
 				};
 				
 				//	These are currently unused.
-				uint16 warningLevel = reader->ReadInt16();
+				//uint16 warningLevel = reader->ReadInt16();
 				uint16 tlvs = reader->ReadInt16();
 	
 				for (int32 i = 0; i < tlvs; i++) {
@@ -634,7 +634,7 @@ status_t OSCARManager::HandleSSI(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 
 	int16 subtype = snac->SubType();
-	int32 request = snac->RequestID();
+	//int32 request = snac->RequestID();
 
 	reader->OffsetTo(snac->DataOffset());
 	
@@ -753,10 +753,10 @@ status_t OSCARManager::HandleSSI(SNAC *snac, BufferReader *reader) {
 		} break;
 
 		case AUTHORISATION_REQUEST: {
-			uint8 idLength = reader->ReadInt8();
-			char *id = reader->ReadString(idLength);
-			uint16 reasonLength = reader->ReadInt16();
-			char *reason = reader->ReadString(reasonLength);
+			//uint8 idLength = reader->ReadInt8();
+			//char *id = reader->ReadString(idLength);
+			//uint16 reasonLength = reader->ReadInt16();
+			//char *reason = reader->ReadString(reasonLength);
 		} break;
 
 		default: {
@@ -822,7 +822,7 @@ status_t OSCARManager::HandleBuddyIcon(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 	
 	uint16 subtype = snac->SubType();
-	uint32 request = snac->RequestID();
+	//uint32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 
@@ -831,7 +831,7 @@ status_t OSCARManager::HandleBuddyIcon(SNAC *snac, BufferReader *reader) {
 			uint8 nickLen = reader->ReadInt8();
 			char *nick = reader->ReadString(nickLen);
 			uint16 type = reader->ReadInt16();
-			uint8 flags = reader->ReadInt8();
+			//uint8 flags = reader->ReadInt8();
 			uint8 hashLen = reader->ReadInt8();
 			uchar *hash = reader->ReadData(hashLen);
 			uint16 iconLen = reader->ReadInt16();
@@ -862,7 +862,7 @@ status_t OSCARManager::HandleICQ(SNAC *snac, BufferReader *reader) {
 	status_t ret = kUnhandled;
 	
 	uint16 subtype = snac->SubType();
-	uint32 request = snac->RequestID();
+	//uint32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 	
@@ -874,10 +874,10 @@ status_t OSCARManager::HandleICQ(SNAC *snac, BufferReader *reader) {
 			
 				switch (tlv.Type()) {
 					case 0x0001: {	// Encapsulated meta data
-						uint16 chunkSize = tlvReader->ReadInt16();
-						uint32 targetUIN = tlvReader->ReadInt32();
+						//uint16 chunkSize = tlvReader->ReadInt16();
+						//uint32 targetUIN = tlvReader->ReadInt32();
 						uint16 dataType = tlvReader->ReadInt16();
-						uint16 sequence = tlvReader->ReadInt16();
+						//uint16 sequence = tlvReader->ReadInt16();
 
 						switch (dataType) {
 							case 0x0041: {				// Offline message
@@ -885,19 +885,19 @@ status_t OSCARManager::HandleICQ(SNAC *snac, BufferReader *reader) {
 
 								uint32 uin = tlvReader->ReadInt32();
 															
- 								uint16 year = tlvReader->ReadInt16();
-								uint8 month = tlvReader->ReadInt8();
-								uint8 day = tlvReader->ReadInt8();
-								uint8 hour = tlvReader->ReadInt8();
-								uint8 minute = tlvReader->ReadInt8();
-								uint8 type = tlvReader->ReadInt8();
+ 								//uint16 year = tlvReader->ReadInt16();
+								//uint8 month = tlvReader->ReadInt8();
+								//uint8 day = tlvReader->ReadInt8();
+								//uint8 hour = tlvReader->ReadInt8();
+								//uint8 minute = tlvReader->ReadInt8();
+								//uint8 type = tlvReader->ReadInt8();
 								uint8 flags = tlvReader->ReadInt8();
 								
 								uint16 length = tlvReader->ReadInt16();
 								char *message = tlvReader->ReadString(length);
 								
 								char id[256];
-								snprintf(id, sizeof(id), "%i", uin);
+								snprintf(id, sizeof(id), "%ld", uin);
 								
 								fHandler->MessageFromUser(id, message,
 									(flags & 0x03) == 0x03);

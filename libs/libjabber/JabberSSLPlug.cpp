@@ -183,6 +183,8 @@ JabberSSLPlug::StopConnection(){
 
 	bio = NULL;
 	ctx = NULL;
+
+	return 0;
 }
 
 

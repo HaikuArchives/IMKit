@@ -348,7 +348,7 @@ ContactCachedConnections *ContactManager::CreateContact(Connection connection, c
 	};
 
 	// File created - set the type
-	if (file.WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, kContactMIMEType, strlen(kContactMIMEType)) != strlen(kContactMIMEType)) {
+	if (file.WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, kContactMIMEType, strlen(kContactMIMEType)) != (ssize_t)strlen(kContactMIMEType)) {
 		// Error writing type
 		entry.Remove();
 		

@@ -54,7 +54,7 @@ OSCARConnection::OSCARConnection(const char *server, uint16 port, OSCARManager *
 	fServer = server;
 	fPort = port;
 	fThread = B_ERROR;
-	
+
 	fRunner = new BMessageRunner(BMessenger(NULL, (BLooper *)this),
 		new BMessage(AMAN_PULSE), 250000, -1);	
 
@@ -523,7 +523,7 @@ int32 OSCARConnection::Receiver(void *con) {
 	struct fd_set error;
 	int16 bytes = 0;
 	int32 processed = 0;
-	uint16 flapLen = 0;
+	//uint16 flapLen = 0;
 	uchar flapHeader[kFLAPHeaderLen];
 	
 	while (connection->fSockMsgr->IsValid() == true) {

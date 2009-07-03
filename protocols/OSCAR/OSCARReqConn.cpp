@@ -25,7 +25,7 @@ status_t OSCARReqConn::HandleServiceControl(SNAC *snac, BufferReader *reader) {
 	status_t ret = B_OK;
 	
 	uint16 subtype = snac->SubType();
-	int32 request = snac->RequestID();
+	//int32 request = snac->RequestID();
 	
 	reader->OffsetTo(snac->DataOffset());
 	

@@ -133,7 +133,6 @@ bool LogWin::HandlesRef(entry_ref ref) {
 void LogWin::MessageReceived(BMessage *msg) {
 	switch (msg->what) {
 		case IM::MESSAGE: {
-			static int32 j;
 			entry_ref contact;
 			if (msg->FindRef("contact",&contact) != B_OK) {
 				printf("Couldn't extract ze contact! Mein lieben!\n");
@@ -245,5 +244,6 @@ int32 LogWin::GenerateContents(void *arg) {
 			};
 		};
 	};
-};
 
+	return B_OK;
+};

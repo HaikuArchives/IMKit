@@ -20,7 +20,7 @@ void PrintHex(const unsigned char* buf, size_t size) {
 	int j = 0;
 	int breakpoint = 0;
 
-	for(;i < size; i++) {
+	for(;i < (int)size; i++) {
 		fprintf(stdout, "%02x ", (unsigned char)buf[i]);
 		breakpoint++;	
 
@@ -49,7 +49,7 @@ void PrintHex(const unsigned char* buf, size_t size) {
 	
 	fprintf(stdout, "\t\t");
 
-	for(j = size - (size%16); j < size; j++) {
+	for(j = size - (size%16); j < (int)size; j++) {
 		if(buf[j] < 30) {
 			fprintf(stdout, ".");
 		} else {
@@ -188,8 +188,6 @@ void MSNManager::MessageReceived(BMessage *msg) {
 		} break;
 		
 		case msnmsgNewConnection: {
-			const char *cookie;
-			int32 bytes = 0;
 			int16 port = 0;
 			char *host = NULL;
 			const char *type = NULL;
@@ -236,7 +234,7 @@ void MSNManager::MessageReceived(BMessage *msg) {
 				
 				const char *auth = msg->FindString("authString");
 				const char *sessionID = msg->FindString("sessionID");
-				const char *inviter = msg->FindString("inviterPassport");
+				//const char *inviter = msg->FindString("inviterPassport");
 				
 				Command *command = new Command("ANS");
 				command->AddParam(fPassport.String());

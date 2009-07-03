@@ -122,7 +122,7 @@ int main( int numarg, const char * argv[] )
 				(attributeType[2] << 8) + attributeType[3];
 				
 			printf("Attribute type was non standard, presuming character "
-				"representation: %s -> %i\n", attributeType.String(),
+				"representation: %s -> %ld\n", attributeType.String(),
 				attributeTypeConst);
 		} else {
 			print_usage();
@@ -158,7 +158,7 @@ int main( int numarg, const char * argv[] )
 	// check if already set
 	const char * name = NULL;
 
-	for (int32 index ; msg.FindString("attr:name", index, &name) == B_OK; index++) {
+	for (int32 index = 0; msg.FindString("attr:name", index, &name) == B_OK; index++) {
 		if (attributeInternal == name) {
 			printf("Attribute already set.\n");
 			return 4;
@@ -167,8 +167,8 @@ int main( int numarg, const char * argv[] )
 	
 	printf("Adding attribute [%s] to MIME type [%s]\n", attributeInternal.String(), mimeType.String() );
 	printf("Pretty name: [%s]\n", attributePublic.String() );
-	printf("Type: [%s] (%X)\n", attributeType.String(), attributeTypeConst );
-	printf("Display width: %ld\n", displayWidth );
+	printf("Type: [%s] (%lX)\n", attributeType.String(), attributeTypeConst );
+	printf("Display width: %d\n", displayWidth );
 	printf("Editable: %s\n", isEditable ? "true" : "false" );
 	printf("Public: %s\n", isPublic ? "true" : "false" );
 	printf("Viewable: %s\n", isViewable ? "true" : "false" );

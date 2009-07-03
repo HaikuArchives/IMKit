@@ -287,7 +287,7 @@ status_t AIMProtocol::Error(const char *error) {
 	msg.AddString("protocol", fManager->Protocol());
 	msg.AddString("error", error);
 	
-	fMsgr.SendMessage(&msg);
+	return fMsgr.SendMessage(&msg);
 };
 
 status_t AIMProtocol::Progress(const char *id, const char *message, float progress) {
