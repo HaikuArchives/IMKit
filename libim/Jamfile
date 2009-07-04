@@ -28,3 +28,12 @@ InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Contact.h ;
 InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Helpers.h ;
 InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Manager.h ;
 InstallFile $(IMKIT_COMMON_INC_DIRECTORY)/libim : Protocol.h ;
+
+Package imkit :
+	libim.so :
+	[ FSplitPath $(IMKIT_COMMON_LIB_DIRECTORY) ]
+;
+Package imkit :
+	Constants.h Contact.h Helpers.h Manager.h Protocol.h :
+	[ FSplitPath $(IMKIT_COMMON_INC_DIRECTORY) ]
+;

@@ -49,3 +49,8 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_emoclient ;
+
+Package imkit :
+	im_emoclient :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

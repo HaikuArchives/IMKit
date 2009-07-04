@@ -19,3 +19,8 @@ Application im_logger :
 Depends im_logger : libim.so ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_logger ;
+
+Package imkit :
+	im_logger :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

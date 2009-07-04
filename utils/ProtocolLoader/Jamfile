@@ -28,3 +28,8 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallBin $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;
+
+Package imkit :
+	ProtocolLoader :
+	[ FSplitPath $(IMKIT_APPS_DIRECTORY)/im_kit ]
+;

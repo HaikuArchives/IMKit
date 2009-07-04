@@ -36,3 +36,8 @@ InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlog_viewer ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon im_binlog_viewer : [ FDirName $(TOP) icons imkit clients im_binlog_viewer.svg ] ;
 }
+
+Package imkit :
+	im_binlog_viewer :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

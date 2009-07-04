@@ -23,3 +23,8 @@ Depends im_infopopper : libim.so ;
 LINKFLAGS on im_infopopper += -L$(IMKIT_COMMON_LIB_DIRECTORY) ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_infopopper ;
+
+Package imkit :
+	im_infopopper :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

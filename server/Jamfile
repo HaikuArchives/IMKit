@@ -38,3 +38,8 @@ InstallBin $(IMKIT_COMMON_SERVERS_DIRECTORY) : im_server ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon im_server : [ FDirName $(TOP) icons imkit im_server.svg ] ;
 }
+
+Package imkit :
+	im_server :
+	[ FSplitPath $(IMKIT_COMMON_SERVERS_DIRECTORY) ]
+;

@@ -75,3 +75,12 @@ if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon aim : [ FDirName $(TOP) icons imkit protocols AIM.svg ] ;
 	SVGIcon icq : [ FDirName $(TOP) icons imkit protocols ICQ.svg ] ;
 }
+
+Package imkit :
+	aim :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+;
+Package imkit :
+	icq :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+;

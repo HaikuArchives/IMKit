@@ -29,3 +29,8 @@ InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_contact_list ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon im_contact_list : [ FDirName $(TOP) icons imkit im_contact_list.svg ] ;
 }
+
+Package imkit :
+	im_contact_list :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

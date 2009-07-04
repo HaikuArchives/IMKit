@@ -14,3 +14,8 @@ Application mimetype_attribute :
 ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : mimetype_attribute ;
+
+Package imkit :
+	mimetype_attribute :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

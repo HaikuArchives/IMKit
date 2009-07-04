@@ -24,3 +24,8 @@ InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlogger ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon im_binlogger : [ FDirName $(TOP) icons imkit clients im_binlogger.svg ] ;
 }
+
+Package imkit :
+	im_binlogger :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

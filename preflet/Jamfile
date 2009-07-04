@@ -43,4 +43,14 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallBin $(IMKIT_PREFERENCES_DIRECTORY) : InstantMessaging ;
-InstallSymlink $(IMKIT_USER_PREFERENCES_DIRECTORY)/InstantMessaging : $(IMKIT_PREFERENCES_DIRECTORY)/InstantMessaging ;
+InstallSymLink $(IMKIT_USER_PREFERENCES_DIRECTORY)/InstantMessaging :
+	$(IMKIT_PREFERENCES_DIRECTORY)/InstantMessaging ;
+
+Package imkit :
+	InstantMessaging :
+	[ FSplitPath $(IMKIT_PREFERENCES_DIRECTORY) ]
+;
+PackageSymLink imkit :
+	[ FSplitPath $(IMKIT_USER_PREFERENCES_DIRECTORY)/InstantMessaging ] :
+	$(IMKIT_PREFERENCES_DIRECTORY)/InstantMessaging
+;

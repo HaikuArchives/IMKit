@@ -15,3 +15,8 @@ AddOn IM_Merge_contacts :
 ;
 
 InstallBin $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker : IM_Merge_contacts ;
+
+Package imkit :
+	IM_Merge_contacts :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker ]
+;

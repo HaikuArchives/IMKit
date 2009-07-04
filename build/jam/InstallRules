@@ -1,4 +1,4 @@
-rule InstallSymlink
+rule InstallSymLink
 {
 	# InstallSymlink linkname : source ;
 
@@ -7,10 +7,10 @@ rule InstallSymlink
 	LocalClean uninstall : $(<) ;
 
 	NoCare $(>) ;
-	InstallSymlink1 $(<) : $(>) ;
+	InstallSymLink1 $(<) : $(>) ;
 }
 
-actions InstallSymlink1
+actions InstallSymLink1
 {
 	$(RM) $(<) && $(LN) -s $(>) $(<)
 }

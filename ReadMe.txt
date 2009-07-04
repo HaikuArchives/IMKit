@@ -21,6 +21,10 @@ If you want to uninstall:
 
 $ jam -q uninstall
 
+To build a .zip archive:
+
+$ jam -q imkit
+
 Triggering the post-install script:
 
 $ jam post-install

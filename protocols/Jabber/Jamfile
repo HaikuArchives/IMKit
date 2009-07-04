@@ -42,3 +42,8 @@ InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : jabber ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon jabber : [ FDirName $(TOP) icons imkit protocols Jabber.svg ] ;
 }
+
+Package imkit :
+	jabber :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+;

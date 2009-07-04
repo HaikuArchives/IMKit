@@ -45,3 +45,8 @@ InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : gtalk ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon gtalk : [ FDirName $(TOP) icons imkit protocols GoogleTalk.svg ] ;
 }
+
+Package imkit :
+	gtalk :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+;

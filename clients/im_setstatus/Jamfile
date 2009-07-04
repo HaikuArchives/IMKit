@@ -18,3 +18,8 @@ Application im_setstatus :
 Depends im_setstatus : libim.so ;
 
 InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_setstatus ;
+
+Package imkit :
+	im_setstatus :
+	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+;

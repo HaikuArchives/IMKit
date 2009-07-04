@@ -34,3 +34,8 @@ if $(IMKIT_IS_ZETA) = 1 {
 }
 
 InstallLib $(IMKIT_APPS_DIRECTORY)/im_kit : IMDeskbarIcon ;
+
+Package imkit :
+	IMDeskbarIcon :
+	[ FSplitPath $(IMKIT_APPS_DIRECTORY)/im_kit ]
+;

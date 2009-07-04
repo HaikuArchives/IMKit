@@ -44,3 +44,8 @@ InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : yahoo ;
 if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon yahoo : [ FDirName $(TOP) icons imkit protocols Yahoo.svg ] ;
 }
+
+Package imkit :
+	yahoo :
+	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+;
