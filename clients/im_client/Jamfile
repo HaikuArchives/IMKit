@@ -23,7 +23,7 @@ Application im_client :
 	ImageButton.cpp
 	StatusBar.cpp
 	IconBar.cpp
-	: be stdc++.r4 libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
 	: im_client.rsrc
 ;
 

@@ -22,7 +22,7 @@ Application IMDeskbarIcon :
 	DeskbarIcon.cpp
 	QueryLooper.cpp
 	svn_revision.cpp
-	: be stdc++.r4 libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
 	: DeskbarIcon.rdef DeskbarIcons.rdef
 ;
 

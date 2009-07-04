@@ -13,7 +13,7 @@ SubDirSysHdrs [ FDirName $(TOP) ] ;
 Application im_infopopper :
 	main.cpp
 	IMInfoApp.cpp
-	: be stdc++.r4 libim.so libcommon.a infopopper
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a infopopper
 	: im_infopopper.rdef
 ;
 

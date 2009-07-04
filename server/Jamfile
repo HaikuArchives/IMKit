@@ -20,7 +20,7 @@ Application im_server :
 	ProtocolManager.cpp
 	ProtocolInfo.cpp
 	StatusIcon.cpp
-	: be stdc++.r4 translation textencoding libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) translation textencoding libim.so libcommon.a
 	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
 ;
 

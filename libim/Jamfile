@@ -14,7 +14,7 @@ SharedLibrary libim.so :
 	Manager.cpp
 	Helpers.cpp
 	Protocol.cpp
-	: be stdc++.r4
+	: be $(TARGET_LIBSTDC++)
 	: libim_version.rdef
 ;
 

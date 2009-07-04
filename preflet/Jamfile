@@ -27,7 +27,7 @@ Application InstantMessaging :
 	SettingsController.cpp
 	SettingsInfo.cpp
 	ViewFactory.cpp
-	: be stdc++.r4 translation textencoding libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) translation textencoding libim.so libcommon.a
 	: preflet.rdef
 ;
 

@@ -36,7 +36,7 @@ Application im_emoclient :
 	MenuBuilder.cpp
 	BitmapMenuItem.cpp
 	PopUpMenu.cpp
-	: be stdc++.r4 translation bsvg libcommon.a libexpat.a libim.so
+	: be $(TARGET_LIBSTDC++) translation bsvg libcommon.a libexpat.a libim.so
 	: im_emoclient.rsrc
 ;
 

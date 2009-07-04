@@ -20,7 +20,7 @@ Application im_binlog_viewer :
 	ColorTools.cpp
 	ColumnListView.cpp
 	ColumnTypes.cpp
-	: be stdc++.r4 tracker libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) tracker libim.so libcommon.a
 	: im_binlog_viewer.rdef
 ;
 

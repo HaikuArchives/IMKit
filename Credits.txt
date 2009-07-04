@@ -6,7 +6,7 @@ We will add you!
 
 == Code ==
 
-Code contributors in alphabetical order:
+Code contributors in alphabetical order by last name:
 
   * Bruno G. "bga" Albuquerque
   * Andrea "xeD" Anzani

@@ -16,7 +16,7 @@ SubDirSysHdrs [ FDirName $(TOP) server ] ;
 
 AddOn jabber :
 	Jabber.cpp
-	: be stdc++.r4 libim.so libexpat.a libjabber.a
+	: be $(TARGET_LIBSTDC++) libim.so libexpat.a libjabber.a
 	: Jabber.rdef ProtocolTemplate.rdef
 ;
 

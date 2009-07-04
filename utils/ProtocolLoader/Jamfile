@@ -16,7 +16,7 @@ Application ProtocolLoader :
 	main.cpp
 	ProtocolHandler.cpp
 	ProtocolLoaderApplication.cpp
-	: be stdc++.r4 libim.so libcommon.a 
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a 
 	: ProtocolLoader.rdef
 ;
 

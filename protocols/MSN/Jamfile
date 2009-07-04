@@ -24,7 +24,7 @@ AddOn msn :
 	P2PHeader.cpp
 	Buddy.cpp
 	SSO.cpp 
-	: be stdc++.r4 libim.so libcommon.a ssl crypto
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a ssl crypto
 	: MSN.rdef ProtocolTemplate.rdef
 ;
 

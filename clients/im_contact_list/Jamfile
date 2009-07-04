@@ -13,7 +13,7 @@ SubDirHdrs [ FDirName $(TOP) ] ;
 Application im_contact_list :
 	main.cpp
 	ContactListApp.cpp
-	: be stdc++.r4 libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
 	: im_contact_list.rdef
 ;
 

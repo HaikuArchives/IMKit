@@ -15,6 +15,7 @@ is_haiku=0
 is_zeta=0
 is_beos=0
 platform=""
+have_gcc4=0
 ssl_incdir=""
 ssl_libdir=""
 yahoo2_incdir=""
@@ -54,6 +55,27 @@ function which_replacement()
 
 	echo $location
  	return
+}
+
+# Simple test to detect if we have gcc4
+function gcc4_test()
+{
+	cat << EOF | gcc -E -pipe -c - | grep gcc -q
+#if defined(__GNUC__)
+#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 0)
+		// Good, we've got gcc4 or better
+#	else
+		int gcc_less_than_four;
+#	endif
+#else
+	int no_gcc;
+#endif
+EOF
+	if [ $? -eq 0 ]; then
+		return 1
+	fi
+
+	return 0
 }
 
 # Binaries
@@ -130,6 +152,17 @@ case "$system" in
 		exit 1
 	;;
 esac
+
+# Checking if we have gcc4 or not
+echo -n "Checking for gcc4..."
+gcc4_test
+if [ $? -eq 0 ]; then
+	have_gcc4=1
+	echo "found"
+else
+	echo "not found"
+	have_gcc4=0
+fi
 
 # Check for rc
 echo -n "Checking for rc... "
@@ -278,6 +311,7 @@ IMKIT_HAVE_OPENSSL = ${have_openssl} ;
 IMKIT_HAVE_LIBYAHOO2 = ${have_libyahoo2} ;
 
 PLATFORM = ${platform} ;
+HAVE_GCC4 = ${have_gcc4} ;
 
 RC = ${rcbin} ;
 XRES = ${xresbin} ;

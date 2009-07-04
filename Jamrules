@@ -5,9 +5,6 @@ SCRIPTS_DIR		= [ FDirName $(JAM_DIR) scripts ] ;
 GENERATED_DIR		= [ FDirName $(TOP) generated ] ;
 DISTRO_DIR		= [ FDirName $(TOP) generated distro ] ;
 
-# TODO: Call gcc4-detector
-HAVE_GCC4 = 0 ;
-
 ##-------------------------------------------------------------------
 ## Defines
 ##-------------------------------------------------------------------

@@ -18,7 +18,7 @@ AddOn yahoo :
 	YahooCallbacks.cpp
 	YahooConnection.cpp
 	yahoo_util.c
-	: be stdc++.r4 libcommon.a yahoo2
+	: be $(TARGET_LIBSTDC++) libcommon.a yahoo2
 	: Yahoo.rdef ProtocolTemplate.rdef
 ;
 
