@@ -10,6 +10,8 @@ SubDir TOP preflet ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 
+C++FLAGS += -fpermissive ;
+
 Application InstantMessaging :
 	main.cpp
 	PApplication.cpp
@@ -27,7 +29,7 @@ Application InstantMessaging :
 	SettingsController.cpp
 	SettingsInfo.cpp
 	ViewFactory.cpp
-	: be $(TARGET_LIBSTDC++) translation textencoding libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) translation textencoding libcommon.a libim.so
 	: preflet.rdef
 ;
 

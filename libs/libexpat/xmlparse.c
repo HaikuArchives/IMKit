@@ -11,7 +11,7 @@ See the file COPYING for copying permission.
 #else
 
 
-#ifdef __declspec
+#  if defined(__declspec) && !defined(__BEOS__) && !defined(__HAIKU__)
 #  define XMLPARSEAPI(type) __declspec(dllexport) type __cdecl
 #endif
 

@@ -80,7 +80,7 @@ void MultiLineStringView::SetWidth(float width) {
 
 void MultiLineStringView::CalculateWrapping(const char *text) {
 	const char spacers[] = " \n-\\/";
-	vector<int16> breakPos;
+	std::vector<int16> breakPos;
 	size_t wordLen = 0;
 	int16 length = 0;
 	int16 offset = 0;

@@ -22,7 +22,7 @@
 #include <iterator>
 #include <map>
 
-#include "ObjectList.h"
+#include <common/ObjectList.h>
 
 void
 setAttributeIfNotPresent( entry_ref ref, const char * attr, const char * value);

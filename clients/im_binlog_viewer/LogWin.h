@@ -13,9 +13,9 @@
 
 #include <stdlib.h>
 
-#include "CLV/ColumnListView.h"
-#include "CLV/ColumnTypes.h"
-#include "../../../common/IMKitUtilities.h"
+#include <common/ColumnListView.h>
+#include <common/ColumnTypes.h>
+#include <common/IMKitUtilities.h>
 
 #include <libim/Constants.h>
 #include <libim/Contact.h>
@@ -23,8 +23,8 @@
 
 #include <map>
 
-typedef map<BString, BBitmap *> iconmap;
-typedef map<time_t, BMessage *> msgmap;
+typedef std::map<BString, BBitmap *> iconmap;
+typedef std::map<time_t, BMessage *> msgmap;
 
 class LogWin : public BWindow {
 	public:

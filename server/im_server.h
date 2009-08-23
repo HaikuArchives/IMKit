@@ -112,7 +112,7 @@ namespace IM {
 					
 			// Variables
 			
-			list<BMessenger>		fMessengers;
+			std::list<BMessenger>		fMessengers;
 			bool					fIsQuitting;
 			
 			/**
@@ -124,11 +124,11 @@ namespace IM {
 			/*	Used to store both <protocol>:<id> and <protocol> status.
 				In other words, both own status per protocol and contact
 				status per connection */
-			map<string,string>		fStatus;// proto_id_string,status_string
+			std::map<std::string, std::string>		fStatus;// proto_id_string,status_string
 			
-			map<Contact,string>		fPreferredConnection;
+			std::map<Contact, std::string>		fPreferredConnection;
 	
-			map<int, StatusIcon *>	fStatusIcons;
+			std::map<int, StatusIcon *>	fStatusIcons;
 	
 			BMessenger				fDeskbarMsgr;
 			

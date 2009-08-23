@@ -13,7 +13,7 @@ const int kResizeWidgetCircleCount = 2;
 
 //#pragma mark Constructor
 
-Divider::Divider(BRect frame, const char *name = "Divider", uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP_BOTTOM, uint32 flags = 0) :
+Divider::Divider(BRect frame, const char *name, uint32 resize, uint32 flags) :
 	BView(frame, name, resize, flags | B_FRAME_EVENTS | B_WILL_DRAW),
 	fOrient(B_HORIZONTAL) {
 	
@@ -91,7 +91,7 @@ void Divider::GetPreferredSize(float *width, float *height) {
 
 //#pragma BArchivable Hooks
 
-status_t Divider::Archive(BMessage *archive, bool deep = true) const {
+status_t Divider::Archive(BMessage *archive, bool deep) const {
 	archive->AddInt32("orientation", fOrient);
 	return BView::Archive(archive, false);
 };

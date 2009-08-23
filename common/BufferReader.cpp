@@ -2,11 +2,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 //#pragma mark Constructor
 
 BufferReader::BufferReader(const uchar *data, int32 length,
-	swap_action swap = B_SWAP_BENDIAN_TO_HOST)
+	swap_action swap)
 
 	: fBuffer((uchar *)data),
 	fLength(length),
@@ -15,9 +16,8 @@ BufferReader::BufferReader(const uchar *data, int32 length,
 	fOffset(0) {
 };
 
-BufferReader::BufferReader(uchar *data, int32 length, bool own = true,
-	swap_action swap = B_SWAP_BENDIAN_TO_HOST)
-	
+BufferReader::BufferReader(uchar *data, int32 length, bool own,
+	swap_action swap)
 	: fBuffer(data),
 	fLength(length),
 	fOwn(own),
@@ -57,14 +57,14 @@ bool BufferReader::HasMoreData(void) const {
 
 //#pragma mark Reader Methods
                                             			
-int8 BufferReader::ReadInt8(bool autoincrement = true) {
+int8 BufferReader::ReadInt8(bool autoincrement) {
 	int8 value = *(int8 *)(fBuffer + fOffset);
 	if (autoincrement) fOffset += sizeof(value);
 	
 	return value;
 };
 
-int16 BufferReader::ReadInt16(bool autoincrement = true) {
+int16 BufferReader::ReadInt16(bool autoincrement) {
 	int16 value = *(int16 *)(fBuffer + fOffset);
 	if (autoincrement) fOffset += sizeof(value);
 
@@ -73,7 +73,7 @@ int16 BufferReader::ReadInt16(bool autoincrement = true) {
 	return value;
 };
 
-int32 BufferReader::ReadInt32(bool autoincrement = true) {
+int32 BufferReader::ReadInt32(bool autoincrement) {
 	int32 value = *(int32 *)(fBuffer + fOffset);
 	if (autoincrement) fOffset += sizeof(value);
 
@@ -82,7 +82,7 @@ int32 BufferReader::ReadInt32(bool autoincrement = true) {
 	return value;
 };
 
-int64 BufferReader::ReadInt64(bool autoincrement = true) {
+int64 BufferReader::ReadInt64(bool autoincrement) {
 	int64 value = *(int64 *)(fBuffer + fOffset);
 	if (autoincrement) fOffset += sizeof(value);
 
@@ -91,7 +91,7 @@ int64 BufferReader::ReadInt64(bool autoincrement = true) {
 	return value;
 };
 
-uchar *BufferReader::ReadData(int16 length, bool autoincrement = true) {
+uchar *BufferReader::ReadData(int16 length, bool autoincrement) {
 	uchar *buffer = NULL;
 	if (length > 0) {
 		buffer = (uchar *)calloc(length, sizeof(uchar));
@@ -103,7 +103,7 @@ uchar *BufferReader::ReadData(int16 length, bool autoincrement = true) {
 	return buffer;
 };
 
-char *BufferReader::ReadString(int16 length, bool autoincrement = true) {
+char *BufferReader::ReadString(int16 length, bool autoincrement) {
 	char *str = (char *)calloc(length + 1, sizeof(char));
 	memcpy(str, fBuffer + fOffset, length);
 	str[length] = '\0';

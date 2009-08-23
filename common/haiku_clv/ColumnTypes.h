@@ -41,6 +41,8 @@ class BTitledColumn : public BColumn
 		void				Title				(BString* forTitle) const; // sets the BString arg to be the title
 		float				FontHeight			() const;
 
+		virtual float		GetPreferredWidth(BField* field, BView* parent) const;
+
 	private:
 		float				fFontHeight;
 		BString				fTitle;
@@ -76,8 +78,8 @@ class BStringColumn : public BTitledColumn
 	public:
 							BStringColumn		(const char *title,
 												 float width,
-												 float maxWidth,
 												 float minWidth,
+												 float maxWidth,
 												 uint32 truncate,
 												 alignment align = B_ALIGN_LEFT);
 		virtual void		DrawField			(BField* field,
@@ -85,6 +87,7 @@ class BStringColumn : public BTitledColumn
 												 BView* parent);
 		virtual int			CompareFields		(BField* field1,
 												 BField* field2);
+		virtual float		GetPreferredWidth(BField* field, BView* parent) const;
 		virtual	bool		AcceptsField        (const BField* field) const;
 
 	private:

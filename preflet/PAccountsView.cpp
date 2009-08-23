@@ -483,7 +483,7 @@ void PAccountsView::LoadSettings(bool reload) {
 		delete item;
 	};
 
-	for (map<BString, BMessage *>::iterator it = fSettings->Start(); it != fSettings->End(); it++) {
+	for (std::map<BString, BMessage *>::iterator it = fSettings->Start(); it != fSettings->End(); it++) {
 		BStringItem *item = new BStringItem(it->first.String());
 		fAccountListView->AddItem(item);
 	};

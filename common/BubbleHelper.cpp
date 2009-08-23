@@ -167,9 +167,9 @@ void BubbleHelper::Helper()
     textview->MakeSelectable(false);
     textview->SetWordWrap(false);
 #ifdef __HAIKU__
-    textview->SetHighColor(ui_color(B_TOOLTIP_TEXT_COLOR));
-    textview->SetLowColor(ui_color(B_TOOLTIP_BACKGROUND_COLOR));
-    textview->SetViewColor(ui_color(B_TOOLTIP_BACKGROUND_COLOR));
+    textview->SetHighColor(ui_color(B_TOOL_TIP_TEXT_COLOR));
+    textview->SetLowColor(ui_color(B_TOOL_TIP_BACKGROUND_COLOR));
+    textview->SetViewColor(ui_color(B_TOOL_TIP_BACKGROUND_COLOR));
 #else
     textview->SetLowColor(240,240,100);
     textview->SetViewColor(240,240,100);

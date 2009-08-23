@@ -10,7 +10,7 @@ SubDir TOP clients tracker_addons merge_contacts ;
 
 AddOn IM_Merge_contacts :
 	merge_contacts.cpp
-	: be
+	: be $(TARGET_LIBSTDC++)
 	: merge_contacts.rdef
 ;
 

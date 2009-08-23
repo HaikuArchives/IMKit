@@ -7,6 +7,8 @@
 #include <fs_attr.h>
 #include <Alert.h>
 
+#include <string.h>
+
 void
 merge_contacts( entry_ref _src, entry_ref _dst )
 {

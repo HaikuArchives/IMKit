@@ -1,6 +1,7 @@
 #include "Contact.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <Node.h>
@@ -273,7 +274,7 @@ status_t Contact::FindConnection(const char * _protocol, char * buffer) {
 	BString str(_protocol);
 	str.ToLower();
 	
-	string protocol(str.String());
+	BString protocol(str.String());
 	
 	for ( int i=0; i < fConnections.CountItems(); i++ ) {
 		const char *connBuffer = (const char *)fConnections.ItemAt(i);
@@ -381,8 +382,8 @@ status_t Contact::ReadAttribute(const char *name, char **buffer, int32 *size) {
 		attr_info info;
 		ret = node.GetAttrInfo(name, &info);
 		if (ret == B_OK) {
-			*buffer = (char *)calloc(info.size, sizeof(char));
-			ret = node.ReadAttr(name, info.type, 0, *buffer, info.size);
+			*buffer = (char *)calloc((size_t)info.size, sizeof(char));
+			ret = node.ReadAttr(name, info.type, 0, *buffer, (size_t)info.size);
 			if (ret > B_OK) {
 				*size = ret;
 				ret = B_OK;

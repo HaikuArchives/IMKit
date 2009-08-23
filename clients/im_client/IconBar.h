@@ -10,7 +10,7 @@ class BDirectory;
 class BubbleHelper;
 class ImageButton;
 
-typedef vector<ImageButton *> button_t;
+typedef std::vector<ImageButton *> button_t;
 
 class IconBar : public BView {
 	public:

@@ -14,7 +14,7 @@ IconView::IconView(BBitmap *icon)
 	fEnabled(true) {
 };
 
-IconView::IconView(entry_ref ref, int16 size = kSmallIcon, bool followSymlink = true)
+IconView::IconView(entry_ref ref, int16 size, bool followSymlink)
 	: BView(BRect(1, 1, size, size), "IconView", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM, B_WILL_DRAW),
 	fBitmap(NULL),
 	fEnabled(true) {

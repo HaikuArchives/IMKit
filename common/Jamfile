@@ -10,6 +10,13 @@ SubDir TOP common ;
 
 SubDirSysHdrs [ FDirName $(TOP) common ] ;
 
+if $(PLATFORM) = Haiku {
+	SEARCH_SOURCE += [ FDirName $(TOP) common haiku_clv ] ;
+} else {
+	SEARCH_SOURCE += [ FDirName $(TOP) common clv ] ;
+}
+C++FLAGS += -fpermissive ;
+
 StaticLibrary libcommon.a :
 	Base64.cpp
 	BufferWriter.cpp
@@ -24,6 +31,11 @@ StaticLibrary libcommon.a :
 	Divider.cpp
 	SettingsFile.cpp
 	htmlparse.cpp
+
+	# CLV
+	ColorTools.cpp
+	ColumnListView.cpp
+	ColumnTypes.cpp
 ;
 
 if $(IMKIT_IS_ZETA) = 1 {

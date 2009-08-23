@@ -5,7 +5,7 @@
 #include <View.h>
 #include <vector>
 
-typedef vector<BString> line_t;
+typedef std::vector<BString> line_t;
 
 class MultiLineStringView : public BView {
 	public:

@@ -7,7 +7,7 @@ class BApplication;
 class ChatWindow;
 class RunView;
 
-typedef map<BString, RunView *> RunMap;
+typedef std::map<BString, RunView *> RunMap;
 extern const char *kDefaultPeopleHandler;
 
 class ChatApp : public BApplication

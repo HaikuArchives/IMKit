@@ -46,7 +46,7 @@ void NotifyingTextView::SetNotificationMessage(BMessage msg) {
 		
 //#pragma mark BTextView Hooks
 
-void NotifyingTextView::InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs = NULL) {
+void NotifyingTextView::InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs) {
 	if ((fMessenger != NULL) && (fMessenger->IsValid() == true)) {
 		BMessage msg(fMessage);
 		msg.AddPointer("source", this);

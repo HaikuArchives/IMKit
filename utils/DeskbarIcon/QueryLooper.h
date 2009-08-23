@@ -21,10 +21,10 @@ typedef struct {
 	node_ref nref;
 } result;
 
-typedef map<entry_ref, result> resultmap;
+typedef std::map<entry_ref, result> resultmap;
 
-typedef vector<BVolume> vollist;
-typedef vector<BQuery *> querylist;
+typedef std::vector<BVolume> vollist;
+typedef std::vector<BQuery *> querylist;
 
 class QueryLooper : public BLooper {
 	public:

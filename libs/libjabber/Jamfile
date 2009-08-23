@@ -8,6 +8,7 @@
 
 SubDir TOP libs libjabber ;
 
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) libs ] ;
 if $(IMKIT_HAVE_OPENSSL) = 1 {
 	SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;

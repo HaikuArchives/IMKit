@@ -51,7 +51,7 @@
 #include <Bitmap.h>
 #include <Cursor.h>
 
-#include "ObjectList.h"
+#include <common/ObjectList.h>
 #include "Theme.h"
 #include "RunView.h"
 #include "URLCrunch.h"

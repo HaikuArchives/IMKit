@@ -21,8 +21,8 @@ class IconTextItem;
 class SettingsController;
 class SettingsInfo;
 
-typedef map<BString, BView*> view_map;
-typedef map<BString, SettingsInfo *> addons_map;
+typedef std::map<BString, BView*> view_map;
+typedef std::map<BString, SettingsInfo *> addons_map;
 
 class PView : public AbstractView, public MultipleViewHandler, public SettingsHost {
 	public:

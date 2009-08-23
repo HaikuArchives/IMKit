@@ -11,8 +11,9 @@ using std::list;
 #include "JabberMessage.h"
 #include "JabberPresence.h"
 #include "JabberRegistration.h"
-#include "ObjectList.h"
 #include "JabberPlug.h"
+
+#include <common/ObjectList.h>
 
 #include <libexpat/xmltok.h>
 #include <libexpat/expat.h>

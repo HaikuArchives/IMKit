@@ -174,7 +174,7 @@ Server::~Server(void) {
 
 	SetAllOffline();
 
-	for (map<int, StatusIcon*>::iterator it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
+	for (std::map<int, StatusIcon*>::iterator it = fStatusIcons.begin(); it != fStatusIcons.end(); ++it) {
 		StatusIcon* icon = it->second;
 		delete icon;
 	};
@@ -557,7 +557,7 @@ void Server::ContactModified(Contact *contact, ConnectionStore *oldConnections, 
 				info->Process(&remove);	
 				
 				// XXX Should remove it from the status list as well
-				map<string,string>::iterator iter = fStatus.find(con.ID());
+				std::map<std::string, std::string>::iterator iter = fStatus.find(con.ID());
 				if ( iter != fStatus.end() )
 					fStatus.erase( iter );
 			};
@@ -620,7 +620,7 @@ void Server::ContactRemoved(Contact *contact, ConnectionStore *oldConnections) {
 			};
 			
 //				// XXX remove from fStatus too
-				map<string,string>::iterator iter = fStatus.find(conn.ID());
+				std::map<std::string, std::string>::iterator iter = fStatus.find(conn.ID());
 				if ( iter != fStatus.end() )
 					fStatus.erase( iter );
 		};
@@ -670,7 +670,7 @@ void Server::_UpdateStatusIcons(void) {
 		};
 
 		if (icon->IsEmpty() == false) {
-			fStatusIcons.insert(pair<int, StatusIcon*>(i, icon));
+			fStatusIcons.insert(std::pair<int, StatusIcon*>(i, icon));
 		};
 	}
 #endif
@@ -928,7 +928,7 @@ void Server::Broadcast(BMessage * msg) {
 	};
 	// done adding fancy names
 	
-	list<BMessenger>::iterator i;
+	std::list<BMessenger>::iterator i;
 	
 	for (i = fMessengers.begin(); i != fMessengers.end(); i++) {
 		BMessenger msgr = (*i);
@@ -984,7 +984,7 @@ status_t Server::SelectConnection(BMessage *msg, Contact &contact) {
 	};
 	
 	for (int i = 0; contact.ConnectionAt(i, connection) == B_OK; i++) {
-		string curr = connection;
+		std::string curr = connection;
 		Connection con(connection);		
 
 		if (protocol != NULL) {	
@@ -1501,7 +1501,7 @@ void Server::UpdateStatus(BMessage * msg) {
 	};
 	
 	Connection connection(protocol, info->AccountName(), id);	
-	string new_status = status;
+	std::string new_status = status;
 	
 	LOG(kAppName, liMedium, "STATUS_CHANGED [%s] is now %s", connection.String(), new_status.c_str());
 	
@@ -1561,14 +1561,14 @@ void Server::UpdateStatus(BMessage * msg) {
 */
 void Server::UpdateContactStatusAttribute(Contact &contact) {
 	// Calculate total status for contact
-	string new_status = OFFLINE_TEXT;
+	std::string new_status = OFFLINE_TEXT;
 	
 	for (int i = 0; i < contact.CountConnections(); i++) {
 		char connection[512];
 
 		contact.ConnectionAt(i,connection);
 
-		string curr = fStatus[connection];
+		std::string curr = fStatus[connection];
 
 		if (curr == ONLINE_TEXT) {
 			new_status = ONLINE_TEXT;
@@ -1879,7 +1879,7 @@ void Server::GetContactsForProtocol(const char * _protocol, BMessage * msg) {
 	BVolume	vol;
 	Contact result;
 	BQuery query;
-	list <entry_ref> refs;
+	std::list <entry_ref> refs;
 	char volName[B_FILE_NAME_LENGTH];
 
 	vroster.Rewind();
@@ -1908,7 +1908,7 @@ void Server::GetContactsForProtocol(const char * _protocol, BMessage * msg) {
 		query.Clear();
 	};
 	
-	list <entry_ref>::iterator iter;
+	std::list <entry_ref>::iterator iter;
 	for (iter = refs.begin(); iter != refs.end(); iter++) {
 		Contact c(*iter);
 		char connBuffer[256];
@@ -2290,7 +2290,7 @@ void Server::handle_STATUS_SET(BMessage * msg) {
 	// Find out 'total' online status
 	fStatus[protocol] = status;
 	
-	string total_status = TotalStatus();
+	std::string total_status = TotalStatus();
 
 	msg->AddString("total_status", total_status.c_str() );
 	LOG(kAppName, liMedium, "Total status changed to %s", total_status.c_str() );
@@ -2597,7 +2597,7 @@ void Server::sendReply(BMessage *msg, BMessage *reply) {
 };
 
 const char *Server::TotalStatus(void) {
-	string total_status = OFFLINE_TEXT;
+	std::string total_status = OFFLINE_TEXT;
 	
 	GenericListStore<ProtocolInfo *> protocols = fProtocol->FindAll(new AllProtocolSpecification());
 	for (GenericListStore<ProtocolInfo *>::Iterator i = protocols.Start(); i != protocols.End(); i++) {
@@ -2633,7 +2633,7 @@ status_t Server::ProtocolOffline(const char *signature) {
 	
 	for (int i = 0; contacts.FindString("id", i, &id) == B_OK; i++) {
 		// XXX: TODO: Needs to use Connection and include an Account
-		string proto_id;
+		std::string proto_id;
 		proto_id += signature;
 		proto_id += ":";
 		proto_id += id;

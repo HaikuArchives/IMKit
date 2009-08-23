@@ -11,6 +11,8 @@ SubDir TOP server ;
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) utils DeskbarIcon ] ;
 
+C++FLAGS += -fpermissive ;
+
 Application im_server :
 	im_server.cpp
 	im_server_main.cpp
@@ -20,7 +22,7 @@ Application im_server :
 	ProtocolManager.cpp
 	ProtocolInfo.cpp
 	StatusIcon.cpp
-	: be $(TARGET_LIBSTDC++) translation textencoding libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) translation textencoding libcommon.a libim.so
 	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
 ;
 
@@ -30,8 +32,6 @@ Depends im_server : libim.so ;
 if $(IMKIT_IS_ZETA) = 1 {
 	LINKFLAGS on im_server += -lzeta -ltracker ;
 }
-
-LINKFLAGS on im_server += -L$(TOP)/libim -lim ;
 
 InstallBin $(IMKIT_COMMON_SERVERS_DIRECTORY) : im_server ;
 

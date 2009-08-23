@@ -14,7 +14,6 @@ checkmem=0
 is_haiku=0
 is_zeta=0
 is_beos=0
-platform=""
 have_gcc4=0
 ssl_incdir=""
 ssl_libdir=""
@@ -119,39 +118,36 @@ else
 fi
 
 # Check operating system
-system=`uname -s`
+platform=`uname -s`
 release=`uname -r`
 echo -n "Checking operating system... "
-case "$system" in
+case "$platform" in
 	BeOS)
 		case "$release" in
 			5.*)
 				is_beos=1
-				platform="beos"
 				defines="BEOS=1 NETSERVER_BUILD=1"
 			;;
 			6.*)
 				is_zeta=1
-				platform="zeta"
 				defines="ZETA=1 BONE_BUILD=1"
 			;;
 			*)
-				echo "*** Unsupported $system operating system."
+				echo "*** Unsupported $platform operating system."
 				exit 1
 			;;
 		esac
 	;;
 	Haiku)
 		is_haiku=1
-		platform="haiku"
 		defines="HAIKU_TARGET_PLATFORM_HAIKU=1 HAIKU=1"
-		echo "$system $release"
 	;;
 	*)
-		echo "*** Unsupported $system operating system."
+		echo "*** Unsupported $platform operating system."
 		exit 1
 	;;
 esac
+echo "$platform $release"
 
 # Checking if we have gcc4 or not
 echo -n "Checking for gcc4..."
@@ -289,6 +285,7 @@ IMKIT_OPENSSL_INCDIR = ${ssl_incdir} ;
 IMKIT_OPENSSL_LIBDIR = ${ssl_libdir} ;
 IMKIT_LIBYAHOO2_INCDIR = ${yahoo2_incdir} ;
 IMKIT_LIBYAHOO2_LIBDIR = ${yahoo2_libdir} ;
+PLATFORM = ${platform} ;
 
 IMKIT_COMMON_BIN_DIRECTORY = ${common_bindir} ;
 IMKIT_COMMON_LIB_DIRECTORY = ${common_libdir} ;

@@ -6,6 +6,8 @@
  *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  */
 
+#include <stdlib.h>
+
 #include <app/Message.h>
 #ifdef __HAIKU__
 #	include <interface/GroupLayout.h>

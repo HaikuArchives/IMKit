@@ -10,17 +10,11 @@ SubDir TOP clients im_binlog_viewer ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
 
-SEARCH_SOURCE += [ FDirName $(TOP) clients im_binlog_viewer CLV ] ;
-
 Application im_binlog_viewer :
 	# im_binlog_viewer
 	LogViewApp.cpp
 	LogWin.cpp
-	# CLV
-	ColorTools.cpp
-	ColumnListView.cpp
-	ColumnTypes.cpp
-	: be $(TARGET_LIBSTDC++) tracker libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) tracker libcommon.a libim.so
 	: im_binlog_viewer.rdef
 ;
 

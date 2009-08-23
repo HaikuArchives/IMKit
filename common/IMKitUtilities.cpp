@@ -25,8 +25,8 @@ const int32 kLargeIcon = 32;
 
 // Loads the icon. Callers responsibility to free BBitmap
 
-BBitmap *ReadNodeIcon(const char *name, int32 size = kSmallIcon,
-	bool followSymlink = true) {
+BBitmap *ReadNodeIcon(const char *name, int32 size,
+	bool followSymlink) {
 	
 	BEntry entry(name, followSymlink);
 	entry_ref ref;
@@ -75,7 +75,7 @@ BBitmap *ReadNodeIcon(const char *name, int32 size = kSmallIcon,
 //  responsibility to delete it) on success, NULL on failure. 
 
 BBitmap *GetBitmapFromAttribute(const char *name, const char *attribute, 
-	type_code type = 'BBMP', bool followSymlink = true) {
+	type_code type, bool followSymlink) {
 
 	BEntry entry(name, followSymlink);
 	entry_ref ref;
@@ -191,7 +191,7 @@ BBitmap *GetIconFromResources(BResources *resources, int32 num, icon_size size) 
 // Reads attribute from node. Returns contents (to be free()'d by user) or NULL on
 // fail
 
-char *ReadAttribute(BNode node, const char *attribute, int32 *length = NULL) {
+char *ReadAttribute(BNode node, const char *attribute, int32 *length) {
 	attr_info info;
 	char *value = NULL;
 

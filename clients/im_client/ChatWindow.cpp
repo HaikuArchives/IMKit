@@ -548,7 +548,7 @@ ChatWindow::MessageReceived( BMessage * msg )
 			int32 add = 1;
 			int32 windows = be_app->CountWindows();
 			int32 next = -10;
-			vector<BWindow *> chatWindows;
+			std::vector<BWindow *> chatWindows;
 			
 			if (msg->what == PREV_WIN) add = -1;
 			

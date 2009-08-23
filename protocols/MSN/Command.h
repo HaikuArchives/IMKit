@@ -5,9 +5,9 @@
 #include <DataIO.h>
 
 #include <vector>
-#include <map.h>
+#include <map>
 
-typedef vector<BMallocIO*> payloadv;
+typedef std::vector<BMallocIO*> payloadv;
 
 /**
 	Class to manage encoding and decoding of MSN commands.
@@ -63,11 +63,11 @@ class Command {
 		BMallocIO	fFlattened;
 
 		BString		fType;
-		vector<BString>
+		std::vector<BString>
 					fParams;
 		payloadv	fPayloads;
 
-		map<BString, bool>
+		std::map<BString, bool>
 					gExpectsPayload;
 };
 

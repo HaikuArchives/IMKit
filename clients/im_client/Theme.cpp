@@ -22,6 +22,8 @@
  
 #define NUMBER_THEME_READERS  1000
 
+#include <string.h>
+
 #include <Message.h>
 #include <Messenger.h>
 #include <View.h>

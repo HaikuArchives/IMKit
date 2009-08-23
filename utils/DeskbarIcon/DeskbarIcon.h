@@ -17,7 +17,6 @@
 
 #include <list>
 #include <map>
-#include <string>
 
 #include "AwayMessageWindow.h"
 #include "QueryLooper.h"
@@ -39,7 +38,7 @@ typedef struct {
 	QueryLooper *query;
 } queryinfo;
 
-typedef map<entry_ref, queryinfo> querymap;
+typedef std::map<entry_ref, queryinfo> querymap;
 
 class _EXPORT IM_DeskbarIcon : public BView
 {
@@ -80,7 +79,7 @@ class _EXPORT IM_DeskbarIcon : public BView
 				
 //		Flashing stuff
 		int					fFlashCount, fBlink;
-		list<BMessenger>	fMsgrs;
+		std::list<BMessenger>	fMsgrs;
 		BMessageRunner *	fMsgRunner;
 		
 //		Settings

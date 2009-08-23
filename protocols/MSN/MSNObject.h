@@ -1,11 +1,9 @@
 #ifndef MSNOBJECT_H
 #define MSNOBJECT_H
 
-#include <vector>
 #include <String.h>
-#include <map.h>
-
 #include <File.h>
+
 #include <openssl/sha.h>
 
 class MSNObject {

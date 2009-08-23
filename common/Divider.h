@@ -28,4 +28,4 @@ class Divider : public BView {
 		orientation			fOrient;
 };
 
-#endif COMMON_DIVIDER_H
+#endif // COMMON_DIVIDER_H

@@ -12,7 +12,7 @@ SubDirHdrs [ FDirName $(TOP) ] ;
 
 Application im_binlogger :
 	logger.cpp
-	: be tracker libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) tracker libim.so libcommon.a
 	: im_binlogger.rdef
 ;
 

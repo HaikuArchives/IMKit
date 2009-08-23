@@ -8,8 +8,8 @@
 #ifndef GENERICSTORE_H
 #define GENERICSTORE_H
 
-#include <list>
 #include <map>
+#include <list>
 
 #include "common/SpecificationFinder.h"
 
@@ -30,8 +30,8 @@ namespace IM {
 	template<class K, class V>
 	class GenericMapStore {
 		public:
-			typedef map<K, V>::iterator Iterator;
-		
+			typedef typename std::map<K, V>::iterator Iterator;
+
 			GenericMapStore(void)
 				: fOwn(true) {
 			};
@@ -99,13 +99,13 @@ namespace IM {
 	
 		private:
 			bool fOwn;
-			map<K, V> fStore;
+			std::map<K, V> fStore;
 	};
 	
 	template<class T>
 	class GenericListStore {
 		public:
-			typedef list<T>::iterator Iterator;
+			typedef typename std::list<T>::iterator Iterator;
 		
 			GenericListStore(void)
 				: fOwn(true) {
@@ -124,7 +124,8 @@ namespace IM {
 			};
 			
 			void Remove(T value) {
-				if (Contains(key) == true) {
+				Iterator it = find(fStore.begin(), fStore.end(), value);
+				if (it != fStore.end()) {
 					type_delete<T>(fOwn, *it);
 					fStore.erase(it);
 				};
@@ -199,7 +200,7 @@ namespace IM {
 			
 		private:
 			bool fOwn;
-			list<T> fStore;
+			std::list<T> fStore;
 	};
 }
 

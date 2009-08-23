@@ -2,7 +2,9 @@
 #define CHATWINDOW_H
 
 #include "main.h"
+
 #include <common/IMKitUtilities.h>
+#include <common/ObjectList.h>
 
 #include <FindDirectory.h>
 
@@ -31,8 +33,6 @@
 #include "ImageButton.h"
 
 #include <kernel/fs_attr.h>
-
-#include "ObjectList.h"
 
 #define C_URL						0
 #define C_TIMESTAMP					1

@@ -53,7 +53,7 @@ class Command;
 #include "Command.h"
 #include "Buddy.h"
 
-typedef map<BString, MSNConnection *> switchboardmap;
+typedef std::map<BString, MSNConnection *> switchboardmap;
 typedef map<int32, Command *> tridmap;
 // Confusing data structures, Ahoy! This is a map of TrIDs to the user the Command is targetted.
 typedef map<int32, pair<BString, Command *> > waitingmsgmap;

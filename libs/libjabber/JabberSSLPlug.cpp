@@ -6,7 +6,7 @@
 
 #define msnmsgPing 'ping'
 
-JabberSSLPlug::JabberSSLPlug(BString forceserver=NULL,int32 port=0){
+JabberSSLPlug::JabberSSLPlug(BString forceserver, int32 port){
 
 	bio = NULL;
 	ctx = NULL;

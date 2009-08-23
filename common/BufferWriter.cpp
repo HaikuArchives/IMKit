@@ -1,11 +1,11 @@
 #include "BufferWriter.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 //#pragma mark Constructor
 
-BufferWriter::BufferWriter(swap_action swap = B_SWAP_BENDIAN_TO_HOST,
-		int32 chunkSize = 50)
+BufferWriter::BufferWriter(swap_action swap, int32 chunkSize)
 	: fBuffer(NULL),
 	fLength(0),
 	fAllocated(0),

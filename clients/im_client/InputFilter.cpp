@@ -2,7 +2,9 @@
 
 #include <libim/Constants.h>
 #include <Messenger.h>
+
 #include <stdio.h>
+#include <string.h>
 
 InputFilter::InputFilter (BTextView *owner, BMessage *msg, bool commandSends,
 	BView * forward_to, int32 interval) 

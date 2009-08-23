@@ -169,7 +169,7 @@ Manager::OneShotMessage( BMessage * msg )
 	Forward a message to the im_server
 */
 status_t
-Manager::SendMessage( BMessage * msg, BMessage * reply = NULL )
+Manager::SendMessage( BMessage * msg, BMessage * reply )
 {
 	if ( !fMsgr.IsValid() )
 	{

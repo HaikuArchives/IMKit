@@ -19,7 +19,7 @@ class SettngsHost;
 
 class ClientInfo;
 
-typedef vector<ClientInfo *> clientinfo_t;
+typedef std::vector<ClientInfo *> clientinfo_t;
 
 class PClientsOverview : public AbstractView, public SettingsController  {
 	public:
