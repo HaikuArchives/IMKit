@@ -67,7 +67,7 @@ TLV::~TLV(void) {
 	free(fFlatten);
 	
 	if (fTLVs.size() > 0) {
-		list <TLV *>::iterator i;
+		std::list<TLV *>::iterator i;
 		
 		for (i = fTLVs.begin(); i != fTLVs.end(); i++) {
 			delete (TLV *)(*i);
@@ -123,7 +123,7 @@ const char *TLV::Flatten(void) {
 		fFlatten[3] = (fLength & 0x00ff);
 		
 		if (fTLVs.size() > 0) {
-			list <TLV *>::iterator i;
+			std::list<TLV *>::iterator i;
 			
 			uint16 offset = 4;
 			
@@ -146,7 +146,7 @@ const char *TLV::Flatten(void) {
 uint16 TLV::FlattenedSize(void) {
 	if (fDirty) {
 		if (fTLVs.size() > 0) {
-			list <TLV *>::iterator i;
+			std::list<TLV *>::iterator i;
 			fFlattenedSize = 0;
 			uint16 length = 0;
 
@@ -172,6 +172,6 @@ status_t TLV::AddTLV(TLV *data) {
 	return B_OK;
 };
 
-BufferReader *TLV::Reader(swap_action swap = B_SWAP_BENDIAN_TO_HOST) {
+BufferReader *TLV::Reader(swap_action swap) {
 	return new BufferReader((const uchar *)fValue, fLength, swap);
 };

@@ -2,6 +2,7 @@
 
 #include <support/ByteOrder.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <libim/Helpers.h>
 
 #include "common/BufferReader.h"
@@ -106,7 +107,7 @@ status_t Flap::AddSNAC(SNAC *snac) {
 uint32 Flap::FlattenedSize(void) {
 	uint32 r = 0;
 	if (fDirty) {
-		list <TypeDataPair>::iterator i;
+		std::list<TypeDataPair>::iterator i;
 		fFlattenedSize = 0;
 		
 		
@@ -150,7 +151,7 @@ const char *Flap::Flatten(uint16 seqNum) {
 		};
 		fDirty = false;
 			
-		list <TypeDataPair>::iterator i;
+		std::list<TypeDataPair>::iterator i;
 		uint32 offset = 0;
 		
 		fFlat[0] = 0x2a;
@@ -202,7 +203,7 @@ void Flap::Channel(uint8 channel) {
 };
 
 void Flap::Clear(void) {
-	list <TypeDataPair>::iterator i;
+	std::list<TypeDataPair>::iterator i;
 
 	for (i = fData.begin(); i != fData.end(); i++) {
 
@@ -232,10 +233,10 @@ void Flap::Clear(void) {
 	fDirty = true;
 };
 
-SNAC *Flap::SNACAt(uint8 index = 0) {
+SNAC *Flap::SNACAt(uint8 index) {
 	uint8 snacCount = 0;
 	
-	list <TypeDataPair>::iterator i;
+	std::list<TypeDataPair>::iterator i;
 	
 	for (i = fData.begin(); i != fData.end(); i++) {
 		TypeDataPair p = (*i);

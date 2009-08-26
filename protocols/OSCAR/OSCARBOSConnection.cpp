@@ -6,6 +6,8 @@
 #include "common/BufferReader.h"
 #include "OSCARConnection.h"
 
+#include <stdlib.h>
+
 #include <UTF8.h>
 
 //#pragma mark Constants
@@ -38,7 +40,7 @@ void remove_html(char *msg);
 //#pragma mark Constructor
 
 OSCARBOSConnection::OSCARBOSConnection(const char *server, uint16 port, OSCARManager *man,
-	const char *name = "OSCAR BOS Connection")
+	const char *name)
 	: OSCARConnection(server, port, man, name, connBOS) {
 
 	fManager = man;

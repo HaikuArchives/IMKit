@@ -24,7 +24,7 @@ AddOn aim :
 	OSCARReqConn.cpp
 	Buddy.cpp
 	Group.cpp
-	: be $(TARGET_LIBSTDC++) textencoding libim.so libcommon.a crypto
+	: be $(TARGET_LIBSTDC++) textencoding libcommon.a libim.so crypto
 	: AIM.rdef AIMProtocolTemplate.rdef
 ;
 
@@ -42,7 +42,7 @@ AddOn icq :
 	OSCARReqConn.cpp
 	Buddy.cpp
 	Group.cpp
-	: be $(TARGET_LIBSTDC++) textencoding libim.so libcommon.a crypto
+	: be $(TARGET_LIBSTDC++) textencoding libcommon.a libim.so crypto
 	: ICQ.rdef ICQProtocolTemplate.rdef
 ;
 

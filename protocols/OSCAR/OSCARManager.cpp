@@ -6,6 +6,7 @@
 #include <UTF8.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <openssl/md5.h>
 
@@ -654,7 +655,7 @@ status_t OSCARManager::HandleSSI(SNAC *snac, BufferReader *reader) {
 			delete tlvReader;
 		} break;
 		case ROSTER_CHECKOUT: {	
-			list <BString> contacts;
+			std::list<BString> contacts;
 		
 			uint8 ssiVersion = reader->ReadInt8();
 			uint16 itemCount = reader->ReadInt16();
@@ -1541,12 +1542,12 @@ status_t OSCARManager::AddBuddy(const char *buddy) {
 	return ret;
 };
 
-status_t OSCARManager::AddBuddies(list <char *>buddies) {
+status_t OSCARManager::AddBuddies(std::list<char *>buddies) {
 	Flap *addBuds = new Flap(SNAC_DATA);
 	addBuds->AddSNAC(new SNAC(BUDDY_LIST_MANAGEMENT, ADD_BUDDY_TO_LIST, 0x00,
 		0x00, 0x00000000));
 	
-	list <char *>::iterator i;
+	std::list<char *>::iterator i;
 	uint8 buddyLen = 0;
 	
 	for (i = buddies.begin(); i != buddies.end(); i++) {
@@ -1628,7 +1629,7 @@ status_t OSCARManager::RemoveBuddy(const char *buddy) {
 	return ret;
 };
 
-status_t OSCARManager::RemoveBuddies(list <char *>buddy) {
+status_t OSCARManager::RemoveBuddies(std::list<char *>buddy) {
 	(void)buddy;
 	return B_OK;
 };

@@ -15,6 +15,8 @@
 #include <UTF8.h>
 #include <Entry.h>
 
+#include <stdlib.h>
+
 #include "Buddy.h"
 
 //#pragma mark Extern C
@@ -97,7 +99,7 @@ status_t ICQProtocol::Process(BMessage * msg) {
 					msg->GetInfo("id", &garbage, &count);
 					
 					if (count > 0) {
-						list<char *> buddies;
+						std::list<char *> buddies;
 						for (int i = 0; msg->FindString("id", i); i++) {
 							const char * id = msg->FindString("id",i);
 							buddies.push_back(strdup(id));
@@ -329,7 +331,7 @@ status_t ICQProtocol::Progress(const char *id, const char *message, float progre
 
 
 status_t ICQProtocol::StatusChanged(const char *nick, online_types status,
-	bool mobileUser = false) {
+	bool mobileUser) {
 	BMessage msg(IM::MESSAGE);
 	msg.AddString("protocol", fManager->Protocol());
 	msg.AddBool("mobileuser", mobileUser);
@@ -363,7 +365,7 @@ status_t ICQProtocol::StatusChanged(const char *nick, online_types status,
 };
 
 status_t ICQProtocol::MessageFromUser(const char *nick, const char *msg,
-	bool autoReply = false) {
+	bool autoReply) {
 	
 	BMessage im_msg(IM::MESSAGE);
 	im_msg.AddInt32("im_what", IM::MESSAGE_RECEIVED);
@@ -404,8 +406,8 @@ status_t ICQProtocol::UserIsTyping(const char *nick, typing_notification type) {
 	return B_OK;
 };
 
-status_t ICQProtocol::SSIBuddies(list<BString> buddies) {
-	list <BString>::iterator i;
+status_t ICQProtocol::SSIBuddies(std::list<BString> buddies) {
+	std::list<BString>::iterator i;
 
 	BMessage serverBased(IM::SERVER_BASED_CONTACT_LIST);
 	serverBased.AddString("protocol", fManager->Protocol());
@@ -470,12 +472,12 @@ BString ICQProtocol::NormalizeNick(const char *nick) {
 	normal.ReplaceAll(" ", "");
 	normal.ToLower();
 	
-	map<string,BString>::iterator i = fNickMap.find(normal.String());
+	std::map<std::string,BString>::iterator i = fNickMap.find(normal.String());
 	
 	if ( i == fNickMap.end() ) {
 		// add 'real' nick if it's not already there
 		LOG(fManager->Protocol(), liDebug, "Adding normal (%s) vs screen (%s)", normal.String(), nick );
-		fNickMap[string(normal.String())] = BString(nick);
+		fNickMap[std::string(normal.String())] = BString(nick);
 	}
 	
 	LOG(fManager->Protocol(), liDebug, "Screen (%s) to normal (%s)", nick, normal.String() );
@@ -484,7 +486,7 @@ BString ICQProtocol::NormalizeNick(const char *nick) {
 };
 
 BString ICQProtocol::GetScreenNick( const char *nick ) {
-	map<string,BString>::iterator i = fNickMap.find(nick);
+	std::map<std::string,BString>::iterator i = fNickMap.find(nick);
 	
 	if ( i != fNickMap.end() ) {
 		// found the nick

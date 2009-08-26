@@ -23,12 +23,12 @@ class SNAC;
 class BufferReader;
 class BLocker;
 
-typedef pair <char *, uint16> ServerAddress;
+typedef std::pair<char *, uint16> ServerAddress;
 
 // The Member Function Pointer for a Family handler / parser
 typedef status_t (OSCARConnection::*FamilyHandler)(SNAC *, BufferReader *);
 // Maps a family to a handler
-typedef map<uint16, FamilyHandler> handler_t;
+typedef std::map<uint16, FamilyHandler> handler_t;
 
 const status_t kUnhandled = -1;
 
@@ -54,7 +54,7 @@ class OSCARConnection : public BLooper {
 				
 		uint8				SupportedSNACs(void) const;
 		uint16				SNACAt(uint8 index) const;
-		bool				Supports(const uint16 family) const;
+		bool				Supports(uint16 family);
 		void				Support(uint16 family);
 		
 		status_t			Send(Flap *flap, send_time at = atBuffer);
@@ -106,7 +106,7 @@ class OSCARConnection : public BLooper {
 		flap_stack			fOutgoingOnline;
 		uint16				fOutgoingSeqNum;
 		
-		vector<uint16>		fSupportedSNACs;
+		std::vector<uint16>		fSupportedSNACs;
 
 		BMessenger			fManMsgr;
 		BMessenger			*fSockMsgr;

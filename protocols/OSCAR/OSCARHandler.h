@@ -19,7 +19,7 @@ class OSCARHandler {
 								bool mobileUser = false) = 0;
 		virtual status_t	MessageFromUser(const char *nick, const char *msg, bool isAutoReply = false) = 0;
 		virtual status_t	UserIsTyping(const char *nick, typing_notification type) = 0;
-		virtual status_t 	SSIBuddies(list<BString> buddies) = 0;
+		virtual status_t 	SSIBuddies(std::list<BString> buddies) = 0;
 		virtual status_t	BuddyIconFromUser(const char *nick, const uchar *data,
 								uint32 length) = 0;
 		virtual status_t	AuthRequestFromUser(char *nick, char *reason) = 0;

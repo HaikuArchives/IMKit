@@ -38,7 +38,7 @@ class TLV {
 		char			*fFlatten;
 		uint16			fFlattenedSize;
 		bool			fDirty;
-		list<TLV *>		fTLVs;
+		std::list<TLV *>		fTLVs;
 };
 
 #endif

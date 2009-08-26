@@ -5,6 +5,8 @@
 #include "SNAC.h"
 #include "TLV.h"
 
+#include <stdlib.h>
+
 #include <UTF8.h>
 
 #if defined(BONE_BUILD) || defined(__HAIKU__)
@@ -22,7 +24,7 @@ void remove_html(char *msg);
 const char *kThreadName = "IM Kit: OSCAR Connection";
 
 OSCARConnection::OSCARConnection(const char *server, uint16 port, OSCARManager *man,
-	const char *name = "OSCAR Connection", conn_type type = connBOS)
+	const char *name, conn_type type)
 	: BLooper(name) {
 	
 	// Setup the map between SNAC families and the handling function
@@ -84,7 +86,7 @@ OSCARConnection::~OSCARConnection(void) {
 
 //#pragma mark -
 
-status_t OSCARConnection::Send(Flap *f, send_time at = atBuffer) {
+status_t OSCARConnection::Send(Flap *f, send_time at) {
 	status_t status = B_OK;
 	switch (at) {
 		case atBuffer: {
@@ -204,7 +206,7 @@ void OSCARConnection::MessageReceived(BMessage *msg) {
 						} break;
 						
 						case 0x0005: {	// New Server:IP
-							pair<char *, uint16> serv = ExtractServerDetails(value);
+							std::pair<char *, uint16> serv = ExtractServerDetails(value);
 							server = serv.first;
 							port = serv.second;
 							LOG(ConnName(), liLow, "Need to reconnect to: %s:%i", server, port);
@@ -276,11 +278,12 @@ uint16 OSCARConnection::SNACAt(uint8 index) const {
 	return fSupportedSNACs[index];
 };
 
-bool OSCARConnection::Supports(const uint16 family) const {
-	vector <const uint16>::iterator i;
-		
+bool OSCARConnection::Supports(uint16 family) {
+	std::vector<uint16>::iterator i;
+
 	for (i = fSupportedSNACs.begin(); i != fSupportedSNACs.end(); i++) {
-		if (family == (*i)) return true;
+		if (family == (*i))
+			return true;
 	};
 
 	return false;

@@ -770,7 +770,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 	}
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON) {
-		list<BMessenger>::iterator i = fMsgrs.begin();
+		std::list<BMessenger>::iterator i = fMsgrs.begin();
 		
 		if (i != fMsgrs.end()) {
 			(*i).SendMessage( IM::DESKBAR_ICON_CLICKED );

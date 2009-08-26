@@ -12,8 +12,8 @@ SNAC::SNAC(void) {
 	fDataOffset = 0;
 };
 
-SNAC::SNAC(uint16 family, uint16 subtype, uint8 flag1 = 0x00, uint8 flag2 = 0x00,
-	uint32 request = 0x00000000) {
+SNAC::SNAC(uint16 family, uint16 subtype, uint8 flag1, uint8 flag2,
+	uint32 request) {
 	
 	fFamily = family;
 	fSubType = subtype;

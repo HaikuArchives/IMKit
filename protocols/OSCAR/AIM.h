@@ -41,7 +41,7 @@ class AIMProtocol : public IM::Protocol, public OSCARHandler {
 		status_t			MessageFromUser(const char *nick, const char *msg,
 								bool autoReply = false);
 		status_t			UserIsTyping(const char *nick, typing_notification type);
-		status_t		 	SSIBuddies(list<BString> buddies);
+		status_t		 	SSIBuddies(std::list<BString> buddies);
 		status_t			BuddyIconFromUser(const char *nick, const uchar *icon,
 								uint32 length);
 		status_t			AuthRequestFromUser(char *nick, char *reason);
@@ -60,6 +60,6 @@ class AIMProtocol : public IM::Protocol, public OSCARHandler {
 		char				*fPassword;
 		uint32				fEncoding;
 		
-		map<string,BString>	fNickMap;
+		std::map<std::string,BString>	fNickMap;
 };
 

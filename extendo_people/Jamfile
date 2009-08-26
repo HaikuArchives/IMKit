@@ -13,6 +13,6 @@ SubDirHdrs [ FDirName $(TOP) ] ;
 Application People :
 	main.cpp
 	PeopleWindow.cpp
-	: be
+	: be $(TARGET_LIBSTDC++)
 	: people.rsrc
 ;

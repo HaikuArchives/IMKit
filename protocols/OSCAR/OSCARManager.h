@@ -36,18 +36,18 @@ class Flap;
 class SNAC;
 class BufferReader;
 
-typedef map<BString, Buddy *> buddymap;
-typedef map<uint16, OSCARConnection *> pfc_map; // Pending family / connection map
-typedef list<Flap *> flap_stack;
-typedef list<OSCARConnection *> connlist;
-typedef map<uint16, Group *> group_t;
-typedef map<uint16, bool> identity_t;
-typedef vector<BString> grouplist_t;
+typedef std::map<BString, Buddy *> buddymap;
+typedef std::map<uint16, OSCARConnection *> pfc_map; // Pending family / connection map
+typedef std::list<Flap *> flap_stack;
+typedef std::list<OSCARConnection *> connlist;
+typedef std::map<uint16, Group *> group_t;
+typedef std::map<uint16, bool> identity_t;
+typedef std::vector<BString> grouplist_t;
 
 // The Member Function Pointer for a Family handler / parser
 typedef status_t (OSCARManager::*FamilyManHandler)(SNAC *, BufferReader *);
 // Maps a family to a handler
-typedef map<uint16, FamilyManHandler> manhandler_t;
+typedef std::map<uint16, FamilyManHandler> manhandler_t;
 
 enum {
 	AMAN_PULSE = 'ampu',
@@ -81,10 +81,10 @@ class OSCARManager : public BLooper {
 		status_t			MessageUser(const char *screenname, const char *message);
 		status_t			AddSSIBuddy(const char *buddy, grouplist_t groups);
 		status_t			AddBuddy(const char *buddy);
-		status_t			AddBuddies(list<char *>buddies);
+		status_t			AddBuddies(std::list<char *>buddies);
 		int32				Buddies(void) const;
 		status_t			RemoveBuddy(const char *buddy);
-		status_t			RemoveBuddies(list<char *>buddies);
+		status_t			RemoveBuddies(std::list<char *>buddies);
 		Buddy				*GetBuddy(const char *screenname);
 
 		status_t			Login(const char *server, uint16 port,

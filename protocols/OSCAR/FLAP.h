@@ -8,8 +8,8 @@
 #include "TLV.h"
 #include "SNAC.h"
 
-typedef pair <uchar *, uint32> BufferLengthPair;
-typedef pair <void *, uint8> TypeDataPair;
+typedef std::pair<uchar *, uint32> BufferLengthPair;
+typedef std::pair<void *, uint8> TypeDataPair;
 
 extern const uint8 kFLAPHeader;
 
@@ -52,7 +52,7 @@ class Flap {
 		uint8				fChannelID;
 		uint16				fSequenceID;
 		uint16				fLength;		
-		list<TypeDataPair>	fData;
+		std::list<TypeDataPair>	fData;
 };
 
 #endif

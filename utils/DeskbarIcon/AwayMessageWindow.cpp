@@ -25,7 +25,7 @@ const float kPadding = 5.0f;
 
 //#pragma mark Constructor
 
-AwayMessageWindow::AwayMessageWindow(AccountInfo *info = NULL)
+AwayMessageWindow::AwayMessageWindow(AccountInfo *info)
 	: BWindow(BRect(100, 100, 325, 220), _T("IM Kit: Set Away Message"), B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
 	fAccountInstance("") {
 

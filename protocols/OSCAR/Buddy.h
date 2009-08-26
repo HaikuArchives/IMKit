@@ -7,8 +7,8 @@
 
 class BufferReader;
 
-typedef vector <BufferReader *> capability_t;
-typedef vector<uint16> groupid_t;
+typedef std::vector <BufferReader *> capability_t;
+typedef std::vector<uint16> groupid_t;
 
 class Buddy {
 	public:

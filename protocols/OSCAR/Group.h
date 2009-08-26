@@ -5,7 +5,7 @@
 
 #include <vector>
 
-typedef vector<int16> child_t;
+typedef std::vector<int16> child_t;
 
 class Group {
 	public:

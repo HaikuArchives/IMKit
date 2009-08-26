@@ -17,7 +17,7 @@
 #include <libim/Constants.h>
 
 extern const int32 kUnhandled;
-typedef pair <char *, uint16> ServerAddress;
+typedef std::pair<char *, uint16> ServerAddress;
 
 class OSCARManager;
 class SNAC;
