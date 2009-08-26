@@ -1,5 +1,6 @@
 #include "MSNObject.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 const char b64_table[] = {
@@ -13,7 +14,7 @@ const char b64_table[] = {
 	'4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-MSNObject::MSNObject(const char *path, const char *username, int32 type = 3) {
+MSNObject::MSNObject(const char *path, const char *username, int32 type) {
 	fCreator = username;
 	fType = type;
 	fFriendly = "AAA=";

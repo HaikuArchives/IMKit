@@ -8,8 +8,8 @@
 
 class Buddy;
 
-typedef list<Buddy *> participant_t;
-typedef list<Command *> pendingmsg_t;
+typedef std::list<Buddy *> participant_t;
+typedef std::list<Command *> pendingmsg_t;
 
 class MSNSBConnection : public MSNConnection {
 	public:

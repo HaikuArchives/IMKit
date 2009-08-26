@@ -24,10 +24,10 @@
 
 // Member Function Pointer for command handlers
 typedef status_t (MSNConnection::*CommandHandler)(Command *);
-typedef map<BString, CommandHandler> commandhandler_t;
-typedef pair <char *, int16> ServerAddress;
-typedef list<Command *> CommandQueue;
-typedef list<BString> contact_t;
+typedef std::map<BString, CommandHandler> commandhandler_t;
+typedef std::pair <char *, int16> ServerAddress;
+typedef std::list<Command *> CommandQueue;
+typedef std::list<BString> contact_t;
 
 class MSNManager;
 

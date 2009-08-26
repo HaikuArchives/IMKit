@@ -91,11 +91,11 @@ void remove_html( char * msg )
 }
 
 void
-wait_for_threads( list<thread_id> threads )
+wait_for_threads( std::list<thread_id> threads )
 {
 	int32 res=0;
 	
-	for ( list<thread_id>::iterator i = threads.begin(); i != threads.end(); i++ )
+	for ( std::list<thread_id>::iterator i = threads.begin(); i != threads.end(); i++ )
 	{
 		wait_for_thread( *i, &res );
 	}
@@ -287,7 +287,7 @@ void MSNManager::MessageReceived(BMessage *msg) {
 			if (con != NULL) {
 				LOG(kProtocolName, liLow, "Connection (%lX) closed", con);
 				
-				list<thread_id> threads;
+				std::list<thread_id> threads;
 				
 				if (con == fNoticeCon) {
 					LOG(kProtocolName, liLow, "  Notice connection closed, go offline");
@@ -334,7 +334,7 @@ void MSNManager::MessageReceived(BMessage *msg) {
 				}
 				
 				if ( con == fNoticeCon ) {
-					list<thread_id> threads;
+					std::list<thread_id> threads;
 					
 					LOG(kProtocolName, liLow, "  Notice connection closed, going offline");
 					connectionlist::iterator i;
@@ -441,7 +441,7 @@ status_t MSNManager::MessageUser(const char *passport, const char *message) {
 		};
 		
 		if (needSB) {
-			fWaitingSBs[sbReq->TransactionID()] = pair<BString,Command*>(passport, msg);
+			fWaitingSBs[sbReq->TransactionID()] = std::pair<BString,Command*>(passport, msg);
 		} else {
 			(*it)->Send(msg);
 		};
@@ -486,8 +486,8 @@ status_t MSNManager::AddBuddy(const char *buddy) {
 	return B_OK;
 };
 
-status_t MSNManager::AddBuddies(list <char *>buddies) {
-/*	for ( list<char*>::iterator i=buddies.begin(); i!=buddies.end(); i++ ) {
+status_t MSNManager::AddBuddies(std::list <char *>buddies) {
+/*	for ( std::list<char*>::iterator i=buddies.begin(); i!=buddies.end(); i++ ) {
 		// BuddyDetails will create the contact if needed
 		BuddyDetails(*i);
 	}
@@ -524,7 +524,7 @@ status_t MSNManager::LogOff(void) {
 
 	connectionlist::iterator it;
 	
-	list<thread_id> threads;
+	std::list<thread_id> threads;
 	
 	for (it = fConnectionPool.begin(); it != fConnectionPool.end(); it++) {
 		BMessenger((*it)).SendMessage(B_QUIT_REQUESTED);
@@ -621,7 +621,7 @@ status_t MSNManager::TypingNotification(const char *passport, uint16 typing) {
 		};
 		
 		if (needSB) {
-			fWaitingSBs[sbReq->TransactionID()] = pair<BString,Command*>(passport, msg);
+			fWaitingSBs[sbReq->TransactionID()] = std::pair<BString,Command*>(passport, msg);
 		} else {
 			(*it)->Send(msg);
 		};
@@ -634,7 +634,7 @@ status_t MSNManager::TypingNotification(const char *passport, uint16 typing) {
 	return B_ERROR;
 };
 
-status_t MSNManager::SetAway(bool away = true) {
+status_t MSNManager::SetAway(bool away) {
 	if (fNoticeCon) {
 		Command *awayCom = new Command("CHG");
 		

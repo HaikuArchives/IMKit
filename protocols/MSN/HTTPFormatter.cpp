@@ -5,6 +5,7 @@
 #include <libim/Helpers.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 HTTPFormatter::HTTPFormatter(void) {
 	_init();
@@ -39,7 +40,7 @@ HTTPFormatter::HTTPFormatter(const char *response, int32 length) {
 		BString line = "";
 		int32 seperator = 0;
 		int32 position = 0;
-		vector <BString> tempVect;
+		std::vector <BString> tempVect;
 		const char *kSeperator = "\r\n";
 		const int32 kSeperatorLen = strlen("\r\n");
 		
@@ -54,7 +55,7 @@ HTTPFormatter::HTTPFormatter(const char *response, int32 length) {
 			tempVect.push_back(line);
 		};
 		
-		vector<BString>::iterator i = tempVect.begin();
+		std::vector<BString>::iterator i = tempVect.begin();
 		line = *i;
 		if ( line.Compare("HTTP/1.", strlen("HTTP/1.")) == 0 )
 		{ // Actual HTTP response. Not present in MSN messages

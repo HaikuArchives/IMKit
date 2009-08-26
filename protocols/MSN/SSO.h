@@ -10,7 +10,7 @@ class SSO;
 class SSOHandler;
 
 typedef status_t (SSO::*SSOMethod)(BString, BString, BString &);
-typedef map<BString, SSOMethod> ssomethod_t;
+typedef std::map<BString, SSOMethod> ssomethod_t;
 
 class SSO {
 	public:

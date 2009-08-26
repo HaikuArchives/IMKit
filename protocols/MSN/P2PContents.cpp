@@ -15,7 +15,7 @@ P2PContents::P2PContents(void) {
 P2PContents::~P2PContents(void) {
 };
 		
-void P2PContents::AddField(const char *field, const char *contents, int32 length = -1) {
+void P2PContents::AddField(const char *field, const char *contents, int32 length) {
 	fDirty = true;
 	if (length == -1) length = strlen(contents);
 	
@@ -33,7 +33,7 @@ int32 P2PContents::FieldAt(int32 index, char *contents) {
 	return -1;
 };
 
-void P2PContents::AppendContent(char *content, int32 length = -1) {
+void P2PContents::AppendContent(char *content, int32 length) {
 	fDirty = true;
 	if (length == -1) length = strlen(content);
 	

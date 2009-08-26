@@ -1,6 +1,7 @@
 #include "Command.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <TLS.h>
 
 Command::Command(const char *type)
@@ -21,7 +22,7 @@ Command::~Command(void) {
 		delete (*i);
 };
 
-status_t Command::AddParam(const char *param, bool encode = false) {
+status_t Command::AddParam(const char *param, bool encode) {
 	fDirty = true;
 
 	BString added = param;
@@ -56,7 +57,7 @@ status_t Command::AddParam(const char *param, bool encode = false) {
 	return B_OK;
 };
 
-const char *Command::Param(int32 index, bool decode = false) {
+const char *Command::Param(int32 index, bool decode) {
 	BString param = "";
 	if ((index >= 0) && (index <= Params())) {
 		param = fParams[index];
@@ -111,7 +112,7 @@ const char *Command::Param(int32 index, bool decode = false) {
 */
 };
 
-status_t Command::AddPayload(const char *payload, int32 length = -1, bool /*encode = true*/) {
+status_t Command::AddPayload(const char *payload, int32 length, bool /*encode*/) {
 	fDirty = true;
 
 	if (length == -1) length = strlen(payload);
@@ -153,7 +154,7 @@ const char *Command::Flatten(int32 sequence) {
 		};
 		
 		if (Params() > 0) {
-			vector<BString>::iterator i;
+			std::vector<BString>::iterator i;
 			for (i = fParams.begin(); i != fParams.end(); i++) {
 				fFlattened.WriteAt(offset++, " ", 1);
 				fFlattened.WriteAt(offset, i->String(), i->Length());
@@ -202,7 +203,7 @@ void Command::Debug(void) {
 	printf("%s", fType.String());
 	if (fUseTrID) printf(" {TrID}");
 	
-	vector<BString>::iterator i;
+	std::vector<BString>::iterator i;
 	for (i = fParams.begin(); i != fParams.end(); i++) printf(" %s", i->String());
 	
 	payloadv::iterator j;
@@ -288,7 +289,7 @@ status_t Command::MakeObject(const char *string) {
 
 bool Command::ExpectsPayload(int32 *payloadSize) {
 	bool ret = false;
-	map <BString, bool>::iterator it = gExpectsPayload.find(fType);
+	std::map <BString, bool>::iterator it = gExpectsPayload.find(fType);
 	*payloadSize = 0;
 
 	if (it != gExpectsPayload.end()) ret = it->second;

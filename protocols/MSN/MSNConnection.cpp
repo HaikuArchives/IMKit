@@ -5,6 +5,8 @@
 
 #include <openssl/md5.h>
 
+#include <stdlib.h>
+
 //#pragma mark Constants
 
 const char *kClientVer = "0x0407 win 6.0 i386 MSNMSGR 8.5 MSMSGS";
@@ -191,7 +193,7 @@ void MSNConnection::SetTo(const char *server, uint16 port, MSNManager *man) {
 	StartReceiver();
 };
 
-status_t MSNConnection::Send(Command *command, queuestyle queue = qsQueue) {
+status_t MSNConnection::Send(Command *command, queuestyle queue) {
 	status_t ret = B_ERROR;
 	
 	switch (queue) {
@@ -286,7 +288,7 @@ status_t MSNConnection::HandleNLN( Command * command ) {
 	Buddy *buddy;
 	if (it == buddies->end()) {
 		buddy = new Buddy(passport.String());
-		buddies->insert(pair<BString, Buddy*>(passport, buddy));
+		buddies->insert(std::pair<BString, Buddy*>(passport, buddy));
 	} else {
 		buddy = it->second;
 	};
@@ -501,20 +503,20 @@ status_t MSNConnection::HandleUSR( Command * command ) {
 				
 		Command *adl = new Command("ADL");
 		
-		list<BString> contacts;
-		map<BString, list<BString> > domainUsers;
+		std::list<BString> contacts;
+		std::map<BString, std::list<BString> > domainUsers;
 		
 		fManager->Handler()->ContactList(&contacts);
 		
 		// Make our contact list into a list by domain
-		for (list<BString>::iterator iIt = contacts.begin(); iIt != contacts.end(); iIt++) {
+		for (std::list<BString>::iterator iIt = contacts.begin(); iIt != contacts.end(); iIt++) {
 			BString user;
 			BString domain;
 			
 			if (SplitEmail((*iIt).String(), user, domain) == B_OK) {			
-				map<BString, list<BString> >::iterator dIt = domainUsers.find(domain);
+				std::map<BString, std::list<BString> >::iterator dIt = domainUsers.find(domain);
 				if (dIt == domainUsers.end()) {
-					list<BString> users;
+					std::list<BString> users;
 					users.push_back(user);
 					
 					domainUsers[domain] = users;
@@ -527,10 +529,10 @@ status_t MSNConnection::HandleUSR( Command * command ) {
 		BString payload = "<ml l=\"1\">";
 
 		// Package each contact by domain
-		for (map<BString, list<BString> >::iterator dIt = domainUsers.begin(); dIt != domainUsers.end(); dIt++) {
+		for (std::map<BString, std::list<BString> >::iterator dIt = domainUsers.begin(); dIt != domainUsers.end(); dIt++) {
 			payload << "<d n=\"" << dIt->first << "\">";
 		
-			for (list<BString>::iterator uIt = dIt->second.begin(); uIt != dIt->second.end(); uIt++) {
+			for (std::list<BString>::iterator uIt = dIt->second.begin(); uIt != dIt->second.end(); uIt++) {
 				payload << "<c n=\"" << (*uIt) <<  "\" l=\"3\" t=\"1\" />";
 			};
 			

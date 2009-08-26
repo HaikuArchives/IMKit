@@ -54,11 +54,11 @@ class Command;
 #include "Buddy.h"
 
 typedef std::map<BString, MSNConnection *> switchboardmap;
-typedef map<int32, Command *> tridmap;
+typedef std::map<int32, Command *> tridmap;
 // Confusing data structures, Ahoy! This is a map of TrIDs to the user the Command is targetted.
-typedef map<int32, pair<BString, Command *> > waitingmsgmap;
-typedef list<MSNConnection*> connectionlist;
-typedef map<BString, Buddy *> buddymap;
+typedef std::map<int32, std::pair<BString, Command *> > waitingmsgmap;
+typedef std::list<MSNConnection*> connectionlist;
+typedef std::map<BString, Buddy *> buddymap;
 
 class MSNManager : public BLooper {
 	public:
@@ -69,7 +69,7 @@ class MSNManager : public BLooper {
 			
 		status_t				MessageUser(const char *screenname, const char *message);
 		status_t				AddBuddy(const char *buddy);
-		status_t				AddBuddies(list<char *>buddies);
+		status_t				AddBuddies(std::list<char *>buddies);
 		int32					Buddies(void) const;
 		buddymap				*BuddyList(void) { return &fBuddy; };
 		Buddy					*BuddyDetails(const char *passport);

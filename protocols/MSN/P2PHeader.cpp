@@ -37,7 +37,7 @@ P2PHeader::~P2PHeader(void) {
 	if (fContent) delete fContent;
 };
 
-void P2PHeader::AddField(char *field, char *contents, int32 length = -1) {
+void P2PHeader::AddField(char *field, char *contents, int32 length) {
 	fDirty = true;
 
 	if (length == -1) length = strlen(contents);

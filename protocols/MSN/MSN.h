@@ -39,13 +39,13 @@ class MSNProtocol : public IM::Protocol, public MSNHandler {
 		virtual uint32 			GetEncoding(void);
 		
 //		To Protocol
-		status_t				ContactList(list<BString> *contacts);
+		status_t				ContactList(std::list<BString> *contacts);
 		
 //		From Protocol		
 		status_t				StatusChanged(const char *nick, online_types status);
 		status_t				MessageFromUser(const char *passport, const char *msg);
 		status_t				UserIsTyping(const char *nick, typing_notification type);
-		status_t			 	SSIBuddies(list<BString> buddies);
+		status_t			 	SSIBuddies(std::list<BString> buddies);
 		status_t				AuthRequest(list_types list, const char *passport, const char *displayname);
 		status_t				Error(const char * error_message);
 		status_t				Progress(const char * id, const char * message, float progress);
@@ -61,7 +61,7 @@ class MSNProtocol : public IM::Protocol, public MSNHandler {
 		BString					fPassword;
 		BString					fDisplayName;
 		
-		map<string,BString>		fNickMap;
+		std::map<std::string,BString>		fNickMap;
 };
 
 #endif

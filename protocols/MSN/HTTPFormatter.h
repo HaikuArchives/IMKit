@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-typedef map<BString, BString> HeaderMap;
+typedef std::map<BString, BString> HeaderMap;
 
 class HTTPFormatter {
 	public:

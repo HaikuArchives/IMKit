@@ -3,14 +3,14 @@
 
 #include <vector>
 #include <String.h>
-#include <map.h>
+#include <map>
 #include <support/ByteOrder.h>
 
 #include "P2PContents.h"
 
 extern const char *kMSNLPVer;
 
-typedef map<BString, BMallocIO*> fieldmap;
+typedef std::map<BString, BMallocIO*> fieldmap;
 
 class P2PHeader {
 	public:

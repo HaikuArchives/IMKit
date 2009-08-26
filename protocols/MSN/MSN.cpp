@@ -84,7 +84,7 @@ status_t MSNProtocol::Process(BMessage * msg) {
 					msg->GetInfo("id", &garbage, &count);
 								
 					if (count > 0) {
-						list<char *> buddies;
+						std::list<char *> buddies;
 						for ( int i=0; msg->FindString("id",i); i++ )
 						{
 							const char * id = msg->FindString("id",i);
@@ -313,8 +313,8 @@ status_t MSNProtocol::UserIsTyping(const char *nick, typing_notification type) {
 	return B_OK;
 };
 
-status_t MSNProtocol::SSIBuddies(list<BString> buddies) {
-	list <BString>::iterator i;
+status_t MSNProtocol::SSIBuddies(std::list<BString> buddies) {
+	std::list <BString>::iterator i;
 
 	BMessage serverBased(IM::SERVER_BASED_CONTACT_LIST);
 	serverBased.AddString("protocol", kProtocolName);
@@ -333,12 +333,12 @@ BString MSNProtocol::NormalizeNick(const char *nick) {
 	normal.ReplaceAll(" ", "");
 	normal.ToLower();
 	
-	map<string,BString>::iterator i = fNickMap.find(normal.String());
+	std::map<std::string,BString>::iterator i = fNickMap.find(normal.String());
 	
 	if ( i == fNickMap.end() ) {
 		// add 'real' nick if it's not already there
 		LOG(kProtocolName, liDebug, "Adding normal (%s) vs screen (%s)", normal.String(), nick );
-		fNickMap[string(normal.String())] = BString(nick);
+		fNickMap[std::string(normal.String())] = BString(nick);
 	}
 	
 	LOG(kProtocolName, liDebug, "Screen (%s) to normal (%s)", nick, normal.String() );
@@ -347,7 +347,7 @@ BString MSNProtocol::NormalizeNick(const char *nick) {
 };
 
 BString MSNProtocol::GetScreenNick( const char *nick ) {
-	map<string,BString>::iterator i = fNickMap.find(nick);
+	std::map<std::string,BString>::iterator i = fNickMap.find(nick);
 	
 	if ( i != fNickMap.end() ) {
 		// found the nick
@@ -360,7 +360,7 @@ BString MSNProtocol::GetScreenNick( const char *nick ) {
 	return BString(nick);
 };
 
-status_t MSNProtocol::ContactList(list<BString> *contacts) {
+status_t MSNProtocol::ContactList(std::list<BString> *contacts) {
 	const char *id;
 	BMessage reply;
 	BMessage msg(IM::GET_CONTACTS_FOR_PROTOCOL);
