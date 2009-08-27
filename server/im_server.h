@@ -55,6 +55,8 @@ namespace IM {
 			virtual void			ContactAdded(Contact *contact);
 			virtual void			ContactModified(Contact *contact, ConnectionStore *oldConnections, ConnectionStore *newConnections);
 			virtual void			ContactRemoved(Contact *contact, ConnectionStore *oldConnections);
+
+			ProtocolManager*		GetProtocolLoader() const;
 			
 		private:
 			void					_Init(void);

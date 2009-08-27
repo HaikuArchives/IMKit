@@ -22,6 +22,8 @@ namespace IM {
 		public:
 								ProtocolManager(void);
 			virtual				~ProtocolManager(void);
+
+			status_t		InitCheck();
 								
 			// Loading / Unloading Protocols
 			ProtocolInfo		*LaunchInstance(BPath protocolPath, BPath settingsPath, const char *name);

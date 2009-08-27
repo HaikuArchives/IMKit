@@ -10,6 +10,8 @@
 
 #include <libim/Helpers.h>
 
+#include "ProtocolManager.h"
+
 #ifdef ZETA
 #include <locale/Locale.h>
 #else
@@ -92,6 +94,23 @@ void CheckIndexes(void) {
 #endif
 		BAlert *alert = new BAlert(_T("The IM Kit"), msg, _T("Quit"), _T("OK"), NULL,
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_IDEA_ALERT);
+		alert->SetShortcut(0, B_ESCAPE);
+		int32 choice = alert->Go();
+
+		if (choice == 0)
+			exit(1);
+	};
+}
+
+void CheckComponents(IM::Server* server)
+{
+	// Check protocol manager
+	if (server->GetProtocolLoader()->InitCheck() != B_OK) {
+		const char* msg = _T("ProtocolLoader, an important component of IM Kit cannot be found.\n"
+			"Please reinstall IM Kit to resolve this issue.");
+
+		BAlert *alert = new BAlert(_T("The IM Kit"), msg, _T("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT);
 		alert->SetShortcut(0, B_ESCAPE);
 		int32 choice = alert->Go();
 
@@ -194,6 +213,7 @@ int main(int numarg, const char ** argv) {
 
 	IM::Server server;
 	CheckIndexes();
+	CheckComponents(&server);
 	server.Run();
 
 	return 0;

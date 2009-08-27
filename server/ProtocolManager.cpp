@@ -18,6 +18,12 @@
 
 #include <map>
 
+#ifdef ZETA
+#include <locale/Locale.h>
+#else
+#define _T(str) (str)
+#endif
+
 using namespace IM;
 
 //#pragma mark Constants
@@ -78,6 +84,13 @@ ProtocolManager::~ProtocolManager(void) {
 	delete fLock;
 };
 
+status_t ProtocolManager::InitCheck()
+{
+	if (fLoaderPath.Path())
+		return B_OK;
+	return B_ERROR;
+}
+
 //#pragma mark Public
 
 ProtocolInfo *ProtocolManager::LaunchInstance(BPath protocolPath, BPath settingsPath, const char *name) {
@@ -131,7 +144,7 @@ status_t ProtocolManager::LoadFromDirectory(BDirectory protocols, BDirectory set
 };
 
 
-status_t ProtocolManager::RestartProtocols(ProtocolSpecification *match, bool canDelete = true) {
+status_t ProtocolManager::RestartProtocols(ProtocolSpecification *match, bool canDelete) {
 	status_t result = B_ERROR;
 	BAutolock lock(fLock);
 		
@@ -191,7 +204,7 @@ status_t ProtocolManager::Unload(void) {
 	return result;
 };
 
-status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessage *message, bool canDelete = true, bool appendSignature = true) {
+status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessage *message, bool canDelete, bool appendSignature) {
 	status_t result = B_ERROR;
 	BAutolock lock(fLock);
 	
@@ -219,7 +232,7 @@ status_t ProtocolManager::MessageProtocols(ProtocolSpecification *match, BMessag
 
 //#pragma mark SpecificationFinder<ProtocolInfo *>
 
-bool ProtocolManager::FindFirst(ProtocolSpecification *match, ProtocolInfo **firstMatch, bool canDelete = true) {
+bool ProtocolManager::FindFirst(ProtocolSpecification *match, ProtocolInfo **firstMatch, bool canDelete) {
 	bool found = false;
 	BAutolock lock(fLock);
 	
@@ -242,7 +255,7 @@ bool ProtocolManager::FindFirst(ProtocolSpecification *match, ProtocolInfo **fir
 	return found;
 };
 
-GenericListStore<ProtocolInfo *> ProtocolManager::FindAll(ProtocolSpecification *match, bool canDelete = true) {
+GenericListStore<ProtocolInfo *> ProtocolManager::FindAll(ProtocolSpecification *match, bool canDelete) {
 	GenericListStore<ProtocolInfo *> protocols(false);
 	BAutolock lock(fLock);
 	

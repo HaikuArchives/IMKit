@@ -102,7 +102,7 @@ Server::Server(void)
 	fCurProtocol(NULL),
 	fProtocol(new ProtocolManager()),
 	fContact(new ContactManager(this)) {
-	
+
 	LOG(kAppName, liHigh, "Starting im_server");
 	
 	BPath prefsPath;
@@ -630,6 +630,12 @@ void Server::ContactRemoved(Contact *contact, ConnectionStore *oldConnections) {
 		UpdateContactStatusAttribute(*contact);
 	};
 };
+
+
+ProtocolManager* Server::GetProtocolLoader() const
+{
+	return fProtocol;
+}
 
 //#pragma mark Private
 
