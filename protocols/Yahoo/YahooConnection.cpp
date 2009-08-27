@@ -11,7 +11,7 @@
 
 #include "yahoo_util.h"
 
-map<int, YahooConnection*> gYahooConnections;
+std::map<int, YahooConnection*> gYahooConnections;
 
 char * y_utf8_to_str(const char *in)
 {
@@ -163,7 +163,7 @@ YahooConnection::AddBuddy( const char * who )
 		return;
 	}
 	
-	list<string>::iterator iter = find( fBuddies.begin(), fBuddies.end(), who );
+	std::list<std::string>::iterator iter = find( fBuddies.begin(), fBuddies.end(), who );
 	
 	if ( iter == fBuddies.end() )
 	{ // not in list, adding
@@ -240,7 +240,7 @@ YahooConnection::cbGotBuddies( YList * buds )
 {
 	fGotBuddyList = true;
 	
-	list<struct yahoo_buddy> yabs;
+	std::list<struct yahoo_buddy> yabs;
 	
 	// copy from buds to buddies...
 	for(; buds; buds = buds->next) {
@@ -253,7 +253,7 @@ YahooConnection::cbGotBuddies( YList * buds )
 	}
 	
 	// add waiting buddies
-	for ( list<string>::iterator iter=fBuddiesToAdd.begin(); iter != fBuddiesToAdd.end(); iter++ )
+	for ( std::list<std::string>::iterator iter=fBuddiesToAdd.begin(); iter != fBuddiesToAdd.end(); iter++ )
 	{
 		AddBuddy( (*iter).c_str() );
 	}

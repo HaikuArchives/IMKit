@@ -1,15 +1,7 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP protocols Yahoo ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_LIBYAHOO2_INCDIR) ] ;
+SubDirHdrs [ FDirName $(LIBYAHOO2_INCLUDE_DIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) common ] ;
 
@@ -18,34 +10,32 @@ AddOn yahoo :
 	YahooCallbacks.cpp
 	YahooConnection.cpp
 	yahoo_util.c
-	: be $(TARGET_LIBSTDC++) libcommon.a yahoo2
+	: be $(TARGET_LIBSTDC++) libcommon.a libim.so yahoo2
 	: Yahoo.rdef ProtocolTemplate.rdef
 ;
 
 Depends yahoo : libcommon.a ;
+Depends yahoo : libim.so ;
 
-if $(IMKIT_IS_HAIKU)  = 1 {
+if $(OS) = HAIKU {
 	LINKFLAGS on yahoo += -lnetwork ;
 }
 
-if $(IMKIT_IS_BEOS) = 1 {
+if $(OS) = BEOS {
 	LINKFLAGS on yahoo += -lsocket ;
 }
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on yahoo += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;
-}
-
-LINKFLAGS on yahoo += -L$(IMKIT_LIBYAHOO2_LIBDIR) ;
-
-InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : yahoo ;
-
-if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon yahoo : [ FDirName $(TOP) icons imkit protocols Yahoo.svg ] ;
 }
 
+LINKFLAGS on yahoo += -L$(LIBYAHOO2_LIBRARY_DIR) ;
+
+InstallLib $(COMMON_ADDONS_DIRECTORY)/im_kit/protocols : yahoo ;
+
 Package imkit :
 	yahoo :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
 ;

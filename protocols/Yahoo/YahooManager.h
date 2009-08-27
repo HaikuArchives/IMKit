@@ -24,8 +24,8 @@ class YahooManager
 		
 		virtual void TypeNotify(const char * who,int stat)=0;
 		
-		virtual void GotBuddyList( list<string> & )=0;
-		virtual void GotContactsInfo( list<struct yahoo_buddy> & )=0;
+		virtual void GotBuddyList( std::list<std::string> & )=0;
+		virtual void GotContactsInfo( std::list<struct yahoo_buddy> & )=0;
 		virtual void GotBuddyIcon(const char *who, long size, const char* icon)=0;
 		virtual void BuddyStatusChanged( const char * who, const char * status )=0;
 };

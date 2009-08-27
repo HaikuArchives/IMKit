@@ -68,12 +68,12 @@ class YahooConnection
 		
 		BList		fConnections;
 		
-		list<string>	fBuddies;
-		list<string>	fBuddiesToAdd;
+		std::list<std::string>	fBuddies;
+		std::list<std::string>	fBuddiesToAdd;
 		bool			fGotBuddyList;
 };
 
-extern map<int, YahooConnection*> gYahooConnections;
+extern std::map<int, YahooConnection*> gYahooConnections;
 extern void cb_yahoo_url_handle(int id, int fd, int error, const char *filename, unsigned long size, void *data);
 extern int32 yahoo_io_thread( void * _data );
 extern const char *  kProtocolName;

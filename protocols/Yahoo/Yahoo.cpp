@@ -316,10 +316,10 @@ Yahoo::LoggedOut()
 }
 
 void
-Yahoo::GotBuddyList( list<string> & buddies )
+Yahoo::GotBuddyList( std::list<std::string> & buddies )
 {
 	LOG("Yahoo", liDebug, "Yahoo::GotBuddyList()");
-	list <string>::iterator i;
+	std::list<std::string>::iterator i;
 
 	BMessage msg(IM::MESSAGE);
 	msg.AddInt32("im_what", IM::CONTACT_LIST);
@@ -334,10 +334,10 @@ Yahoo::GotBuddyList( list<string> & buddies )
 }
 
 void
-Yahoo::GotContactsInfo( list<struct yahoo_buddy> & yabs )
+Yahoo::GotContactsInfo( std::list<struct yahoo_buddy> & yabs )
 {
 	LOG("Yahoo", liDebug, "Yahoo::GotBuddyList()");
-	list <struct yahoo_buddy>::iterator i;
+	std::list<struct yahoo_buddy>::iterator i;
 
 	for (i = yabs.begin(); i != yabs.end(); i++) {
 		BMessage msg(IM::MESSAGE);
