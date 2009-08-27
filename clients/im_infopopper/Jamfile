@@ -1,14 +1,7 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients im_infopopper ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(INFOPOPPER_INCLUDE_DIR) ] ;
 
 Application im_infopopper :
 	main.cpp
@@ -20,11 +13,12 @@ Application im_infopopper :
 Depends im_infopopper : libcommon.a ;
 Depends im_infopopper : libim.so ;
 
-LINKFLAGS on im_infopopper += -L$(IMKIT_COMMON_LIB_DIRECTORY) ;
+LINKFLAGS on im_infopopper += -L$(INFOPOPPER_LIBRARY_DIR) ;
+LINKFLAGS on im_infopopper += -L$(COMMON_LIB_DIRECTORY) ;
 
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_infopopper ;
+InstallBin $(COMMON_BIN_DIRECTORY) : im_infopopper ;
 
 Package imkit :
 	im_infopopper :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;

@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
+# PackageRules
+#
 # Rules to create archives for binary distribution
-#-------------------------------------------------------------------------------
 
 rule Copy
 {
@@ -34,7 +34,7 @@ rule FPackageConfigSubPath
 
 	local configSubPath ;
 	on $(packagename) {
-		configSubPath = $(PLATFORM) $(OSPLAT) ;
+		configSubPath = $(OS:L) $(OSPLAT:L) ;
 	
 		if $(DEBUG) = 0 {
 			configSubPath += release ;

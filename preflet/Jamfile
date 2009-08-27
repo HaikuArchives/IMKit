@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP preflet ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
@@ -36,23 +28,20 @@ Application InstantMessaging :
 Depends InstantMessaging : libcommon.a ;
 Depends InstantMessaging : libim.so ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on InstantMessaging += -lzeta -ltracker ;
-}
-
-if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon InstantMessaging : [ FDirName $(TOP) icons imkit InstantMessaging.svg ] ;
 }
 
-InstallBin $(IMKIT_PREFERENCES_DIRECTORY) : InstantMessaging ;
-InstallSymLink $(IMKIT_USER_PREFERENCES_DIRECTORY)/InstantMessaging :
-	$(IMKIT_PREFERENCES_DIRECTORY)/InstantMessaging ;
+InstallBin $(PREFERENCES_DIRECTORY) : InstantMessaging ;
+InstallSymLink $(USER_PREFERENCES_DIRECTORY)/InstantMessaging :
+	$(PREFERENCES_DIRECTORY)/InstantMessaging ;
 
 Package imkit :
 	InstantMessaging :
-	[ FSplitPath $(IMKIT_PREFERENCES_DIRECTORY) ]
+	[ FSplitPath $(PREFERENCES_DIRECTORY) ]
 ;
 PackageSymLink imkit :
-	[ FSplitPath $(IMKIT_USER_PREFERENCES_DIRECTORY)/InstantMessaging ] :
-	$(IMKIT_PREFERENCES_DIRECTORY)/InstantMessaging
+	[ FSplitPath $(USER_PREFERENCES_DIRECTORY)/InstantMessaging ] :
+	$(PREFERENCES_DIRECTORY)/InstantMessaging
 ;

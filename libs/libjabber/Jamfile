@@ -1,17 +1,9 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP libs libjabber ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) libs ] ;
-if $(IMKIT_HAVE_OPENSSL) = 1 {
-	SubDirSysHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+if $(HAVE_OPENSSL) {
+	SubDirSysHdrs [ FDirName $(OPENSSL_INCLUDE_DIR) ] ;
 }
 
 SEARCH_SOURCE += [ FDirName $(TOP) libs libexpat ] ;
@@ -35,7 +27,7 @@ local sources =
 	xmltok.c
 ;
 
-if $(IMKIT_HAVE_OPENSSL) = 1 {
+if $(HAVE_OPENSSL) {
 	sources += JabberSSLPlug.cpp ;
 }
 

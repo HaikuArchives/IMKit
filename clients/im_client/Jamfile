@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients im_client ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
@@ -30,23 +22,20 @@ Application im_client :
 Depends im_client : libcommon.a ;
 Depends im_client : libim.so ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on im_client += -lzeta -ltracker ;
-}
-
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_client ;
-InstallSymLink $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client :
-	$(IMKIT_COMMON_BIN_DIRECTORY)/im_client ;
-
-if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon im_client : [ FDirName $(TOP) icons imkit im_client.svg ] ;
 }
 
+InstallBin $(COMMON_BIN_DIRECTORY) : im_client ;
+InstallSymLink $(COMMON_ADDONS_DIRECTORY)/Tracker/im_client :
+	$(COMMON_BIN_DIRECTORY)/im_client ;
+
 Package imkit :
 	im_client :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;
 PackageSymLink imkit :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker/im_client ] :
-	$(IMKIT_COMMON_BIN_DIRECTORY)/im_client
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/Tracker/im_client ] :
+	$(COMMON_BIN_DIRECTORY)/im_client
 ;

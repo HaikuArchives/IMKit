@@ -1,21 +1,13 @@
-#
-# Copyright 2008-2009, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients ;
 
 SubInclude TOP clients logger ;
 SubInclude TOP clients tracker_addons ;
-if $(IMKIT_HAVE_INFOPOPPER) = 1 {
+if $(HAVE_INFOPOPPER) {
 	SubInclude TOP clients im_infopopper ;
 }
 SubInclude TOP clients im_binlogger ;
 SubInclude TOP clients im_binlog_viewer ;
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	SubInclude TOP clients im_emoclient ;
 }
 SubInclude TOP clients im_client ;

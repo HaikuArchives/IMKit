@@ -1,3 +1,7 @@
+# FileRules
+#
+# Rules for files and symbolic links.
+
 rule SymLink
 {
 	# SymLink <target> : <source> : <makeDefaultDependencies> ;

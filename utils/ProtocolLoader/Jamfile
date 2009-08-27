@@ -1,12 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Michael Davidson <slaad@bong.com.au>
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP utils ProtocolLoader ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
@@ -23,13 +14,13 @@ Application ProtocolLoader :
 Depends ProtocolLoader : libcommon.a ;
 Depends ProtocolLoader : libim.so ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
 
-InstallBin $(IMKIT_APPS_DIRECTORY)/im_kit : ProtocolLoader ;
+InstallBin $(APPS_DIRECTORY)/im_kit : ProtocolLoader ;
 
 Package imkit :
 	ProtocolLoader :
-	[ FSplitPath $(IMKIT_APPS_DIRECTORY)/im_kit ]
+	[ FSplitPath $(APPS_DIRECTORY)/im_kit ]
 ;

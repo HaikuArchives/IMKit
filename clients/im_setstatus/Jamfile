@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients im_setstatus ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
@@ -17,9 +9,9 @@ Application im_setstatus :
 
 Depends im_setstatus : libim.so ;
 
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_setstatus ;
+InstallBin $(COMMON_BIN_DIRECTORY) : im_setstatus ;
 
 Package imkit :
 	im_setstatus :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;

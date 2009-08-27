@@ -10,15 +10,6 @@ if $(OSPLAT) = PPC {
 	LINKFLAGS += -warn -export pragma ;
 }
 
-COMMON_FOLDER = /boot/home/config ;
-
-LIBNETAPI = netapi ;	# default, may be changed to bnetapi (see below)
-
-if $(OSPLAT) = X86 {
-	NETWORK_LIBS += network ;
-	COMMON_FOLDER = /boot/common ;
-}
-
 # Use copyattr for copying.
 CP = copyattr --data ;
 
@@ -69,13 +60,13 @@ rule SetUpSubDirBuildSettings
 		CCFLAGS += -g ;
 		C++FLAGS += -g -fno-inline ;
 		LINKFLAGS += -g ;
-		DISTRO_DIR			= [ FDirName $(TOP) generated distro-debug-$(PLATFORM) ] ;
-		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-debug-$(PLATFORM) ] ;
+		DISTRO_DIR			= [ FDirName $(TOP) generated distro-debug-$(OS:L) ] ;
+		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-debug-$(OS:L) ] ;
 	}
 	else 
 	{
-		DISTRO_DIR			= [ FDirName $(TOP) generated distro-$(PLATFORM) ] ;
-		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-$(PLATFORM) ] ;
+		DISTRO_DIR			= [ FDirName $(TOP) generated distro-$(OS:L) ] ;
+		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-$(OS:L) ] ;
 	}
 
 	# optimization settings

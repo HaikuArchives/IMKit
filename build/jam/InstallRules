@@ -1,3 +1,7 @@
+# InstallRules
+#
+# Missing rules for installation.
+
 rule InstallSymLink
 {
 	# InstallSymlink linkname : source ;

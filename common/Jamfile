@@ -1,16 +1,8 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP common ;
 
 SubDirSysHdrs [ FDirName $(TOP) common ] ;
 
-if $(PLATFORM) = Haiku {
+if $(OS) = HAIKU {
 	SEARCH_SOURCE += [ FDirName $(TOP) common haiku_clv ] ;
 } else {
 	SEARCH_SOURCE += [ FDirName $(TOP) common clv ] ;
@@ -38,6 +30,6 @@ StaticLibrary libcommon.a :
 	ColumnTypes.cpp
 ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on libcommon.a += -lzeta -ltracker ;
 }

@@ -1,3 +1,7 @@
+# DistroRules
+#
+# Rules to archive binary distributions.
+
 rule Distro
 {
 	local target = $(1) ;

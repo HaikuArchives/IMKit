@@ -1,15 +1,7 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP protocols MSN ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+SubDirHdrs [ FDirName $(OPENSSL_INCLUDE_DIR) ] ;
 
 AddOn msn :
 	# MSN
@@ -31,28 +23,25 @@ AddOn msn :
 Depends msn : libcommon.a ;
 Depends msn : libim.so ;
 
-if $(IMKIT_IS_HAIKU) = 1 {
+if $(OS) = HAIKU {
 	LINKFLAGS on msn += -lnetwork ;
 }
 
-if $(IMKIT_IS_BEOS) = 1 {
+if $(OS) = BEOS {
 	LINKFLAGS on msn += -lsocket ;
 }
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on msn += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;
-}
-
-LINKFLAGS on msn += -L$(IMKIT_OPENSSL_LIBDIR) ;
-
-InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : msn ;
-
-if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon msn : [ FDirName $(TOP) icons imkit protocols MSN.svg ] ;
 }
 
+LINKFLAGS on msn += -L$(OPENSSL_LIBRARY_DIR) ;
+
+InstallLib $(COMMON_ADDONS_DIRECTORY)/im_kit/protocols : msn ;
+
 Package imkit :
 	msn :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
 ;

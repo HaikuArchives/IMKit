@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients im_binlogger ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
@@ -19,13 +11,13 @@ Application im_binlogger :
 Depends im_binlogger : libcommon.a ;
 Depends im_binlogger : libim.so ;
 
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_binlogger ;
+InstallBin $(COMMON_BIN_DIRECTORY) : im_binlogger ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	SVGIcon im_binlogger : [ FDirName $(TOP) icons imkit clients im_binlogger.svg ] ;
 }
 
 Package imkit :
 	im_binlogger :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;

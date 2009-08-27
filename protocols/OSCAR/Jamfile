@@ -1,15 +1,7 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP protocols OSCAR ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
-SubDirHdrs [ FDirName $(IMKIT_OPENSSL_INCDIR) ] ;
+SubDirHdrs [ FDirName $(OPENSSL_INCLUDE_DIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) common ] ;
 
@@ -49,38 +41,35 @@ AddOn icq :
 Depends icq : libcommon.a ;
 Depends icq : libim.so ;
 
-if $(IMKIT_IS_HAIKU)  = 1 {
+if $(OS) = HAIKU {
 	LINKFLAGS on aim += -lnetwork ;
 	LINKFLAGS on icq += -lnetwork ;
 }
 
-if $(IMKIT_IS_BEOS) = 1 {
+if $(OS) = BEOS {
 	LINKFLAGS on aim += -lsocket ;
 	LINKFLAGS on icq += -lsocket ;
 }
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on aim += -lsocket -lbind ;
 	LINKFLAGS on icq += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;
-}
-
-LINKFLAGS on aim += -L$(IMKIT_OPENSSL_LIBDIR) ;
-LINKFLAGS on icq += -L$(IMKIT_OPENSSL_LIBDIR) ;
-
-InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : aim ;
-InstallLib $(IMKIT_COMMON_ADDONS_DIRECTORY)/im_kit/protocols : icq ;
-
-if $(IMKIT_IS_ZETA) = 1 {
 	SVGIcon aim : [ FDirName $(TOP) icons imkit protocols AIM.svg ] ;
 	SVGIcon icq : [ FDirName $(TOP) icons imkit protocols ICQ.svg ] ;
 }
 
+LINKFLAGS on aim += -L$(OPENSSL_LIBRARY_DIR) ;
+LINKFLAGS on icq += -L$(OPENSSL_LIBRARY_DIR) ;
+
+InstallLib $(COMMON_ADDONS_DIRECTORY)/im_kit/protocols : aim ;
+InstallLib $(COMMON_ADDONS_DIRECTORY)/im_kit/protocols : icq ;
+
 Package imkit :
 	aim :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
 ;
 Package imkit :
 	icq :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/imkit/protocols ]
 ;

@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients logger ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
@@ -18,9 +10,9 @@ Application im_logger :
 
 Depends im_logger : libim.so ;
 
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_logger ;
+InstallBin $(COMMON_BIN_DIRECTORY) : im_logger ;
 
 Package imkit :
 	im_logger :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;

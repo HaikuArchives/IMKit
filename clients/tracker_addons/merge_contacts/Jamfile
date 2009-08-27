@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients tracker_addons merge_contacts ;
 
 AddOn IM_Merge_contacts :
@@ -14,9 +6,9 @@ AddOn IM_Merge_contacts :
 	: merge_contacts.rdef
 ;
 
-InstallBin $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker : IM_Merge_contacts ;
+InstallBin $(COMMON_ADDONS_DIRECTORY)/Tracker : IM_Merge_contacts ;
 
 Package imkit :
 	IM_Merge_contacts :
-	[ FSplitPath $(IMKIT_COMMON_ADDONS_DIRECTORY)/Tracker ]
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/Tracker ]
 ;

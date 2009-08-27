@@ -1,11 +1,3 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP clients im_emoclient ;
 
 SubDirHdrs [ FDirName $(TOP) ] ;
@@ -32,6 +24,7 @@ Application im_emoclient :
 	StdBevels.cpp
 	Emoticor.cpp
 	Emoconfig.cpp
+
 	# BitmapMenu
 	MenuBuilder.cpp
 	BitmapMenuItem.cpp
@@ -44,13 +37,13 @@ Depends im_emoclient : libcommon.a ;
 Depends im_emoclient : libexpat.a ;
 Depends im_emoclient : libim.so ;
 
-if $(IMKIT_IS_ZETA) = 1 {
+if $(OS) = ZETA {
 	LINKFLAGS on im_emoclient += -lzeta -ltracker ;
 }
 
-InstallBin $(IMKIT_COMMON_BIN_DIRECTORY) : im_emoclient ;
+InstallBin $(COMMON_BIN_DIRECTORY) : im_emoclient ;
 
 Package imkit :
 	im_emoclient :
-	[ FSplitPath $(IMKIT_COMMON_BIN_DIRECTORY) ]
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
 ;

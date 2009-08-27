@@ -1,19 +1,11 @@
-#
-# Copyright 2008, IM Kit Team.
-# Distributed under the terms of the MIT License.
-#
-# Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
-
 SubDir TOP protocols ;
 
 SubInclude TOP protocols Jabber ;
-if $(IMKIT_HAVE_OPENSSL) = 1 {
+if $(HAVE_OPENSSL) {
 	SubInclude TOP protocols MSN ;
 	SubInclude TOP protocols GoogleTalk ;
 	SubInclude TOP protocols OSCAR ;
 }
-if $(IMKIT_HAVE_LIBYAHOO2) = 1 {
+if $(HAVE_LIBYAHOO2) {
 	SubInclude TOP protocols Yahoo ;
 }
