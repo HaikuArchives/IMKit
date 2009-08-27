@@ -2,20 +2,52 @@
 #
 # Rules that specify what to build and how to do it.
 
+rule AddResources
+{
+	# AddResources <name> : <resourcefiles> ;
+	#
+	# Adds resources to the application.
+	#
+	# <name>: Name of the application.
+	# <resourcefiles>: List of resource files. Grist will be set.
+	#
+	local resfiles ;
+	local file ;
+	for file in $(2) {
+		if ! $(file:G) {
+			file = [ FGristFiles $(file) ] ;
+		}
+		resfiles += $(file) ;
+	}
+
+	SEARCH on $(resfile) += $(SEARCH_SOURCE) ;
+
+	for file in $(resfiles) {
+		if $(file:S) = .rdef {
+			local rdef = $(file) ;
+			file = $(rdef:S=.rsrc) ;
+			ResComp $(file) : $(rdef) ;
+		}
+		RESFILES on $(1) += $(file) ;
+	}
+}
+
 rule Application
 {
-	# Application <name> : <sources> : <libraries> ;
+	# Application <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates an application from sources.
 	#
 	# <name>: Name of the application. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
 	local app = $(1) ;
 	local sources = $(2) ;
 	local libs = $(3) ;
 
+	AddResources $(1) : $(4) ;
 	Main $(app) : $(sources) ;
 	MakeLocate $(app) : $(LOCATE_MAIN_TARGET) ;
 	LinkAgainst $(app) : $(libs) ;
@@ -146,6 +178,41 @@ rule XRes
 		Depends $(1) : $(2) ;
 		XRes1 $(1) : $(2) ;
 	}
+}
+
+rule ResComp
+{
+	# ResComp <resource file> : <rdef file> ;
+	#
+	# Creates a binary resource file from a rdef script.
+	#
+	# <resource file>: The resource file. Grist is required.
+	# <rdef file>: The rdef script. Grist is required.
+	#
+	local cc ;
+	local defines ;
+
+	on $(1) {
+		defines = $(DEFINES) ;
+	}
+
+	DEFINES on $(1) = $(defines) ;
+	CCDEFS on $(1) = [ FDefines $(defines) ] ;
+	#HDRS on $(1) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) : "-I " ] ;
+	HDRS on $(1) = [ on $(1) FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ]
+		$(HDRS_INCLUDES_SEPARATOR ;
+	RCHDRS on $(1) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) : "-I " ] ;
+	SEARCH on $(2) += $(SEARCH_SOURCE) ;
+	Depends $(1) : $(2) $(RC) ;
+	LocalClean clean : $(1) ;
+	ResComp1 $(1) : $(RC) $(2) ;
+}
+
+# Note: We pipe the input files into the preprocessor, since *.rdef files are
+# considered linker scripts, and thus we can use preprocessor features.
+actions ResComp1
+{
+	cat "$(2[2-])" | $(CC) -E $(CCDEFS) $(HDRS) - | egrep -v '^#' | $(2[1]) $(RCHDRS) --auto-names -o "$(1)" -
 }
 
 actions XRes1
