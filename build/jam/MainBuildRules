@@ -198,10 +198,9 @@ rule ResComp
 
 	DEFINES on $(1) = $(defines) ;
 	CCDEFS on $(1) = [ FDefines $(defines) ] ;
-	#HDRS on $(1) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) : "-I " ] ;
 	HDRS on $(1) = [ on $(1) FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ]
-		$(HDRS_INCLUDES_SEPARATOR ;
-	RCHDRS on $(1) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) : "-I " ] ;
+		$(HDRS_INCLUDES_SEPARATOR) ;
+	RCHDRS on $(1) = [ FRcIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ] ;
 	SEARCH on $(2) += $(SEARCH_SOURCE) ;
 	Depends $(1) : $(2) $(RC) ;
 	LocalClean clean : $(1) ;
@@ -336,6 +335,15 @@ if $(OSPLAT) = X86 {
 	rule FSysIncludes { return -I$(<) ; }
 } else {
 	rule FSysIncludes { return "-i "$(<) ; }
+}
+
+# FRcIncludes <dirs> ;
+#
+# Counterpart of FIncludes for *.rdef scripts.
+#
+rule FRcIncludes
+{
+	return "-I "$(<) ;
 }
 
 # Variable referring to the STL.
