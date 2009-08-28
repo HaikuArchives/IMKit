@@ -53,6 +53,20 @@ rule SetUpSubDirBuildSettings
 		}
 	}
 
+	local gccString = ;
+	if $(IS_GCC4_PLATFORM) {
+		gccString += gcc4 ;
+	} else {
+		gccString += gcc2 ;
+	}
+
+	local binModeString = ;
+	if $(DEBUG) && $(DEBUG) != 0 {
+		binModeString += debug ;
+	} else {
+		binModeString += release ;
+	}
+
 	# debugging settings
 	if $(DEBUG) && $(DEBUG) != 0 {
 		OPTIMIZE = 0 ;
@@ -61,14 +75,10 @@ rule SetUpSubDirBuildSettings
 		CCFLAGS += -g ;
 		C++FLAGS += -g -fno-inline ;
 		LINKFLAGS += -g ;
-		DISTRO_DIR			= [ FDirName $(TOP) generated distro-debug-$(OS:L) ] ;
-		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-debug-$(OS:L) ] ;
 	}
-	else 
-	{
-		DISTRO_DIR			= [ FDirName $(TOP) generated distro-$(OS:L) ] ;
-		OBJECTS_DIR			= [ FDirName $(TOP) generated objects-$(OS:L) ] ;
-	}
+
+	DISTRO_DIR = [ FDirName $(TOP) generated distro-$(OS:L)-$(OSPLAT:L)-$(gccString)-$(binModeString) ] ;
+	OBJECTS_DIR = [ FDirName $(TOP) generated objects-$(OS:L)-$(OSPLAT:L)-$(gccString)-$(binModeString) ] ;
 
 	# optimization settings
 	if $(OPTIMIZE) = 0 {
