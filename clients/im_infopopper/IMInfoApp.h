@@ -17,7 +17,7 @@
 #include <infopopper/InfoPopper.h>
 #include <common/IMKitUtilities.h>
 
-typedef map<BString, entry_ref> protoicons;
+typedef std::map<BString, entry_ref> protoicons;
 
 class IMInfoApp : public BApplication {
 	public:
