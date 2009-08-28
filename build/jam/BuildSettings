@@ -23,8 +23,9 @@ MKDIR = mkdir -p ;
 # by default we do not strip and do not build tests:
 STRIP_APPS ?= 0 ;
 BUILD_TESTS ?= 0 ;
-# For consistency, we evaluate BUILD_DEBUG, too:
-DEBUG ?= $(BUILD_DEBUG) ;
+
+# Enable debugging by default
+DEBUG ?= 1 ;
 
 rule SetUpSubDirBuildSettings
 {

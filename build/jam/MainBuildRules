@@ -46,8 +46,9 @@ rule Application
 	local app = $(1) ;
 	local sources = $(2) ;
 	local libs = $(3) ;
+	local res = $(4) ;
 
-	AddResources $(1) : $(4) ;
+	AddResources $(app) : $(res) ;
 	Main $(app) : $(sources) ;
 	MakeLocate $(app) : $(LOCATE_MAIN_TARGET) ;
 	LinkAgainst $(app) : $(libs) ;
@@ -60,31 +61,35 @@ actions Strip
 
 rule AddOn
 {
-	# AddOn <name> : <sources> : <libraries> ;
+	# AddOn <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates an add-on from sources.
 	#
 	# <name>: Name of the add-on. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
-	SharedLibrary $(1) : $(2) : $(3) ;
+	SharedLibrary $(1) : $(2) : $(3) : $(4) ;
 }
 
 rule SharedLibrary
 {
-	# SharedLibrary <name> : <sources> : <libraries> ;
+	# SharedLibrary <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates a shared library from sources.
 	#
 	# <name>: Name of the shared library. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
 	local lib = $(1) ;
 	local sources = $(2) ;
 	local libs = $(3) ;
+	local res = $(4) ;
 
+	AddResources $(lib) : $(res) ;
 	Main $(lib) : $(sources) ;
 	MakeLocate $(lib) : $(LOCATE_MAIN_TARGET) ;
 	local linkFlags ;
@@ -189,7 +194,6 @@ rule ResComp
 	# <resource file>: The resource file. Grist is required.
 	# <rdef file>: The rdef script. Grist is required.
 	#
-	local cc ;
 	local defines ;
 
 	on $(1) {
@@ -201,7 +205,9 @@ rule ResComp
 	HDRS on $(1) = [ on $(1) FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ]
 		$(HDRS_INCLUDES_SEPARATOR) ;
 	RCHDRS on $(1) = [ FRcIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ] ;
+
 	SEARCH on $(2) += $(SEARCH_SOURCE) ;
+	MakeLocate $(1) : $(LOCATE_TARGET) ;
 	Depends $(1) : $(2) $(RC) ;
 	LocalClean clean : $(1) ;
 	ResComp1 $(1) : $(RC) $(2) ;
