@@ -635,7 +635,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			fModeIcon = fOfflineIcon;
 			
 			LOG(kLogName, liDebug, "Build menu: im_server not running");
-			fMenu->AddItem( new BMenuItem(_T("Start im_server"), new BMessage(kMsgStartIMServer)) );
+			fMenu->AddItem( new BMenuItem(_T("Start IM Kit server"), new BMessage(kMsgStartIMServer)) );
 			
 			fMenu->SetTargetForItems( this );
 
