@@ -1,5 +1,6 @@
 #include "MenuColumns.h"
-#include "IconMenuItem.h"
+
+#include <common/IconMenuItem.h>
 
 #include <stdio.h>
 
@@ -68,7 +69,7 @@ BPopUpMenu *generate_menu(BRow *row, BColumnListView *parent) {
 };
 
 MenuStringColumn::MenuStringColumn(const char *title, float width, float maxWidth,
-	float minWidth, uint32 truncate, alignment align = B_ALIGN_LEFT)
+	float minWidth, uint32 truncate, alignment align)
 	: BStringColumn(title, width, maxWidth, minWidth, truncate, align) {
 
 	fMenu = NULL;
@@ -100,7 +101,7 @@ void MenuStringColumn::MouseDown(BColumnListView *parent, BRow *row, BField *fie
 //#pragma mark -
 
 MenuIntegerColumn::MenuIntegerColumn(const char *title, float width, float maxWidth,
-	float minWidth, alignment align = B_ALIGN_LEFT)
+	float minWidth, alignment align)
 	: BIntegerColumn(title, width, maxWidth, minWidth, align) {
 
 	fMenu = NULL;
@@ -132,7 +133,7 @@ void MenuIntegerColumn::MouseDown(BColumnListView *parent, BRow *row, BField *fi
 //#pragma mark -
 
 MenuSizeColumn::MenuSizeColumn(const char *title, float width, float maxWidth,
-	float minWidth, alignment align = B_ALIGN_LEFT)
+	float minWidth, alignment align)
 	: BSizeColumn(title, width, maxWidth, minWidth, align) {
 
 	fMenu = NULL;
@@ -164,7 +165,7 @@ void MenuSizeColumn::MouseDown(BColumnListView *parent, BRow *row, BField *field
 //#pragma mark -
 
 MenuDateColumn::MenuDateColumn(const char *title, float width, float maxWidth,
-	float minWidth, alignment align = B_ALIGN_LEFT)
+	float minWidth, alignment align)
 	: BDateColumn(title, width, maxWidth, minWidth, align) {
 
 	fMenu = NULL;
@@ -196,7 +197,7 @@ void MenuDateColumn::MouseDown(BColumnListView *parent, BRow *row, BField *field
 //#pragma mark -
 
 MenuBitmapColumn::MenuBitmapColumn(const char *title, float width, float maxWidth,
-	float minWidth, alignment align = B_ALIGN_LEFT)
+	float minWidth, alignment align)
 	: BBitmapColumn(title, width, maxWidth, minWidth, align) {
 
 	fMenu = NULL;

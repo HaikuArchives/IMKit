@@ -14,3 +14,4 @@ SubInclude TOP utils gimicq-import ;
 SubInclude TOP utils mimetype ;
 SubInclude TOP utils IconSetter ;
 SubInclude TOP utils ProtocolLoader ;
+SubInclude TOP utils QueryViewer ;

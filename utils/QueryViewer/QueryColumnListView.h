@@ -20,9 +20,10 @@
 #include <map>
 #include <vector>
 
-#include "IMKitUtilities.h"
-#include "CLV/ColumnListView.h"
-#include "CLV/ColumnTypes.h"
+#include <common/IMKitUtilities.h>
+#include <common/ColumnListView.h>
+#include <common/ColumnTypes.h>
+
 #include "SVGCache.h"
 #include "MenuColumns.h"
 
@@ -61,24 +62,24 @@ typedef struct {
 	node_ref nref;
 } result;
 
-typedef map<BString, BString> attr_map;
-typedef map<BString, uint32> type_map;
-typedef map<BString, int32> ai_map;
-typedef map<int32, BString> ia_map;
-typedef map<entry_ref, BRow *> ref_map;
-typedef map<BString, BColumn *> pc_map;
+typedef std::map<BString, BString> attr_map;
+typedef std::map<BString, uint32> type_map;
+typedef std::map<BString, int32> ai_map;
+typedef std::map<int32, BString> ia_map;
+typedef std::map<entry_ref, BRow *> ref_map;
+typedef std::map<BString, BColumn *> pc_map;
 
-typedef map<uint32, col_info *> hash_info_map;
-typedef map<BString, col_info *> internal_info_map;
-typedef map<BString, col_info *> public_info_map;
+typedef std::map<uint32, col_info *> hash_info_map;
+typedef std::map<BString, col_info *> internal_info_map;
+typedef std::map<BString, col_info *> public_info_map;
 
-typedef map<BString, BString> mime_map;
+typedef std::map<BString, BString> mime_map;
 
-typedef vector<BVolume> vollist;
-typedef vector<BQuery *> querylist;
+typedef std::vector<BVolume> vollist;
+typedef std::vector<BQuery *> querylist;
 
-typedef map<entry_ref, result> resultmap;
-typedef vector<entry_ref> pending_stack;
+typedef std::map<entry_ref, result> resultmap;
+typedef std::vector<entry_ref> pending_stack;
 
 
 enum {

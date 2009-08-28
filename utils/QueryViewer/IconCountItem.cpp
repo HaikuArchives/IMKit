@@ -6,7 +6,7 @@ const float kEdgeOffset = 2.0;
 const rgb_color kHighlight = {140, 140, 140, 255};
 
 IconCountItem::IconCountItem(const char *text, const char *path,
-	BBitmap *icon = NULL, bool isNew = false) 
+	BBitmap *icon, bool isNew) 
 	: fIcon(NULL),
 	fIconHeight(0),
 	fIconWidth(0) {

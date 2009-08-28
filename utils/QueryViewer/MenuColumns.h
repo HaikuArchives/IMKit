@@ -7,11 +7,11 @@
 #include <PopUpMenu.h>
 #include <Window.h>
 
-#include "CLV/ColumnListView.h"
-#include "CLV/ColumnTypes.h"
-#include "QueryColumnListView.h"
+#include <common/ColumnListView.h>
+#include <common/ColumnTypes.h>
+#include <common/IMKitUtilities.h>
 
-#include "IMKitUtilities.h"
+#include "QueryColumnListView.h"
 
 extern const int32 kPathIndex;
 extern const int32 kNameIndex;

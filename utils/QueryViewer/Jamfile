@@ -1,0 +1,34 @@
+SubDir TOP utils QueryViewer ;
+
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+
+if $(OS) = HAIKU {
+	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+} else {
+	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+}
+
+Application QueryViewer :
+	Hash.cpp
+	IconCountItem.cpp
+	MenuColumns.cpp
+	QueryApp.cpp
+	QueryColumnListView.cpp
+	QueryWindow.cpp
+	SVGCache.cpp
+	main.cpp
+	: be $(TARGET_LIBSTDC++) tracker libcommon.a
+;
+
+Depends ProtocolLoader : libcommon.a ;
+
+if $(OS) = ZETA {
+	LINKFLAGS on QueryViewer += -lzeta -ltracker ;
+}
+
+InstallBin $(APPS_DIRECTORY)/im_kit : QueryViewer ;
+
+Package imkit :
+	QueryViewer :
+	[ FSplitPath $(APPS_DIRECTORY)/im_kit ]
+;

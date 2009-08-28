@@ -25,9 +25,9 @@ const int32 kNameIndex = 1;
 mime_map QueryColumnListView::fMimeTypes;
 
 QueryColumnListView::QueryColumnListView(BRect rect, const char *name,
-	uint32 resizingMode, uint32 drawFlags, entry_ref ref, BMessage *msg = NULL,
-	BMessenger *notify = NULL, border_style border = B_NO_BORDER,
-	bool showHorizontalScrollbar = true)
+	uint32 resizingMode, uint32 drawFlags, entry_ref ref, BMessage *msg,
+	BMessenger *notify, border_style border,
+	bool showHorizontalScrollbar)
 	: BColumnListView(rect, name, resizingMode, drawFlags, border,
 		showHorizontalScrollbar) {
 		
@@ -207,7 +207,8 @@ void QueryColumnListView::MessageReceived(BMessage *msg) {
 			pending_stack::iterator pIt;
 			BMessage reply(B_REPLY);
 			for (pIt = fPending.begin(); pIt != fPending.end(); pIt++) {
-				reply.AddRef("ref", pIt);
+				entry_ref& r = (*pIt);
+				reply.AddRef("ref", &r);
 			};
 			fPending.clear();
 			
@@ -342,10 +343,11 @@ void QueryColumnListView::AttachedToWindow(void) {
 	vollist::iterator vIt;
 	for (vIt = fVolumes.begin(); vIt != fVolumes.end(); vIt++) {
 		BQuery *query = new BQuery();
+		BVolume& v = (*vIt);
 		
 		query->SetPredicate(fPredicate.String());
 		query->SetTarget(this);
-		query->SetVolume(vIt);
+		query->SetVolume(&v);
 
 		query->Fetch();
 		fQueries.push_back(query);

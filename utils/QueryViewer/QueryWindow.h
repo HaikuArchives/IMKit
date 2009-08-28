@@ -13,14 +13,14 @@
 #include <vector>
 
 #include "IconCountItem.h"
-#include "CLV/ColumnListView.h"
-#include "CLV/ColumnTypes.h"
 #include "QueryColumnListView.h"
 
-#include "IMKitUtilities.h"
+#include <common/ColumnListView.h>
+#include <common/ColumnTypes.h>
+#include <common/IMKitUtilities.h>
 
-typedef map<BString, QueryColumnListView *> cl_map; // Path / QCLV map
-typedef map<entry_ref, IconCountItem *> di_map; // Directory / IconTextItem map
+typedef std::map<BString, QueryColumnListView *> cl_map; // Path / QCLV map
+typedef std::map<entry_ref, IconCountItem *> di_map; // Directory / IconTextItem map
 
 class QueryWindow : public BWindow {
 	public:
