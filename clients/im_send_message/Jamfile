@@ -1,0 +1,17 @@
+SubDir TOP clients im_send_message ;
+
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+
+Application im_send_message :
+	im_send_message.cpp
+	: be libim.so
+;
+
+Depends im_send_message : libim.so ;
+
+InstallBin $(COMMON_BIN_DIRECTORY) : im_send_message ;
+
+Package imkit :
+	im_send_message :
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
+;

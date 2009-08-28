@@ -11,5 +11,6 @@ if $(OS) = ZETA {
 	SubInclude TOP clients im_emoclient ;
 }
 SubInclude TOP clients im_client ;
+SubInclude TOP clients im_send_message ;
 SubInclude TOP clients im_setstatus ;
 SubInclude TOP clients im_contact_list ;
