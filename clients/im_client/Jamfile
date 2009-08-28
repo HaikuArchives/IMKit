@@ -16,7 +16,7 @@ Application im_client :
 	StatusBar.cpp
 	IconBar.cpp
 	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
-	: im_client.rsrc
+	: im_client.rdef
 ;
 
 Depends im_client : libcommon.a ;
