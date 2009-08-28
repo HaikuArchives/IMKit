@@ -47,7 +47,7 @@ BBitmap *ReadNodeIcon(const char *name, int32 size,
  #endif
 #endif
 
-#ifdef HAIKU
+#ifdef __HAIKU__
 	BNode node(BPath(&ref).Path());
 
 	ret = new BBitmap(BRect(0, 0, size - 1, size - 1), B_RGBA32);
