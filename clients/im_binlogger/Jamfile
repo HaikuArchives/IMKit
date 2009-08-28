@@ -1,6 +1,6 @@
 SubDir TOP clients im_binlogger ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 Application im_binlogger :
 	logger.cpp

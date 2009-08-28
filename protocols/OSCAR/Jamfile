@@ -1,6 +1,6 @@
 SubDir TOP protocols OSCAR ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(OPENSSL_INCLUDE_DIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) common ] ;

@@ -1,6 +1,6 @@
 SubDir TOP clients im_setstatus ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 Application im_setstatus :
 	im_setstatus.cpp

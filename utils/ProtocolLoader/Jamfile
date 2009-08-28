@@ -1,6 +1,6 @@
 SubDir TOP utils ProtocolLoader ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(TOP) server ] ;
 
 Application ProtocolLoader :
