@@ -1,6 +1,12 @@
 SubDir TOP clients im_binlog_viewer ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+
+if $(OS) = HAIKU {
+	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+} else {
+	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+}
 
 Application im_binlog_viewer :
 	# im_binlog_viewer

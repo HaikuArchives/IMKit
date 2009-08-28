@@ -1,5 +1,6 @@
 SubDir TOP common ;
 
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) common ] ;
 
 if $(OS) = HAIKU {
