@@ -1,6 +1,11 @@
 SubDir TOP clients im_contact_list ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+if $(OS) = HAIKU {
+	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+} else {
+	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+}
 
 Application im_contact_list :
 	main.cpp
