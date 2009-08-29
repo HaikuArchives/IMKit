@@ -1,0 +1,9 @@
+resource(1000) message('IMst') {
+	"setting" = message {
+		"name" = "auto_start",
+		"description" = "Auto start",
+		int32 "type" = 'CSTR',
+		"default" = true,
+		"help" = "Should im_server start this automatically?"
+	}
+};

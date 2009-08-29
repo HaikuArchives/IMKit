@@ -5,8 +5,12 @@ SubDirHdrs [ FDirName $(TOP) ] ;
 Application im_contact_list :
 	main.cpp
 	ContactListApp.cpp
-	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
-	: im_contact_list.rdef
+	ContactListWindow.cpp
+	PeopleColumnListView.cpp
+	StatusView.cpp
+	PictureView.cpp
+	: be $(TARGET_LIBSTDC++) tracker translation libim.so libcommon.a
+	: im_contact_list.rdef SettingsTemplate.rdef
 ;
 
 Depends im_contact_list : libcommon.a ;
