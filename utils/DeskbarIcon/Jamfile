@@ -10,7 +10,6 @@ CreateSVNRevisionFile $(svnRevisionFile) ;
 C++FLAGS += -fpermissive ;
 
 Application IMDeskbarIcon :
-	AccountInfo.cpp
 	AwayMessageWindow.cpp
 	DeskbarIconApp.cpp
 	DeskbarIcon.cpp

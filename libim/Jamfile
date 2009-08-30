@@ -1,6 +1,7 @@
 SubDir TOP libim ;
 
 SharedLibrary libim.so :
+	AccountInfo.cpp
 	Connection.cpp
 	Contact.cpp
 	Manager.cpp
@@ -15,6 +16,7 @@ if $(OS) = ZETA {
 }
 
 InstallLib $(COMMON_LIB_DIRECTORY) : libim.so ;
+InstallFile $(COMMON_INCLUDE_DIRECTORY)/libim : AccountInfo.h ;
 InstallFile $(COMMON_INCLUDE_DIRECTORY)/libim : Constants.h ;
 InstallFile $(COMMON_INCLUDE_DIRECTORY)/libim : Contact.h ;
 InstallFile $(COMMON_INCLUDE_DIRECTORY)/libim : Helpers.h ;
@@ -26,6 +28,6 @@ Package imkit :
 	[ FSplitPath $(COMMON_LIB_DIRECTORY) ]
 ;
 Package imkit :
-	Constants.h Contact.h Helpers.h Manager.h Protocol.h :
+	AccountInfo.h Constants.h Contact.h Helpers.h Manager.h Protocol.h :
 	[ FSplitPath $(COMMON_INCLUDE_DIRECTORY) ]
 ;

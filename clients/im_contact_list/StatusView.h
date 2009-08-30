@@ -7,18 +7,29 @@
 
 #include <interface/View.h>
 
+#include <libim/AccountInfo.h>
+
 class BPopUpMenu;
 class BMenuField;
+class BMenuItem;
 
 class StatusView : public BView {
 public:
-						StatusView(const char* name);
+								StatusView(const char* name);
 
-	virtual	void		AttachedToWindow();
+	// BView hooks
+	virtual	void				AttachedToWindow();
+
+	// Public methods
+			void				GetProtocolStatuses();
 
 private:
-			BPopUpMenu* fStatusMenu;
-			BMenuField* fStatusMenuField;
+			IM::AccountStatus	fStatus;
+			BPopUpMenu* 		fStatusMenu;
+			BMenuField*			fStatusMenuField;
+			BMenuItem*			fOnlineMenuItem;
+			BMenuItem*			fAwayMenuItem;
+			BMenuItem*			fOfflineMenuItem;
 };
 
 #endif	// _STATUS_VIEW_H

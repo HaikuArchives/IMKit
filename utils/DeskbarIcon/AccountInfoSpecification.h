@@ -1,16 +1,17 @@
 #ifndef ACCOUNTINFOSPECIFICATION_H
 #define ACCOUNTINFOSPECIFICATION_H
 
-#include "AccountInfo.h"
-#include "common/Specification.h"
-
 #include <support/String.h>
 
-typedef IM::Specification<AccountInfo *> AccountInfoSpecification;
+#include <libim/AccountInfo.h>
+
+#include "common/Specification.h"
+
+typedef IM::Specification<IM::AccountInfo *> AccountInfoSpecification;
 
 class AllAccountInfoSpecification : public AccountInfoSpecification {
 	public:
-		virtual bool		IsSatisfiedBy(AccountInfo *info) {
+		virtual bool		IsSatisfiedBy(IM::AccountInfo *info) {
 								return true;
 							};
 };
@@ -22,7 +23,7 @@ class InstanceAccountInfoSpecification : public AccountInfoSpecification {
 								fInstance(instance) {
 							};
 							
-		virtual bool		IsSatisfiedBy(AccountInfo *info) {
+		virtual bool		IsSatisfiedBy(IM::AccountInfo *info) {
 								return (info->ID() == fInstance);
 							};
 	

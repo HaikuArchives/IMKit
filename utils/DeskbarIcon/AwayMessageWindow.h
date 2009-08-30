@@ -4,7 +4,8 @@
 #include <interface/Window.h>
 #include <support/String.h>
 
-class AccountInfo;
+#include <libim/AccountInfo.h>
+
 class BButton;
 class BScrollView;
 class BTextView;
@@ -12,7 +13,7 @@ class BView;
 
 class AwayMessageWindow : public BWindow {
 	public:
-								AwayMessageWindow(AccountInfo *info = NULL);
+								AwayMessageWindow(IM::AccountInfo *info = NULL);
 			virtual				~AwayMessageWindow(void);
 			
 			// BWindow Hooks

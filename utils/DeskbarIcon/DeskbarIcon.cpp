@@ -1,6 +1,5 @@
 #include "DeskbarIcon.h"
 
-#include "AccountInfo.h"
 #include "AccountInfoSpecification.h"
 #include "common/BubbleHelper.h"
 #include "common/GenericStore.h"
@@ -65,14 +64,14 @@ const int32 kMsgQueryUpdated = 'qlup';
 // Misc messages
 const int32 kMsgSettingsWindowClose = 'swcl';
 
-class AccountStore : public IM::GenericMapStore<BString, AccountInfo *>, IM::SpecificationFinder<AccountInfo *> {
+class AccountStore : public IM::GenericMapStore<BString, IM::AccountInfo *>, IM::SpecificationFinder<IM::AccountInfo *> {
 	public:
-		virtual bool FindFirst(AccountInfoSpecification *specification, AccountInfo **firstMatch, bool deleteSpec = true) {
+		virtual bool FindFirst(AccountInfoSpecification *specification, IM::AccountInfo **firstMatch, bool deleteSpec = true) {
 			bool result = false;		
-			IM::GenericMapStore<BString, AccountInfo *>::Iterator it;
+			IM::GenericMapStore<BString, IM::AccountInfo *>::Iterator it;
 
 			for (it = Start(); it != End(); it++) {
-				AccountInfo *current = it->second;
+				IM::AccountInfo *current = it->second;
 				
 				if (specification->IsSatisfiedBy(current) == true) {
 					*firstMatch = current;
@@ -88,12 +87,12 @@ class AccountStore : public IM::GenericMapStore<BString, AccountInfo *>, IM::Spe
 			return result;
 		};
 
-		virtual IM::GenericListStore<AccountInfo *> FindAll(AccountInfoSpecification *specification, bool deleteSpec = true) {
-			IM::GenericListStore<AccountInfo *> accounts(false);
+		virtual IM::GenericListStore<IM::AccountInfo *> FindAll(AccountInfoSpecification *specification, bool deleteSpec = true) {
+			IM::GenericListStore<IM::AccountInfo *> accounts(false);
 
-			IM::GenericMapStore<BString, AccountInfo *>::Iterator it;
+			IM::GenericMapStore<BString, IM::AccountInfo *>::Iterator it;
 			for (it = Start(); it != End(); it++) {
-				AccountInfo *current = it->second;
+				IM::AccountInfo *current = it->second;
 				
 				if (specification->IsSatisfiedBy(current) == true) {
 					accounts.Add(current);
@@ -272,22 +271,22 @@ void IM_DeskbarIcon::getProtocolStates(void) {
 	
 	for (int32 i = 0; protStatus.FindString("instance_id", i, &instanceID) == B_OK; i++) {
 		const char *protocol = NULL;
+		const char *account = NULL;
 		const char *userfriendly = NULL;
 		const char *status = NULL;
-		const char *account = NULL;
 		
 		if (protStatus.FindString("protocol",i, &protocol) != B_OK) protocol = _T("Unknown protocol");
+		if (protStatus.FindString("account_name", i, &account) != B_OK) account = _T("Unknown account");
 		if (protStatus.FindString("userfriendly",i, &userfriendly) != B_OK) userfriendly = _T("Unknown");
 		if (protStatus.FindString("status", i, &status) != B_OK) status = _T("Unknown status");
-		if (protStatus.FindString("account_name", i, &account) != B_OK) account = _T("Unknown account");
 
-		AccountInfo *info = new AccountInfo(instanceID.String(), account, protocol, userfriendly, status);
+		IM::AccountInfo *info = new IM::AccountInfo(instanceID.String(), protocol, account, userfriendly, status);
 		fAccount->Add(info->ID(), info);
 		
 		fTipText << "\n  " << info->DisplayLabel() << ": " << _T(info->StatusLabel()) << "";
 
-		if ((fStatus > kStatusOnline) && (info->Status() == Online)) fStatus = kStatusOnline;
-		if ((fStatus > kStatusAway) && (info->Status() == Away)) fStatus = kStatusAway;
+		if ((fStatus > kStatusOnline) && (info->Status() == IM::Online)) fStatus = kStatusOnline;
+		if ((fStatus > kStatusAway) && (info->Status() == IM::Away)) fStatus = kStatusAway;
 	}
 
 	switch (fStatus) {
@@ -391,7 +390,7 @@ void IM_DeskbarIcon::MessageReceived(BMessage * msg) {
 		case kMsgSetStatus: {
 			const char *status = NULL;
 			const char *instance_id = NULL;
-			AccountInfo *info = NULL;
+			IM::AccountInfo *info = NULL;
 
 			if (msg->FindString("status", &status) != B_OK) {
 				LOG(kLogName, liDebug, "No 'status' in kMSgSetStatus message", msg);
@@ -679,7 +678,7 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 			getProtocolStates();
 					
 			for (AccountStore::Iterator it = fAccount->Start(); it != fAccount->End(); it++) {
-				AccountInfo *info = it->second;
+				IM::AccountInfo *info = it->second;
 								
 				BString name = info->DisplayLabel();
 
@@ -706,13 +705,13 @@ void IM_DeskbarIcon::MouseDown(BPoint p) {
 				
 				account->SetTargetForItems(this);
 				switch (info->Status()) {
-					case Online: {
+					case IM::Online: {
 						account->ItemAt(0)->SetMarked(true);
 					} break;
-					case Away: {
+					case IM::Away: {
 						account->ItemAt(1)->SetMarked(true);
 					} break;
-					case Offline: {
+					case IM::Offline: {
 						account->ItemAt(2)->SetMarked(true);
 					} break;
 				};

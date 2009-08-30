@@ -14,7 +14,7 @@ Application im_contact_list :
 	PeopleColumnListView.cpp
 	StatusView.cpp
 	PictureView.cpp
-	: be $(TARGET_LIBSTDC++) tracker translation libim.so libcommon.a
+	: be $(TARGET_LIBSTDC++) tracker translation libcommon.a libim.so
 	: im_contact_list.rdef SettingsTemplate.rdef
 ;
 

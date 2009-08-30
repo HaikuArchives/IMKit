@@ -106,13 +106,9 @@ PeopleColumnListView::Populate()
 			entry_ref ref;
 			while (query->GetNextRef(&ref) == B_OK) {
 				BBitmap* icon = new BBitmap(BRect(0, 0, 16, 16), B_RGBA32);
-#if 1
 				BNode node(&ref);
 				if (BIconUtils::GetIcon(&node, BEOS_ICON_ATTRIBUTE, BEOS_MINI_ICON_ATTRIBUTE,
 					BEOS_LARGE_ICON_ATTRIBUTE, B_MINI_ICON, icon) != B_OK) {
-#else
-				if (BNodeInfo::GetTrackerIcon(&ref, icon, B_MINI_ICON) != B_OK) {
-#endif
 					delete icon;
 					icon = NULL;
 				}
