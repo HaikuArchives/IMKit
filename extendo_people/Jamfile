@@ -14,5 +14,5 @@ Application People :
 	main.cpp
 	PeopleWindow.cpp
 	: be $(TARGET_LIBSTDC++)
-	: people.rsrc
+	: extendo_people.rdef
 ;
