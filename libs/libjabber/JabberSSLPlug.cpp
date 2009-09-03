@@ -25,7 +25,7 @@ JabberSSLPlug::~JabberSSLPlug(){
 
 		if ( fKeepAliveRunner)
 			delete fKeepAliveRunner;
-		if(bio != NULL & ctx !=NULL) StopConnection();
+		if(bio != NULL && ctx !=NULL) StopConnection();
 }
 
 void
