@@ -1,327 +1,281 @@
-#include "GoogleTalk.h"
+/*
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Andrea Anzani, andrea.anzani@gmail.com
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
+
 #include <stdio.h>
+
+#include <string>
+
 #include <libim/Constants.h>
 #include <libim/Helpers.h>
+
 #include <libjabber/JabberSSLPlug.h>
 
+#include "GoogleTalk.h"
 #include "States.h"
-#include "string.h"	
 
-const char *  kProtocolName = "gtalk";
+const char* kProtocolName = "gtalk";
 
-int64 idsms=0;
+int64 idsms = 0;
 
-extern "C" IM::Protocol * load_protocol()
+extern "C" IM::Protocol* load_protocol()
 {
 	return new GoogleTalk();
 }
 
-
 GoogleTalk::GoogleTalk()
-:	IM::Protocol( IM::Protocol::MESSAGES | IM::Protocol::SERVER_BUDDY_LIST | IM::Protocol::OFFLINE_MESSAGES),
-	JabberHandler("jabberHandler", fPlug = new JabberSSLPlug("talk.google.com",5223) ),
+	: IM::Protocol(IM::Protocol::MESSAGES | IM::Protocol::SERVER_BUDDY_LIST |
+		IM::Protocol::OFFLINE_MESSAGES),
+	JabberHandler("jabberHandler", fPlug
+		= new JabberSSLPlug("talk.google.com", 5223)),
 	fUsername(""),
 	fServer("gmail.com"),
 	fPassword("")
 {
-
 }
 
-GoogleTalk::~GoogleTalk(){
+
+GoogleTalk::~GoogleTalk()
+{
 	Shutdown();
 }
 
+
 status_t
-GoogleTalk::Init( BMessenger msgr )
+GoogleTalk::Init(BMessenger msgr)
 {
 	fServerMsgr = msgr;
-	fAuth=false;
-	fRostered=false;
-	fAgent=false;
-	fFullLogged=false;
-	fPerc=0.0;
-	fLaterBuddyList=new StrList;
+	fAuth = false;
+	fRostered = false;
+	fAgent = false;
+	fFullLogged = false;
+	fPerc = 0.0;
+	fLaterBuddyList = new StrList();
+
 	return B_OK;
-	
 }
 
 status_t
 GoogleTalk::Shutdown()
 {
-
 	LogOff();
+
 	fLaterBuddyList->clear();
 	delete fLaterBuddyList;
-	
-	
+
 	thread_id plug = fPlug->Thread();
-	BMessenger(fPlug).SendMessage( B_QUIT_REQUESTED );
+	BMessenger(fPlug).SendMessage(B_QUIT_REQUESTED);
 	fPlug = NULL;
-	int32 res=0;
-	wait_for_thread( plug, &res );
-	
+
+	int32 res = 0;
+	wait_for_thread(plug, &res);
+
 	return B_OK;
 }
 
 
 status_t
-GoogleTalk::Process( BMessage * msg )
+GoogleTalk::Process(BMessage* msg)
 {
-	switch ( msg->what )
-	{
-		case IM::MESSAGE:
-		{
+	switch (msg->what) {
+		case IM::MESSAGE: {
 			int32 im_what = 0;
-			
-			msg->FindInt32("im_what", &im_what );
-						
-			switch ( im_what )
-			{
-				case IM::SET_STATUS:
-				{
-					const char *status = msg->FindString("status");
+
+			msg->FindInt32("im_what", &im_what);
+
+			switch (im_what) {
+				case IM::SET_STATUS: {
+					const char* status = msg->FindString("status");
 					LOG(kProtocolName, liMedium, "Set status to %s", status);
-					
-					if (strcmp(status, OFFLINE_TEXT) == 0) 
-					{
-							
-						SetStatus(S_OFFLINE,OFFLINE_TEXT); //do the log-out?
-					} 
-					else 
-					if (strcmp(status, AWAY_TEXT) == 0) 
-					{
-						if(IsAuthorized()){
-						
-						 //const char *away_msg;	
-						 BString away_msg;					 
-						 if(msg->FindString("away_msg",&away_msg) == B_OK)
-						 {
-						 	// quick and dirty way to use advanced away status:
-						 	// add 'DND: ' for Do not Disturb
-						 	// or  'XA: ' for Extended Away
-						 	
-						 	if(away_msg.Compare("DND: ",4) == 0)
-						 		SetStatus(S_DND,away_msg); 
-						 	else
-						 	if(away_msg.Compare("XA: ",4) == 0)
-						 		SetStatus(S_XA,away_msg); 
-						 	else	
-						 		SetStatus(S_AWAY,away_msg); 
-						 }
-						 	 else
-						 		 SetStatus(S_AWAY,AWAY_TEXT); 
-						 
-						 			
-						 SetAway(true);
-						} 
-					} 
-					else 
-					if (strcmp(status, ONLINE_TEXT) == 0) 
-					{
-							if(!IsAuthorized())
-							{
-								if(fUsername == "")
-									Error("Empty Username!",NULL);
-								if(fServer == "")
-									Error("Empty Server!",NULL);
-								if(fPassword == "")
-									Error("Empty Password!",NULL);
-								
-								Progress("GoogleTalk Login", "GoogleTalk: Connecting..", 0.0);
-										
+
+					if (strcmp(status, OFFLINE_TEXT) == 0)
+						SetStatus(S_OFFLINE, OFFLINE_TEXT);
+					else {
+						if (strcmp(status, AWAY_TEXT) == 0) {
+							if (IsAuthorized()) {
+								BString away_msg;
+								if (msg->FindString("away_msg", &away_msg) == B_OK) {
+									// quick and dirty way to use advanced away status:
+								 	// add 'DND: ' for Do not Disturb
+								 	// or  'XA: ' for Extended Away
+								 	if (away_msg.Compare("DND: ", 4) == 0)
+								 		SetStatus(S_DND, away_msg); 
+								 	else {
+									 	if(away_msg.Compare("XA: ", 4) == 0)
+									 		SetStatus(S_XA, away_msg);
+									 	else
+									 		SetStatus(S_AWAY, away_msg);
+									}
+								} else
+									SetStatus(S_AWAY, AWAY_TEXT);
+								SetAway(true);
 							}
-							
-							SetStatus(S_ONLINE,ONLINE_TEXT); //do the login!
-							if(IsAuthorized()) SetAway(false); 
-					} 
-					else
-					{
-						Error("Invalid",NULL);
-						LOG(kProtocolName, liHigh, "Invalid status when setting status: '%s'", status);
+						} else {
+							if (strcmp(status, ONLINE_TEXT) == 0) {
+								if (!IsAuthorized()) {
+									if (fUsername == "")
+										Error("Empty Username!", NULL);
+									if (fServer == "")
+										Error("Empty Server!", NULL);
+									if (fPassword == "")
+										Error("Empty Password!",NULL);
+
+									Progress("GoogleTalk Login", "GoogleTalk: Connecting...", 0.0f);
+								}
+
+								SetStatus(S_ONLINE, ONLINE_TEXT);
+								if (IsAuthorized())
+									SetAway(false); 
+							} else {
+								Error("Invalid", NULL);
+								LOG(kProtocolName, liHigh, "Invalid status when setting status: '%s'", status);
+							}
+						}
 					}
-				}	break;
-				
-				case IM::SEND_MESSAGE:
-				{
-						const char * buddy=msg->FindString("id");
-						const char * sms=msg->FindString("message");
+				} break;
+
+				case IM::SEND_MESSAGE: {
+						const char* buddy = msg->FindString("id");
+						const char* sms = msg->FindString("message");
+
 						JabberMessage jm;
 						jm.SetTo(buddy);
 						jm.SetFrom(GetJid());
 						jm.SetBody(sms);
 						TimeStamp(jm);
-						
-						//not the right place.. see Jabber::Message
-						JabberContact *contact=getContact(buddy);
-						
+
+						// not the right place.. see Jabber::Message
+						JabberContact* contact = getContact(buddy);
+
 						//tmp: new mess id!
 						BString messid("imkit_");
 						messid << idsms;
 						idsms++;
-						
-						if(contact)
+
+						if (contact)
 							jm.SetID(messid);
-												
+
 						SendMessage(jm);
-						
 						MessageSent(buddy,sms);
-				} 
-				break;
-				case IM::REGISTER_CONTACTS:
-					
-					{
-					
-					//debugger("REGISTER");
-					type_code garbage;
-					int32 count = 0;
-					msg->GetInfo("id", &garbage, &count);
-					
-										
-					if (count > 0 ) {
-						
-						for ( int i=0; msg->FindString("id",i); i++ )
-						{
-							const char * id = msg->FindString("id",i);
-							JabberContact* contact=getContact(id);
-							if(contact)
-								  BuddyStatusChanged(contact);
-							else
-							{
-							 
-								//Are we on-line?
-								// send auth req?
-								if(fFullLogged)
-								{ 			
-									AddContact(id,id,"");
-									BuddyStatusChanged(id,OFFLINE_TEXT);
+					} break;
+
+				case IM::REGISTER_CONTACTS: {
+						type_code garbage;
+						int32 count = 0;
+						msg->GetInfo("id", &garbage, &count);
+
+						if (count > 0) {
+							for (int i = 0; msg->FindString("id", i); i++) {
+								const char* id = msg->FindString("id", i);
+								JabberContact* contact = getContact(id);
+								if (contact)
+									  BuddyStatusChanged(contact);
+								else {
+									// Are we on-line?
+									// send auth req?
+									if (fFullLogged) { 			
+										AddContact(id, id, "");
+										BuddyStatusChanged(id, OFFLINE_TEXT);
+									} else {
+										// we add to a temp list.
+										// when logged in we will register the new buddy...
+										fLaterBuddyList->push_back(BString(id));
+									}
 								}
-								
-								else
-								{
-								 // we add to a temp list.
-								 // when logged in we will register the new buddy..
-									 fLaterBuddyList->push_back(BString(id));
-								}							 
-							} 
-						};
-						
-					} 
-					else 
-						return B_ERROR;
-					} 	
-					break;
-				case IM::UNREGISTER_CONTACTS:
-				
-				{
-						
-					
-						const char * buddy=NULL;
-						
-						for ( int i=0; msg->FindString("id", i, &buddy) == B_OK; i++ )
-						{
+							}
+						} else
+							return B_ERROR;
+					} break;
+
+				case IM::UNREGISTER_CONTACTS: {
+						const char* buddy = NULL;
+
+						for (int i = 0; msg->FindString("id", i, &buddy) == B_OK; i++) {
 							LOG(kProtocolName, liDebug, "Unregister Contact: '%s'", buddy);
-							
-							if(!fFullLogged)
-							BuddyStatusChanged(buddy,OFFLINE_TEXT);
-							else
-							{
+
+							if (!fFullLogged)
+								BuddyStatusChanged(buddy, OFFLINE_TEXT);
+							else {
 								LOG(kProtocolName, liDebug, "Unregister Contact DOING IT");
-							 	JabberContact* contact=getContact(buddy);
-							 	if(contact)
+							 	JabberContact* contact = getContact(buddy);
+							 	if (contact)
 									RemoveContact(contact);
 							}
 						}
-				} 
-					
-					break;
-				case IM::USER_STARTED_TYPING: 
-				{
-						const char * id=NULL;
-						
-						if( msg->FindString("id", &id) == B_OK )
-						{
-						 JabberContact* contact=getContact(id);
-						 if(contact)
-							StartComposingMessage(contact);
+					} break;
+
+				case IM::USER_STARTED_TYPING:  {
+						const char* id = NULL;
+
+						if (msg->FindString("id", &id) == B_OK) {
+							JabberContact* contact=getContact(id);
+							if (contact)
+								StartComposingMessage(contact);
 						}
-				} 
-				break;
-				case IM::USER_STOPPED_TYPING: 
-				{
-						const char * id=NULL;
-						
-						if( msg->FindString("id", &id) == B_OK )
-						{
-						 JabberContact* contact=getContact(id);
-						 if(contact && (contact->GetLastMessageID().ICompare("")!=0)){
-							StopComposingMessage(contact);
-							contact->SetLastMessageID("");
-							
+					} break;
+
+				case IM::USER_STOPPED_TYPING: {
+						const char* id=NULL;
+
+						if (msg->FindString("id", &id) == B_OK) {
+							JabberContact* contact = getContact(id);
+							if (contact && (contact->GetLastMessageID().ICompare("") != 0)) {
+								StopComposingMessage(contact);
+								contact->SetLastMessageID("");
 							}
 						}
-				} 
-				break;
-				
+					} break;
+
 				case IM::GET_CONTACT_INFO:
-					//debugger("Get Contact Info! ;)");
 					SendContactInfo(msg->FindString("id"));
-				break;
-								
-				case IM::SEND_AUTH_ACK:
-				{
-					if(!IsAuthorized())
-						return B_ERROR;
-					
-					const char * id = msg->FindString("id");
-					int32 button = msg->FindInt32("which");
-					
-					if (button == 0) {
-						
-						//Authorization granted
-						AcceptSubscription(id);
-						BMessage im_msg(IM::MESSAGE);
-						im_msg.AddInt32("im_what", IM::CONTACT_AUTHORIZED);
-						im_msg.AddString("protocol", kProtocolName);
-						im_msg.AddString("id", id);
-						im_msg.AddString("message", "");
-						fServerMsgr.SendMessage(&im_msg);
-						
-						//now we want to see you! ;)
-						AddContact(id,id,"");
-														
-					} 
-					else 
-					{
-						//Authorization rejected
-						Error("Authorization rejected!",id);
-					}
-						
-					
-				}
-				break;
+					break;
+
+				case IM::SEND_AUTH_ACK: {
+						if (!IsAuthorized())
+							return B_ERROR;
+
+						const char* id = msg->FindString("id");
+						int32 button = msg->FindInt32("which");
+
+						if (button == 0) {
+							// Authorization granted
+							AcceptSubscription(id);
+							BMessage im_msg(IM::MESSAGE);
+							im_msg.AddInt32("im_what", IM::CONTACT_AUTHORIZED);
+							im_msg.AddString("protocol", kProtocolName);
+							im_msg.AddString("id", id);
+							im_msg.AddString("message", "");
+							fServerMsgr.SendMessage(&im_msg);
+
+							//now we want to see you! ;)
+							AddContact(id, id, "");														
+						} else {
+							// Authorization rejected
+							Error("Authorization rejected!",id);
+						}
+					} break;
+
 				case IM::SPECIAL_TO_PROTOCOL:
-				{
-						/*BMessage im_msg(IM::MESSAGE);
-						im_msg.AddInt32("im_what", IM::SPECIAL_FROM_PROTOCOL);
-						im_msg.AddString("protocol", kProtocolName);
-						im_msg.AddString("uid_string", "jabber!");
-						fServerMsgr.SendMessage(&im_msg);
-						*/
-						Send(msg->FindString("direct_data"));		
-				}
-				break;
+					Send(msg->FindString("direct_data"));		
+					break;
+
 				default:
 					// we don't handle this im_what code
-					msg->PrintToStream();	
+					msg->PrintToStream();
 					return B_ERROR;
 			}
-		}	break;
-		
+		} break;
+
 		default:
 			// we don't handle this what code
 			return B_ERROR;
 	}
-	
+
 	return B_OK;
 }
 
@@ -625,7 +579,7 @@ GoogleTalk::Authorized()
 {
 	SetAway(false);
 	
-	fPerc +=0.3333;
+	fPerc +=0.3333f;
 	fAuth=true;
 	Progress("GoogleTalk Login", "GoogleTalk: Authorized", fPerc);
 	LOG(kProtocolName, liDebug, "GoogleTalk:Login %f - Authorized",fPerc) ;
@@ -715,7 +669,7 @@ GoogleTalk::Roster(RosterList * roster){
 	
 	//fRostered=true;
 	if(!fRostered){ //here the case when more than one roster message has arrived!
-		fPerc +=0.3333;
+		fPerc +=0.3333f;
 		fRostered = true;
 		Progress("GoogleTalk Login", "GoogleTalk: Roster", fPerc);
 	}
@@ -727,7 +681,7 @@ GoogleTalk::Roster(RosterList * roster){
 
 void
 GoogleTalk::Agents(AgentList * agents){
-	fPerc +=0.3333;
+	fPerc +=0.3333f;
 	fAgent = true;
 	Progress("GoogleTalk Login", "GoogleTalk: Agents", fPerc);
 	LOG(kProtocolName, liDebug, "GoogleTalk:Login %f - Agents",fPerc) ;
