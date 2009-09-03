@@ -1,15 +1,24 @@
 #include "MultiLineStringView.h"
 
 #include <ctype.h>
+#include <stdio.h>
+
+#ifdef __HAIKU__
+#	include <LayoutUtils.h>
+#endif
 
 //#pragma mark Public
 
 MultiLineStringView::MultiLineStringView(const char *name, const char *text,
 	float width)
+#ifdef __HAIKU__
+	: BView(name, B_WILL_DRAW | B_SUPPORTS_LAYOUT),
+#else
 	: BView(BRect(0, 0, width, width), name, B_FOLLOW_ALL_SIDES, B_WILL_DRAW),
+#endif
 	fText(text),
 	fWidth(width) {
-	
+
 	CalculateWrapping(text);
 };
 
@@ -17,6 +26,16 @@ MultiLineStringView::~MultiLineStringView(void) {
 };
 
 //#pragma mark BView Hooks
+
+#ifdef __HAIKU__
+BSize MultiLineStringView::PreferredSize() {
+	float width, height;
+
+	GetPreferredSize(&width, &height);
+	return BLayoutUtils::ComposeSize(ExplicitMaxSize(),
+		BSize(width, height));
+};
+#endif
 
 void MultiLineStringView::AttachedToWindow(void) {
 #if B_BEOS_VERSION > B_BEOS_VERSION_5

@@ -14,6 +14,9 @@ class MultiLineStringView : public BView {
 							~MultiLineStringView(void);
 							
 		// BView hooks
+#ifdef __HAIKU__
+		BSize				PreferredSize();
+#endif
 		void				AttachedToWindow(void);
 		void				Draw(BRect rect);
 		void				GetPreferredSize(float *width, float *height);
