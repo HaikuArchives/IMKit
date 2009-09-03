@@ -124,9 +124,9 @@ PView::PView(BRect bounds)
 #endif
 
 	// Save and revert buttons
-	fRevert = new BButton(frameRevert, "revert", _T("Revert"), new BMessage(kRevert));
+	fRevert = ViewFactory::Create<BButton>(frameRevert, "revert", _T("Revert"), new BMessage(kRevert));
 	fRevert->SetEnabled(false);
-	fSave = new BButton(frameSave, "save", _T("Save"), new BMessage(kSave));
+	fSave = ViewFactory::Create<BButton>(frameSave, "save", _T("Save"), new BMessage(kSave));
 	fSave->SetEnabled(false);
 
 	// Settings item
@@ -170,8 +170,8 @@ PView::PView(BRect bounds)
 	SetLayout(new BGroupLayout(B_VERTICAL));
 
 	AddChild(BGroupLayoutBuilder(B_HORIZONTAL, inset)
-		.Add(listScroller, 0.1f)
-		.Add(fMainView, 0.9f)
+		.Add(listScroller)
+		.Add(fMainView)
 		.SetInsets(inset, inset, inset, inset)
 	);
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
@@ -200,6 +200,7 @@ PView::~PView(void) {
 
 //#pragma mark BView Hooks
 
+#ifdef __HAIKU__
 BSize PView::MinSize() {
 	return BLayoutUtils::ComposeSize(ExplicitMinSize(),
 		BSize(500, 500));
@@ -209,6 +210,7 @@ BSize PView::MaxSize() {
 	return BLayoutUtils::ComposeSize(ExplicitMaxSize(),
 		BSize(640, 480));
 };
+#endif
 
 void PView::AttachedToWindow(void) {
 #if B_BEOS_VERSION > B_BEOS_VERSION_5

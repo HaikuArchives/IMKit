@@ -20,6 +20,14 @@ class ViewFactory {
 
 		template <class T>
 		static T		*Create(BRect rect, const char *name, const char *label, BMessage *msg);
+
+		template <class T>
+		static T		*Create(BRect rect, const char *name, const char *label, const char* value,
+							BMessage *msg, uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP, uint32 flags = B_WILL_DRAW | B_NAVIGABLE);
+
+		template <class T>
+		static T		*Create(BRect rect, const char *name, const char *label,
+			uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP, uint32 flags = B_WILL_DRAW);
 };
 
 class AbstractView : public BView {

@@ -169,7 +169,7 @@ bool PClientView::ShowHeading(void) const {
 
 float PClientView::BuildGUI(void) {
 	BMessage curr;
-	float inset = ceilf(be_plain_font->Size() * 0.7);
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
 
 #ifdef __HAIKU__
 	// Setup layout
@@ -190,7 +190,7 @@ float PClientView::BuildGUI(void) {
 		BFont headingFont(be_bold_font);
 		headingFont.SetSize(headingFont.Size() * 1.2f);
 
-		BStringView* descLabel = new BStringView(BRect(0, 0, 1, 1), fTitle.String(), fTitle.String());
+		BStringView* descLabel = ViewFactory::Create<BStringView>(BRect(0, 0, 1, 1), fTitle.String(), fTitle.String());
 		descLabel->SetFont(&headingFont);
 		descLabel->SetAlignment(B_ALIGN_LEFT);
 
@@ -330,7 +330,7 @@ float PClientView::BuildGUI(void) {
 #ifndef __HAIKU__
 				frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
-				control = new BCheckBox(frame, name, _T(desc), NULL);
+				control = ViewFactory::Create<BCheckBox>(frame, name, _T(desc), (BMessage*)NULL);
 				if (active) {
 					((BCheckBox*)control)->SetValue(B_CONTROL_ON);
 				};
@@ -349,7 +349,7 @@ float PClientView::BuildGUI(void) {
 #ifndef __HAIKU__
 					frame = BRect(0, 0, kControlWidth, kFontHeight);
 #endif
-					control = new BTextControl(frame, name, _T(desc), value, NULL);
+					control = ViewFactory::Create<BTextControl>(frame, name, _T(desc), value, NULL);
 					if (secret) {
 						((BTextControl*)control)->TextView()->HideTyping(true);
 						((BTextControl*)control)->SetText(_T(value));
@@ -359,7 +359,8 @@ float PClientView::BuildGUI(void) {
 #ifndef __HAIKU__
 					frame  = BRect(0, 0, kDividerWidth, kFontHeight);
 #endif
-					BStringView* label = new BStringView(frame, "NA", _T(desc), B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
+					BStringView* label = ViewFactory::Create<BStringView>(frame, "NA",
+						_T(desc), B_FOLLOW_LEFT | B_FOLLOW_TOP, B_WILL_DRAW);
 #ifdef __HAIKU__
 					layout.Add(label);
 #else
@@ -393,8 +394,10 @@ float PClientView::BuildGUI(void) {
 			} else {
 #ifndef __HAIKU__
 				frame = BRect(0, 0, kControlWidth, kFontHeight);
-#endif
 				control = new BMenuField(frame, name, _T(desc), menu);
+#else
+				control = new BMenuField(name, _T(desc), menu);
+#endif
 				((BMenuField *)control)->SetDivider(kDividerWidth);
 			}
 		}

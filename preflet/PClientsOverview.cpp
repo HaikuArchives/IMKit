@@ -116,7 +116,7 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 
 		BString nameEdit = "edit_";
 		nameEdit << file;
-		BButton* button = new BButton(frame, nameEdit.String(), _T("Edit..."), editMsg);
+		BButton* button = ViewFactory::Create<BButton>(frame, nameEdit.String(), _T("Edit..."), editMsg);
 		button->ResizeToPreferred();
 
 		fClientInfo.push_back(new ClientInfo(checkbox, button));

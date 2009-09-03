@@ -3,6 +3,8 @@
 #include <interface/Box.h>
 #include <interface/TextControl.h>
 #include <interface/Button.h>
+#include <interface/CheckBox.h>
+#include <interface/StringView.h>
 
 #include "common/NotifyingTextView.h"
 
@@ -18,7 +20,7 @@ BView *ViewFactory::Create<BView>(BRect rect, const char *name, uint32 resize, u
 	BView *view = NULL;
 
 #ifdef __HAIKU__
-	view = new BView(name, flags);
+	view = new BView(name, flags & B_SUPPORTS_LAYOUT);
 #else
 	view = new BView(rect, name, resize, flags);
 #endif
@@ -49,6 +51,18 @@ BButton *ViewFactory::Create<BButton>(BRect rect, const char* name, const char* 
 };
 
 template <>
+BCheckBox *ViewFactory::Create<BCheckBox>(BRect rect, const char* name, const char* label, BMessage* msg) {
+	BCheckBox *checkbox = NULL;
+#ifdef __HAIKU__
+	checkbox = new BCheckBox(name, label, msg);
+#else
+	checkbox = new BCheckBox(rect, name, label, msg);
+#endif
+
+	return checkbox;
+}
+
+template <>
 BBox *ViewFactory::Create<BBox>(BRect rect, const char *name, uint32 resize, uint32 flags) {
 	BBox *box = NULL;
 #ifdef __HAIKU__
@@ -61,16 +75,30 @@ BBox *ViewFactory::Create<BBox>(BRect rect, const char *name, uint32 resize, uin
 };
 
 template <>
-BTextControl *ViewFactory::Create<BTextControl>(BRect rect, const char *name, uint32 resize, uint32 flags) {
+BTextControl *ViewFactory::Create<BTextControl>(BRect rect, const char *name, const char* label,
+	const char* value, BMessage* msg, uint32 resize, uint32 flags) {
 	BTextControl *text = NULL;
 	
 #ifdef __HAIKU__
-	text = new BTextControl(name, name, NULL, NULL);
+	text = new BTextControl(name, label, value, msg, flags);
 #else
-	text = new BTextControl(rect, name, name, NULL, NULL);
+	text = new BTextControl(rect, name, label, value, msg, resize, flags);
 #endif
 
 	return text;
+};
+
+template <>
+BStringView* ViewFactory::Create<BStringView>(BRect rect, const char* name, const char* label, uint32 resize, uint32 flags) {
+	BStringView *view = NULL;
+
+#ifdef __HAIKU__
+	view = new BStringView(name, label, flags);
+#else
+	view = new BStringView(rect, name, label, resize, flags);
+#endif
+
+	return view;
 };
 
 template <>
@@ -88,7 +116,7 @@ NotifyingTextView *ViewFactory::Create<NotifyingTextView>(BRect rect, const char
 
 AbstractView::AbstractView(BRect frame, const char *name, uint32 resizeMask, uint32 flags)
 #ifdef __HAIKU__
-	: BView(name, flags) {
+	: BView(name, flags | B_SUPPORTS_LAYOUT) {
 #else
 	: BView(frame, name, resizeMask, flags) {
 #endif

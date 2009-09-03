@@ -75,10 +75,8 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol,
 		B_WILL_DRAW | B_FRAME_EVENTS);
 
 	// Account name
-	fAccountName = ViewFactory::Create<BTextControl>(frame, "account_name", B_FOLLOW_ALL_SIDES,
-		B_WILL_DRAW | B_FRAME_EVENTS);
-	fAccountName->SetLabel(_T("Account name:"));
-	fAccountName->SetText(fOriginalAccount.String());
+	fAccountName = ViewFactory::Create<BTextControl>(frame, "account_name", _T("Account name:"),
+		fOriginalAccount.String(), NULL, B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
 	fAccountName->SetFont(be_bold_font);
 	fAccountName->MakeFocus();
 
@@ -88,13 +86,8 @@ PAccountDialog::PAccountDialog(const char *title, const char *protocol,
 
 	fProtocolControl = new PClientView(frame, "ProtocolControls", NULL, fTemplate, fSettings);
 
-#ifdef __HAIKU__
-	fCancelButton = new BButton(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
-	fOKButton = new BButton(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
-#else
-	fCancelButton = new BButton("cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
-	fOKButton = new BButton("ok", _T("OK"), new BMessage(kAddAccountOk));
-#endif
+	fCancelButton = ViewFactory::Create<BButton>(frame, "cancel", _T("Cancel"), new BMessage(kAddAccountCancel));
+	fOKButton = ViewFactory::Create<BButton>(frame, "ok", _T("OK"), new BMessage(kAddAccountOk));
 
 #ifdef __HAIKU__
 	float inset = ceilf(be_plain_font->Size() * 0.7f);
