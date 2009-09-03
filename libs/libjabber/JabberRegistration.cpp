@@ -1,5 +1,5 @@
 #include "JabberRegistration.h"
-#include "stdio.h"
+#include "Logger.h"
 
 JabberRegistration::JabberRegistration(const BString & jid, bool unRegister)
 {
@@ -12,11 +12,10 @@ JabberRegistration::JabberRegistration(const BString & jid, bool unRegister)
 void
 JabberRegistration::PrintToStream() 
 {
-	//by xed uses printf (no good)
-	printf(" ** JabberRegistration **\n");
-	printf("    fJid:  %s\n",fJid.String());
-	printf("  fInstructions:  %s\n",fInstructions.String());
-	printf(" ** JabberRegistrationFields **\n");
+	logmsg(" ** JabberRegistration **");
+	logmsg("    fJid:  %s",fJid.String());
+	logmsg("  fInstructions:  %s",fInstructions.String());
+	logmsg(" ** JabberRegistrationFields **");
 	
 }
 JabberRegistration::~JabberRegistration()
@@ -44,7 +43,7 @@ JabberRegistration::AddField(const BString & field, const BString & value)
 	p.second = value;
 	fFields->insert(p);
 	
-	printf("Field added %s %s \n",field.String(),value.String());
+	logmsg("Field added %s %s",field.String(),value.String());
 }
 
 void

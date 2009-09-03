@@ -6,6 +6,8 @@
 #include <stdio.h>
 
 #include "JabberAgent.h"
+#include "Logger.h"
+
 
 JabberAgent::JabberAgent() 
 {
@@ -22,10 +24,10 @@ JabberAgent::~JabberAgent()
 void
 JabberAgent::PrintToStream() 
 {
-	printf(" ** Jabber Agent **\n");
-	printf("    Jid:  %s\n",fJid.String());
-	printf("   name:  %s\n",fName.String());
-	printf("service:  %s\n",fService.String());
+	logmsg(" ** Jabber Agent **");
+	logmsg("    Jid:  %s",fJid.String());
+	logmsg("   name:  %s",fName.String());
+	logmsg("service:  %s",fService.String());
 }
 
 

@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "JabberContact.h"
+#include "Logger.h"
 
 JabberContact::JabberContact()
 	: fPresence(new JabberPresence()),
@@ -22,10 +23,10 @@ JabberContact::~JabberContact()
 void
 JabberContact::PrintToStream() 
 {
-	printf("\nJabberContact\n");
-	printf("     Name:  %s\n",fName.String());
-	printf("    Group:  %s\n",fGroup.String());
-	printf("      Jid:  %s\n",fJid.String());	
+	logmsg("\nJabberContact");
+	logmsg("     Name:  %s",fName.String());
+	logmsg("    Group:  %s",fGroup.String());
+	logmsg("      Jid:  %s",fJid.String());	
 }
 
 

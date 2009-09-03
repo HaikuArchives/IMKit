@@ -8,8 +8,6 @@ if $(HAVE_OPENSSL) {
 
 SEARCH_SOURCE += [ FDirName $(TOP) libs libexpat ] ;
 
-SubDirC++Flags -DSTDOUT=1 ;
-
 local sources =
 	# libjabber
 	JabberAgent.cpp
@@ -21,6 +19,7 @@ local sources =
 	JabberRegistration.cpp
 	JabberSocketPlug.cpp
 	SHA1.cpp
+	Logger.cpp
 	# libexpat
 	xmlparse.c
 	xmlrole.c

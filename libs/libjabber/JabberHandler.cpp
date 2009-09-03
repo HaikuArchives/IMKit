@@ -1,6 +1,7 @@
 #include "JabberHandler.h"
 #include "SHA1.h"
 #include "States.h"
+#include "Logger.h"
 
 
 
@@ -325,7 +326,7 @@ JabberHandler::ReceivedData(const char * data,int32 length)  {
 	if(length > 0){
 		
 		if (!XML_Parse(fParser, data, length, 0))
-			printf("parse failed\n");
+			logmsg("parse failed");
 	}
 	else
 	
@@ -390,7 +391,7 @@ JabberHandler::BeginSession()
 	}
 	else
 	{
-    	printf("failed to connect\n");
+    	logmsg("failed to connect");
     	Disconnected("Failed to connect to host.");
     	return false;
     }
@@ -544,7 +545,7 @@ JabberHandler::Characters(void * pUserData, const char * pString, int pLen)
 		if(pLen==1 && (pString[0]=='\n' || pString[0]==9 || pString[0]==32 )) return;
 		element = new JabberElement;
 		element->SetName("new_data");
-		//printf("Creating string %s\n",tmpz);
+		//logmsg("Creating string %s",tmpz);
 		element->SetData(tmpz);
 		handler->fElementStack->AddItem(element);
 	}
@@ -555,7 +556,7 @@ JabberHandler::Characters(void * pUserData, const char * pString, int pLen)
 	{
 		BString tmp;
 		tmp << element->GetData().String() << tmpz ;
-		//printf("Adding string %s\n",tmp.String());
+		//logmsg("Adding string %s",tmp.String());
 		element->SetData(tmp.String());
 	}
 	
@@ -602,12 +603,12 @@ JabberHandler::BuildMessage()
 			// some 'x' features by xeD
 			
 			BString xmlns(HasAttribute("xmlns", element->GetAttr(),element->GetAttrCount()));
-			printf("GetAttr xmlns #%s#\n",xmlns.String());
+			logmsg("GetAttr xmlns #%s#",xmlns.String());
 			message->SetX(xmlns);
 			
 			if (previous != 0)  
 			{
-				printf("previous->GetName() [%s] [%s]\n",previous->GetName().String(),previous->GetData().String());
+				logmsg("previous->GetName() [%s] [%s]",previous->GetName().String(),previous->GetData().String());
 				
 				if (previous->GetName().ICompare("composing") == 0) 
 				{
@@ -737,13 +738,13 @@ JabberHandler::BuildPresence()
 		{
 			if (previous != NULL && previous->GetName().ICompare("data") == 0)
 				presence->SetShowFromString(previous->GetData());
-			//	printf("BUILD show %s\n",previous->GetData().String());
+			//	logmsg("BUILD show %s",previous->GetData().String());
 		} 
 		else if (element->GetName().ICompare("status") == 0)
 		{
 			if (previous != NULL && previous->GetName().ICompare("data") == 0)
 				presence->SetStatus(previous->GetData());
-			//	printf("BUILD status %s\n",previous->GetData().String());
+			//	logmsg("BUILD status %s",previous->GetData().String());
 		}
 
 		if (previous)
@@ -1004,17 +1005,17 @@ JabberHandler::TwoDigit(int32 number, BString & string)
 const char * 
 JabberHandler::HasAttribute(const char * pName, const char ** pAttributes,int32 count) 
 {
-	//printf("** Has Attribute for %s\n",pName);
+	//logmsg("** Has Attribute for %s",pName);
 	for (int32 i=0;i<count; i += 2) 
 	{
-		//printf("     %ld  -  %s\n",i,pAttributes[i]);
+		//logmsg("     %ld  -  %s",i,pAttributes[i]);
 		if (strcmp(pAttributes[i], pName) == 0)
 			{
-				//printf("compare ok! val %s\n",pAttributes[i + 1]);
+				//logmsg("compare ok! val %s",pAttributes[i + 1]);
 				return pAttributes[i + 1];
 			}
 	}
-	//printf("\n");
+	//logmsg("");
 	return NULL;
 }
 const char * 

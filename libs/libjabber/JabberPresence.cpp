@@ -1,6 +1,6 @@
 #include "JabberPresence.h"
 #include "States.h"
-#include "stdio.h"
+#include "Logger.h"
 
 JabberPresence::JabberPresence() 
 {
@@ -13,11 +13,10 @@ JabberPresence::JabberPresence()
 void
 JabberPresence::PrintToStream() 
 {
-	//by xed uses printf (no good :)
-	printf("\nJabberPresence\n");
-	printf("   Status:  %s\n",fStatus.String());
-	printf("    Show:  %ld\n",fShow);
-	printf("      Jid:  %s\n",fJid.String());
+	logmsg("\nJabberPresence");
+	logmsg("   Status:  %s",fStatus.String());
+	logmsg("    Show:  %ld",fShow);
+	logmsg("      Jid:  %s",fJid.String());
 	
 }
 JabberPresence::JabberPresence(const JabberPresence & copy)

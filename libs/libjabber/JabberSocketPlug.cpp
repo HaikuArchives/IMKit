@@ -1,4 +1,5 @@
 #include "JabberSocketPlug.h"
+#include "Logger.h"
 
 #ifdef NETSERVER_BUILD 
 #	include <netdb.h> 
@@ -20,8 +21,6 @@
 
 #include "JabberHandler.h"
 
-#define LOG(X) printf X;
-
 JabberSocketPlug::JabberSocketPlug(){
 	
 	fReceiverThread = -1;
@@ -38,7 +37,7 @@ JabberSocketPlug::~JabberSocketPlug(){
 int
 JabberSocketPlug::StartConnection(BString fHost, int32 fPort,void* cookie){
 	
-	LOG(("StartConnection to %s:%ld\n",fHost.String(),fPort));
+	logmsg("StartConnection to %s:%ld",fHost.String(),fPort);
 	struct sockaddr_in remoteAddr;
 	remoteAddr.sin_family = AF_INET;
 
@@ -54,7 +53,7 @@ JabberSocketPlug::StartConnection(BString fHost, int32 fPort,void* cookie){
        		remoteAddr.sin_addr = *((in_addr *)remoteInet->h_addr_list[0]);
        	else 
        	{
-			printf("failed (remoteInet) [%s]\n",fHost.String());
+			logmsg("failed (remoteInet) [%s]",fHost.String());
 		}
     }
 
@@ -62,13 +61,13 @@ JabberSocketPlug::StartConnection(BString fHost, int32 fPort,void* cookie){
     
     if ((fSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     {
-    	printf("failed to create socket\n");
+    	logmsg("failed to create socket");
     	fSocket = -1;
     }
     
     if (connect(fSocket, (struct sockaddr *)&remoteAddr, sizeof(remoteAddr)) < 0) 
     {
-	   	printf("failed to connect socket\n");
+	   	logmsg("failed to connect socket");
     	fSocket = -1;
     }
    
@@ -81,11 +80,11 @@ JabberSocketPlug::StartConnection(BString fHost, int32 fPort,void* cookie){
 	   	resume_thread(fReceiverThread); 
 	else 
 	{
-		printf("failed to resume the thread!\n");
+		logmsg("failed to resume the thread!");
 		return -1;
 	}
 	
-	LOG(("DONE: StartConnection to %s:%ld\n",fHost.String(),fPort));
+	logmsg("DONE: StartConnection to %s:%ld",fHost.String(),fPort);
 	return fSocket;	
 }
 
@@ -108,10 +107,8 @@ JabberSocketPlug::ReceiveData(void * pHandler){
 			#ifdef NETSERVER_BUILD 
 				plug->fEndpointLock->Unlock(); 
 			#endif
-				data[length] = 0;
-			#ifdef STDOUT
-				printf("\n<< %s\n", data);
-			#endif
+			data[length] = 0;
+			logmsg("\n<< %s", data);
 		} 
 		else 
 		{
@@ -146,9 +143,7 @@ JabberSocketPlug::Send(const BString & xml){
 			fEndpointLock->Lock(); 
 		#endif	
 		
-		#ifdef STDOUT
-			printf("\n>> %s\n", xml.String());
-		#endif
+		logmsg("\n>> %s", xml.String());
 		
 		if(send(fSocket, xml.String(), xml.Length(), 0) == -1)
 			return -1;
@@ -161,7 +156,7 @@ JabberSocketPlug::Send(const BString & xml){
 	else
 	
 	{
-		printf("Socket not initialized\n");
+		logmsg("Socket not initialized");
 		return -1;
 	}
 	return 0;

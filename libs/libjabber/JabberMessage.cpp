@@ -1,5 +1,5 @@
 #include "JabberMessage.h"
-#include "stdio.h"
+#include "Logger.h"
 
 JabberMessage::JabberMessage() 
 {
@@ -30,16 +30,15 @@ JabberMessage::JabberMessage(const JabberMessage & copy)
 void
 JabberMessage::PrintToStream() 
 {
-	//by xed uses printf (no good :)
-	printf(" ** JabberMessage **\n");
-	printf("    To:  %s\n",fTo.String());
-	printf("    Id:  %s\n",fId.String());
-	printf("  From:  %s\n",fFrom.String());
-	printf("  Body:  %s\n",fBody.String());
-	printf(" Stamp:  %s\n\n",fStamp.String());
-	printf("  Type:  %s\n",fType.String());
-	printf(" Error:  %s\n\n",fError.String());
-	printf("     X:  %s\n\n",fX.String());
+	logmsg(" ** JabberMessage **");
+	logmsg("    To:  %s",fTo.String());
+	logmsg("    Id:  %s",fId.String());
+	logmsg("  From:  %s",fFrom.String());
+	logmsg("  Body:  %s",fBody.String());
+	logmsg(" Stamp:  %s",fStamp.String());
+	logmsg("  Type:  %s",fType.String());
+	logmsg(" Error:  %s",fError.String());
+	logmsg("     X:  %s",fX.String());
 }
 
 

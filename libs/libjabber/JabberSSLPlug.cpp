@@ -1,8 +1,6 @@
 #include "JabberSSLPlug.h"
-
 #include "JabberHandler.h"
-
-#define LOG(X) printf X;
+#include "Logger.h"
 
 #define msnmsgPing 'ping'
 
@@ -34,7 +32,6 @@ void
 JabberSSLPlug::MessageReceived(BMessage* msg){
 
 		if(msg->what == msnmsgPing){
-			printf("\nPING!\n");
 			Send(" ");
 		}
 		else
@@ -51,7 +48,7 @@ JabberSSLPlug::StartConnection(BString fServer, int32 fPort,void* cookie){
 	else
 		fHost << fServer << ":" << fPort;
 	
-	LOG(("StartConnection to %s\n",fHost.String()));
+	logmsg("StartConnection to %s",fHost.String());
 
 	SSL * ssl;
 	int result = 0;
@@ -81,7 +78,7 @@ JabberSSLPlug::StartConnection(BString fServer, int32 fPort,void* cookie){
 
     if(BIO_do_connect(bio) <= 0)
     {
-        fprintf(stderr, "Error attempting to connect\n");
+        logmsg("Error attempting to connect");
         ERR_print_errors_fp(stderr);
         BIO_free_all(bio);
         SSL_CTX_free(ctx);
@@ -97,11 +94,11 @@ JabberSSLPlug::StartConnection(BString fServer, int32 fPort,void* cookie){
 	   	resume_thread(fReceiverThread); 
 	else 
 	{
-		printf("failed to resume the thread!\n");
+		logmsg("failed to resume the thread!");
 		return -1; //FIX! returning..
 	}
 	
-	LOG(("DONE: StartConnection to %s\n",fHost.String()));
+	logmsg("DONE: StartConnection to %s",fHost.String());
 	return result;	
 }
 
@@ -121,9 +118,7 @@ JabberSSLPlug::ReceiveData(void * pHandler){
 			
 			data[length] = 0;
 			
-			#ifdef STDOUT
-				printf("\nSSLPlug<< %s\n", data);
-			#endif
+			logmsg("\nSSLPlug<< %s", data);
 		} 
 		
 		else {
@@ -131,11 +126,9 @@ JabberSSLPlug::ReceiveData(void * pHandler){
 			if(!BIO_should_retry(plug->bio)) {			
 				
 				//uhm really and error!
-				#ifdef STDOUT
-					//int ret = SSL_get_error(plug->bio);
-					printf("\nSSLPlug<< not should retry! err ");
-					ERR_print_errors(plug->bio);
-				#endif	
+				//int ret = SSL_get_error(plug->bio);
+				logmsg("\nSSLPlug<< not should retry! err ");
+				ERR_print_errors(plug->bio);
 				return 0;			
 			}
 			else 
@@ -161,9 +154,7 @@ JabberSSLPlug::ReceivedData(const char* data,int32 len){
 int
 JabberSSLPlug::Send(const BString & xml){
 		
-		#ifdef STDOUT
-			printf("\nSSLPlug>> %s\n", xml.String());
-		#endif
+		logmsg("\nSSLPlug>> %s", xml.String());
 		
 		return BIO_write(bio, xml.String(), xml.Length());
 }
