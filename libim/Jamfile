@@ -1,4 +1,5 @@
 SubDir TOP libim ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 SharedLibrary libim.so :
 	AccountInfo.cpp
