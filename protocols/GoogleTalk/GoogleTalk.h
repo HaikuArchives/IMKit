@@ -55,7 +55,7 @@ public:
 		virtual void SetAway(bool);
 		virtual void LoggedOut();
 
-		//virtual void GotBuddyList( list<string> & );
+		//virtual void GotBuddyList( std::list<string> & );
 		virtual void BuddyStatusChanged( const char * who, const char * status );
 		virtual void BuddyStatusChanged( JabberContact* who );
 		virtual void BuddyStatusChanged( JabberPresence* who );
@@ -69,7 +69,7 @@ private:
 		BString		fServer;
 		BString		fPassword;
 
-		typedef list<BString>	StrList; // new buddy added when off-line.
+		typedef std::list<BString>	StrList; // new buddy added when off-line.
 		StrList*			fLaterBuddyList;
 
 		//special client
