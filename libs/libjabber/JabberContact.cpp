@@ -1,68 +1,76 @@
-#include "JabberContact.h"
-#include "stdio.h"
+/*
+ * Copyright 2002, The Olmeki Team.
+ * Distributed under the terms of the Olmeki License.
+ */
 
-JabberContact::JabberContact() 
+#include <stdio.h>
+
+#include "JabberContact.h"
+
+JabberContact::JabberContact()
+	: fPresence(new JabberPresence()),
+	fId("")
 {
-	fPresence = new JabberPresence();
-	fId = "";
 }
+
 
 JabberContact::~JabberContact() 
 {
 }
+
+
 void
 JabberContact::PrintToStream() 
 {
-	
 	printf("\nJabberContact\n");
 	printf("     Name:  %s\n",fName.String());
 	printf("    Group:  %s\n",fGroup.String());
-	printf("      Jid:  %s\n",fJid.String());
-
-	
-	
+	printf("      Jid:  %s\n",fJid.String());	
 }
 
+
 void
-JabberContact::SetName(const BString & name) 
+JabberContact::SetName(const BString& name) 
 {
 	fName = name;
 }
 
+
 void
-JabberContact::SetGroup(const BString & group) 
+JabberContact::SetGroup(const BString& group) 
 {
 	fGroup = group;
 }
 
+
 void
-JabberContact::SetPresence(JabberPresence * presence) 
+JabberContact::SetPresence(JabberPresence* presence) 
 {
-	
-	//presence->PrintToStream();
-	//delete fPresence;
 	fPresence = presence;
 }
+
 
 void
 JabberContact::SetPresence()
 {
-	//fPresence->PrintToStream();
 	delete fPresence;
-	fPresence = new JabberPresence();	// construct an empty JabberPresence
+	fPresence = new JabberPresence();
 }
 
+
 void
-JabberContact::SetJid(const BString & jid) 
+JabberContact::SetJid(const BString& jid) 
 {
 	fJid = jid;
 }
 
+
 void
-JabberContact::SetSubscription(const BString & subscription) 
+JabberContact::SetSubscription(const BString& subscription) 
 {
 	fSubscription = subscription;
 }
+
 
 BString
 JabberContact::GetSubscription() const
@@ -70,11 +78,13 @@ JabberContact::GetSubscription() const
 	return fSubscription;
 }
 
+
 BString
 JabberContact::GetName() const
 {
 	return fName;
 }
+
 
 BString
 JabberContact::GetGroup() const
@@ -88,8 +98,23 @@ JabberContact::GetPresence()
 	return fPresence;
 }
 
+
 BString
 JabberContact::GetJid() const
 {
 	return fJid;
+}
+			
+
+BString
+JabberContact::GetLastMessageID() const
+{
+	return fId;
+}
+
+
+void
+JabberContact::SetLastMessageID(const BString& id)
+{
+	fId = id;
 }
