@@ -12,6 +12,7 @@
 #	include <interface/GroupLayout.h>
 #	include <interface/GroupLayoutBuilder.h>
 #	include <interface/GridLayoutBuilder.h>
+#	include <interface/LayoutUtils.h>
 #endif
 #include <interface/Box.h>
 #include <interface/OutlineListView.h>
@@ -84,7 +85,7 @@ PView::PView(BRect bounds)
 	frame = BRect(kEdgeOffset, kEdgeOffset, 180, Bounds().bottom - kEdgeOffset);
 #endif
 
-	fListView = new BOutlineListView(frame, "listview", B_SINGLE_SELECTION_LIST,
+	fListView = new BOutlineListView(BRect(0, 0, 1, 1), "listview", B_SINGLE_SELECTION_LIST,
 		B_FOLLOW_ALL_SIDES);
 	fListView->SetSelectionMessage(new BMessage(kListChanged));
 	fListView->MakeFocus();
@@ -198,6 +199,16 @@ PView::~PView(void) {
 };
 
 //#pragma mark BView Hooks
+
+BSize PView::MinSize() {
+	return BLayoutUtils::ComposeSize(ExplicitMinSize(),
+		BSize(500, 500));
+};
+
+BSize PView::MaxSize() {
+	return BLayoutUtils::ComposeSize(ExplicitMaxSize(),
+		BSize(640, 480));
+};
 
 void PView::AttachedToWindow(void) {
 #if B_BEOS_VERSION > B_BEOS_VERSION_5

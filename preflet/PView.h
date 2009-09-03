@@ -30,6 +30,8 @@ class PView : public AbstractView, public MultipleViewHandler, public SettingsHo
 						~PView(void);
 
 		// BView Hooks
+		virtual	BSize			MinSize();
+		virtual	BSize			MaxSize();
 		virtual void			AttachedToWindow(void);
 		virtual void			MessageReceived(BMessage *msg);
 

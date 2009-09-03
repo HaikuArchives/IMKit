@@ -74,11 +74,6 @@ PWindow::PWindow(void)
 	AddChild(BGroupLayoutBuilder(B_VERTICAL)
 		.Add(fView)
 	);
-
-	BSize minSize = fView->MinSize();
-	BSize maxSize = fView->MaxSize();
-	SetSizeLimits(minSize.width, minSize.height,
-		maxSize.width, maxSize.height);
 #else
 	AddChild(fView);
 #endif

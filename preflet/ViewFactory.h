@@ -10,14 +10,16 @@
 #ifndef VIEWFACTORY_H
 #define VIEWFACTORY_H
 
+#include <Message.h>
 #include <interface/View.h>
-
-class BBox;
 
 class ViewFactory {
 	public:
 		template <class T>
 		static T		*Create(BRect rect, const char *name, uint32 resize, uint32 flags);
+
+		template <class T>
+		static T		*Create(BRect rect, const char *name, const char *label, BMessage *msg);
 };
 
 class AbstractView : public BView {

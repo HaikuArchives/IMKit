@@ -161,10 +161,13 @@ PAccountsView::PAccountsView(BRect bounds, BPath *protoPath)
 #endif
 
 	// Buttons
-	fAddButton = new BButton(frame, "Add", _T("Add account" B_UTF8_ELLIPSIS), new BMessage(kAddAccount));
-	fEditButton = new BButton(frame, "Edit", _T("Edit account" B_UTF8_ELLIPSIS), new BMessage(kEditAccount));
+	fAddButton = ViewFactory::Create<BButton>(frame, "Add",
+		_T("Add account" B_UTF8_ELLIPSIS), new BMessage(kAddAccount));
+	fEditButton = ViewFactory::Create<BButton>(frame, "Edit",
+		_T("Edit account" B_UTF8_ELLIPSIS), new BMessage(kEditAccount));
 	fEditButton->SetEnabled(false);
-	fDelButton = new BButton(frame, "Del", _T("Remove"), new BMessage(kDelAccount));
+	fDelButton = ViewFactory::Create<BButton>(frame, "Del", _T("Remove"),
+		new BMessage(kDelAccount));
 	fDelButton->SetEnabled(false);
 
 #ifdef __HAIKU__

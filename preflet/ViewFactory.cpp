@@ -2,6 +2,7 @@
 
 #include <interface/Box.h>
 #include <interface/TextControl.h>
+#include <interface/Button.h>
 
 #include "common/NotifyingTextView.h"
 
@@ -33,6 +34,18 @@ BView *ViewFactory::Create<BView>(BRect rect, const char *name, uint32 resize, u
 #endif
 
 	return view;
+};
+
+template <>
+BButton *ViewFactory::Create<BButton>(BRect rect, const char* name, const char* label, BMessage* msg) {
+	BButton *button = NULL;
+#ifdef __HAIKU__
+	button = new BButton(name, label, msg);
+#else
+	button = new BButton(rect, name, label, msg);
+#endif
+
+	return button;
 };
 
 template <>
