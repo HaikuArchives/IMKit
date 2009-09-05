@@ -10,9 +10,14 @@
 
 
 JabberAgent::JabberAgent() 
+	: fGroupChat(false),
+	fSearchable(false),
+	fTransport(false),
+	fRegistration(false),
+	fService(""),
+	fName(""),
+	fJid("")
 {
-	fGroupChat = fSearchable = fTransport = fRegistration = false;
-	fService = fName = fJid = "";
 }
 
 
@@ -24,10 +29,10 @@ JabberAgent::~JabberAgent()
 void
 JabberAgent::PrintToStream() 
 {
-	logmsg(" ** Jabber Agent **");
-	logmsg("    Jid:  %s",fJid.String());
-	logmsg("   name:  %s",fName.String());
-	logmsg("service:  %s",fService.String());
+	logmsg("JabberAgent:");
+	logmsg("     Name:  %s", fName.String());
+	logmsg("  Service:  %s", fService.String());
+	logmsg("      Jid:  %s", fJid.String());	
 }
 
 

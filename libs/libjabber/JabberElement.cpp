@@ -73,7 +73,7 @@ JabberElement::SetAttr(const char** attr)
 }
 
 
-const char **
+const char**
 JabberElement::GetAttr() const
 {
 	return (const char **)fAttr;

@@ -23,10 +23,10 @@ JabberContact::~JabberContact()
 void
 JabberContact::PrintToStream() 
 {
-	logmsg("\nJabberContact");
-	logmsg("     Name:  %s",fName.String());
-	logmsg("    Group:  %s",fGroup.String());
-	logmsg("      Jid:  %s",fJid.String());	
+	logmsg("JabberContact:");
+	logmsg("     Name:  %s", fName.String());
+	logmsg("    Group:  %s", fGroup.String());
+	logmsg("      Jid:  %s", fJid.String());	
 }
 
 
