@@ -118,7 +118,7 @@ JabberSSLPlug::ReceiveData(void * pHandler){
 			
 			data[length] = 0;
 			
-			logmsg("\nSSLPlug<< %s", data);
+			logmsg("SSLPlug<<\n%s", data);
 		} 
 		
 		else {
@@ -127,7 +127,7 @@ JabberSSLPlug::ReceiveData(void * pHandler){
 				
 				//uhm really and error!
 				//int ret = SSL_get_error(plug->bio);
-				logmsg("\nSSLPlug<< not should retry! err ");
+				logmsg("SSLPlug<< not should retry! err ");
 				ERR_print_errors(plug->bio);
 				return 0;			
 			}

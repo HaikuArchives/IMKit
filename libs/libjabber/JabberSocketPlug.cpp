@@ -108,7 +108,7 @@ JabberSocketPlug::ReceiveData(void * pHandler){
 				plug->fEndpointLock->Unlock(); 
 			#endif
 			data[length] = 0;
-			logmsg("\n<< %s", data);
+			logmsg("SocketPlug<<\n%s", data);
 		} 
 		else 
 		{
