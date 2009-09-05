@@ -143,7 +143,7 @@ JabberSocketPlug::Send(const BString & xml){
 			fEndpointLock->Lock(); 
 		#endif	
 		
-		logmsg("\n>> %s", xml.String());
+		logmsg("SocketPlug>>\n%s", xml.String());
 		
 		if(send(fSocket, xml.String(), xml.Length(), 0) == -1)
 			return -1;

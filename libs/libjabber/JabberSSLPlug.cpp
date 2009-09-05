@@ -154,7 +154,7 @@ JabberSSLPlug::ReceivedData(const char* data,int32 len){
 int
 JabberSSLPlug::Send(const BString & xml){
 		
-		logmsg("\nSSLPlug>> %s", xml.String());
+		logmsg("SSLPlug>>\n%s", xml.String());
 		
 		return BIO_write(bio, xml.String(), xml.Length());
 }
