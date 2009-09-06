@@ -8,12 +8,18 @@ if $(OS) = HAIKU {
 } else {
 	SEARCH_SOURCE += [ FDirName $(TOP) common clv ] ;
 }
+SEARCH_SOURCE += [ FDirName $(TOP) common support ] ;
 C++FLAGS += -fpermissive ;
 
 StaticLibrary libcommon.a :
+	# support
 	Base64.cpp
 	BufferWriter.cpp
 	BufferReader.cpp
+	SettingsFile.cpp
+	htmlparse.cpp
+
+	# interface
 	BubbleHelper.cpp
 	IMKitUtilities.cpp
 	IconMenuItem.cpp
@@ -22,8 +28,6 @@ StaticLibrary libcommon.a :
 	MultiLineStringView.cpp
 	NotifyingTextView.cpp
 	Divider.cpp
-	SettingsFile.cpp
-	htmlparse.cpp
 
 	# CLV
 	ColorTools.cpp

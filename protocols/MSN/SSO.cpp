@@ -3,8 +3,8 @@
 #include "MSN.h"
 #include "HTTPFormatter.h"
 #include "SSOHandler.h"
-#include "common/BufferWriter.h"
-#include "common/Base64.h"
+#include <common/support/BufferWriter.h>
+#include <common/support/Base64.h>
 
 #if defined(BONE_BUILD) || defined(__HAIKU__)
 	#include <arpa/inet.h>
