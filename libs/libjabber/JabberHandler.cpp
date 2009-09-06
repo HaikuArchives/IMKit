@@ -463,6 +463,7 @@ JabberHandler::StartElement(void* pUserData, const char* pName, const char** pAt
 	if (name.ICompare("iq") == 0) {
 		const char* type = handler->HasAttribute("type", pAttr);
 		const char* id = handler->HasAttribute("id", pAttr);
+		const char* from = handler->HasAttribute("from", pAttr);
 
 		if (type != NULL && id != NULL) {
 			if (strcmp(type, "result") == 0) {
@@ -472,12 +473,9 @@ JabberHandler::StartElement(void* pUserData, const char* pName, const char** pAt
 				}
 			}
 
-			// Save vCard attributes
-			if (strcmp(id, "vCardInfo") == 0) {
-				const char* from = handler->HasAttribute("from", pAttr);
-				handler->fFromStack->push_back(BString(from));
-				handler->fTypeStack->push_back(BString(type));
-			}
+			// Always save from and type attributes
+			handler->fFromStack->push_back(BString(from));
+			handler->fTypeStack->push_back(BString(type));
 		}
 	}
 
@@ -539,16 +537,12 @@ JabberHandler::EndElement(void* pUserData, const char* pName)
 		}
 	} else if (name.ICompare("vCard") == 0) {
 		BString type;
-		if (handler->fTypeStack->size() != 0) {
+		if (handler->fTypeStack->size() != 0)
 			type = *(handler->fTypeStack->begin());
-			handler->fTypeStack->pop_front();
-		}
 
 		BString from;
-		if (handler->fFromStack->size() != 0) {
+		if (handler->fFromStack->size() != 0)
 			from = *(handler->fFromStack->begin());
-			handler->fFromStack->pop_front();
-		}
 
 		if (type.ICompare("result") == 0) {
 			JabberVCard* vCard = handler->BuildVCard(from);
@@ -561,6 +555,12 @@ JabberHandler::EndElement(void* pUserData, const char* pName)
 				}
 			}
 		}
+	} else if (name.ICompare("iq") == 0) {
+		// Remove last type and from attributes from their stacks
+		if (handler->fTypeStack->size() != 0)
+			handler->fTypeStack->pop_front();
+		if (handler->fFromStack->size() != 0)
+			handler->fFromStack->pop_front();
 	}
 }
 
