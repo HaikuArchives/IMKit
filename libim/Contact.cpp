@@ -402,12 +402,9 @@ status_t Contact::WriteAttribute(const char *name, const char *buffer, int32 siz
 	if (node.InitCheck() != B_OK)
 		return B_ERROR;
 
-	// Remove attribute first
-	status_t err = node.RemoveAttr(name);
-	if (err == B_OK)
-		err = node.WriteAttr(name, B_STRING_TYPE, 0, buffer, size);
-
+	status_t err = node.WriteAttr(name, B_STRING_TYPE, 0, buffer, size);
 	node.Unset();
+
 	return err;
 };
 
