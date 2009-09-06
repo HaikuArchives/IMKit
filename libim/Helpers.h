@@ -59,6 +59,7 @@ extern status_t im_protocol_get_account(const char *protocol, const char *accoun
 extern status_t im_protocol_get_account_list(const char *protocol, BMessage *accounts);
 
 extern status_t im_protocol_get_path(const char *protocol, BPath *path);
+extern status_t im_protocol_get_settings_path(const char* protocol, BPath* path);
 
 /*
 	Returns a message containing string(s) named "protocol" with the name of the protocols

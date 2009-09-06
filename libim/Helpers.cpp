@@ -288,13 +288,9 @@ status_t
 im_load_protocol_settings( const char * protocol, BMessage * msg )
 {
 	BPath path;
-	
-	if (find_directory(B_USER_SETTINGS_DIRECTORY,&path,true,NULL) != B_OK)
+	if (im_protocol_get_settings_path(protocol, &path) != B_OK)
 		return B_ERROR;
-		
-	path.Append("im_kit/add-ons/protocols");
-	path.Append( protocol );
-		
+
 	return im_load_settings( path.Path(), msg );
 }
 
@@ -631,6 +627,21 @@ status_t im_protocol_get_path(const char *protocol, BPath *path) {
 	
 	return result;
 };
+
+status_t
+im_protocol_get_settings_path(const char* protocol, BPath* path)
+{
+	if (protocol == NULL || path == NULL)
+		return B_BAD_VALUE;
+
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, path, true, NULL) != B_OK)
+		return B_ERROR;
+
+	path->Append("im_kit/add-ons/protocols");
+	path->Append(protocol);
+
+	return B_OK;
+}
 
 // CLIENT / PROTOCOL LIST
 
