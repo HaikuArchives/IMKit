@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "OSCARConstants.h"
-#include "common/BufferReader.h"
+#include <common/support/BufferReader.h>
 
 //#pragma mark Constructor
 
