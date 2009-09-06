@@ -19,8 +19,6 @@
  * Contributor(s): Wade Majors <wade@ezri.org>
  *                 Rene Gollent
  */
- 
-#include "SettingsFile.h"
 
 #include <Path.h>
 #include <File.h>
@@ -34,230 +32,244 @@
 #include <stdio.h>
 #include <errno.h>
 
-SettingsFile::SettingsFile(char const*lname,char const*bname,directory_which d) {
-	check=B_OK;
-	if (d!=(directory_which)-1) { // -1 means "absolute path"
-		if ((check=find_directory(d,&path))!=B_OK) return;		
+#include "SettingsFile.h"
+
+
+SettingsFile::SettingsFile(const char* lname, const char* bname, directory_which d)
+{
+	check = B_OK;
+
+	// -1 means "absolute path"
+	if (d != (directory_which)-1) {
+		if ((check = find_directory(d, &path)) != B_OK)
+			return;		
 	} else {
-		if ((check=path.SetTo("/"))!=B_OK) return;
-	}
-	if (bname==NULL) { // no base name, try to figure it out from the signature
-		app_info ai;
-		char*sig=ai.signature;
-		if ((check=be_app->GetAppInfo(&ai))!=B_OK) return;
-		int plen=strlen("application/x-vnd.");
-		if (strncmp(sig,"application/x-vnd.",plen)) {
-			plen=strlen("application/");
-			if (strncmp(sig,"application/",plen)) {
-				check=B_BAD_VALUE;
-				return; // the signature is really broken. bail out.
-			}
-		}
-		sig+=plen;
-		bool founddot=false;
-		char*sep;
-		while ((sep=strchr(sig,'.'))!=NULL) { // replace each '.' by a '/' in the signature to build a relative path
-			*sep='/';
-			founddot=true;
-		}
-		if (!founddot&&((sep=strchr(sig,'-'))!=NULL)) { // no '.' was found. replace the first '-' by a '/', if there's a '-'
-			*sep='/';
-		}
-		if ((check=path.Append(sig))!=B_OK) { path.Unset();return; }
-	} else {
-		if ((check=path.Append(bname))!=B_OK) { path.Unset();return; }
+		if ((check = path.SetTo("/")) != B_OK)
+			return;
 	}
 
-	if (lname==NULL) {
-		if ((check=path.Append("Settings"))!=B_OK) { path.Unset();return; }
+	// No base name, try to figure it out from the signature
+	if (bname == NULL) {
+		app_info ai;
+		char* sig = ai.signature;
+
+		if ((check = be_app->GetAppInfo(&ai)) != B_OK)
+			return;
+
+		int32 plen = strlen("application/x-vnd.");
+		if (strncmp(sig,"application/x-vnd.", plen) != 0) {
+			plen = strlen("application/");
+			if (strncmp(sig, "application/" ,plen) != 0) {
+				// The signature is really broken. bail out
+				check = B_BAD_VALUE;
+				return;
+			}
+		}
+
+		sig += plen;
+
+		bool foundDot = false;
+
+		// Replace each '.' by a '/' in the signature to build a relative path
+		char* sep;
+		while ((sep = strchr(sig, '.')) != NULL) {
+			*sep = '/';
+			foundDot = true;
+		}
+
+		// No '.' was found. replace the first '-' by a '/', if there's a '-'
+		if (!foundDot && ((sep = strchr(sig, '-')) != NULL)) {
+			*sep='/';
+		}
+
+		if ((check = path.Append(sig)) != B_OK) {
+			path.Unset();
+			return;
+		}
 	} else {
-		if ((check=path.Append(lname))!=B_OK) { path.Unset();return; }
+		if ((check = path.Append(bname)) != B_OK) {
+			path.Unset();
+			return;
+		}
 	}
-	
+
+	if (lname == NULL) {
+		if ((check = path.Append("Settings")) != B_OK) {
+			path.Unset();
+			return;
+		}
+	} else {
+		if ((check = path.Append(lname)) != B_OK) {
+			path.Unset();
+			return;
+		}
+	}
+
 	BEntry entry(path.Path()); 
 	entry.GetNodeRef(&fNodeRef);
 }
 
-status_t SettingsFile::InitCheck() const {
+
+status_t
+SettingsFile::InitCheck() const
+{
 	return check;
 }
 
-status_t SettingsFile::Load() {
+
+status_t
+SettingsFile::Load()
+{
 	status_t ret;
-	BFile file(path.Path(),B_READ_ONLY | B_CREATE_FILE);
-	ret=file.InitCheck();
-	if (ret!=B_OK) {
+	BFile file(path.Path(), B_READ_ONLY | B_CREATE_FILE);
+
+	ret = file.InitCheck();
+	if (ret != B_OK)
 		return ret;
-	}
-	ret=file.Lock();
-	if (ret!=B_OK) {
+
+	ret = file.Lock();
+	if (ret != B_OK)
 		return ret;
-	}
-	ret=Unflatten(&file);
-	if (ret!=B_OK) {
+
+	ret = Unflatten(&file);
+	if (ret != B_OK) {
 		file.Unlock();
 		MakeEmpty();
 		return ret;
 	}
-	
-/*	
-	ret=file.RewindAttrs();
-	if (ret!=B_OK) {
-		file.Unlock();
-		MakeEmpty();
-		return ret;
-	}
-	char attr_name[B_ATTR_NAME_LENGTH];
-	while ((ret=file.GetNextAttrName(attr_name))!=B_ENTRY_NOT_FOUND) { // walk all the attributes of the settings file
-		if (ret!=B_OK) {
-			file.Unlock();
-			return ret;
-		}
-			// found an attribute
-		attr_info ai;
-		ret=file.GetAttrInfo(attr_name,&ai);
-		if (ret!=B_OK) {
-			file.Unlock();
-			return ret;
-		}
-		switch (ai.type) {
-			case B_CHAR_TYPE :
-			case B_STRING_TYPE :
-			case B_BOOL_TYPE :
-			case B_INT8_TYPE :
-			case B_INT16_TYPE :
-			case B_INT32_TYPE :
-			case B_INT64_TYPE :
-			case B_UINT8_TYPE :
-			case B_UINT16_TYPE :
-			case B_UINT32_TYPE :
-			case B_UINT64_TYPE :
-			case B_FLOAT_TYPE :
-			case B_DOUBLE_TYPE :
-			case B_OFF_T_TYPE :
-			case B_SIZE_T_TYPE :
-			case B_SSIZE_T_TYPE :
-			case B_POINT_TYPE :
-			case B_RECT_TYPE :
-			case B_RGB_COLOR_TYPE :
-			case B_TIME_TYPE :
-			case B_MIME_TYPE : {
-				char*partial_name=strdup(attr_name);
-				if (partial_name==NULL) {
-					file.Unlock();
-					return B_NO_MEMORY;
-				}
-				ret=_ExtractAttribute(this,&file,attr_name,partial_name,&ai);
-				free(partial_name);
-				if (ret!=B_OK) {
-					file.Unlock();
-					return ret;
-				}
-				break;
-			}
-		}		
-	}
-*/
+
 	file.Unlock();
 	return B_OK; 
 }
 
-status_t SettingsFile::_ExtractAttribute(BMessage*m,BFile*f,const char*full_name,char*partial_name,attr_info*ai) {
+
+status_t
+SettingsFile::_ExtractAttribute(BMessage* m, BFile* f, const char* full_name, char* partial_name, attr_info* ai)
+{
 	status_t ret;
-	char*end=strchr(partial_name,':');
-	if (end==NULL) { // found a leaf
-		if (!m->HasData(partial_name,ai->type)) { // the name does not exist in the message - ignore it
+	char* end = strchr(partial_name, ':');
+
+	if (end == NULL) {
+		// Found a leaf
+		if (!m->HasData(partial_name, ai->type))
+			// The name does not exist in the message - ignore it
 			return B_OK;
-		}
-		void* buffer=malloc(ai->size);
-		if (buffer==NULL) { // cannot allocate space to hold the data
+
+		void* buffer = malloc(ai->size);
+		if (buffer == NULL)
+			// Cannot allocate space to hold the data
 			return B_NO_MEMORY;
-		}
-		if (f->ReadAttr(full_name,ai->type,0,buffer,ai->size)!=ai->size) { // cannot read the data
+
+		if (f->ReadAttr(full_name, ai->type, 0, buffer, ai->size) != ai->size) {
+			// Cannot read the data
 			free(buffer);
 			return B_IO_ERROR;
 		}
-		ret=m->ReplaceData(partial_name,ai->type,buffer,ai->size);
-		if (ret!=B_OK) { // cannot replace the data
+
+		ret = m->ReplaceData(partial_name, ai->type, buffer, ai->size);
+		if (ret != B_OK) {
+			// Cannot replace the data
 			free(buffer);
 			return ret;
 		}
 		free(buffer);
 		return B_OK;
 	}
-	if (end[1]!=':') { // found an un-numbered sub-message
-		*(end++)='\0'; // zero-terminate the name, point to the rest of the sub-string
-		if (!m->HasMessage(partial_name)) { // archived message does not contain that entry. go away.
+
+	if (end[1] != ':') {
+		// Found an un-numbered sub-message
+		*(end++) = '\0';
+
+		if (!m->HasMessage(partial_name))
+			// Archived message does not contain that entry. go away
 			return B_OK;
-		}
+
+		// Extract the sub-message
 		BMessage subm;
-		ret=m->FindMessage(partial_name,&subm); // extract the sub-message
-		if (ret!=B_OK) {
+		ret = m->FindMessage(partial_name, &subm);
+		if (ret != B_OK)
 			return ret;
-		}
-		ret=_ExtractAttribute(&subm,f,full_name,end,ai); // keep processing
-		if (ret!=B_OK) {
+
+		ret = _ExtractAttribute(&subm, f, full_name, end, ai);
+		if (ret != B_OK)
 			return ret;
-		}
-		ret=m->ReplaceMessage(partial_name,&subm); // replace the sub-message
-		if (ret!=B_OK) {
+
+		// Replace the sub-message
+		ret = m->ReplaceMessage(partial_name, &subm);
+		if (ret != B_OK)
 			return ret;
-		}
 		return B_OK;
-	} else { // found a numbered entry
+	} else {
+		// Found a numbered entry
 		char* endptr;
-		errno=0;
-		*end='\0'; // zero-terminate the name
-		int32 r=strtol(end+2,&endptr,10); // get the entry number
-		if (errno!=0) {
+		errno = 0;
+		*end = '\0';
+
+		// Get the entry number
+		int32 r = strtol(end + 2, &endptr, 10);
+		if (errno != 0)
 			return B_OK;
-		}
-		if (r>=1000000000) { // sanity-check.
+
+		// Sanity-check
+		if (r >= 1000000000)
 			return B_OK;
-		}
-		if (*endptr==':') { // this is a numbered message
-			if (!m->HasMessage(partial_name,r)) { // archived message does not contain that entry, go away
+
+		if (*endptr == ':') {
+			// This is a numbered message
+			if (!m->HasMessage(partial_name, r))
+				// Archived message does not contain that entry, go away
 				return B_OK;
-			}
+
+			// Extract the sub-message
 			BMessage subm;
-			ret=m->FindMessage(partial_name,r,&subm); // extract the sub-message
-			if (ret!=B_OK) {
+			ret = m->FindMessage(partial_name, r, &subm);
+			if (ret != B_OK)
 				return ret;
-			}
-			ret=_ExtractAttribute(&subm,f,full_name,endptr+1,ai); // recurse
-			if (ret!=B_OK) {
+
+			// Recurse
+			ret = _ExtractAttribute(&subm, f, full_name, endptr + 1, ai);
+			if (ret != B_OK)
 				return ret;
-			}
-			ret=m->ReplaceMessage(partial_name,r,&subm); // replace the sub-message
-			if (ret!=B_OK) {
+
+			// Replace the sub-message
+			ret = m->ReplaceMessage(partial_name, r, &subm);
+			if (ret != B_OK)
 				return ret;
-			}
 			return B_OK;
-		} else if (*endptr=='\0') { // this is a numbered leaf
-			if (!m->HasData(partial_name,ai->type,r)) { // archived message does not contain this leaf
+		} else if (*endptr=='\0') {
+			// This is a numbered leaf
+			if (!m->HasData(partial_name, ai->type, r))
+				// Archived message does not contain this leaf
 				return B_OK;
-			}
-			void* buffer=malloc(ai->size);
-			if (buffer==NULL) {
+
+			void* buffer = malloc(ai->size);
+			if (buffer == NULL)
 				return B_NO_MEMORY;
-			}
-			if (f->ReadAttr(full_name,ai->type,0,buffer,ai->size)!=ai->size) { // extract the attribute data
+
+			if (f->ReadAttr(full_name, ai->type, 0, buffer, ai->size) != ai->size) {
+				// Extract the attribute data
 				free(buffer);
 				return B_IO_ERROR;
 			}
-			ret=m->ReplaceData(partial_name,ai->type,r,buffer,ai->size); // and replace it in the message
-			if (ret!=B_OK) {
+
+			ret = m->ReplaceData(partial_name, ai->type, r, buffer, ai->size);
+			// And replace it in the message
+			if (ret != B_OK) {
 				free(buffer);
 				return ret;
 			}
+
 			free(buffer);
 			return B_OK;
 		}
 	}
+
 	return B_OK;
 }
 
-status_t SettingsFile::Save() const {
+status_t
+SettingsFile::Save() const
+{
 	status_t ret;
 	BFile file(path.Path(),B_READ_WRITE|B_CREATE_FILE|B_ERASE_FILE);
 	ret=file.InitCheck();

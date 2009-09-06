@@ -22,6 +22,7 @@ local sources =
 	Logger.cpp
 	SHA1.cpp
 	Base64.cpp
+
 	# libexpat
 	xmlparse.c
 	xmlrole.c

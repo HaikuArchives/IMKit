@@ -1,52 +1,71 @@
+/*
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Mikael Eiman
+ *		nathanw
+ */
+
 #include <ctype.h>
 
 #include "htmlparse.h"
 
-void encode_html( BString &msg ) {
+
+void
+encode_html(BString& msg)
+{
 	// BStrings are slow and sucky, but this is real easy
-	msg.ReplaceAll("&","&amp;");
-	msg.ReplaceAll("\"","&quot;");
-	msg.ReplaceAll("<","&lt;");
-	msg.ReplaceAll(">","&gt;");
+	msg.ReplaceAll("&", "&amp;");
+	msg.ReplaceAll("\"", "&quot;");
+	msg.ReplaceAll("<", "&lt;");
+	msg.ReplaceAll(">", "&gt;");
 	
-	msg.ReplaceAll("[b]","<b>");
-	msg.ReplaceAll("[/b]","</b>");
-	msg.ReplaceAll("[i]","<i>");
-	msg.ReplaceAll("[/i]","</i>");
-	
+	msg.ReplaceAll("[b]", "<b>");
+	msg.ReplaceAll("[/b]", "</b>");
+	msg.ReplaceAll("[i]", "<i>");
+	msg.ReplaceAll("[/i]", "</i>");
+
 	msg.Prepend("<html><body>");
 	msg.Append("</body></html>");
 }
 
-void parse_html( char * msg )
+
+void
+parse_html(char* msg)
 {
 	bool is_in_tag = false;
 	int copy_pos = 0;
-	
-	char * copy = new char[strlen(msg)+1];
-	
-	for ( int i=0; msg[i]; i++ )
-	{
-		switch ( msg[i] )
-		{
+
+	char* copy = new char[strlen(msg) + 1];
+
+	for (int32 i = 0; msg[i]; i++) {
+		switch (msg[i])	{
 			case '<':
 				is_in_tag = true;
-				for (int j = i+1; msg[j]; j++) {
-					if (isspace(msg[j])) continue;
+
+				for (int32 j = i + 1; msg[j]; j++) {
+					if (isspace(msg[j]))
+						continue;
 					else if (tolower(msg[j]) == 'a') {
 						copy[copy_pos++] = '[';
 						copy[copy_pos++] = ' ';
-						for (; msg[j] && msg[j] != '=' /* This is horrible */; j++); j++;
+
+						for (; msg[j] && msg[j] != '=' /* This is horrible */; j++);
+						j++;
 						for (; msg[j] && isspace(msg[j]); j++);
-						if (msg[j] == '\"') j++;
+
+						if (msg[j] == '\"')
+							j++;
+
 						for (; msg[j] && !isspace(msg[j]) && msg[j] != '\"'; j++)
-								copy[copy_pos++] = msg[j];
+							copy[copy_pos++] = msg[j];
 						copy[copy_pos++] = ' ';
 						copy[copy_pos++] = ']';
 						copy[copy_pos++] = ' ';
-					} else break;
-				}
-							
+					} else
+						break;
+				}	
 				break;
 			case '>':
 				is_in_tag = false;
@@ -73,16 +92,12 @@ void parse_html( char * msg )
 					break;
 				}
 			default:
-				if ( !is_in_tag )
-				{
+				if (!is_in_tag)
 					copy[copy_pos++] = msg[i];
-				}
 		}
 	}
-	
+
 	copy[copy_pos] = 0;
-	
 	strcpy(msg, copy);
-	
 	delete copy;
 }
