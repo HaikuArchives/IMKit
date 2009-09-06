@@ -1439,15 +1439,12 @@ void Server::MessageFromProtocols(BMessage *msg) {
 			if (icon == NULL) {
 				LOG(kAppName, liHigh, "Unable to decode buddy icon.");
 			} else {
-				LOG(kAppName, liDebug, "Setting %s's icon to be %p\n", protocol, icon);
+				LOG(kAppName, liDebug, "Setting %s's icon to be %p", protocol, icon);
 
 				status_t ret = contact.SetBuddyIcon(protocol, icon);
-				LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
-
 				if ((ret == B_OK) && (contact.GetBuddyIcon("general") == NULL)) {
 					LOG(kAppName, liDebug, "Also setting the general icon, since none was set");
 					ret = contact.SetBuddyIcon("general", icon);
-					LOG(kAppName, liDebug, "Gets: %s (%ld)\n", strerror(ret), ret);
 				};
 
 				BMessage update(MESSAGE);
