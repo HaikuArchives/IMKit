@@ -8,6 +8,7 @@
 #include <String.h>
 
 #include "JabberPresence.h"
+#include "JabberVCard.h"
 
 class JabberContact {
 public:
@@ -20,12 +21,14 @@ public:
 	virtual	void				SetPresence();
 	virtual void 				SetPresence(JabberPresence* presence);
 			void 				SetJid(const BString& jid);
+			void				SetVCard(JabberVCard* vCard);
 			void				PrintToStream();
 			BString 			GetName() const;
 			BString 			GetGroup() const;
 			BString 			GetSubscription() const;
 			JabberPresence*		GetPresence();
 			BString 			GetJid() const;
+			JabberVCard*		GetVCard() const;
 
 			BString				GetLastMessageID() const;
 			void				SetLastMessageID(const BString& id);
@@ -37,6 +40,7 @@ private:
 			BString				fName;
 			BString				fId;
 			BString				fSubscription;
+			JabberVCard*		fVCard;
 };
 
 #endif	// JABBER_CONTACT_H

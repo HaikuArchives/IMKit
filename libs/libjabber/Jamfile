@@ -17,6 +17,7 @@ local sources =
 	JabberMessage.cpp
 	JabberPresence.cpp
 	JabberRegistration.cpp
+	JabberVCard.cpp
 	JabberSocketPlug.cpp
 	SHA1.cpp
 	Logger.cpp

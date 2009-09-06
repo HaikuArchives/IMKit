@@ -102,6 +102,7 @@ protected:
 	virtual void 				SubscriptionRequest(JabberPresence * presence) ;
 	virtual void 				Registration(JabberRegistration * registration) ;	
 	virtual	void				Unsubscribe(JabberPresence * presence);
+	virtual	void				GotVCard(JabberContact* contact);
 };
 
 #endif	// IMKIT_GoogleTalk_H

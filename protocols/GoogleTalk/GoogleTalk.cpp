@@ -265,14 +265,15 @@ GoogleTalk::Process(BMessage* msg)
 					break;
 
 				default:
-					// we don't handle this im_what code
+					// We don't handle this im_what code
+					LOG(kProtocolName, liDebug, "Got unhandled message: %ld", im_what);
 					msg->PrintToStream();
 					return B_ERROR;
 			}
 		} break;
 
 		default:
-			// we don't handle this what code
+			// We don't handle this what code
 			return B_ERROR;
 	}
 
@@ -559,21 +560,38 @@ GoogleTalk::getContact(const char* id)
 	return NULL;
 }
 
+
 void			
 GoogleTalk::SendContactInfo(const char* id)
 {
-	JabberContact *jid=getContact(id);
-	if(jid)
-	{
-		BMessage msg(IM::MESSAGE);
-		msg.AddInt32("im_what", IM::CONTACT_INFO);
-		msg.AddString("protocol", kProtocolName);
-		msg.AddString("id", id);
-		msg.AddString("nick", jid->GetName());     //just nick ??
-		fServerMsgr.SendMessage(&msg);	
+	JabberContact* jid = getContact(id);
+	if (!jid)
+		return;
+
+	BMessage msg(IM::MESSAGE);
+	msg.AddInt32("im_what", IM::CONTACT_INFO);
+	msg.AddString("protocol", kProtocolName);
+	msg.AddString("id", id);
+	msg.AddString("nick", jid->GetName());
+
+	// vCard information
+	JabberVCard* vCard = jid->GetVCard();
+	if (vCard) {
+		msg.AddString("full name", vCard->GetFullName());
+		msg.AddString("first name", vCard->GetGivenName());
+		msg.AddString("middle name", vCard->GetMiddleName());
+		msg.AddString("last name", vCard->GetFamilyName());
+		msg.AddString("email", vCard->GetEmail());
+		msg.AddString("birthday", vCard->GetBirthday());
+		msg.AddString("url", vCard->GetURL());
 	}
+
+	// Send contact information
+	fServerMsgr.SendMessage(&msg);	
 }
+
 //CALLBACK!
+
 void
 GoogleTalk::Authorized()
 {
@@ -727,6 +745,12 @@ GoogleTalk::Unsubscribe(JabberPresence * presence){
 	msg.AddString("id", presence->GetJid());
 	msg.AddString("status", OFFLINE_TEXT);
 	fServerMsgr.SendMessage( &msg );
+}
+
+void
+GoogleTalk::GotVCard(JabberContact* contact)
+{
+	SendContactInfo(contact->GetJid().String());
 }
 
 void

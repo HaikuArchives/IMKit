@@ -22,6 +22,7 @@
 #include "JabberMessage.h"
 #include "JabberPresence.h"
 #include "JabberRegistration.h"
+#include "JabberVCard.h"
 #include "JabberPlug.h"
 
 class JabberHandler {
@@ -87,6 +88,7 @@ protected:
 		virtual void 				SubscriptionRequest(JabberPresence * presence) = 0;
 		virtual void 				Registration(JabberRegistration * registration) = 0;
 		virtual	void				Unsubscribe(JabberPresence * presence) = 0;
+		virtual	void				GotVCard(JabberContact* contact) = 0;
 
 private:
 	enum ID { 
@@ -104,6 +106,8 @@ private:
 
 				ElementList*				fElementStack;
 				StrList*					fNsStack;
+				StrList*					fTypeStack;
+				StrList*					fFromStack;
 				RosterList*					fRoster;
 				AgentList*					fAgents;
 
@@ -121,12 +125,15 @@ protected:
 				void 						SendVersion();
 				void 						RequestRoster();
 				void 						RequestAgents();
+				void						RequestSelfVCard();
+				void						RequestVCard(JabberContact* contact);
 
 				JabberMessage* 				BuildMessage();
 				JabberPresence* 			BuildPresence();
 				RosterList *				BuildRoster();
 				AgentList * 				BuildAgents();
 				JabberRegistration* 		BuildRegistration();
+				JabberVCard*				BuildVCard(const BString& from);
 
 				//int32 					GetConnection();
 				const JabberAgent*	 		IsAgent(const BString & jid);

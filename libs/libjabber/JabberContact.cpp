@@ -67,6 +67,18 @@ JabberContact::SetJid(const BString& jid)
 
 
 void
+JabberContact::SetVCard(JabberVCard* vCard)
+{
+	fVCard = vCard;
+
+	// If vCard information has nickname field
+	// we want to use it
+	if (fVCard->GetNickname() != "")
+		fName = fVCard->GetNickname();
+}
+
+
+void
 JabberContact::SetSubscription(const BString& subscription) 
 {
 	fSubscription = subscription;
@@ -104,6 +116,13 @@ BString
 JabberContact::GetJid() const
 {
 	return fJid;
+}
+
+
+JabberVCard*
+JabberContact::GetVCard() const
+{
+	return fVCard;
 }
 			
 

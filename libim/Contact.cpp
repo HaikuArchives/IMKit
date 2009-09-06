@@ -402,21 +402,13 @@ status_t Contact::WriteAttribute(const char *name, const char *buffer, int32 siz
 	if (node.InitCheck() != B_OK)
 		return B_ERROR;
 
-	// Read attribute, if available
-	char data[size];
-	ssize_t bytesRead = node.ReadAttr(name, B_STRING_TYPE, 0, data, size);
-	if (bytesRead < 0)
-		bytesRead = 0;
-	data[bytesRead] = '\0';
+	// Remove attribute first
+	status_t err = node.RemoveAttr(name);
+	if (err == B_OK)
+		err = node.WriteAttr(name, B_STRING_TYPE, 0, buffer, size);
 
-	// Write attribute, if it's available and non-empty
-	if (strlen(data) > 0) {
-		status_t err = node.WriteAttr(name, B_STRING_TYPE, 0, buffer, size);
-		node.Unset();
-		return err;
-	};
-
-	return B_ERROR;
+	node.Unset();
+	return err;
 };
 
 status_t
@@ -459,6 +451,34 @@ Contact::SetEmail(const char *email)
 	if (email == NULL)
 		return B_BAD_VALUE;
 	return WriteAttribute("META:email", email, strlen(email));
+}
+
+status_t
+Contact::GetURL(char* buffer, int size)
+{
+	return ReadAttribute("META:url", buffer, size);
+}
+
+status_t
+Contact::SetURL(const char* url)
+{
+	if (url == NULL)
+		return B_BAD_VALUE;
+	return WriteAttribute("META:url", url, strlen(url));
+}
+
+status_t
+Contact::GetBirthday(char* buffer, int size)
+{
+	return ReadAttribute("META:birthday", buffer, size);
+}
+
+status_t
+Contact::SetBirthday(const char* birthday)
+{
+	if (birthday == NULL)
+		return B_BAD_VALUE;
+	return WriteAttribute("META::birthday", birthday, strlen(birthday));
 }
 
 status_t

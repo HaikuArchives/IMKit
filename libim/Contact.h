@@ -51,6 +51,10 @@ class Contact
 		status_t	SetNickname(const char *);
 		status_t	GetEmail(char *buf, int size);
 		status_t	SetEmail(const char *);
+		status_t	GetURL(char* buf, int size);
+		status_t	SetURL(const char*);
+		status_t	GetBirthday(char* buf, int size);
+		status_t	SetBirthday(const char*);
 
 		int32		CountGroups(void);
 		const char	*GroupAt(int32 index);

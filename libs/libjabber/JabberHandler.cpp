@@ -32,7 +32,9 @@ JabberHandler::JabberHandler(const BString& name, JabberPlug* plug)
 	fPlug(plug)
 {
 	fElementStack = new ElementList(20, true);
-	fNsStack = new StrList;
+	fNsStack = new StrList();
+	fTypeStack = new StrList();
+	fFromStack = new StrList();
 	fRoster = new RosterList(20, true);
 	fAgents = new AgentList(20, true);
 
@@ -59,6 +61,16 @@ JabberHandler::Dispose()
 	if (fNsStack) {
 		delete fNsStack;
 		fNsStack = NULL;
+	}
+
+	if (fTypeStack) {
+		delete fTypeStack;
+		fTypeStack = NULL;
+	}
+
+	if (fFromStack) {
+		delete fFromStack;
+		fFromStack = NULL;
 	}
 
 	if (fRoster) {
@@ -324,7 +336,7 @@ JabberHandler::Register(JabberAgent* agent)
 void
 JabberHandler::Register(JabberRegistration* registration)
 {
-	JabberRegistration::FieldList * fields = registration->GetFields();
+	JabberRegistration::FieldList* fields = registration->GetFields();
 	//const BList* fields = pRegistration->GetFields();
 
 	BString xml;
@@ -349,10 +361,10 @@ JabberHandler::Register(JabberRegistration* registration)
 int32
 JabberHandler::ReceivedData(const char* data, int32 length)
 {
-	if (length > 0)
+	if (length > 0) {
 		if (!XML_Parse(fParser, data, length, 0))
 			logmsg("Parse failed!");
-	else if(IsAuthorized())
+	} else if (IsAuthorized())
 		Disconnected("Disconnected when receiving");
 
 	return 0;
@@ -362,7 +374,7 @@ JabberHandler::ReceivedData(const char* data, int32 length)
 void
 JabberHandler::Send(const BString& xml) 
 {
-	if (fPlug->Send(xml) < 0 )
+	if (fPlug->Send(xml) < 0)
 		Disconnected("Could not send");
 }
 
@@ -386,7 +398,7 @@ JabberHandler::Authorize()
 //	xml << 			"<digest>" << shaPassword << "</digest>"; // Error encoding the password??
 	xml << 			"<resource>" << fResource << "</resource>";
 	xml << 		"</query>";
-	xml << 	"</iq>";
+	xml << "</iq>";
 	Send(xml);
 }
 
@@ -452,10 +464,20 @@ JabberHandler::StartElement(void* pUserData, const char* pName, const char** pAt
 		const char* type = handler->HasAttribute("type", pAttr);
 		const char* id = handler->HasAttribute("id", pAttr);
 
-		if (type != NULL && strcmp(type, "result") == 0 && 
-		 	id != NULL && strcmp(id, "auth") == 0) {
-			handler->fAuthorized = true;
-			handler->Authorized();
+		if (type != NULL && id != NULL) {
+			if (strcmp(type, "result") == 0) {
+				if (strcmp(id, "auth") == 0) {
+					handler->fAuthorized = true;
+					handler->Authorized();
+				}
+			}
+
+			// Save vCard attributes
+			if (strcmp(id, "vCardInfo") == 0) {
+				const char* from = handler->HasAttribute("from", pAttr);
+				handler->fFromStack->push_back(BString(from));
+				handler->fTypeStack->push_back(BString(type));
+			}
 		}
 	}
 
@@ -465,9 +487,9 @@ JabberHandler::StartElement(void* pUserData, const char* pName, const char** pAt
 	handler->fElementStack->AddItem(element);
 
 	if (name.ICompare("query") == 0) {
-		const char* ns = handler->HasAttribute("xmlns", pAttr,element->GetAttrCount());
-		if (ns != NULL)
-			handler->fNsStack->push_back(BString(ns));	// the ns stack is an std::list
+		const char* ns = handler->HasAttribute("xmlns", pAttr, element->GetAttrCount());
+		if (ns)
+			handler->fNsStack->push_back(BString(ns));
 	}
 }
 
@@ -478,7 +500,7 @@ JabberHandler::EndElement(void* pUserData, const char* pName)
 	BString name(pName);
 	JabberHandler* handler = (JabberHandler *)pUserData;
 
-	JabberElement* element=handler->fElementStack->LastItem();
+	JabberElement* element = handler->fElementStack->LastItem();
 	if (element && element->GetName().ICompare("new_data") == 0)
 		element->SetName("data");
 
@@ -515,6 +537,30 @@ JabberHandler::EndElement(void* pUserData, const char* pName)
 				delete r;
 			}
 		}
+	} else if (name.ICompare("vCard") == 0) {
+		BString type;
+		if (handler->fTypeStack->size() != 0) {
+			type = *(handler->fTypeStack->begin());
+			handler->fTypeStack->pop_front();
+		}
+
+		BString from;
+		if (handler->fFromStack->size() != 0) {
+			from = *(handler->fFromStack->begin());
+			handler->fFromStack->pop_front();
+		}
+
+		if (type.ICompare("result") == 0) {
+			JabberVCard* vCard = handler->BuildVCard(from);
+
+			for (int32 i = 0; i < handler->fRoster->CountItems(); i++) {
+				JabberContact* contact = handler->fRoster->ItemAt(i);
+				if (contact->GetJid().ICompare(from) == 0) {
+					contact->SetVCard(vCard);
+					handler->GotVCard(contact);
+				}
+			}
+		}
 	}
 }
 
@@ -523,14 +569,14 @@ void
 JabberHandler::Characters(void* pUserData, const char* pString, int pLen) 
 {
 	JabberHandler* handler = (JabberHandler *)pUserData;
-	JabberElement* element=handler->fElementStack->LastItem();
+	JabberElement* element = handler->fElementStack->LastItem();
 
 	char tmpz[pLen + 1];
 	memcpy(tmpz, pString, pLen);
 	tmpz[pLen] = 0;
 
 	if (!element || element->GetName().ICompare("new_data") != 0) {
-		if (pLen == 1 && (pString[0] == '\n' || pString[0] == 9 || pString[0] == 32 ))
+		if (pLen == 1 && (pString[0] == '\n' || pString[0] == 9 || pString[0] == 32))
 			return;
 		element = new JabberElement();
 		element->SetName("new_data");
@@ -569,13 +615,14 @@ JabberHandler::BuildMessage()
 			message->SetX(xmlns);
 
 			if (previous != 0) {
-				if (previous->GetName().ICompare("composing") == 0) {
+				if (previous->GetName().ICompare("composing") == 0)
 					message->SetX("composing");			
-				} else {
+				else {
 					// old olmeki compatibily..
 					if (previous->GetName().ICompare("data") == 0) {
 				 		if (previous->GetData().ICompare("Offline Storage") == 0)
 							message->SetOffline(true);
+					}
 				}
 			}
 		}
@@ -774,6 +821,7 @@ JabberHandler::BuildAgents()
 JabberRegistration*
 JabberHandler::BuildRegistration()
 {
+	// http://xmpp.org/extensions/xep-0077.html
 	JabberElement* element = fElementStack->RemoveItemAt(fElementStack->CountItems() - 1);
 	JabberElement* previous = NULL;
 	JabberRegistration* registration = new JabberRegistration();
@@ -811,6 +859,62 @@ JabberHandler::BuildRegistration()
 }
 
 
+/*********************************************************
+ * Builds a JabberRegistration object from elements on the
+ * element stack
+ *********************************************************/
+JabberVCard*
+JabberHandler::BuildVCard(const BString& from)
+{
+	// http://xmpp.org/extensions/xep-0054.html#sect-id2251780
+	JabberVCard* vCard = new JabberVCard();
+	JabberElement* element = fElementStack->RemoveItemAt(fElementStack->CountItems() - 1);
+	JabberElement* previous = NULL;
+
+	while (element->GetName().ICompare("vCard") != 0) {
+		if (element->GetName().ICompare("FN") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetFullName(previous->GetData().String());
+		} else if (element->GetName().ICompare("GIVEN") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetGivenName(previous->GetData().String());
+		} else if (element->GetName().ICompare("FAMILY") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetFamilyName(previous->GetData().String());
+		} else if (element->GetName().ICompare("MIDDLE") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetMiddleName(previous->GetData().String());
+		} else if (element->GetName().ICompare("NICKNAME") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetNickname(previous->GetData().String());
+		} else if (element->GetName().ICompare("EMAIL") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetEmail(previous->GetData().String());
+		} else if (element->GetName().ICompare("URL") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetURL(previous->GetData().String());
+		} else if (element->GetName().ICompare("BDAY") == 0) {
+			if (previous && previous->GetName().ICompare("data") == 0)
+				vCard->SetBirthday(previous->GetData().String());
+		}
+
+		if (previous)
+			delete previous;
+
+		previous = element;
+		element = fElementStack->RemoveItemAt(fElementStack->CountItems() - 1);
+	}
+
+	vCard->ParseFrom(from);
+	logmsg("got vcard from %s: %s", from.String(), vCard->GetFullName().String());
+
+	delete previous;
+	delete element;
+
+	return vCard;
+}
+
+
 void
 JabberHandler::SendVersion() 
 {
@@ -838,6 +942,29 @@ JabberHandler::RequestAgents()
 
 
 void
+JabberHandler::RequestSelfVCard()
+{
+	// http://xmpp.org/extensions/xep-0054.html#sect-id2251582
+	// TODO
+}
+
+
+void
+JabberHandler::RequestVCard(JabberContact* contact)
+{
+	// Ignore NULL contact
+	if (!contact)
+		return;
+
+	// http://xmpp.org/extensions/xep-0054.html#sect-id2251780
+	BString xml;
+	xml << "<iq type='get' to='" << contact->GetJid() << "' "
+		<< " id='vCardInfo'><vCard xmlns='vcard-temp' /></iq>";
+	Send(xml);
+}
+
+
+void
 JabberHandler::UpdateRoster(JabberPresence* presence) 
 {
 	JabberContact* contact;
@@ -857,6 +984,7 @@ JabberHandler::UpdateRoster(JabberPresence* presence)
 	contact->SetName(presence->GetJid());
 	contact->SetPresence(presence);
 	fRoster->AddItem(contact);
+	RequestVCard(contact);
 }
 
 
@@ -887,6 +1015,7 @@ JabberHandler::UpdateRoster(JabberContact* contact)
 	}
 
 	fRoster->AddItem(contact);
+	RequestVCard(contact);
 }
 
 
@@ -972,7 +1101,7 @@ void
 JabberHandler::StripResource(BString& jid)
 {
 	int i = jid.FindFirst('/');
-	i f(i != -1)
+	if (i != -1)
 		jid.Remove(i, jid.Length() - i);
 }
 
