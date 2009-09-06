@@ -1,11 +1,11 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
 #ifndef _STATUS_VIEW_H
 #define _STATUS_VIEW_H
 
-#include <interface/View.h>
+#include <View.h>
 
 #include <libim/AccountInfo.h>
 
@@ -19,6 +19,7 @@ public:
 
 	// BView hooks
 	virtual	void				AttachedToWindow();
+	virtual	void				MessageReceived(BMessage* msg);
 
 	// Public methods
 			void				GetProtocolStatuses();

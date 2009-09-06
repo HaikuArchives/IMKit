@@ -1,19 +1,21 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
- *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
-#include <storage/VolumeRoster.h>
-#include <storage/Volume.h>
-#include <storage/Query.h>
-#include <storage/Mime.h>
-#include <storage/Path.h>
-#include <storage/NodeInfo.h>
+#include <VolumeRoster.h>
+#include <Volume.h>
+#include <Query.h>
+#include <Mime.h>
+#include <Path.h>
+#include <NodeInfo.h>
+#include <NodeMonitor.h>
 
 #include <libim/Helpers.h>
+#include <libim/Contact.h>
 
 #include <common/IMKitUtilities.h>
 #include <common/IconUtils.h>
@@ -44,8 +46,45 @@ PeopleColumnListView::PeopleColumnListView(const char* _name)
 		B_TRUNCATE_END, B_ALIGN_LEFT);
 	AddColumn(status, 2);
 
-	BBitmapColumn* photo = new BBitmapColumn("Photo", 20, 20, 20, B_ALIGN_CENTER);
+	BBitmapColumn* photo = new BBitmapColumn("Photo", iconSize, iconSize, iconSize,
+		B_ALIGN_CENTER);
 	AddColumn(photo, 3);
+}
+
+
+void
+PeopleColumnListView::MessageReceived(BMessage* msg)
+{
+	switch (msg->what) {
+		case B_QUERY_UPDATE: {
+				int32 opcode = B_ERROR;
+
+				if (msg->FindInt32("opcode", &opcode) != B_OK)
+					return;
+
+				const char *name = NULL;
+
+				switch (opcode) {
+					case B_ENTRY_CREATED:
+						// Add to contact list
+						msg->FindString("name", &name);
+						//handle.entry.set_name(name);
+						//msg->FindInt64("directory", &handle.entry.directory);
+						//msg->FindInt32("device", &handle.entry.device);
+						//msg->FindInt64("node", &handle.node);
+						break;
+					case B_ENTRY_REMOVED:
+						// Remove from contact list
+						msg->FindString("name", &name);
+						break;
+				}
+
+				printf("--- %s\n", name);
+			} break;
+		default:
+			BColumnListView::MessageReceived(msg);
+			break;
+	}
 }
 
 
@@ -74,6 +113,11 @@ PeopleColumnListView::Populate()
 		BPath protocolPath(path);
 		protocolPath.Append(file, true);
 
+		// Query predicate
+		BString predicate;
+		predicate << "((IM:connections==\"*"
+			<< file << ":*\") && (BEOS:TYPE==\"application/x-person\"))";
+
 		// Protocol icon
 		BBitmap* protocolIcon = ReadNodeIcon(protocolPath.Path(), B_LARGE_ICON, true);
 
@@ -85,6 +129,10 @@ PeopleColumnListView::Populate()
 		row->SetField(new BBitmapField(NULL), 3);
 		AddRow(row);
 
+		// Add protocol to the map
+		fProtocolItems[file] = new ProtocolItem();
+		fProtocolItems[file]->row = row;
+
 		// Rewind volume roster
 		roster.Rewind();
 
@@ -93,18 +141,22 @@ PeopleColumnListView::Populate()
 			if (vol.InitCheck() != B_OK || !vol.IsPersistent() || !vol.KnowsQuery())
 				continue;
 
-			BString predicate;
-
-			predicate << "((IM:connections==\"*"
-				<< file << ":*\") && (BEOS:TYPE==\"application/x-person\"))";
-
+			// Create query
 			BQuery* query = new BQuery();
+			query->SetTarget(BMessenger(this));
 			query->SetPredicate(predicate.String());
 			query->SetVolume(&vol);
 			query->Fetch();
 
+			// Add query to protocol queries list
+			(void)fProtocolItems[file]->queries.AddItem(query);
+
 			entry_ref ref;
 			while (query->GetNextRef(&ref) == B_OK) {
+				// Contact object
+				IM::Contact contact(ref);
+
+				// Get contact icon
 				BBitmap* icon = new BBitmap(BRect(0, 0, 16, 16), B_RGBA32);
 				BNode node(&ref);
 				if (BIconUtils::GetIcon(&node, BEOS_ICON_ATTRIBUTE, BEOS_MINI_ICON_ATTRIBUTE,
@@ -113,11 +165,14 @@ PeopleColumnListView::Populate()
 					icon = NULL;
 				}
 
+				// Get buddy icon
+				BBitmap* buddyIcon = contact.GetBuddyIcon(file, B_LARGE_ICON);
+
 				BRow* contactRow = new BRow(iconSize);
 				contactRow->SetField(new BBitmapField(icon), 0);
 				contactRow->SetField(new BStringField(ref.name), 1);
 				contactRow->SetField(new BStringField(NULL), 2);
-				contactRow->SetField(new BBitmapField(NULL), 3);
+				contactRow->SetField(new BBitmapField(buddyIcon), 3);
 				AddRow(contactRow, row);
 			}
 		}

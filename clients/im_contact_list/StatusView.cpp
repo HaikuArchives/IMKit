@@ -1,17 +1,17 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
- *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
-#include <app/Message.h>
-#include <interface/GroupLayout.h>
-#include <interface/GridLayoutBuilder.h>
-#include <interface/PopUpMenu.h>
-#include <interface/MenuItem.h>
-#include <interface/MenuField.h>
+#include <Message.h>
+#include <GroupLayout.h>
+#include <GridLayoutBuilder.h>
+#include <PopUpMenu.h>
+#include <MenuItem.h>
+#include <MenuField.h>
 
 #include <libim/Constants.h>
 #include <libim/Manager.h>
@@ -19,12 +19,11 @@
 
 #include "StatusView.h"
 #include "PictureView.h"
+#include "Misc.h"
 
 const char* kLogName = "im_contact_list";
 
-const int32 kSetOnline = '_ava';
-const int32 kSetAway = '_awa';
-const int32 kSetOffline = '_off';
+const int32 kSetStatus = 'sets';
 
 
 StatusView::StatusView(const char* name)
@@ -33,11 +32,22 @@ StatusView::StatusView(const char* name)
 {
 	// PopUp menu
 	fStatusMenu = new BPopUpMenu("Status menu");
-	fOnlineMenuItem = new BMenuItem("Online", new BMessage(kSetOnline));
-	fAwayMenuItem = new BMenuItem("Away", new BMessage(kSetAway));
-	fOfflineMenuItem = new BMenuItem("Offline", new BMessage(kSetOffline));
+
+	// Online status
+	BMessage* setOnline = new BMessage(kSetStatus);
+	setOnline->AddString("status", ONLINE_TEXT);
+	fOnlineMenuItem = new BMenuItem(ONLINE_TEXT, setOnline);
 	fStatusMenu->AddItem(fOnlineMenuItem);
+
+	BMessage* setAway = new BMessage(kSetStatus);
+	setAway->AddString("status", AWAY_TEXT);
+	fAwayMenuItem = new BMenuItem(AWAY_TEXT, setAway);
 	fStatusMenu->AddItem(fAwayMenuItem);
+
+	// Offline
+	BMessage* setOffline = new BMessage(kSetStatus);
+	setOffline->AddString("status", OFFLINE_TEXT);
+	fOfflineMenuItem = new BMenuItem(OFFLINE_TEXT, setOffline);
 	fStatusMenu->AddItem(fOfflineMenuItem);
 
 	// Menu field
@@ -63,6 +73,30 @@ void
 StatusView::AttachedToWindow()
 {
 	fStatusMenu->SetTargetForItems(this);
+}
+
+
+void
+StatusView::MessageReceived(BMessage* msg)
+{
+	switch (msg->what) {
+		case kSetStatus: {
+				const char* status = NULL;
+
+				if (msg->FindString("status", &status) != B_OK) {
+					LOG(kLogName, liDebug, "No 'status' field in kSetStatus message");
+					return;
+				}
+
+				BMessage cmd(IM::MESSAGE);
+				cmd.AddInt32("im_what", IM::SET_STATUS);
+				cmd.AddString("status", status);
+				(void)SendMessageToServer(&cmd);
+			} break;
+		default:
+			BView::MessageReceived(msg);
+			break;
+	};
 }
 
 

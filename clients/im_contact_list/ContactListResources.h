@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
 #ifndef _CONTACT_LIST_RESOURCES_H

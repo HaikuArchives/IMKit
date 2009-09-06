@@ -6,14 +6,14 @@
  *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
-#include "ContactListApp.h"
+#include <libim/Manager.h>
+
+#include "Misc.h"
 
 
-int
-main(int argc, char* argv[])
+status_t
+SendMessageToServer(BMessage* msg)
 {
-	ContactListApp* app = new ContactListApp();
-	app->Run();
-
-	return 0;
+	IM::Manager manager;
+	return manager.SendMessage(msg);
 }

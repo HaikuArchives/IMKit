@@ -1,41 +1,42 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
- *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
-#include <app/Application.h>
-#include <interface/GroupLayout.h>
-#include <interface/GroupLayoutBuilder.h>
+#include <Application.h>
+#include <GroupLayout.h>
+#include <GroupLayoutBuilder.h>
 
 #include "ContactListWindow.h"
-#include "PeopleColumnListView.h"
-#include "StatusView.h"
+#include "ContactListView.h"
 
 
 ContactListWindow::ContactListWindow()
 	: BWindow(BRect(0, 0, 1, 1), "Contact List", B_TITLED_WINDOW,
-		B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS)
+		B_ASYNCHRONOUS_CONTROLS | B_AUTO_UPDATE_SIZE_LIMITS),
+	fManager(new IM::Manager(BMessenger(this)))
 {
-	// Views
-	fListView = new PeopleColumnListView("contact_list");
-	fStatusView = new StatusView("status");
-
-	// Populate list view
-	fListView->Populate();
+	// Create contact list view
+	fView = new ContactListView("top");
 
 	// Layout
-	float inset = (float)ceilf(be_plain_font->Size() * 0.7f);
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
-	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
-		.Add(fListView)
-		.Add(fStatusView)
+	AddChild(BGroupLayoutBuilder(B_VERTICAL)
+		.Add(fView)
 	);
 
 	// Center window
 	CenterOnScreen();
+}
+
+
+status_t
+ContactListWindow::InitCheck()
+{
+	return fManager->InitCheck();
 }
 
 

@@ -1,13 +1,13 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
- *		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
-#include <interface/Bitmap.h>
-#include <translation/TranslationUtils.h>
+#include <Bitmap.h>
+#include <TranslationUtils.h>
 
 #include "PictureView.h"
 

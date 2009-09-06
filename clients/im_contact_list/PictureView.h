@@ -1,11 +1,11 @@
 /*
- * Copyright 2003-2009, IM Kit Team. All rights reserved.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
 #ifndef _PICTURE_VIEW_H
 #define _PICTURE_VIEW_H
 
-#include <interface/View.h>
+#include <View.h>
 
 class BBitmap;
 
