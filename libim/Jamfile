@@ -8,9 +8,11 @@ SharedLibrary libim.so :
 	Manager.cpp
 	Helpers.cpp
 	Protocol.cpp
-	: be $(TARGET_LIBSTDC++)
+	: be $(TARGET_LIBSTDC++) libcommon.a
 	: libim_version.rdef
 ;
+
+Depends libim.so : libcommon.a ;
 
 if $(OS) = ZETA {
 	LINKFLAGS on libim.so += -lzeta ;

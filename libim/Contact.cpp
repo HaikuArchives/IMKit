@@ -11,6 +11,8 @@
 #include "Connection.h"
 #include "Helpers.h"
 
+#include <common/IMKitUtilities.h>
+
 using namespace IM;
 
 //#pragma mark Contact
@@ -516,7 +518,7 @@ status_t Contact::SetBuddyIcon(const char *protocol, BBitmap *icon) {
 	return ret;
 };
 
-BBitmap *Contact::GetBuddyIcon(const char *protocol, int16 /*size*/) {
+BBitmap *Contact::GetBuddyIcon(const char *protocol, int16 size) {
 	char *buffer = NULL;
 	int32 length = -1;
 
@@ -531,7 +533,8 @@ BBitmap *Contact::GetBuddyIcon(const char *protocol, int16 /*size*/) {
 		free(buffer);
 		
 		if (iconAttr.FindMessage(protocol, &iconMsg) == B_OK) {
-			return new BBitmap(&iconMsg);
+			BBitmap* icon = new BBitmap(&iconMsg);
+			return rescale_bitmap((const BBitmap*)icon, size);
 		};
 	};
 	
