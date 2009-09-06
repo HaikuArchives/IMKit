@@ -3,7 +3,8 @@
 #include "FLAP.h"
 #include "SNAC.h"
 #include "TLV.h"
-#include "common/BufferReader.h"
+
+#include <common/support/BufferReader.h>
 
 //#pragma mark Constructor
 

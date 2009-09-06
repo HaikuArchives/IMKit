@@ -3,8 +3,9 @@
 #include "FLAP.h"
 #include "SNAC.h"
 #include "TLV.h"
-#include "common/BufferReader.h"
 #include "OSCARConnection.h"
+
+#include <common/support/BufferReader.h>
 
 #include <stdlib.h>
 

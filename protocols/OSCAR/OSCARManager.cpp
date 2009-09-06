@@ -17,10 +17,11 @@
 #include "OSCARBOSConnection.h"
 #include "OSCARReqConn.h"
 #include "OSCARHandler.h"
-#include "common/htmlparse.h"
 #include "Group.h"
-#include "common/BufferReader.h"
-#include "common/BufferWriter.h"
+
+#include <common/support/htmlparse.h>
+#include <common/support/BufferReader.h>
+#include <common/support/BufferWriter.h>
 
 #if B_BEOS_VERSION==B_BEOS_VERSION_5
 //Not beautiful. An inline function should probably be used instead.

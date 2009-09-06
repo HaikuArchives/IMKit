@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <libim/Helpers.h>
 
-#include "common/BufferReader.h"
+#include <common/support/BufferReader.h>
 
 //#pragma mark Constants
 

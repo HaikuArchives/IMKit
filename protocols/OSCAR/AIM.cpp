@@ -17,7 +17,8 @@
 
 #include <stdlib.h>
 
-#include "common/htmlparse.h"
+#include <common/support/htmlparse.h>
+
 #include "OSCARManager.h"
 
 //#pragma mark Extern C

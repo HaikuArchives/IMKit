@@ -1,6 +1,5 @@
 #include "OSCARConnection.h"
 
-#include "common/BufferReader.h"
 #include "FLAP.h"
 #include "SNAC.h"
 #include "TLV.h"
@@ -8,6 +7,8 @@
 #include <stdlib.h>
 
 #include <UTF8.h>
+
+#include <common/support/BufferReader.h>
 
 #if defined(BONE_BUILD) || defined(__HAIKU__)
 	#include <sys/select.h>
