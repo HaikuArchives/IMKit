@@ -87,6 +87,7 @@ private:
 
 		JabberContact*	getContact(const char* id);
 		void			SendContactInfo(const char* id);
+		void			SendBuddyIcon(const char* id);
 		void			AddStatusString(JabberPresence* who ,BMessage* to);	
 
 		void			CheckLoginStatus();

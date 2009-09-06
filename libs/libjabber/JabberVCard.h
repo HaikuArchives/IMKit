@@ -24,6 +24,9 @@ public:
 	BString		GetEmail() const;
 	BString		GetURL() const;
 	BString		GetBirthday() const;
+	BString		GetPhotoMimeType() const;
+	BString		GetPhotoContent() const;
+	BString		GetPhotoURL() const;
 
 	void		SetFullName(const BString& firstName);
 	void		SetGivenName(const BString& name);
@@ -33,6 +36,9 @@ public:
 	void		SetEmail(const BString& email);
 	void		SetURL(const BString& url);
 	void		SetBirthday(const BString& birthday);
+	void		SetPhotoMimeType(const BString& mime);
+	void		SetPhotoContent(const BString& content);
+	void		SetPhotoURL(const BString& url);
 
 private:
 	BString		fJid;
@@ -45,6 +51,9 @@ private:
 	BString		fEmail;
 	BString		fURL;
 	BString		fBirthday;
+	BString		fPhotoMime;
+	BString		fPhotoContent;
+	BString		fPhotoURL;
 };
 
 #endif	// _JABBER_VCARD_H

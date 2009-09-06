@@ -587,7 +587,28 @@ GoogleTalk::SendContactInfo(const char* id)
 	}
 
 	// Send contact information
-	fServerMsgr.SendMessage(&msg);	
+	fServerMsgr.SendMessage(&msg);
+}
+
+void
+GoogleTalk::SendBuddyIcon(const char* id)
+{
+	JabberContact* jid = getContact(id);
+	if (!jid)
+		return;
+
+	// vCard information
+	JabberVCard* vCard = jid->GetVCard();
+	if (vCard) {
+		BString data = vCard->GetPhotoContent();
+
+		BMessage msg(IM::MESSAGE);
+		msg.AddInt32("im_what", IM::SET_BUDDY_ICON);
+		msg.AddString("protocol", kProtocolName);
+		msg.AddString("id", id);
+		msg.AddData("icondata", B_RAW_TYPE, data.String(), data.Length());
+		fServerMsgr.SendMessage(&msg);
+	}
 }
 
 //CALLBACK!
@@ -751,6 +772,7 @@ void
 GoogleTalk::GotVCard(JabberContact* contact)
 {
 	SendContactInfo(contact->GetJid().String());
+	SendBuddyIcon(contact->GetJid().String());
 }
 
 void

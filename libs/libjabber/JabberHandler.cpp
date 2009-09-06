@@ -874,28 +874,42 @@ JabberHandler::BuildVCard(const BString& from)
 	while (element->GetName().ICompare("vCard") != 0) {
 		if (element->GetName().ICompare("FN") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetFullName(previous->GetData().String());
+				vCard->SetFullName(previous->GetData());
 		} else if (element->GetName().ICompare("GIVEN") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetGivenName(previous->GetData().String());
+				vCard->SetGivenName(previous->GetData());
 		} else if (element->GetName().ICompare("FAMILY") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetFamilyName(previous->GetData().String());
+				vCard->SetFamilyName(previous->GetData());
 		} else if (element->GetName().ICompare("MIDDLE") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetMiddleName(previous->GetData().String());
+				vCard->SetMiddleName(previous->GetData());
 		} else if (element->GetName().ICompare("NICKNAME") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetNickname(previous->GetData().String());
+				vCard->SetNickname(previous->GetData());
 		} else if (element->GetName().ICompare("EMAIL") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetEmail(previous->GetData().String());
+				vCard->SetEmail(previous->GetData());
 		} else if (element->GetName().ICompare("URL") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetURL(previous->GetData().String());
+				vCard->SetURL(previous->GetData());
 		} else if (element->GetName().ICompare("BDAY") == 0) {
 			if (previous && previous->GetName().ICompare("data") == 0)
-				vCard->SetBirthday(previous->GetData().String());
+				vCard->SetBirthday(previous->GetData());
+		} else {
+			// Handle PHOTO childs
+			if (element->GetName().ICompare("EXTVAL") == 0) {
+				// Got a URI to an external content
+				// TODO:
+			} else {
+				if (element->GetName().ICompare("TYPE") == 0) {
+					if (previous && previous->GetName().ICompare("data") == 0)
+						vCard->SetPhotoMimeType(previous->GetData());
+				} else if (element->GetName().ICompare("BINVAL") == 0) {
+					if (previous && previous->GetName().ICompare("data") == 0)
+						vCard->SetPhotoContent(previous->GetData());
+				}
+			}
 		}
 
 		if (previous)

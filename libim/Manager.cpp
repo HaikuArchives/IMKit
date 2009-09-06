@@ -158,7 +158,8 @@ Manager::OneShotMessage( BMessage * msg )
 	
 	if ( !msgr.IsValid() )
 	{
-		LOG("Manager", liHigh, "Manager::SendMessage: fMsgr invalid");
+		LOG("Manager", liHigh, "Manager::SendMessage(): BMessenger(\"%s\") invalid",
+			IM_SERVER_SIG);
 		return B_ERROR;
 	}
 	
