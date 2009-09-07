@@ -196,14 +196,16 @@ char *ReadAttribute(BNode node, const char *attribute, int32 *length) {
 	char *value = NULL;
 
 	if (node.GetAttrInfo(attribute, &info) == B_OK) {
-		value = (char *)calloc(info.size, sizeof(char));
+		value = (char *)calloc(info.size + 1, sizeof(char));
 		if (node.ReadAttr(attribute, info.type, 0, (void *)value, info.size) !=
 			info.size) {
 			
 			free(value);
 			value = NULL;
 		};
-		if (length) *length = info.size;
+		if (length && value) *length = info.size + 1;
+		if (value)
+			value[info.size] = '\0';
 	};
 
 	return value;
