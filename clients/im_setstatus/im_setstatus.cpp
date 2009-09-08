@@ -35,13 +35,17 @@ main(int argc, char* argv[])
 		BString connString(argv[2]);
 		connString << ":" << argv[3];
 
-		IM::Connection connection("gtalk:plfiorini");
+		IM::Connection connection(connString);
 		newmsg.AddString("protocol", connection.Protocol());
 		newmsg.AddString("id", connection.ID());
 	}
 
 	IM::Manager man;
-	man.SendMessage(&newmsg);
+	if (man.SendMessage(&newmsg) != B_OK) {
+		fprintf(stderr, "Couldn't send message to IM Kit server, please "
+			"check if it's running!\n");
+		return 1;
+	}
 
 	return 0;
 }
