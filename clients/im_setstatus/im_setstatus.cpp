@@ -9,6 +9,7 @@
 #include <libim/Constants.h>
 #include <libim/Manager.h>
 #include <libim/Helpers.h>
+#include <libim/Connection.h>
 
 
 int
@@ -31,25 +32,12 @@ main(int argc, char* argv[])
 	else if (strcmp(argv[1], "--away") == 0)
 		newmsg.AddString("status", AWAY_TEXT);
 	if (argc == 4) {
-		// Get protocol path
-		BPath protocolPath;
-		if (im_protocol_get_path(argv[2], &protocolPath) != B_OK) {
-			fprintf(stderr, "Error finding protocol \"%s\" path!\n", argv[2]);
-			return 1;
-		}
+		BString connString(argv[2]);
+		connString << ":" << argv[3];
 
-		// Get protocol settings path
-		BPath protocolSettingsPath;
-		if (im_protocol_get_settings_path(argv[2], &protocolSettingsPath) != B_OK) {
-			fprintf(stderr, "Error finding protocol \"%s\" settings path!\n", argv[2]);
-			return 1;
-		}
-
-		BString instance(protocolPath.Path());
-		instance << "->" << protocolSettingsPath.Path() << "/" << argv[3]
-			<< " (" << argv[3] << ")";
-
-		newmsg.AddString("instance_id", instance.String());
+		IM::Connection connection("gtalk:plfiorini");
+		newmsg.AddString("protocol", connection.Protocol());
+		newmsg.AddString("id", connection.ID());
 	}
 
 	IM::Manager man;
