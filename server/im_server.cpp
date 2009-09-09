@@ -798,7 +798,8 @@ status_t Server::LoadProtocols(void) {
 		(rc_user = userAddon.Append("im_kit/protocols")) != B_OK ||
 		(rc_user = addonsDir.SetTo(userAddon.Path())) != B_OK) {
 		// we couldn't access the addons directory for the protocols!
-		LOG(kAppName, liHigh, "Cannot access user protocol addon directory: %s, error 0x%lx (%s)!", userAddon.Path(), rc_user, strerror(rc_user));
+		if ((rc_sys != B_OK) && (rc_user != B_OK))
+			LOG(kAppName, liHigh, "Cannot access user protocol addon directory: %s, error 0x%lx (%s)!", userAddon.Path(), rc_user, strerror(rc_user));
 	} else {
 		if (userAddon != commonAddon) {
 			fProtocol->LoadFromDirectory(addonsDir, settingsDir);
@@ -1413,7 +1414,6 @@ void Server::MessageFromProtocols(BMessage *msg) {
 	};
 
 	if (im_what == SET_BUDDY_ICON) {
-		LOG(kAppName, liHigh, "Got a buddy icon from a protocol!");
 		const uchar *data;
 		int32 bytes = -1;
 		entry_ref ref;

@@ -144,7 +144,10 @@ void ContactManager::MessageReceived(BMessage *msg) {
 					if (fContact->Contains(handle.entry) == false) {
 						ContactAdded(handle);
 					} else {
-						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already know about - possibly due to live query notification catching up with a call to CreateContact");
+LOG(kAppName, liDebug, "------- %s", name);
+						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already "
+							"know about - possibly due to live query notification catching up with "
+							"a call to CreateContact");
 					};
 				} break;
 				
@@ -175,10 +178,12 @@ void ContactManager::MessageReceived(BMessage *msg) {
 					msg->FindInt32("device", &handle.entry.device);
 					msg->FindInt64("node", &handle.node);
 
-					if (fContact->Contains(handle.entry) == false) {					
+					if (fContact->Contains(handle.entry) == false) {
 						ContactAdded(handle);
 					} else {
-						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already know about - possibly due to live query notification catching up with a call to CreateContact");
+						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already "
+							"know about - possibly due to node monitoring catching up with a "
+							"call to CreateContact");
 					};
 				} break;
 				case B_ENTRY_MOVED: {
@@ -262,7 +267,7 @@ status_t ContactManager::Init(void) {
 		
 		BQuery *query = new BQuery();
 		query->SetTarget(BMessenger(this));
-		query->SetPredicate("IM:connections=*");
+		query->SetPredicate("((IM:connections==\"*\") && (BEOS:TYPE==\"application/x-person\"))");
 		query->SetVolume(&vol);
 		query->Fetch();
 		
@@ -274,7 +279,8 @@ status_t ContactManager::Init(void) {
 			BNode node(&handle.entry);
 			if (node.GetNodeRef(&nref) == B_OK) {
 				handle.node = nref.node;		
-				ContactAdded(handle);
+				if (fContact->Contains(handle.entry) == false)
+					ContactAdded(handle);
 			};
 		};
 	};
