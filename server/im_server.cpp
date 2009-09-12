@@ -751,6 +751,9 @@ void Server::_InstallDeskbarIcon(void) {
 	};
 
 	if (valid == true) {
+		LOG(kAppName, liDebug, "_InstallDeskbarIcon: Found %s",
+			BPath(&ref).Path());
+
 		BDeskbar deskbar;
 		deskbar.AddItem(&ref);
 	};

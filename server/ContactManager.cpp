@@ -144,7 +144,6 @@ void ContactManager::MessageReceived(BMessage *msg) {
 					if (fContact->Contains(handle.entry) == false) {
 						ContactAdded(handle);
 					} else {
-LOG(kAppName, liDebug, "------- %s", name);
 						LOG(kAppName, liDebug, "Got a B_ENTRY_CREATED for a Contact we already "
 							"know about - possibly due to live query notification catching up with "
 							"a call to CreateContact");
