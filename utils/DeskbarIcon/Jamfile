@@ -26,7 +26,7 @@ if $(OS) = ZETA {
 	LINKFLAGS on IMDeskbarIcon += -lzeta -ltracker ;
 }
 
-InstallLib $(APPS_DIRECTORY)/im_kit : IMDeskbarIcon ;
+InstallBin $(APPS_DIRECTORY)/im_kit : IMDeskbarIcon ;
 
 Package imkit :
 	IMDeskbarIcon :
