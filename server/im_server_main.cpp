@@ -18,6 +18,16 @@
 #define _T(str) (str)
 #endif
 
+typedef struct people_attributes_t {
+	const char* attr;
+	const char* name;
+	type_code type;
+	int32 width;
+	bool isViewable;
+	bool isPublic;
+	bool isEditable;
+};
+
 //#pragma mark Installation / Setup Methods
 
 void RegisterSoundEvents(void) {
@@ -30,6 +40,67 @@ void RegisterSoundEvents(void) {
 	add_system_beep_event(kImStatusAwaySound, 0);
 	add_system_beep_event(kImStatusOfflineSound, 0);
 };
+
+void CheckMime()
+{
+	BMimeType mime("application/x-person");
+	BMessage msg;
+	status_t ret;
+
+	// Sanity check
+	if (mime.InitCheck() != B_OK)
+		return;
+
+	// Install if it's not installed
+	if (!mime.IsInstalled()) {
+		ret = mime.Install();
+		if (ret != B_OK)
+			return;
+		mime.SetAttrInfo(&msg);
+	}
+
+	// Get attribute information
+	ret = mime.GetAttrInfo(&msg);
+	if (ret != B_OK)
+		return;
+
+	const people_attributes_t attributes[] = {
+		{"IM:status", "IM Status", B_STRING_TYPE, 80, true, true, false},
+		{"IM:connections", "IM Connections", B_STRING_TYPE, 80, true, true, true},
+		{NULL, NULL, B_ANY_TYPE, 0, false, false, false}
+	};
+
+	int32 i = 0;
+	while (attributes[i].attr != NULL) {
+		const char* name = NULL;
+		bool found = false;
+
+		for (int32 index = 0; msg.FindString("attr:name", index, &name) == B_OK; index++) {
+			if (strcmp(attributes[i].attr, name) == 0) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			msg.AddString("attr:name", attributes[i].attr);
+			msg.AddString("attr:public_name", attributes[i].name);
+			msg.AddInt32("attr:type", attributes[i].type);
+			msg.AddInt32("attr:width", attributes[i].width);
+			msg.AddBool("attr:editable", attributes[i].isEditable);
+			msg.AddBool("attr:public", attributes[i].isPublic);
+			msg.AddBool("attr:viewable", attributes[i].isViewable);
+			msg.AddBool("attr:extra", false);
+			msg.AddInt32("attr:alignment", 0);
+
+			ret = mime.SetAttrInfo(&msg);
+			if (ret != B_OK)
+				return;
+		}
+
+		i++;
+	}
+}
 
 void CheckIndexes(void) {
 	BVolumeRoster roster;
@@ -212,6 +283,7 @@ int main(int numarg, const char ** argv) {
 	rename("/boot/home/im_kit.log", "/boot/home/im_kit.log.0");
 
 	IM::Server server;
+	CheckMime();
 	CheckIndexes();
 	CheckComponents(&server);
 	server.Run();
