@@ -1,21 +1,29 @@
 SubDir TOP server ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
-SubDirSysHdrs [ FDirName $(TOP) utils DeskbarIcon ] ;
+
+# SVN revision
+local svnRevisionFile = [ FGristFiles svn_revision ] ;
+MakeLocate $(svnRevisionFile) : $(LOCATE_TARGET) ;
+CreateSVNRevisionFile $(svnRevisionFile) ;
 
 C++FLAGS += -fpermissive ;
 
 Application im_server :
-	im_server.cpp
-	im_server_main.cpp
+	AwayMessageWindow.cpp
 	ContactCachedConnections.cpp
 	ContactHandle.cpp
 	ContactManager.cpp
-	ProtocolManager.cpp
+	DeskbarIcon.cpp
 	ProtocolInfo.cpp
+	ProtocolManager.cpp
+	QueryLooper.cpp
 	StatusIcon.cpp
+	im_server.cpp
+	im_server_main.cpp
+	svn_revision.cpp
 	: be $(TARGET_LIBSTDC++) translation textencoding libcommon.a libim.so
-	: im_server.rdef ContactStatusIcons.rdef Icons.rdef
+	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
 ;
 
 Depends im_server : libcommon.a ;

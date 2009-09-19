@@ -9,7 +9,6 @@
 SubDir TOP utils ;
 
 # Include all the components
-SubInclude TOP utils DeskbarIcon ;
 SubInclude TOP utils gimicq-import ;
 SubInclude TOP utils mimetype ;
 SubInclude TOP utils IconSetter ;

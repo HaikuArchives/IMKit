@@ -709,54 +709,16 @@ void Server::_UpdateStatusIcons(void) {
 /**
 	Install deskbar icon.
 */
-void Server::_InstallDeskbarIcon(void) {
+void Server::_InstallDeskbarIcon()
+{
+	image_info info;
 	entry_ref ref;
-	bool valid = false;
 
-	if (be_roster->FindApp(DESKBAR_ICON_SIG, &ref) == B_OK) {
-		valid = true;
-	} else {
-		// Try with a query and take the first result
-		BVolumeRoster vroster;
-		BVolume volume;
-		char volName[B_FILE_NAME_LENGTH];
-
-		vroster.Rewind();
-
-		while (vroster.GetNextVolume(&volume) == B_OK) {
-			if ((volume.InitCheck() != B_OK) || !volume.KnowsQuery())
-				continue;
-
-			volume.GetName(volName);
-			LOG(kAppName, liDebug, "_InstallDeskbarIcon: Trying with a query on %s", volName);
-
-			BQuery *query = new BQuery();
-			query->SetPredicate("(BEOS:APP_SIG==\""DESKBAR_ICON_SIG"\")");
-			query->SetVolume(&volume);
-			query->Fetch();
-
-			if (query->GetNextRef(&ref) == B_OK) {
-				valid = true;
-				break;
-			};
-
-			LOG(kAppName, liHigh, "Unable to find Deskbar icon - waiting before retrying");
-			snooze(kQueryDelay);
-
-			if (query->GetNextRef(&ref) == B_OK) {
-				valid = true;
-				break;
-			};
-		};
-	};
-
-	if (valid == true) {
-		LOG(kAppName, liDebug, "_InstallDeskbarIcon: Found %s",
-			BPath(&ref).Path());
-
+	if (our_image(info) == B_OK
+		&& get_ref_for_path(info.name, &ref) == B_OK) {
 		BDeskbar deskbar;
 		deskbar.AddItem(&ref);
-	};
+	}
 }
 
 /**
@@ -2588,7 +2550,6 @@ void Server::reply_GET_CONTACTS_FOR_PROTOCOL(BMessage * msg) {
 
 void Server::ReadyToRun(void) {
 	fContact->Init();
-
 	SetAllOffline();
 	StartAutostartApps();
 };
