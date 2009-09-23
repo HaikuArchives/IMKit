@@ -1,26 +1,21 @@
 /*
- * Copyright 2003-2009, IM Kit Team.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
- *
- * Authors:
- *		Michael Davidson <slaad@bong.com.au>
- *		
  */
-#ifndef CONTACT_LISTENER_H
-#define CONTACT_LISTENER_H
+#ifndef _CONTACT_LISTENER_H
+#define _CONTACT_LISTENER_H
 
-#include "common/GenericStore.h"
+#include "ConnectionStore.h"
 
 namespace IM {
-	class Contact;
-	class ConnectionStore;
-
 	class ContactListener {
-		public:
-			virtual void		ContactAdded(Contact *contact) {};
-			virtual void		ContactModified(Contact *contact, ConnectionStore *oldConnections, ConnectionStore *newConnections) {};
-			virtual void		ContactRemoved(Contact *contact, ConnectionStore *oldConnections) {};
+	public:
+		virtual void ContactAdded(Contact* contact) {}
+		virtual void ContactModified(Contact* contact,
+			ConnectionStore* oldConnections, ConnectionStore* newConnections) {}
+		virtual	void ContactRemoved(Contact* contact,
+			ConnectionStore *oldConnections) {}
 	};
 };
 
-#endif // CONTACT_LISTENER_H
+#endif	// _CONTACT_LISTENER_H

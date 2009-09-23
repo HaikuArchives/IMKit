@@ -1,24 +1,20 @@
 /*
- * Copyright 2003-2009, IM Kit Team.
+ * Copyright 2003-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
  * Authors:
- *		Michael Davidson <slaad@bong.com.au>
- *		
+ *		Michael Davidson, slaad@bong.com.au
  */
-
-#ifndef CONNECTIONSTORE_H
-#define CONNECTIONSTORE_H
+#ifndef _CONNECTION_STORE_H
+#define _CONNECTION_STORE_H
 
 #include <libim/Connection.h>
 
 #include "common/GenericStore.h"
 
 namespace IM {
-
 	class ConnectionStore : public IM::GenericListStore<IM::Connection> {
 	};
-
 };
 
-#endif // CONNECTIONSTORE_H
+#endif	// _CONNECTION_STORE_H

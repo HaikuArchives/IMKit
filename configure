@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# Copyright 2008, IM Kit Team.
+# Copyright 2008-2009, IM Kit Team.
 # Distributed under the terms of the MIT License.
 #
 # Authors:
-#		Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
 #
 
 current_dir=`pwd`
@@ -145,6 +145,7 @@ COMMON_ADDONS_DIRECTORY = $(finddir B_COMMON_ADDONS_DIRECTORY) ;
 COMMON_DEVELOP_DIRECTORY = $(finddir B_COMMON_DEVELOP_DIRECTORY) ;
 USER_CONFIG_DIRECTORY = $(finddir B_USER_CONFIG_DIRECTORY) ;
 SYSTEM_DIRECTORY = $(finddir B_SYSTEM_DIRECTORY) ;
+SYSTEM_LIB_DIRECTORY = $(finddir B_SYSTEM_LIB_DIRECTORY) ;
 BEOS_PREFERENCES_DIRECTORY = $(finddir B_BEOS_PREFERENCES_DIRECTORY) ;
 PREFERENCES_DIRECTORY = $(finddir B_PREFERENCES_DIRECTORY) ;
 USER_PREFERENCES_DIRECTORY = $(finddir B_USER_CONFIG_DIRECTORY)/be/Preferences ;

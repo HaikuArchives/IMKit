@@ -1,43 +1,37 @@
 /*
- * Copyright 2003-2009, IM Kit Team.
+ * Copyright 2004-2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
- *
- * Authors:
- *		Michael Davidson <slaad@bong.com.au>
- *		
  */
+#ifndef _CONTACT_CACHED_CONNECTIONS_H
+#define _CONTACT_CACHED_CONNECTIONS_H
  
-#ifndef CONTACTCACHEDCONNECTIONS_H
-#define CONTACTCACHEDCONNECTIONS_H
-
-#include "ContactHandle.h"
- 
-#include <storage/Entry.h>
+#include <Entry.h>
  
 #include <libim/Contact.h>
+
+#include "ContactHandle.h"
  
 namespace IM {
 	class ConnectionStore;
 
 	class ContactCachedConnections : public Contact {
-		public:
-							ContactCachedConnections(const entry_ref &ref);
-							ContactCachedConnections(const BEntry &entry);
-		
-			// Public
-			void			ReloadConnections(void);
-			ConnectionStore *CachedConnections(void);
-			ContactHandle	Handle(void) const;
-			
-			// Operators
-							operator const entry_ref *(void) const;
-			bool			operator == (const entry_ref &entry) const;
-			bool			operator == (const ContactHandle &handle) const;
-	
-		private:
-			ConnectionStore	*fConnections;
-	};
-	
+	public:
+							ContactCachedConnections(const entry_ref& ref);
+							ContactCachedConnections(const BEntry& entry);
+
+		// Public
+		void				ReloadConnections();
+		ConnectionStore*	CachedConnections();
+		ContactHandle		Handle() const;
+
+		// Operators
+							operator const entry_ref* () const;
+		bool				operator==(const entry_ref& entry) const;
+		bool				operator==(const ContactHandle& handle) const;
+
+	private:
+		ConnectionStore*	fConnections;
+	};	
 };
 
-#endif // CONTACTCACHEDCONNECTIONS_H
+#endif	// _CONTACT_CACHED_CONNECTIONS_H

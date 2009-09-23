@@ -236,11 +236,11 @@ void ContactManager::MessageReceived(BMessage *msg) {
 
 //#pragma mark SpecificationFinder<Contact *> Hooks
 
-bool ContactManager::FindFirst(ContactSpecification *spec, ContactCachedConnections **firstMatch, bool canDelete = true) {
+bool ContactManager::FindFirst(ContactSpecification *spec, ContactCachedConnections **firstMatch, bool canDelete) {
 	return fContact->FindFirst(spec, firstMatch, canDelete);
 };
 
-GenericListStore<ContactCachedConnections *> ContactManager::FindAll(ContactSpecification *spec, bool canDelete = true) {
+GenericListStore<ContactCachedConnections *> ContactManager::FindAll(ContactSpecification *spec, bool canDelete) {
 	return fContact->FindAll(spec, canDelete);
 };
 

@@ -1,9 +1,9 @@
 /*
- * Copyright 2009-, IM Kit Team.
+ * Copyright 2009, IM Kit Team. All rights reserved.
  * Distributed under the terms of the MIT License.
  *
- * Authors;
- *   Michael Davidson (slaad@bong.com.au)
+ * Authors:
+ *		Michael Davidson, slaad@bong.com.au
  */
 #ifndef GENERICSTORE_H
 #define GENERICSTORE_H
@@ -16,7 +16,6 @@
 #include <stdio.h>
 
 namespace IM {
-
 	// The type_delete function is called as type_delete<type>([reallyDelete,] instance) - for reference types it's a no-op whilst pointer types will free instance
 	template <typename T> void type_delete(T value) { type_delete<T>(true, value); };
 	template <typename T> void type_delete(bool performDelete, T value) { };

@@ -1,20 +1,4 @@
-#include "im_server.h"
-
-#include "ContactManager.h"
-#include "ConnectionStore.h"
-#include "Private/Constants.h"
-#include "ProtocolInfo.h"
-#include "ProtocolManager.h"
-#include "ProtocolSpecification.h"
-#include "StatusIcon.h"
-#include "StringSpecification.h"
-
-#include "common/GenericStore.h"
-#include "common/IMKitUtilities.h"
-
-#include <libim/Constants.h>
-#include <libim/Helpers.h>
-#include <TranslationUtils.h>
+#include <signal.h>
 
 #include <image.h>
 #include <Roster.h>
@@ -39,6 +23,7 @@
 #include <PropertyInfo.h>
 #include <Mime.h>
 #include <storage/Resources.h>
+#include <TranslationUtils.h>
 
 #include <DeskbarIcon.h>
 
@@ -48,9 +33,20 @@
 #define _T(str) (str)
 #endif
 
-#include "IMKitResources.h"
+#include <libim/Constants.h>
+#include <libim/Helpers.h>
 
-#include <signal.h>
+#include <common/IMKitUtilities.h>
+
+#include "im_server.h"
+#include "IMKitResources.h"
+#include "ContactManager.h"
+#include "Private/Constants.h"
+#include "ProtocolInfo.h"
+#include "ProtocolManager.h"
+#include "ProtocolSpecification.h"
+#include "StatusIcon.h"
+#include "StringSpecification.h"
 
 using namespace IM;
 

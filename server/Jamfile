@@ -7,8 +7,6 @@ local svnRevisionFile = [ FGristFiles svn_revision ] ;
 MakeLocate $(svnRevisionFile) : $(LOCATE_TARGET) ;
 CreateSVNRevisionFile $(svnRevisionFile) ;
 
-C++FLAGS += -fpermissive ;
-
 Application im_server :
 	AwayMessageWindow.cpp
 	ContactCachedConnections.cpp
@@ -23,7 +21,7 @@ Application im_server :
 	im_server_main.cpp
 	svn_revision.cpp
 	: be $(TARGET_LIBSTDC++) translation textencoding libcommon.a libim.so
-	: im_server.rdef ContactStatusIcons.rdef Icons.rdef DeskbarIcons.rdef
+	: im_server.rdef Icons.rdef
 ;
 
 Depends im_server : libcommon.a ;
