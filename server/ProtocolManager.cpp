@@ -3,7 +3,7 @@
 #include "ProtocolSpecification.h"
 
 #include "common/GenericStore.h"
-#include "Private/Constants.h"
+#include "Constants.h"
 
 #include <app/Roster.h>
 #include <storage/VolumeRoster.h>

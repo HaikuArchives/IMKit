@@ -1,6 +1,6 @@
 #include "ProtocolInfo.h"
 
-#include "Private/Constants.h"
+#include "Constants.h"
 
 #include <app/Messenger.h>
 #include <kernel/image.h>

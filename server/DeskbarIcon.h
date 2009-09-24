@@ -27,7 +27,7 @@
 
 #include "AwayMessageWindow.h"
 #include "QueryLooper.h"
-#include "IMKitResources.h"
+#include "Resources.h"
 
 #include <libim/Manager.h>
 #include <libim/Contact.h>

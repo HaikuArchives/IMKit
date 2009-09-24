@@ -39,9 +39,9 @@
 #include <common/IMKitUtilities.h>
 
 #include "im_server.h"
-#include "IMKitResources.h"
+#include "Resources.h"
 #include "ContactManager.h"
-#include "Private/Constants.h"
+#include "Constants.h"
 #include "ProtocolInfo.h"
 #include "ProtocolManager.h"
 #include "ProtocolSpecification.h"
