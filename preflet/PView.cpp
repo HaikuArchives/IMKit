@@ -66,7 +66,7 @@ PView::PView(BRect bounds)
 	fCurrentView(NULL),
 	fCurrentIndex(0) {
 	
-	BRect frame;
+	BRect frame(0, 0, 1, 1);
 	font_height fontHeight;
 
 	be_bold_font->GetHeight(&fontHeight);
@@ -79,23 +79,25 @@ PView::PView(BRect bounds)
 	fManager = new IM::Manager(BMessenger(this));
 
 	// Outline list view
-#ifdef __HAIKU__
-	frame = BRect(0, 0, 1, 1);
-#else
+#ifndef __HAIKU__
 	frame = BRect(kEdgeOffset, kEdgeOffset, 180, Bounds().bottom - kEdgeOffset);
 #endif
 
-	fListView = new BOutlineListView(BRect(0, 0, 1, 1), "listview", B_SINGLE_SELECTION_LIST,
-		B_FOLLOW_ALL_SIDES);
-	fListView->SetSelectionMessage(new BMessage(kListChanged));
-	fListView->MakeFocus();
 #ifdef __HAIKU__
-	BScrollView* listScroller = new BScrollView("listview_scroll", fListView, 0,
+	const float scrollWidth = 9.0f * be_plain_font->Size() + 30.0f;
+	fListView = new BOutlineListView("listview");
+	BScrollView* listScroller = new BScrollView("listview_scroll", fListView,
 		0, false, true, B_FANCY_BORDER);
+	listScroller->SetExplicitMinSize(BSize(scrollWidth, B_SIZE_UNSET));
+	listScroller->SetExplicitMaxSize(BSize(scrollWidth, B_SIZE_UNSET));
 #else
+	fListView = new BOutlineListView(frame, "listview", B_SINGLE_SELECTION_LIST,
+		B_FOLLOW_ALL_SIDES);
 	BScrollView* listScroller = new BScrollView("listview_scroll", fListView, B_FOLLOW_ALL,
 		0, false, true, B_FANCY_BORDER);
 #endif
+	fListView->SetSelectionMessage(new BMessage(kListChanged));
+	fListView->MakeFocus();
 
 	// Add main view
 #ifndef __HAIKU__
@@ -170,8 +172,8 @@ PView::PView(BRect bounds)
 	SetLayout(new BGroupLayout(B_VERTICAL));
 
 	AddChild(BGroupLayoutBuilder(B_HORIZONTAL, inset)
-		.Add(listScroller)
-		.Add(fMainView)
+		.Add(listScroller, 1.0f)
+		.Add(fMainView, 4.0f)
 		.SetInsets(inset, inset, inset, inset)
 	);
 	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)

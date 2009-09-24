@@ -34,7 +34,6 @@
 
 #ifdef __HAIKU__
 #	define PWINDOW_RECT 0, 0, 1, 1
-//#	define PWINDOW_RECT 0, 0, 720, 500
 #else
 #	define PWINDOW_RECT 0, 0, 720, 500
 #endif

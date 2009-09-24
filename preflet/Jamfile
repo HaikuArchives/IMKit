@@ -2,8 +2,6 @@ SubDir TOP preflet ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 
-C++FLAGS += -fpermissive ;
-
 Application InstantMessaging :
 	main.cpp
 	PApplication.cpp
