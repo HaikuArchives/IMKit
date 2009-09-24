@@ -26,11 +26,11 @@
 #include <interface/TextView.h>
 #include <interface/StringView.h>
 
-#include <common/BubbleHelper.h>
+#include <common/interface/BubbleHelper.h>
 
 #include <libim/Helpers.h>
 
-#include "common/Divider.h"
+#include <common/interface/Divider.h>
 #include "PUtils.h"
 #include "ViewFactory.h"
 

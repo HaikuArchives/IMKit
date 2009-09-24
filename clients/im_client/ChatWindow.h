@@ -27,7 +27,7 @@
 #include <Bitmap.h>
 #include <MessageRunner.h>
 
-#include <common/IconMenuItem.h>
+#include <common/interface/IconMenuItem.h>
 #include "StatusBar.h"
 #include "IconBar.h"
 #include "ImageButton.h"

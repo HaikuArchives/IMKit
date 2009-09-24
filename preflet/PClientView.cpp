@@ -37,9 +37,9 @@
 #include "PUtils.h"
 #include "SettingsHost.h"
 
-#include "common/BubbleHelper.h"
-#include "common/Divider.h"
-#include "common/NotifyingTextView.h"
+#include <common/interface/BubbleHelper.h>
+#include <common/interface/Divider.h>
+#include <common/interface/NotifyingTextView.h>
 
 //#pragma mark Global
 

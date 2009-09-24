@@ -34,7 +34,7 @@
 #	define _T(str) (str)
 #endif
 
-#include <common/IconTextItem.h>
+#include <common/interface/IconTextItem.h>
 #include <common/IMKitUtilities.h>
 
 #include <libim/Helpers.h>

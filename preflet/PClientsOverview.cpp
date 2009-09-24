@@ -21,8 +21,8 @@
 #include "PClientsOverview.h"
 #include "SettingsHost.h"
 
-#include "common/Divider.h"
-#include "common/MultiLineStringView.h"
+#include <common/interface/Divider.h>
+#include <common/interface/MultiLineStringView.h>
 
 #ifdef ZETA
 #	include <locale/Locale.h>

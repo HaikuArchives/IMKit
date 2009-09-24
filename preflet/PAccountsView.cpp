@@ -29,8 +29,9 @@
 #include "SettingsHost.h"
 
 #include <libim/Helpers.h>
-#include "common/GenericStore.h"
-#include "common/Divider.h"
+
+#include <common/GenericStore.h>
+#include <common/interface/Divider.h>
 
 #ifdef ZETA
 #	include <app/Roster.h>

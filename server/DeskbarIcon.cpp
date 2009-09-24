@@ -1,9 +1,9 @@
 #include "DeskbarIcon.h"
 
 #include "AccountInfoSpecification.h"
-#include "common/BubbleHelper.h"
-#include "common/GenericStore.h"
-#include "common/IMKitUtilities.h"
+#include <common/interface/BubbleHelper.h>
+#include <common/GenericStore.h>
+#include <common/IMKitUtilities.h>
 
 #include <libim/Constants.h>
 #include <libim/Manager.h>

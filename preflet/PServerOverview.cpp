@@ -17,7 +17,7 @@
 #endif
 
 #include "PServerOverview.h"
-#include "common/Divider.h"
+#include <common/interface/Divider.h>
 
 #ifdef ZETA
 #	include <locale/Locale.h>

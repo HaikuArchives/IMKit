@@ -6,7 +6,7 @@
 #include <interface/CheckBox.h>
 #include <interface/StringView.h>
 
-#include "common/NotifyingTextView.h"
+#include <common/interface/NotifyingTextView.h>
 
 //#pragma mark Public Methods
 

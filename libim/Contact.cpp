@@ -377,6 +377,9 @@ Contact::ReadAttribute( const char * attr, char *buffer, int bufsize )
 }
 
 status_t Contact::ReadAttribute(const char *name, char **buffer, int32 *size) {
+	if ((name == NULL) || (buffer == NULL) || (size == NULL))
+		return B_BAD_VALUE;
+
 	status_t ret = B_OK;
 	BNode node(&fEntry);
 	ret = node.InitCheck();
@@ -399,8 +402,11 @@ status_t Contact::ReadAttribute(const char *name, char **buffer, int32 *size) {
 };
 
 status_t Contact::WriteAttribute(const char *name, const char *buffer, int32 size) {
-	BNode node(&fEntry);
+	if ((name == NULL) || (buffer == NULL) || (size <= 0))
+		return B_BAD_VALUE;
 
+	// Write attribute
+	BNode node(&fEntry);
 	if (node.InitCheck() != B_OK)
 		return B_ERROR;
 

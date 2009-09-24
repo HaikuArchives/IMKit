@@ -1,7 +1,7 @@
 #include "ChatWindow.h"
 
-#include "../../common/IMKitUtilities.h"
-#include "../../common/IconView.h"
+#include <common/IMKitUtilities.h>
+#include <common/interface/BitmapView.h>
 
 #include <libim/Connection.h>
 #include <libim/Contact.h>
@@ -13,7 +13,7 @@
 #include <MessageRunner.h>
 #include <vector>
 
-#include <common/BubbleHelper.h>
+#include <common/interface/BubbleHelper.h>
 
 #ifdef ZETA
 #include <locale/Locale.h>

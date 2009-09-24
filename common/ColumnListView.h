@@ -3,9 +3,9 @@
 #define _COMMON_COLUMN_LIST_VIEW_H
 
 #ifdef __HAIKU__
-#	include <common/haiku_clv/ColumnListView.h>
+#	include <common/clv_haiku/ColumnListView.h>
 #else
-#	include <common/clv/ColumnListView.h>
+#	include <common/clv_zeta/ColumnListView.h>
 #endif
 
 #endif	// _COMMON_COLUMN_LIST_VIEW_H

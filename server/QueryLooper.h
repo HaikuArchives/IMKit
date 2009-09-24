@@ -10,7 +10,7 @@
 #include <String.h>
 #include <Volume.h>
 
-#include <common/IconMenuItem.h>
+#include <common/interface/IconMenuItem.h>
 #include <common/IMKitUtilities.h>
 
 #include <map>

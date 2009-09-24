@@ -23,7 +23,7 @@
 
 #include <libim/Helpers.h>
 
-#include "common/Divider.h"
+#include <common/interface/Divider.h>
 
 #include "PAccountDialog.h"
 #include "PClientView.h"

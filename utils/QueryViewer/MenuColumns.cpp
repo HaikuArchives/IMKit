@@ -1,6 +1,6 @@
 #include "MenuColumns.h"
 
-#include <common/IconMenuItem.h>
+#include <common/interface/IconMenuItem.h>
 
 #include <stdio.h>
 

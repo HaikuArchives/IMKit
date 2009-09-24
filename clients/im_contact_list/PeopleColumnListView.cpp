@@ -18,7 +18,7 @@
 #include <libim/Contact.h>
 
 #include <common/IMKitUtilities.h>
-#include <common/IconUtils.h>
+#include <common/interface/IconUtils.h>
 
 const float kMiniSize = B_MINI_ICON * 1.25f;
 const float kLargeSize = B_LARGE_ICON * 1.25f;

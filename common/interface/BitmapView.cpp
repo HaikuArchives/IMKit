@@ -1,4 +1,4 @@
-#include "IconView.h"
+#include "BitmapView.h"
 
 #include <stdio.h>
 
