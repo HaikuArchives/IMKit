@@ -1,7 +1,6 @@
 SubDir TOP utils ProtocolLoader ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
-SubDirHdrs [ FDirName $(TOP) server ] ;
 
 Application ProtocolLoader :
 	main.cpp

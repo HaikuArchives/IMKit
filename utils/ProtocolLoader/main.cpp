@@ -14,7 +14,7 @@
 #include <signal.h>
 
 #include "ProtocolLoaderApplication.h"
-#include "Private/Constants.h"
+#include <server/Constants.h>
 
 // #pragma mark Constants
 
