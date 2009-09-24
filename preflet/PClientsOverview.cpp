@@ -12,10 +12,8 @@
 #include <interface/Button.h>
 #include <interface/CheckBox.h>
 #ifdef __HAIKU__
-#	include <interface/GroupLayout.h>
-#	include <interface/GroupLayoutBuilder.h>
-#	include <interface/GridLayoutBuilder.h>
-#	include <interface/SpaceLayoutItem.h>
+#	include <GroupLayout.h>
+#	include <GroupLayoutBuilder.h>
 #endif
 #include <storage/Path.h>
 #include <libim/Helpers.h>
@@ -67,31 +65,32 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 	
 	BFont headingFont(be_bold_font);
 	headingFont.SetSize(headingFont.Size() * 1.2f);
-	float inset = ceilf(be_plain_font->Size() * 0.7f);
+
 	BRect frame(0, 0, 1, 1);
-#ifndef __HAIKU__
+#ifdef __HAIKU__
+	float inset = ceilf(be_plain_font->Size() * 0.7f);
+#else
 	frame = Frame();
 	frame.InsetBy(inset * 2, inset * 2);
 #endif
 
-	fAutoStartLabel = new BStringView(frame, "AutoStartLabel", _T("Autostart"));
+	fAutoStartLabel = ViewFactory::Create<BStringView>(frame, "AutoStartLabel",
+		_T("Autostart"));
 	fAutoStartLabel->SetAlignment(B_ALIGN_LEFT);
 	fAutoStartLabel->SetFont(&headingFont);
 
-	fAutoStartDivider = new Divider(frame, "AutoStartDivider", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS);
+	fAutoStartDivider = new Divider(frame, "AutoStartDivider", B_FOLLOW_ALL_SIDES);
 	fAutoStartDivider->ResizeToPreferred();
 
-	fAutoStartDesc = new MultiLineStringView("AutoStartDesc", _T(kAutoStartDesc), Bounds().Width());
+	fAutoStartDesc = new MultiLineStringView("AutoStartDesc",
+		_T(kAutoStartDesc), Bounds().Width());
 	fAutoStartDesc->ResizeToPreferred();
 
 #ifdef __HAIKU__
-	int32 row = 5;
-	BGridLayoutBuilder layout(0.0f, 1.0f);
-	layout.Add(fAutoStartLabel, 0, 0, 2)
-		.Add(fAutoStartDivider, 0, 1, 2)
-		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 2, 2)
-		.Add(fAutoStartDesc, 0, 3, 2)
-		.Add(BSpaceLayoutItem::CreateVerticalStrut(4.0f), 0, 4, 2)
+	BGroupLayoutBuilder layout(B_VERTICAL, inset);
+	layout.Add(fAutoStartLabel)
+		.Add(fAutoStartDivider)
+		.Add(fAutoStartDesc)
 	;
 #endif
 
@@ -122,9 +121,10 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 		fClientInfo.push_back(new ClientInfo(checkbox, button));
 
 #ifdef __HAIKU__
-		layout.Add(checkbox, 0, row);
-		layout.Add(button, 1, row);
-		layout.Add(BSpaceLayoutItem::CreateVerticalStrut(8.0f), 0, ++row, 2);
+		layout.AddGroup(B_HORIZONTAL)
+			.Add(checkbox)
+			.Add(button)
+		.End();
 #else
 		AddChild(checkbox);
 		AddChild(button);
@@ -140,10 +140,8 @@ PClientsOverview::PClientsOverview(MultipleViewHandler *handler, BRect bounds)
 
 	// Build the layout
 	SetLayout(new BGroupLayout(B_HORIZONTAL));
-	AddChild(BGroupLayoutBuilder(B_VERTICAL, inset)
-		.Add(layout)
-		.AddGlue()
-	);
+	layout.AddGlue();
+	AddChild(layout);
 #else
 	AddChild(fAutoStartLabel);
 	AddChild(fAutoStartDivider);
