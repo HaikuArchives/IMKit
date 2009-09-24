@@ -1983,16 +1983,20 @@ status_t Server::UpdateOwnSettings(BMessage &settings) {
 status_t Server::SetAutoStart(bool autostart) {
 	app_info info;
 	BPath serverPath;
+#ifndef __HAIKU__
 	status_t err = B_ERROR;
+#endif
 
 	// Find server path
 	be_roster->GetRunningAppInfo(be_app->Team(), &info);
 	serverPath.SetTo(&info.ref);
 
+#ifndef __HAIKU__
 	// UserBootscript command
 	BString cmd0 = "# Added by IM Kit.      AAA_im_server_BBB";
 	BString cmd1(serverPath.Path());
 	cmd1.Append(" & # AAA_im_server_BBB");
+#endif
 
 	// Start server at boot time
 	BPath path;
@@ -2002,6 +2006,27 @@ status_t Server::SetAutoStart(bool autostart) {
 		return B_ERROR;
 	};
 
+#ifdef __HAIKU__
+	path.Append("launch");
+	BDirectory directory(path.Path());
+	BEntry entry(&directory, serverPath.Leaf());
+
+	// Remove symbolic link
+	entry.Remove();
+
+	if (autostart) {
+		// Put a symlink into ~/config/boot/launch
+		if (directory.CreateSymLink(serverPath.Leaf(),
+			serverPath.Path(), NULL) != B_OK) {
+			BAlert* alert = new BAlert("",
+				_T("Can't enable notifications at startup time, you probably don't have "
+				   "write permission to the boot settings directory."), "OK", NULL, NULL,
+				B_WIDTH_AS_USUAL, B_STOP_ALERT);
+			(void)alert->Go();
+			return B_ERROR;
+		}
+	}
+#else
 	// Create file if it doesn't exist
 	BDirectory directory(path.Path());
 	path.Append("UserBootscript");
@@ -2068,6 +2093,7 @@ status_t Server::SetAutoStart(bool autostart) {
 			file.Write("\n", 1);
 		};
 	};
+#endif
 
 	return B_OK;
 };
