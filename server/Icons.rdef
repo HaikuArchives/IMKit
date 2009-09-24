@@ -1,5 +1,5 @@
 
-#include "IMKitResources.h"
+#include "Resources.h"
 
 #ifdef HAIKU_TARGET_PLATFORM_HAIKU
 
