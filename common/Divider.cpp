@@ -14,7 +14,11 @@ const int kResizeWidgetCircleCount = 2;
 //#pragma mark Constructor
 
 Divider::Divider(BRect frame, const char *name, uint32 resize, uint32 flags) :
+#ifdef __HAIKU__
+	BView(name, flags | B_FRAME_EVENTS | B_WILL_DRAW),
+#else
 	BView(frame, name, resize, flags | B_FRAME_EVENTS | B_WILL_DRAW),
+#endif
 	fOrient(B_HORIZONTAL) {
 	
 	SetViewColor (ui_color (B_PANEL_BACKGROUND_COLOR));
