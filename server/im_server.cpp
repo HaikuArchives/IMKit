@@ -2019,9 +2019,9 @@ status_t Server::SetAutoStart(bool autostart) {
 		if (directory.CreateSymLink(serverPath.Leaf(),
 			serverPath.Path(), NULL) != B_OK) {
 			BAlert* alert = new BAlert("",
-				_T("Can't enable notifications at startup time, you probably don't have "
-				   "write permission to the boot settings directory."), "OK", NULL, NULL,
-				B_WIDTH_AS_USUAL, B_STOP_ALERT);
+				_T("Can't enable instant messaging at startup time, you probably "
+				   "don't have write permission to the boot settings directory."), "OK",
+				NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 			(void)alert->Go();
 			return B_ERROR;
 		}
