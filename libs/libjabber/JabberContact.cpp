@@ -70,11 +70,6 @@ void
 JabberContact::SetVCard(JabberVCard* vCard)
 {
 	fVCard = vCard;
-
-	// If vCard information has nickname field
-	// we want to use it
-	if (fVCard->GetNickname() != "")
-		fName = fVCard->GetNickname();
 }
 
 
