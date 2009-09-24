@@ -1,6 +1,6 @@
 #include "ProtocolLoaderApplication.h"
 
-#include "Private/Constants.h"
+#include <server/Constants.h>
 
 #include <libim/Constants.h>
 #include <libim/Manager.h>
