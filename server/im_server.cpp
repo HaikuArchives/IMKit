@@ -25,7 +25,7 @@
 #include <storage/Resources.h>
 #include <TranslationUtils.h>
 
-#include <DeskbarIcon.h>
+#include "DeskbarIcon.h"
 
 #ifdef ZETA
 #include <locale/Locale.h>
@@ -115,16 +115,13 @@ Server::Server(void)
 	};
 	
 	InitSettings();
-	
-	BMessage settings;
-	if (im_load_client_settings("im_server", &settings) == B_OK) {
-		UpdateOwnSettings(settings);
-	}
-	
 	LoadProtocols();
-
 	_Init();
-	
+
+	BMessage settings;
+	if (im_load_client_settings("im_server", &settings) == B_OK)
+		UpdateOwnSettings(settings);
+
 #if defined(ZETA)
 	/* same badness as in DeskbarIcon.cpp */
 	BPath path( "/boot/apps/Internet/IMKit/Language/Dictionaries/im_server" );
@@ -700,21 +697,6 @@ void Server::_UpdateStatusIcons(void) {
 		};
 	}
 #endif
-}
-
-/**
-	Install deskbar icon.
-*/
-void Server::_InstallDeskbarIcon()
-{
-	image_info info;
-	entry_ref ref;
-
-	if (our_image(info) == B_OK
-		&& get_ref_for_path(info.name, &ref) == B_OK) {
-		BDeskbar deskbar;
-		deskbar.AddItem(&ref);
-	}
 }
 
 /**
@@ -1364,7 +1346,7 @@ void Server::MessageFromProtocols(BMessage *msg) {
 				full_name.Append(last_name);
 		}
 
-		// Update contact information (the attributes will be set only when not already set)
+		// Update contact information
 		ContactHandle handle = contact->Handle();
 		Contact clientContact(handle.entry);
 		clientContact.SetName(full_name.String());
@@ -2127,7 +2109,8 @@ status_t Server::SetDeskbarIcon(bool deskbar_icon) {
 	};
 
 	// Install the icon
-	_InstallDeskbarIcon();
+	if (!isInstalled && deskbar_icon)
+		deskbar.AddItem(new IM_DeskbarIcon());
 
 	return B_OK;
 };

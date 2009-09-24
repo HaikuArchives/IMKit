@@ -61,8 +61,7 @@ namespace IM {
 		private:
 			void					_Init(void);
 			void					_UpdateStatusIcons(void);
-			void					_InstallDeskbarIcon(void);
-			
+
 			status_t				LoadProtocols(void);
 			
 			bool					IsMessageOk(BMessage *);

@@ -197,7 +197,6 @@ void IM_DeskbarIcon::_init() {
 	if (fOfflineIcon == NULL) {
 		LOG(kLogName, liHigh, "Error loading fOfflineIcon");
 	};
-LOG(kLogName, liHigh, "---------------------------- %d %p", kDeskbarOfflineIcon, fOfflineIcon);
 
 	fGenericIcon = GetIconFromResources(&resources, kDeskbarGenericIcon, B_MINI_ICON);
 	if (fGenericIcon == NULL) {
