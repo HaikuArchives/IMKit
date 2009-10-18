@@ -11,6 +11,7 @@
 #  include <arpa/inet.h>
 #  include <sys/socket.h>
 #  include <netdb.h>
+#  include <unistd.h>
 #endif 
 
 #ifdef __HAIKU__
