@@ -9,6 +9,8 @@
 
 current_dir=`pwd`
 defines=""
+is_zeta="0"
+finddir_system_prefix="B_SYSTEM"
 
 # Replacement for which to make it work in Zeta
 function which_replacement()
@@ -59,13 +61,15 @@ case "$platform" in
 				defines="BEOS=1 NETSERVER_BUILD=1"
 			;;
 			6.*)
-				defines="ZETA=1 BONE_BUILD=1"
+				defines="ZETA=1 BONE_BUILD=1 _ZETA_TS_FIND_DIR_=1"
+				is_zeta="1"
 			;;
 			*)
 				echo "*** Unsupported $platform operating system."
 				exit 1
 			;;
 		esac
+		finddir_system_prefix="B_BEOS"
 	;;
 	Haiku)
 		defines="HAIKU=1 HAIKU_TARGET_PLATFORM_HAIKU=1"
@@ -144,12 +148,15 @@ COMMON_SERVERS_DIRECTORY = $(finddir B_COMMON_SERVERS_DIRECTORY) ;
 COMMON_ADDONS_DIRECTORY = $(finddir B_COMMON_ADDONS_DIRECTORY) ;
 COMMON_DEVELOP_DIRECTORY = $(finddir B_COMMON_DEVELOP_DIRECTORY) ;
 USER_CONFIG_DIRECTORY = $(finddir B_USER_CONFIG_DIRECTORY) ;
-SYSTEM_DIRECTORY = $(finddir B_SYSTEM_DIRECTORY) ;
-SYSTEM_LIB_DIRECTORY = $(finddir B_SYSTEM_LIB_DIRECTORY) ;
+USER_INCLUDE_DIRECTORY = $(finddir B_USER_CONFIG_DIRECTORY)/include ;
+SYSTEM_DIRECTORY = $(finddir ${finddir_system_prefix}_DIRECTORY) ;
+SYSTEM_LIB_DIRECTORY = $(finddir ${finddir_system_prefix}_LIB_DIRECTORY) ;
 BEOS_PREFERENCES_DIRECTORY = $(finddir B_BEOS_PREFERENCES_DIRECTORY) ;
 PREFERENCES_DIRECTORY = $(finddir B_PREFERENCES_DIRECTORY) ;
 USER_PREFERENCES_DIRECTORY = $(finddir B_USER_CONFIG_DIRECTORY)/be/Preferences ;
 APPS_DIRECTORY = $(finddir B_APPS_DIRECTORY) ;
+
+IS_ZETA = ${is_zeta} ;
 
 DEFINES += ${defines} ;
 EOF
