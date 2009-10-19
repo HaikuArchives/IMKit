@@ -35,7 +35,7 @@ main(int argc, char* argv[])
 		BString connString(argv[2]);
 		connString << ":" << argv[3];
 
-		IM::Connection connection(connString);
+		IM::Connection connection(connString.String());
 		newmsg.AddString("protocol", connection.Protocol());
 		newmsg.AddString("id", connection.ID());
 	}
