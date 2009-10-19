@@ -3,9 +3,9 @@ SubDir TOP utils QueryViewer ;
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 if $(OS) = HAIKU {
-	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview haiku ] ;
 } else {
-	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview zeta ] ;
 }
 
 Application QueryViewer :
@@ -17,10 +17,11 @@ Application QueryViewer :
 	QueryWindow.cpp
 	SVGCache.cpp
 	main.cpp
-	: be $(TARGET_LIBSTDC++) tracker libcommon.a
+	: be $(TARGET_LIBSTDC++) tracker libcommon.a libcolumnlistview.a
 ;
 
 Depends ProtocolLoader : libcommon.a ;
+Depends ProtocolLoader : libcolumnlistview.a ;
 
 if $(OS) = ZETA {
 	LINKFLAGS on QueryViewer += -lzeta -ltracker ;

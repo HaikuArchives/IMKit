@@ -1,0 +1,41 @@
+SubDir TOP clients im_chat ;
+
+SubDirSysHdrs [ FDirName $(TOP) ] ;
+
+Application im_chat :
+	main.cpp
+	ChatApp.cpp
+	ChatWindow.cpp
+	InputFilter.cpp
+	ResizeView.cpp
+	Theme.cpp
+	Utilities.cpp
+	URLCrunch.cpp
+	RunView.cpp
+	ImageButton.cpp
+	StatusBar.cpp
+	IconBar.cpp
+	: be $(TARGET_LIBSTDC++) libim.so libcommon.a
+	: im_chat.rdef
+;
+
+Depends im_chat : libcommon.a ;
+Depends im_chat : libim.so ;
+
+if $(OS) = ZETA {
+	LINKFLAGS on im_chat += -lzeta -ltracker ;
+	SVGIcon im_chat : [ FDirName $(TOP) icons imkit im_client.svg ] ;
+}
+
+InstallBin $(COMMON_BIN_DIRECTORY) : im_chat ;
+InstallSymLink $(COMMON_ADDONS_DIRECTORY)/Tracker/im_chat :
+	$(COMMON_BIN_DIRECTORY)/im_chat ;
+
+Package imkit :
+	im_chat :
+	[ FSplitPath $(COMMON_BIN_DIRECTORY) ]
+;
+PackageSymLink imkit :
+	[ FSplitPath $(COMMON_ADDONS_DIRECTORY)/Tracker/im_chat ] :
+	$(COMMON_BIN_DIRECTORY)/im_chat
+;

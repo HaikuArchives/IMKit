@@ -2,9 +2,9 @@ SubDir TOP clients im_contact_list ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 if $(OS) = HAIKU {
-	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview haiku ] ;
 } else {
-	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview zeta ] ;
 }
 
 Application im_contact_list :
@@ -16,11 +16,12 @@ Application im_contact_list :
 	StatusView.cpp
 	PictureView.cpp
 	Misc.cpp
-	: be $(TARGET_LIBSTDC++) tracker translation libcommon.a libim.so
+	: be $(TARGET_LIBSTDC++) tracker translation libcommon.a libcolumnlistview.a libim.so
 	: im_contact_list.rdef SettingsTemplate.rdef
 ;
 
 Depends im_contact_list : libcommon.a ;
+Depends im_contact_list : libcolumnlistview.a ;
 Depends im_contact_list : libim.so ;
 
 if $(OS) = ZETA {

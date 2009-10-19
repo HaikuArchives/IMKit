@@ -9,8 +9,10 @@ SubInclude TOP clients im_binlogger ;
 SubInclude TOP clients im_binlog_viewer ;
 if $(OS) = ZETA {
 	SubInclude TOP clients im_emoclient ;
+	SubInclude TOP clients im_client ;
+} else {
+	SubInclude TOP clients im_chat ;
 }
-SubInclude TOP clients im_client ;
 SubInclude TOP clients im_send_message ;
 SubInclude TOP clients im_setstatus ;
 SubInclude TOP clients im_contact_list ;

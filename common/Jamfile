@@ -3,29 +3,20 @@ SubDir TOP common ;
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) common ] ;
 
-if $(OS) = HAIKU {
-	SEARCH_SOURCE += [ FDirName $(TOP) common clv_haiku ] ;
-} else {
-	SEARCH_SOURCE += [ FDirName $(TOP) common clv_zeta ] ;
-}
 SEARCH_SOURCE += [ FDirName $(TOP) common interface ] ;
 SEARCH_SOURCE += [ FDirName $(TOP) common support ] ;
 
 StaticLibrary libcommon.a :
-	# CLV
-	ColorTools.cpp
-	ColumnListView.cpp
-	ColumnTypes.cpp
-
 	# interface
-	BubbleHelper.cpp
 	IMKitUtilities.cpp
+	BitmapView.cpp
+	BubbleHelper.cpp
+	Divider.cpp
 	IconMenuItem.cpp
 	IconTextItem.cpp
-	BitmapView.cpp
 	MultiLineStringView.cpp
 	NotifyingTextView.cpp
-	Divider.cpp
+	ToolbarView.cpp
 
 	# support
 	Base64.cpp

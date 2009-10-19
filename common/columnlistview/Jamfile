@@ -1,0 +1,19 @@
+SubDir TOP common columnlistview ;
+
+SubDirSysHdrs [ FDirName $(TOP) common ] ;
+
+if $(OS) = HAIKU {
+	SEARCH_SOURCE += [ FDirName $(TOP) common columnlistview haiku ] ;
+} else {
+	SEARCH_SOURCE += [ FDirName $(TOP) common columnlistview zeta ] ;
+}
+
+StaticLibrary libcolumnlistview.a :
+	ColorTools.cpp
+	ColumnListView.cpp
+	ColumnTypes.cpp
+;
+
+if $(OS) = ZETA {
+	LINKFLAGS on libcommon.a += -lzeta -ltracker ;
+}

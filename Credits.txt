@@ -6,26 +6,17 @@ We will add you!
 
 == Code ==
 
-IM Kit Team members in alphabetical order by last name:
-
-  * Michael "slaad" Davidson
-  * Pier Luigi "plfiorini" Fiorini
-
-Current code contributors in alphabetical order by last name:
-
-  * Bruno G. "bga" Albuquerque
-  * Michael "slaad" Davidson
-  * Pier Luigi "plfiorini" Fiorini
-  * Matt "mmadia" Madia
-
-Past contributors in alphabetical order by last name:
+Contributors in alphabetical order by last name:
 
   * Bruno G. "bga" Albuquerque
   * Andrea "xeD" Anzani
   * Michael "slaad" Davidson
   * Mikael "m_eiman" Eiman
+  * Pier Luigi "plfiorini" Fiorini
   * Oliver "OliverH" Hartmann
   * Mikael "tic" Jansson
+  * Matt "mmadia" Madia
+  * François "mmu_man" Revol
 
 == Icons ==
 

@@ -3,20 +3,21 @@ SubDir TOP clients im_binlog_viewer ;
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 
 if $(OS) = HAIKU {
-	SubDirSysHdrs [ FDirName $(TOP) common haiku_clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview haiku ] ;
 } else {
-	SubDirSysHdrs [ FDirName $(TOP) common clv ] ;
+	SubDirSysHdrs [ FDirName $(TOP) common columnlistview zeta ] ;
 }
 
 Application im_binlog_viewer :
 	# im_binlog_viewer
 	LogViewApp.cpp
 	LogWin.cpp
-	: be $(TARGET_LIBSTDC++) tracker libcommon.a libim.so
+	: be $(TARGET_LIBSTDC++) tracker libcommon.a libcolumnlistview.a libim.so
 	: im_binlog_viewer.rdef
 ;
 
 Depends im_binlog_viewer : libcommon.a ;
+Depends im_binlog_viewer : libcolumnlistview.a ;
 Depends im_binlog_viewer : libim.so ;
 
 if $(OS) = ZETA {

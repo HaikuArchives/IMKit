@@ -20,9 +20,14 @@
 #include <map>
 #include <vector>
 
+#ifdef __HAIKU__
+#	include <common/columnlistview/haiku/ColumnListView.h>
+#	include <common/columnlistview/haiku/ColumnTypes.h>
+#else
+#	include <common/columnlistview/zeta/ColumnListView.h>
+#	include <common/columnlistview/zeta/ColumnTypes.h>
+#endif
 #include <common/IMKitUtilities.h>
-#include <common/ColumnListView.h>
-#include <common/ColumnTypes.h>
 
 #include "SVGCache.h"
 #include "MenuColumns.h"

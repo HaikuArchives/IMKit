@@ -3,6 +3,7 @@ SubDir TOP ;
 # Include all the components
 SubInclude TOP libs ;
 SubInclude TOP common ;
+SubInclude TOP common columnlistview ;
 SubInclude TOP libim ;
 SubInclude TOP server ;
 SubInclude TOP preflet ;
