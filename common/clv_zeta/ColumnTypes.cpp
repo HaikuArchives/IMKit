@@ -78,8 +78,11 @@ void BTitledColumn::DrawString(const char* string, BView* parent, BRect rect)
 		case B_ALIGN_RIGHT:
 			parent->MovePenTo(rect.right - kTEXT_MARGIN - font.StringWidth(string), y);
 			break;
+#if 0
 		case B_ALIGN_HORIZONTAL_UNSET:
 		case B_ALIGN_USE_FULL_WIDTH:
+#endif
+		default:
 			break;
 	}
 	parent->DrawString(string);
@@ -704,8 +707,11 @@ void BBitmapColumn::DrawField(BField* field, BRect rect, BView* parent)
 				x = rect.right - kTEXT_MARGIN - r.Width();
 				break;
 
+#if 0
 			case B_ALIGN_HORIZONTAL_UNSET:
 			case B_ALIGN_USE_FULL_WIDTH:
+#endif
+			default:
 				break;
 		}
 		parent->SetDrawingMode(B_OP_ALPHA);
