@@ -14,7 +14,7 @@
 #include <libim/Constants.h>
 #include <libim/Manager.h>
 
-#include <infopopper/InfoPopper.h>
+#include <InfoPopper.h>
 #include <common/IMKitUtilities.h>
 
 typedef std::map<BString, entry_ref> protoicons;
