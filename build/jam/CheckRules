@@ -47,13 +47,24 @@ rule CheckOpenSSL
 		if $(haveLibs) {
 			OPENSSL_LIBRARY_DIR = $(COMMON_LIB_DIRECTORY) ;
 		} else {
-			haveLibs = [ Glob $(BEOS_SYSTEM_DIRECTORY)/lib : libssl.so ] ;
+			haveLibs = [ Glob $(COMMON_DEVELOP_DIRECTORY)/lib/x86 : libssl.so ] ;
 			if $(haveLibs) {
-				OPENSSL_LIBRARY_DIR = $(BEOS_SYSTEM_DIRECTORY)/lib ;
+				OPENSSL_LIBRARY_DIR = $(COMMON_DEVELOP_DIRECTORY)/lib/x86 ;
+			} else {
+				haveLibs = [ Glob $(BEOS_SYSTEM_DIRECTORY)/lib : libssl.so ] ;
+				if $(haveLibs) {
+					OPENSSL_LIBRARY_DIR = $(BEOS_SYSTEM_DIRECTORY)/lib ;
+				}
 			}
 		}
 
 		HAVE_OPENSSL = $(haveLibs) ;
+	}
+	if ($(OPENSSL_INCLUDE_DIR) {
+		Echo OpenSSL Headers: $(OPENSSL_INCLUDE_DIR) ;
+	}
+	if $(OPENSSL_LIBRARY_DIR) {
+		Echo OpenSSL Libs: $(OPENSSL_LIBRARY_DIR) ;
 	}
 }
 
@@ -71,10 +82,25 @@ rule CheckLibYahoo2
 	local haveHeaders = [ Glob $(COMMON_INCLUDE_DIRECTORY)/libyahoo2 : yahoo2.h ] ;
 	if $(haveHeaders) {
 		LIBYAHOO2_INCLUDE_DIR = $(COMMON_INCLUDE_DIRECTORY)/libyahoo2 ;
-
+	} else {
+		haveHeaders = [ Glob $(USER_INCLUDE_DIRECTORY)/libyahoo2 : yahoo2.h ] ;
+		if $(haveHeaders) {
+			LIBYAHOO2_INCLUDE_DIR = $(USER_INCLUDE_DIRECTORY)/libyahoo2 ;
+		}
+	}
+	if $(haveHeaders) {
 		local haveLibs = [ Glob $(COMMON_LIB_DIRECTORY) : libyahoo2.so ] ;
 		if $(haveLibs) {
 			LIBYAHOO2_LIBRARY_DIR = $(COMMON_LIB_DIRECTORY) ;
+		} else {
+			local haveLibs = [ Glob $(COMMON_LIB_DIRECTORY) : libyahoo2.so ] ;
+			if $(haveLibs) {
+				LIBYAHOO2_LIBRARY_DIR = $(COMMON_LIB_DIRECTORY) ;
+			}
+		}
+		if $(haveLibs) {
+			Echo Yahoo Headers: $(LIBYAHOO2_INCLUDE_DIR) ;
+			Echo Yahoo Libs: $(LIBYAHOO2_LIBRARY_DIR) ;
 		}
 
 		HAVE_LIBYAHOO2 = $(haveLibs) ;
