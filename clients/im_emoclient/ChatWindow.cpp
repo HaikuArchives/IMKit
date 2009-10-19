@@ -1,7 +1,8 @@
 #include "ChatWindow.h"
 
-#include "../../common/IMKitUtilities.h"
+#include <common/IMKitUtilities.h>
 
+#include <libim/Connection.h>
 #include <libim/Contact.h>
 #include <libim/Constants.h>
 #include <libim/Helpers.h>
