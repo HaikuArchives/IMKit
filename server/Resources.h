@@ -2,8 +2,8 @@
  * Copyright 2008-2009, Pier Luigi Fiorini.
  * Distributed under the terms of the MIT License.
  */
-#ifndef RESOURCES_H
-#define RESOURCES_H
+#ifndef SERVER_RESOURCES_H
+#define SERVER_RESOURCES_H
 
 #ifdef HAIKU_TARGET_PLATFORM_HAIKU
 
@@ -46,9 +46,14 @@ enum {
 	kEmailIconSmall				= 2000,
 	kEmailIconLarge				= 2001,
 	kPeopleIconLarge			= 2002,
-	kPeopleIconSmall			= 2003
+	kPeopleIconSmall			= 2003,
+
+	kDeskbarOnlineIcon		= 3000,
+	kDeskbarOfflineIcon		= 3001,
+	kDeskbarAwayIcon		= 3002,
+	kDeskbarGenericIcon		= 3003
 };
 
 #endif // HAIKU_TARGET_PLATFORM_HAIKU
 
-#endif // RESOURCES_H
+#endif // SERVER_RESOURCES_H
