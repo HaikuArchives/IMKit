@@ -6,6 +6,6 @@ resource app_version {
 	variety = B_APPV_ALPHA,
 	internal = 0,
 
-	short_info = "IM Kit",
-	long_info = "IM Kit © 2003-2008 IM Kit Team"
+	short_info = "IM Kit Library",
+	long_info = "IM Kit © 2004-2009 IM Kit Team"
 };
