@@ -1,0 +1,45 @@
+resource(1000) message('IMst') {
+	"setting" = message {
+		"name" = "auto_start",
+		"description" = "Auto-start",
+		int32 "type" = 'BOOL',
+		"default" = true,
+		"help" = "Should this application be started automatically?"
+	},
+	"setting" = message {
+		"name" = "app_sig",
+		"description" = "Application signature",
+		int32 "type" = 'CSTR',
+		"default" = "application/x-vnd.IMKit-Chat"
+	},
+	"setting" = message {
+		"name" = "icon_size",
+		"description" = "Toolbar icon size",
+		int32 "type" = 'LONG',
+		"default" = 32,
+		"help" = "Size of toolbar icons",
+		"valid_value" = 16,
+		"valid_value" = 32
+	},
+	"setting" = message {
+		"name" = "show_send_button",
+		"description" = "Show 'Send' button",
+		int32 "type" = 'BOOL',
+		"default" = true,
+		"help" = "Should the 'Send' button be visible?"
+	},
+	"setting" = message {
+		"name" = "command_sends",
+		"description" = "Send message with CMD-Enter instead of Enter",
+		int32 "type" = 'BOOL',
+		"default" = true,
+		"help" = "Should messages be sent when pressing CMD-Enter instead of just Enter?\nUse this if you send lots of multi line messages"
+	},
+	"setting" = message {
+		"name" = "people_handler",
+		"description" = "MIME type for default People handler",
+		int32 "type" = 'CSTR',
+		"default" = "application/x-vnd.Be-PEPL",
+		"help" = "Defines what application should be opened when clicking a People icon"
+	}
+};
