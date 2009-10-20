@@ -14,8 +14,10 @@ class ContactListView : public BView {
 public:
 									ContactListView(const char* name);
 
+#ifdef __HAIKU__
 	// BView hooks
 	virtual	BSize					MinSize();
+#endif
 
 private:
 			PeopleColumnListView*	fListView;

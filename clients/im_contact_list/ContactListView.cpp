@@ -6,9 +6,11 @@
  *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
  */
 
+#ifdef __HAIKU__
 #include <GroupLayout.h>
 #include <GroupLayoutBuilder.h>
 #include <LayoutUtils.h>
+#endif
 
 #include "ContactListView.h"
 #include "PeopleColumnListView.h"
