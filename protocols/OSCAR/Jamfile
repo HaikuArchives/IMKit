@@ -51,7 +51,7 @@ if $(OS) = BEOS {
 	LINKFLAGS on icq += -lsocket ;
 }
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on aim += -lsocket -lbind ;
 	LINKFLAGS on icq += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;

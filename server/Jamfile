@@ -27,7 +27,7 @@ Application im_server :
 Depends im_server : libcommon.a ;
 Depends im_server : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on im_server += -lzeta -ltracker ;
 	SVGIcon im_server : [ FDirName $(TOP) icons imkit im_server.svg ] ;
 }

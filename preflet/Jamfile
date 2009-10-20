@@ -26,7 +26,7 @@ Application InstantMessaging :
 Depends InstantMessaging : libcommon.a ;
 Depends InstantMessaging : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on InstantMessaging += -lzeta -ltracker ;
 	SVGIcon InstantMessaging : [ FDirName $(TOP) icons imkit InstantMessaging.svg ] ;
 }

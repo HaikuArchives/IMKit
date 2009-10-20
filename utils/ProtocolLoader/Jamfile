@@ -13,7 +13,7 @@ Application ProtocolLoader :
 Depends ProtocolLoader : libcommon.a ;
 Depends ProtocolLoader : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
 

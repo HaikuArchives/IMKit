@@ -2,10 +2,15 @@ SubDir TOP common ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirSysHdrs [ FDirName $(TOP) common ] ;
+SubDirSysHdrs [ FDirName $(TOP) common interface ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) common interface ] ;
 SEARCH_SOURCE += [ FDirName $(TOP) common support ] ;
 
+local HAIKU_ONLY = ;
+if $(OS) = HAIKU {
+	HAIKU_ONLY = "" ;
+}
 StaticLibrary libcommon.a :
 	# interface
 	IMKitUtilities.cpp
@@ -16,7 +21,7 @@ StaticLibrary libcommon.a :
 	IconTextItem.cpp
 	MultiLineStringView.cpp
 	NotifyingTextView.cpp
-	ToolbarView.cpp
+	$(HAIKU_ONLY)ToolbarView.cpp
 
 	# support
 	Base64.cpp
@@ -26,6 +31,6 @@ StaticLibrary libcommon.a :
 	htmlparse.cpp
 ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on libcommon.a += -lzeta -ltracker ;
 }

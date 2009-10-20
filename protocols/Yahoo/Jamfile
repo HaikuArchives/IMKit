@@ -1,6 +1,6 @@
 SubDir TOP protocols Yahoo ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(LIBYAHOO2_INCLUDE_DIR) ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) common ] ;
@@ -25,7 +25,7 @@ if $(OS) = BEOS {
 	LINKFLAGS on yahoo += -lsocket ;
 }
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on yahoo += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;
 	SVGIcon yahoo : [ FDirName $(TOP) icons imkit protocols Yahoo.svg ] ;

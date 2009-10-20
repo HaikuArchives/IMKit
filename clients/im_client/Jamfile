@@ -22,7 +22,7 @@ Application im_client :
 Depends im_client : libcommon.a ;
 Depends im_client : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on im_client += -lzeta -ltracker ;
 	SVGIcon im_client : [ FDirName $(TOP) icons imkit im_client.svg ] ;
 }

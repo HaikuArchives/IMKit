@@ -31,7 +31,7 @@ if $(OS) = BEOS {
 	LINKFLAGS on msn += -lsocket ;
 }
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on msn += -lsocket -lbind ;
 	SubDirHdrs /boot/develop/headers/be/bone ;
 	SVGIcon msn : [ FDirName $(TOP) icons imkit protocols MSN.svg ] ;

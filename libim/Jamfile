@@ -14,8 +14,8 @@ SharedLibrary libim.so :
 
 Depends libim.so : libcommon.a ;
 
-if $(OS) = ZETA {
-	LINKFLAGS on libim.so += -lzeta ;
+if $(IS_ZETA) = 1 {
+	LINKFLAGS on libim.so += -lzeta -ltracker ;
 }
 
 InstallLib $(COMMON_LIB_DIRECTORY) : libim.so ;

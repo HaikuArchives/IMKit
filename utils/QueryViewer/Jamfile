@@ -1,7 +1,7 @@
 SubDir TOP utils QueryViewer ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
-
+SubDirSysHdrs [ FDirName $(TOP) common ] ;
 if $(OS) = HAIKU {
 	SubDirSysHdrs [ FDirName $(TOP) common columnlistview haiku ] ;
 } else {
@@ -23,7 +23,7 @@ Application QueryViewer :
 Depends ProtocolLoader : libcommon.a ;
 Depends ProtocolLoader : libcolumnlistview.a ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on QueryViewer += -lzeta -ltracker ;
 }
 

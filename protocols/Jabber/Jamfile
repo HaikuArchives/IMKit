@@ -24,7 +24,7 @@ if $(OS) = BEOS {
 	LINKFLAGS on jabber += -lsocket ;
 }
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on jabber += -lsocket -lbind ;
 	SubDirSysHdrs /boot/develop/headers/be/bone ;
 	SVGIcon jabber : [ FDirName $(TOP) icons imkit protocols Jabber.svg ] ;

@@ -1,6 +1,7 @@
 SubDir TOP clients im_contact_list ;
 
 SubDirSysHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) common ] ;
 if $(OS) = HAIKU {
 	SubDirSysHdrs [ FDirName $(TOP) common columnlistview haiku ] ;
 } else {
@@ -24,7 +25,7 @@ Depends im_contact_list : libcommon.a ;
 Depends im_contact_list : libcolumnlistview.a ;
 Depends im_contact_list : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on im_client += -lzeta -ltracker ;
 	SVGIcon im_contact_list : [ FDirName $(TOP) icons imkit im_contact_list.svg ] ;
 }

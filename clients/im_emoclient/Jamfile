@@ -1,8 +1,10 @@
 SubDir TOP clients im_emoclient ;
 
-SubDirHdrs [ FDirName $(TOP) ] ;
+SubDirSysHdrs [ FDirName $(TOP) ] ;
 SubDirHdrs [ FDirName $(TOP) libs ] ;
+SubDirHdrs [ FDirName $(TOP) libs libexpat ] ;
 SubDirHdrs [ FDirName $(TOP) common ] ;
+SubDirHdrs [ FDirName $(TOP) common interface ] ;
 SubDirHdrs [ FDirName $(TOP) clients im_emoclient include ] ;
 
 SEARCH_SOURCE += [ FDirName $(TOP) clients im_emoclient BitmapMenu ] ;
@@ -30,14 +32,14 @@ Application im_emoclient :
 	BitmapMenuItem.cpp
 	PopUpMenu.cpp
 	: be $(TARGET_LIBSTDC++) translation bsvg libcommon.a libexpat.a libim.so
-	: im_emoclient.rsrc
+	: im_emoclient.rdef
 ;
 
 Depends im_emoclient : libcommon.a ;
 Depends im_emoclient : libexpat.a ;
 Depends im_emoclient : libim.so ;
 
-if $(OS) = ZETA {
+if $(IS_ZETA) = 1 {
 	LINKFLAGS on im_emoclient += -lzeta -ltracker ;
 }
 
