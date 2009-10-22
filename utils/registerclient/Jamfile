@@ -1,0 +1,14 @@
+SubDir TOP utils registerclient ;
+
+Application RegisterClient :
+	registerclient.cpp
+	: be
+	: registerclient.rdef
+;
+
+InstallBin $(APPS_DIRECTORY)/IMKit : RegisterClient ;
+
+Package imkit :
+	RegisterClient :
+	[ FSplitPath $(APPS_DIRECTORY)/IMKit ]
+;
