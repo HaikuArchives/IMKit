@@ -27,9 +27,9 @@ if $(IS_ZETA) = 1 {
 	LINKFLAGS on QueryViewer += -lzeta -ltracker ;
 }
 
-InstallBin $(APPS_DIRECTORY)/im_kit : QueryViewer ;
+InstallBin $(APPS_DIRECTORY)/IMKit : QueryViewer ;
 
 Package imkit :
 	QueryViewer :
-	[ FSplitPath $(APPS_DIRECTORY)/im_kit ]
+	[ FSplitPath $(APPS_DIRECTORY)/IMKit ]
 ;

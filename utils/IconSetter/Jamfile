@@ -9,9 +9,9 @@ Application IconSetter :
 
 Depends IconSetter : libim.so ;
 
-InstallBin $(APPS_DIRECTORY)/im_kit : IconSetter ;
+InstallBin $(APPS_DIRECTORY)/IMKit : IconSetter ;
 
 Package imkit :
 	IconSetter :
-	[ FSplitPath $(APPS_DIRECTORY)/im_kit ]
+	[ FSplitPath $(APPS_DIRECTORY)/IMKit ]
 ;

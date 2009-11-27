@@ -17,9 +17,9 @@ if $(IS_ZETA) = 1 {
 	LINKFLAGS on ProtocolLoader += -lzeta -ltracker ;
 }
 
-InstallBin $(APPS_DIRECTORY)/im_kit : ProtocolLoader ;
+InstallBin $(APPS_DIRECTORY)/IMKit : ProtocolLoader ;
 
 Package imkit :
 	ProtocolLoader :
-	[ FSplitPath $(APPS_DIRECTORY)/im_kit ]
+	[ FSplitPath $(APPS_DIRECTORY)/IMKit ]
 ;
